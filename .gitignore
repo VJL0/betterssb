@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.venv/
+.pnpm-store/
+
+# Build output
+.output/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# WXT
+frontend/.wxt/
+web-ext.config.ts
+stats.html
+stats-*.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Testing
+.coverage
+coverage/
+htmlcov/
+.pytest_cache/
+
+# Database
+*.db
+*.db-journal
+
+# OS
+Thumbs.db

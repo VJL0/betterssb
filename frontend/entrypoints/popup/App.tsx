@@ -1,34 +1,78 @@
-import { useState } from 'react';
-import reactLogo from '@/assets/react.svg';
-import wxtLogo from '/wxt.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import { useAuth } from "@/hooks/useAuth";
+import { GoogleSignIn } from "@/components/auth/GoogleSignIn";
+import { UserProfile } from "@/components/auth/UserProfile";
+import { Card } from "@/components/ui";
+import { ScheduleBuilder } from "./pages/ScheduleBuilder";
+import { SemesterPlanner } from "./pages/SemesterPlanner";
+import { ChatPage } from "./pages/ChatPage";
+import { TranscriptPage } from "./pages/TranscriptPage";
+import { SettingsPage } from "./pages/SettingsPage";
+
+const TABS = ["Schedule", "Planner", "Chat", "Transcript", "Settings"] as const;
+type Tab = (typeof TABS)[number];
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [activeTab, setActiveTab] = useState<Tab>("Schedule");
+  const { user, isAuthenticated, loading, error, login, logout } = useAuth();
+
+  if (!isAuthenticated) {
+    return (
+      <div className="popup-container">
+        <div className="login-screen">
+          <div className="login-brand">
+            <h1 className="login-title">BetterSSB</h1>
+            <p className="login-subtitle">
+              Supercharge your university registration
+            </p>
+          </div>
+
+          <Card>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center" }}>
+              <p style={{ fontSize: 13, color: "#6b7280", textAlign: "center", margin: 0 }}>
+                Sign in with your Google account to get started.
+              </p>
+              <GoogleSignIn onCredential={login} loading={loading} />
+              {error && (
+                <div style={{ fontSize: 12, color: "#dc2626", textAlign: "center" }}>
+                  {error}
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://wxt.dev" target="_blank">
-          <img src={wxtLogo} className="logo" alt="WXT logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="popup-container">
+      <div className="popup-header">
+        <h1>BetterSSB</h1>
+        {user && <UserProfile user={user} onLogout={logout} />}
       </div>
-      <h1>WXT + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+      <nav className="popup-tabs">
+        {TABS.map((tab) => (
+          <button
+            key={tab}
+            className={`popup-tab ${activeTab === tab ? "popup-tab--active" : ""}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </nav>
+
+      <div className="popup-content">
+        {activeTab === "Schedule" && <ScheduleBuilder />}
+        {activeTab === "Planner" && <SemesterPlanner />}
+        {activeTab === "Chat" && <ChatPage />}
+        {activeTab === "Transcript" && <TranscriptPage />}
+        {activeTab === "Settings" && <SettingsPage />}
       </div>
-      <p className="read-the-docs">
-        Click on the WXT and React logos to learn more
-      </p>
-    </>
+    </div>
   );
 }
 

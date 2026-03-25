@@ -1,0 +1,187 @@
+:root {
+  --bssb-primary: #4f46e5;
+  --bssb-success: #16a34a;
+  --bssb-warning: #ca8a04;
+  --bssb-danger: #dc2626;
+  --bssb-bg: #ffffff;
+  --bssb-text: #1f2937;
+  --bssb-border: #e5e7eb;
+  --bssb-muted: #6b7280;
+}
+
+.betterssb-rating-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fff;
+  margin-left: 6px;
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.betterssb-rating-badge:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.betterssb-rating-badge--green {
+  background-color: var(--bssb-success);
+}
+
+.betterssb-rating-badge--yellow {
+  background-color: var(--bssb-warning);
+}
+
+.betterssb-rating-badge--red {
+  background-color: var(--bssb-danger);
+}
+
+.betterssb-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bssb-bg);
+  color: var(--bssb-text);
+  border: 1px solid var(--bssb-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+  z-index: 999999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.betterssb-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--bssb-bg);
+}
+
+.betterssb-rating-badge:hover .betterssb-tooltip {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.betterssb-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 2px 0;
+}
+
+.betterssb-tooltip-label {
+  color: var(--bssb-muted);
+}
+
+.betterssb-tooltip-value {
+  font-weight: 600;
+}
+
+.betterssb-tooltip-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.betterssb-tooltip-tag {
+  background: #f3f4f6;
+  color: var(--bssb-text);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.betterssb-tooltip-link {
+  display: block;
+  margin-top: 8px;
+  color: var(--bssb-primary);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.betterssb-enhanced table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.betterssb-enhanced th {
+  position: sticky;
+  top: 0;
+  background: #f9fafb;
+  border-bottom: 2px solid var(--bssb-border);
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--bssb-text);
+  z-index: 10;
+}
+
+.betterssb-enhanced td {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--bssb-text);
+  border-bottom: 1px solid var(--bssb-border);
+}
+
+.betterssb-enhanced tr:nth-child(even) td {
+  background: #f9fafb;
+}
+
+.betterssb-enhanced tr:hover td {
+  background: #eff6ff;
+  transition: background 0.15s ease;
+}
+
+.betterssb-enhanced input[type="text"],
+.betterssb-enhanced input[type="search"],
+.betterssb-enhanced select {
+  border: 1px solid var(--bssb-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.betterssb-enhanced input[type="text"]:focus,
+.betterssb-enhanced input[type="search"]:focus,
+.betterssb-enhanced select:focus {
+  border-color: var(--bssb-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  outline: none;
+}
+
+.betterssb-enhanced button,
+.betterssb-enhanced .btn {
+  border-radius: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.betterssb-enhanced button:active,
+.betterssb-enhanced .btn:active {
+  transform: scale(0.98);
+}
