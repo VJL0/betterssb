@@ -5,7 +5,18 @@ export default defineConfig({
   manifest: {
     name: "BetterSSB",
     description: "Supercharge your university's Self-Service Banner registration",
-    permissions: ["storage", "alarms", "notifications", "sidePanel", "identity"],
-    host_permissions: ["*://*.edu/*"],
+    permissions: [
+      "storage",
+      "alarms",
+      "notifications",
+      "sidePanel",
+      "identity",
+      "tabs",
+      "activeTab",
+    ],
+    host_permissions: [
+      "*://*.edu/StudentRegistrationSsb/*",
+      "*://*.edu/ssb/*",
+    ],
   },
 });

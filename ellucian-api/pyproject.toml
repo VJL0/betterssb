@@ -1,0 +1,12 @@
+[project]
+name = "ellucian-ssb-api-docs"
+version = "1.0.0"
+description = "Interactive API documentation for Ellucian Self-Service Banner (SSB) student registration endpoints"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi[standard]>=0.115.0",
+    "uvicorn>=0.34.0",
+]
+
+[tool.ruff]
+line-length = 120

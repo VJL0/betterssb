@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
-import { onMessage } from "@/lib/messaging";
+import { onMessage, sendTabMessage } from "@/lib/messaging";
+import type { ExtensionMessage, ExtensionResponse } from "@/lib/messaging";
 import { getStorageItem } from "@/lib/storage";
 import type {
   Section,
@@ -8,9 +9,39 @@ import type {
   TranscriptCourse,
 } from "@/types";
 
+const SSB_URL_PATTERN = "*://*.edu/StudentRegistrationSsb/*";
+
+async function findSSBTab(): Promise<number | null> {
+  const tabs = await chrome.tabs.query({ url: SSB_URL_PATTERN });
+  return tabs[0]?.id ?? null;
+}
+
+async function relayToSSBTab(
+  msg: ExtensionMessage,
+): Promise<ExtensionResponse> {
+  const tabId = await findSSBTab();
+  if (!tabId) {
+    return {
+      success: false,
+      error: "No SSB tab found. Please open your registration page first.",
+    };
+  }
+  return sendTabMessage(tabId, msg);
+}
+
+function isSSBMessage(type: string): boolean {
+  return type.startsWith("SSB_");
+}
+
 export default defineBackground(() => {
   onMessage(async (msg, sendResponse) => {
     try {
+      if (isSSBMessage(msg.type)) {
+        const result = await relayToSSBTab(msg);
+        sendResponse(result);
+        return;
+      }
+
       const customBaseUrl = await getStorageItem<string>("betterssb:apiUrl");
       if (customBaseUrl) api.setBaseUrl(customBaseUrl);
 

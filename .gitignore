@@ -39,11 +39,12 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
-# Testing
+# Testing / Linting
 .coverage
 coverage/
 htmlcov/
 .pytest_cache/
+.ruff_cache/
 
 # Database
 *.db
