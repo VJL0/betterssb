@@ -75,7 +75,10 @@ function cacheBuster(): string {
   return Date.now().toString();
 }
 
-async function ssbGet<T>(path: string, params: Record<string, string> = {}): Promise<T> {
+async function ssbGet<T>(
+  path: string,
+  params: Record<string, string> = {},
+): Promise<T> {
   const url = new URL(`${SSB_BASE}${path}`, window.location.origin);
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== "") url.searchParams.set(k, v);
@@ -210,10 +213,13 @@ export async function searchCourses(
   if (params.txt_attribute) qs.txt_attribute = params.txt_attribute;
   if (params.txt_keywordall) qs.txt_keywordall = params.txt_keywordall;
   if (params.txt_courseTitle) qs.txt_courseTitle = params.txt_courseTitle;
-  if (params.txt_course_number_range_From) qs.txt_course_number_range_From = params.txt_course_number_range_From;
-  if (params.txt_course_number_range_To) qs.txt_course_number_range_To = params.txt_course_number_range_To;
+  if (params.txt_course_number_range_From)
+    qs.txt_course_number_range_From = params.txt_course_number_range_From;
+  if (params.txt_course_number_range_To)
+    qs.txt_course_number_range_To = params.txt_course_number_range_To;
   if (params.txt_credithourlow) qs.txt_credithourlow = params.txt_credithourlow;
-  if (params.txt_credithourhigh) qs.txt_credithourhigh = params.txt_credithourhigh;
+  if (params.txt_credithourhigh)
+    qs.txt_credithourhigh = params.txt_credithourhigh;
 
   return ssbGet("/courseSearchResults/courseSearchResults", qs);
 }
@@ -231,7 +237,8 @@ export async function searchSections(
     sortDirection: params.sortDirection ?? "asc",
   };
 
-  if (params.txt_subjectcoursecombo) qs.txt_subjectcoursecombo = params.txt_subjectcoursecombo;
+  if (params.txt_subjectcoursecombo)
+    qs.txt_subjectcoursecombo = params.txt_subjectcoursecombo;
   if (params.txt_subject) qs.txt_subject = params.txt_subject;
   if (params.txt_courseNumber) qs.txt_courseNumber = params.txt_courseNumber;
   if (params.txt_college) qs.txt_college = params.txt_college;
@@ -361,9 +368,7 @@ export async function getPlanTerms(
   });
 }
 
-export async function savePlanTerm(
-  term: string,
-): Promise<void> {
+export async function savePlanTerm(term: string): Promise<void> {
   await ssbGet("/term/saveTerm", {
     mode: "plan",
     term,
@@ -382,9 +387,7 @@ export async function addPlanItem(
   });
 }
 
-export async function getPlanEvents(
-  termFilter = "",
-): Promise<unknown[]> {
+export async function getPlanEvents(termFilter = ""): Promise<unknown[]> {
   return ssbGet("/plan/getPlanEvents", { termFilter });
 }
 
@@ -408,7 +411,9 @@ export async function getRegistrationEvents(
   return ssbGet("/classRegistration/getRegistrationEvents", { termFilter });
 }
 
-export async function getMeetingInformationForRegistrations(): Promise<SSBRegistrationSection[]> {
+export async function getMeetingInformationForRegistrations(): Promise<
+  SSBRegistrationSection[]
+> {
   return ssbGet("/classRegistration/getMeetingInformationForRegistrations", {});
 }
 
@@ -441,9 +446,7 @@ export async function getRegistrationTerms(
   });
 }
 
-export async function saveRegistrationTerm(
-  term: string,
-): Promise<void> {
+export async function saveRegistrationTerm(term: string): Promise<void> {
   await ssbGet("/term/saveTerm", {
     mode: "registration",
     term,
@@ -576,7 +579,8 @@ export function ssbSectionToInternal(
     days: meetingTimeToDays(mf.meetingTime),
     startTime: formatTime(mf.meetingTime.beginTime),
     endTime: formatTime(mf.meetingTime.endTime),
-    location: `${mf.meetingTime.buildingDescription} ${mf.meetingTime.room}`.trim(),
+    location:
+      `${mf.meetingTime.buildingDescription} ${mf.meetingTime.room}`.trim(),
     seatsAvailable: ssb.seatsAvailable,
     maxSeats: ssb.maximumEnrollment,
     term: ssb.termDesc,

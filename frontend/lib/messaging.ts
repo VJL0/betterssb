@@ -54,7 +54,10 @@ export function sendTabMessage(
   tabId: number,
   msg: ExtensionMessage,
 ): Promise<ExtensionResponse> {
-  return chrome.tabs.sendMessage<ExtensionMessage, ExtensionResponse>(tabId, msg);
+  return chrome.tabs.sendMessage<ExtensionMessage, ExtensionResponse>(
+    tabId,
+    msg,
+  );
 }
 
 export function onMessage(

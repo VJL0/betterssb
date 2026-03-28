@@ -3,7 +3,7 @@ import { getStorageItem, setStorageItem } from "@/lib/storage";
 
 export function useStorage<T>(
   key: string,
-  defaultValue: T
+  defaultValue: T,
 ): [T, (value: T) => Promise<void>, boolean] {
   const [value, setValueState] = useState<T>(defaultValue);
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ export function useStorage<T>(
     });
 
     const listener = (
-      changes: Record<string, chrome.storage.StorageChange>
+      changes: Record<string, chrome.storage.StorageChange>,
     ) => {
       if (key in changes) {
         setValueState((changes[key].newValue as T) ?? defaultValue);
@@ -38,7 +38,7 @@ export function useStorage<T>(
       setValueState(newValue);
       await setStorageItem(key, newValue);
     },
-    [key]
+    [key],
   );
 
   return [value, setValue, loading];

@@ -145,7 +145,12 @@ export function ChatWindow() {
           placeholder="Type a message..."
           disabled={loading}
         />
-        <Button size="sm" onClick={handleSend} loading={loading} disabled={!input.trim()}>
+        <Button
+          size="sm"
+          onClick={handleSend}
+          loading={loading}
+          disabled={!input.trim()}
+        >
           Send
         </Button>
       </div>

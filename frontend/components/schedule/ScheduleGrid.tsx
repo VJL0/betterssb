@@ -37,7 +37,9 @@ function minutesToLabel(mins: number): string {
   const m = mins % 60;
   const ampm = h >= 12 ? "PM" : "AM";
   const h12 = h % 12 || 12;
-  return m === 0 ? `${h12}${ampm}` : `${h12}:${String(m).padStart(2, "0")}${ampm}`;
+  return m === 0
+    ? `${h12}${ampm}`
+    : `${h12}:${String(m).padStart(2, "0")}${ampm}`;
 }
 
 export function ScheduleGrid({ sections }: ScheduleGridProps) {
@@ -54,7 +56,7 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
 
   const hours = Array.from(
     { length: END_HOUR - START_HOUR },
-    (_, i) => START_HOUR + i
+    (_, i) => START_HOUR + i,
   );
 
   return (
@@ -70,7 +72,9 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
         position: "relative",
       }}
     >
-      <div style={{ background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }} />
+      <div
+        style={{ background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}
+      />
       {DAYS.map((d) => (
         <div
           key={d}
@@ -119,7 +123,7 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
               borderBottom: "1px solid #f3f4f6",
             }}
           />
-        ))
+        )),
       )}
 
       {sections.map((section) => {
@@ -131,8 +135,7 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
           const dayIndex = DAYS.indexOf(day);
           if (dayIndex === -1) return null;
 
-          const topPct =
-            ((startMin - START_HOUR * 60) / TOTAL_MINUTES) * 100;
+          const topPct = ((startMin - START_HOUR * 60) / TOTAL_MINUTES) * 100;
           const heightPct = ((endMin - startMin) / TOTAL_MINUTES) * 100;
 
           return (
@@ -164,7 +167,9 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
                 }}
               >
                 <span style={{ fontWeight: 700 }}>{section.courseId}</span>
-                <span style={{ opacity: 0.9 }}>{section.instructor.split(" ").pop()}</span>
+                <span style={{ opacity: 0.9 }}>
+                  {section.instructor.split(" ").pop()}
+                </span>
                 <span style={{ opacity: 0.8 }}>{section.location}</span>
               </div>
             </div>

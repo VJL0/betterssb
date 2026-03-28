@@ -56,14 +56,23 @@ function Toggle({
 }
 
 export function SettingsPage() {
-  const [apiUrl, setApiUrl] = useStorage("betterssb:apiUrl", "http://localhost:8000/api/v1");
-  const [googleClientId, setGoogleClientId] = useStorage("betterssb:googleClientId", "");
+  const [apiUrl, setApiUrl] = useStorage(
+    "betterssb:apiUrl",
+    "http://localhost:8000/api/v1",
+  );
+  const [googleClientId, setGoogleClientId] = useStorage(
+    "betterssb:googleClientId",
+    "",
+  );
   const [schoolName, setSchoolName] = useStorage("betterssb:schoolName", "");
   const [autoRegCrns, setAutoRegCrns] = useStorage("betterssb:autoRegCrns", "");
   const [regTime, setRegTime] = useStorage("betterssb:registrationTime", "");
   const [enableRmp, setEnableRmp] = useStorage("betterssb:enableRmp", true);
   const [enableUi, setEnableUi] = useStorage("betterssb:enableUi", true);
-  const [enableAutoReg, setEnableAutoReg] = useStorage("betterssb:enableAutoReg", false);
+  const [enableAutoReg, setEnableAutoReg] = useStorage(
+    "betterssb:enableAutoReg",
+    false,
+  );
   const [saved, setSaved] = useStorage("betterssb:_lastSave", 0);
 
   function handleSave() {
@@ -133,7 +142,9 @@ export function SettingsPage() {
       <Button onClick={handleSave}>Save Settings</Button>
 
       {saved > 0 && (
-        <div style={{ fontSize: "12px", color: "#16a34a", textAlign: "center" }}>
+        <div
+          style={{ fontSize: "12px", color: "#16a34a", textAlign: "center" }}
+        >
           Settings saved
         </div>
       )}

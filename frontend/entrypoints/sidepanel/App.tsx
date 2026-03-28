@@ -55,7 +55,9 @@ function App() {
               background: "none",
               cursor: "pointer",
               borderBottom:
-                activeTab === tab ? "2px solid #4f46e5" : "2px solid transparent",
+                activeTab === tab
+                  ? "2px solid #4f46e5"
+                  : "2px solid transparent",
               fontFamily: "inherit",
               transition: "color 0.15s ease, border-color 0.15s ease",
             }}

@@ -102,7 +102,10 @@ export default defineBackground(() => {
         }
 
         default:
-          sendResponse({ success: false, error: `Unknown message type: ${msg.type}` });
+          sendResponse({
+            success: false,
+            error: `Unknown message type: ${msg.type}`,
+          });
       }
     } catch (err) {
       sendResponse({
@@ -117,7 +120,9 @@ export default defineBackground(() => {
   chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name !== "betterssb-reg-check") return;
 
-    const targetTime = await getStorageItem<string>("betterssb:registrationTime");
+    const targetTime = await getStorageItem<string>(
+      "betterssb:registrationTime",
+    );
     if (!targetTime) return;
 
     const target = new Date(targetTime).getTime();

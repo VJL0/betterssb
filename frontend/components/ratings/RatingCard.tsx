@@ -12,7 +12,13 @@ function ratingColor(value: number): string {
 }
 
 function tagBadgeColor(tag: string): "blue" | "gray" {
-  const positive = ["amazing", "caring", "respected", "inspirational", "hilarious"];
+  const positive = [
+    "amazing",
+    "caring",
+    "respected",
+    "inspirational",
+    "hilarious",
+  ];
   return positive.some((p) => tag.toLowerCase().includes(p)) ? "blue" : "gray";
 }
 

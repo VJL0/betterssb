@@ -3,7 +3,7 @@ const CRN_INPUT_SELECTORS = [
   'input[name*="CRN"]',
   'input[name*="crn"]',
   'input[id*="crn_id"]',
-  'input.crn_id',
+  "input.crn_id",
 ];
 
 function findCRNInputs(): HTMLInputElement[] {
@@ -16,10 +16,12 @@ function findCRNInputs(): HTMLInputElement[] {
 
 function findSubmitButton(): HTMLElement | null {
   const candidates = [
-    document.querySelector<HTMLElement>('#saveButton'),
+    document.querySelector<HTMLElement>("#saveButton"),
     document.querySelector<HTMLElement>('button[id*="submit"]'),
-    document.querySelector<HTMLElement>('input[type="submit"][value*="Submit"]'),
-    document.querySelector<HTMLElement>('button.btn-primary'),
+    document.querySelector<HTMLElement>(
+      'input[type="submit"][value*="Submit"]',
+    ),
+    document.querySelector<HTMLElement>("button.btn-primary"),
   ];
   return candidates.find((el) => el !== null) ?? null;
 }
@@ -27,7 +29,7 @@ function findSubmitButton(): HTMLElement | null {
 function setNativeValue(input: HTMLInputElement, value: string): void {
   const setter = Object.getOwnPropertyDescriptor(
     HTMLInputElement.prototype,
-    "value"
+    "value",
   )?.set;
   setter?.call(input, value);
   input.dispatchEvent(new Event("input", { bubbles: true }));
@@ -47,7 +49,7 @@ export async function registerForSections(crns: string[]): Promise<void> {
 
   if (crns.length > inputs.length) {
     console.warn(
-      `[BetterSSB] Only ${inputs.length} CRN fields found, but ${crns.length} CRNs provided`
+      `[BetterSSB] Only ${inputs.length} CRN fields found, but ${crns.length} CRNs provided`,
     );
   }
 

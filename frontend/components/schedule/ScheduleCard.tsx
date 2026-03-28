@@ -25,7 +25,13 @@ export function ScheduleCard({ schedule, index, onSelect }: ScheduleCardProps) {
           </span>
           <Badge
             text={`Score: ${schedule.score.toFixed(1)}`}
-            color={schedule.score >= 80 ? "green" : schedule.score >= 60 ? "yellow" : "red"}
+            color={
+              schedule.score >= 80
+                ? "green"
+                : schedule.score >= 60
+                  ? "yellow"
+                  : "red"
+            }
           />
         </div>
         <Button size="sm" onClick={onSelect}>
@@ -34,7 +40,14 @@ export function ScheduleCard({ schedule, index, onSelect }: ScheduleCardProps) {
       </div>
 
       {schedule.warnings.length > 0 && (
-        <div style={{ marginBottom: "10px", display: "flex", flexDirection: "column", gap: "4px" }}>
+        <div
+          style={{
+            marginBottom: "10px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+          }}
+        >
           {schedule.warnings.map((w, i) => (
             <div
               key={i}

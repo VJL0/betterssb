@@ -40,7 +40,10 @@ export function TranscriptPage() {
     setPrereqLoading(true);
 
     try {
-      const required = prereqInput.split(",").map((s) => s.trim()).filter(Boolean);
+      const required = prereqInput
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
       const response = await sendMessage({
         type: "CHECK_PREREQS",
         payload: { completed: transcript.courses, required },
@@ -83,14 +86,24 @@ export function TranscriptPage() {
       </Card>
 
       {error && (
-        <div style={{ color: "#dc2626", fontSize: "13px", padding: "8px 12px", background: "#fee2e2", borderRadius: "8px" }}>
+        <div
+          style={{
+            color: "#dc2626",
+            fontSize: "13px",
+            padding: "8px 12px",
+            background: "#fee2e2",
+            borderRadius: "8px",
+          }}
+        >
           {error}
         </div>
       )}
 
       {transcript && (
         <>
-          <Card title={`Courses (${transcript.courses.length})${transcript.gpa != null ? ` — GPA: ${transcript.gpa.toFixed(2)}` : ""}`}>
+          <Card
+            title={`Courses (${transcript.courses.length})${transcript.gpa != null ? ` — GPA: ${transcript.gpa.toFixed(2)}` : ""}`}
+          >
             <div style={{ overflowX: "auto" }}>
               <table
                 style={{
@@ -100,11 +113,24 @@ export function TranscriptPage() {
                 }}
               >
                 <thead>
-                  <tr style={{ borderBottom: "2px solid #e5e7eb", textAlign: "left" }}>
-                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>Course</th>
-                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>Title</th>
-                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>Grade</th>
-                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>Credits</th>
+                  <tr
+                    style={{
+                      borderBottom: "2px solid #e5e7eb",
+                      textAlign: "left",
+                    }}
+                  >
+                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>
+                      Course
+                    </th>
+                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>
+                      Title
+                    </th>
+                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>
+                      Grade
+                    </th>
+                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>
+                      Credits
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -113,7 +139,9 @@ export function TranscriptPage() {
                       <td style={{ padding: "6px 8px", fontWeight: 500 }}>
                         {c.subject} {c.courseNumber}
                       </td>
-                      <td style={{ padding: "6px 8px", color: "#6b7280" }}>{c.title}</td>
+                      <td style={{ padding: "6px 8px", color: "#6b7280" }}>
+                        {c.title}
+                      </td>
                       <td style={{ padding: "6px 8px" }}>
                         <Badge
                           text={c.grade}
@@ -137,9 +165,19 @@ export function TranscriptPage() {
           </Card>
 
           <Card title="Check Prerequisites">
-            <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
+            <div
+              style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}
+            >
               <div style={{ flex: 1 }}>
-                <label style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "#374151", marginBottom: "4px" }}>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    color: "#374151",
+                    marginBottom: "4px",
+                  }}
+                >
                   Required courses (comma-separated)
                 </label>
                 <input
@@ -157,13 +195,25 @@ export function TranscriptPage() {
                   }}
                 />
               </div>
-              <Button size="sm" onClick={checkPrereqs} loading={prereqLoading} disabled={!prereqInput.trim()}>
+              <Button
+                size="sm"
+                onClick={checkPrereqs}
+                loading={prereqLoading}
+                disabled={!prereqInput.trim()}
+              >
                 Check
               </Button>
             </div>
 
             {prereqs && (
-              <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "6px" }}>
+              <div
+                style={{
+                  marginTop: "12px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                }}
+              >
                 {Object.entries(prereqs).map(([course, met]) => (
                   <div
                     key={course}
@@ -174,7 +224,9 @@ export function TranscriptPage() {
                       fontSize: "13px",
                     }}
                   >
-                    <span style={{ fontSize: "16px" }}>{met ? "✅" : "❌"}</span>
+                    <span style={{ fontSize: "16px" }}>
+                      {met ? "✅" : "❌"}
+                    </span>
                     <span style={{ fontWeight: 500 }}>{course}</span>
                     <span style={{ color: met ? "#16a34a" : "#dc2626" }}>
                       {met ? "Satisfied" : "Not met"}

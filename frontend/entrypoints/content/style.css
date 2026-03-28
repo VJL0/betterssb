@@ -23,8 +23,11 @@
   cursor: pointer;
   position: relative;
   vertical-align: middle;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .betterssb-rating-badge:hover {
@@ -62,7 +65,8 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s ease;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
 }
 
@@ -123,7 +127,8 @@
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .betterssb-enhanced th {
@@ -163,7 +168,9 @@
   padding: 6px 10px;
   font-size: 14px;
   font-family: inherit;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .betterssb-enhanced input[type="text"]:focus,
@@ -177,8 +184,11 @@
 .betterssb-enhanced button,
 .betterssb-enhanced .btn {
   border-radius: 6px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  transition: background 0.15s ease, transform 0.1s ease;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
 }
 
 .betterssb-enhanced button:active,

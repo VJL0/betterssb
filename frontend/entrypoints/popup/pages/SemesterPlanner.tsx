@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import type { SSBTerm, SSBSection, SSBSectionSearchResponse } from "@/types/ssb";
+import type {
+  SSBTerm,
+  SSBSection,
+  SSBSectionSearchResponse,
+} from "@/types/ssb";
 import { sendMessage } from "@/lib/messaging";
 import { Card, Button, Input } from "@/components/ui";
 
@@ -29,7 +33,10 @@ export function SemesterPlanner() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await sendMessage({ type: "SSB_PLAN_GET_TERMS", payload: {} });
+        const res = await sendMessage({
+          type: "SSB_PLAN_GET_TERMS",
+          payload: {},
+        });
         if (res.success && Array.isArray(res.data)) {
           setTerms(res.data as SSBTerm[]);
           if ((res.data as SSBTerm[]).length > 0) {
@@ -37,7 +44,10 @@ export function SemesterPlanner() {
           }
         }
       } catch {
-        const fallback = await sendMessage({ type: "SSB_GET_TERMS", payload: {} });
+        const fallback = await sendMessage({
+          type: "SSB_GET_TERMS",
+          payload: {},
+        });
         if (fallback.success && Array.isArray(fallback.data)) {
           setTerms(fallback.data as SSBTerm[]);
           if ((fallback.data as SSBTerm[]).length > 0) {
@@ -67,7 +77,9 @@ export function SemesterPlanner() {
         const body = res.data as SSBSectionSearchResponse;
         setSSBSections(body.data ?? []);
         if ((body.data ?? []).length === 0) {
-          setSearchError("No sections found. Try a different course (e.g. CIS2168).");
+          setSearchError(
+            "No sections found. Try a different course (e.g. CIS2168).",
+          );
         }
       } else {
         setSearchError(res.error ?? "Search failed. Is your SSB tab open?");
@@ -82,7 +94,10 @@ export function SemesterPlanner() {
   async function addToPlan(sec: SSBSection) {
     setAddingCrns((prev) => new Set(prev).add(sec.courseReferenceNumber));
     try {
-      await sendMessage({ type: "SSB_PLAN_SAVE_TERM", payload: { term: selectedTerm } });
+      await sendMessage({
+        type: "SSB_PLAN_SAVE_TERM",
+        payload: { term: selectedTerm },
+      });
 
       const res = await sendMessage({
         type: "SSB_PLAN_ADD_ITEM",
@@ -104,8 +119,12 @@ export function SemesterPlanner() {
             if (mt.wednesday) days += "W";
             if (mt.thursday) days += "R";
             if (mt.friday) days += "F";
-            const start = mt.beginTime ? `${mt.beginTime.slice(0, 2)}:${mt.beginTime.slice(2)}` : "";
-            const end = mt.endTime ? `${mt.endTime.slice(0, 2)}:${mt.endTime.slice(2)}` : "";
+            const start = mt.beginTime
+              ? `${mt.beginTime.slice(0, 2)}:${mt.beginTime.slice(2)}`
+              : "";
+            const end = mt.endTime
+              ? `${mt.endTime.slice(0, 2)}:${mt.endTime.slice(2)}`
+              : "";
             return `${days} ${start}-${end}`;
           })
           .join(", ");
@@ -147,7 +166,14 @@ export function SemesterPlanner() {
       <Card title="Plan Ahead — Search Courses">
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <div>
-            <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>
+            <label
+              style={{
+                fontSize: "12px",
+                fontWeight: 600,
+                display: "block",
+                marginBottom: "4px",
+              }}
+            >
               Term
             </label>
             <select
@@ -163,7 +189,9 @@ export function SemesterPlanner() {
             >
               {terms.length === 0 && <option value="">Loading terms...</option>}
               {terms.map((t) => (
-                <option key={t.code} value={t.code}>{t.description}</option>
+                <option key={t.code} value={t.code}>
+                  {t.description}
+                </option>
               ))}
             </select>
           </div>
@@ -215,22 +243,35 @@ export function SemesterPlanner() {
                     fontSize: "12px",
                   }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                    }}
+                  >
                     <div>
-                      <strong>{sec.subject} {sec.courseNumber}-{sec.sequenceNumber}</strong>
-                      {" "}(CRN: {sec.courseReferenceNumber})
-                      <br />
-                      <span style={{ color: "#6b7280" }}>{sec.courseTitle}</span>
+                      <strong>
+                        {sec.subject} {sec.courseNumber}-{sec.sequenceNumber}
+                      </strong>{" "}
+                      (CRN: {sec.courseReferenceNumber})
                       <br />
                       <span style={{ color: "#6b7280" }}>
-                        {primaryInstructor} · {sec.instructionalMethodDescription}
+                        {sec.courseTitle}
                       </span>
                       <br />
-                      <span style={{
-                        color: sec.seatsAvailable > 0 ? "#059669" : "#dc2626",
-                        fontWeight: 600,
-                        fontSize: "11px",
-                      }}>
+                      <span style={{ color: "#6b7280" }}>
+                        {primaryInstructor} ·{" "}
+                        {sec.instructionalMethodDescription}
+                      </span>
+                      <br />
+                      <span
+                        style={{
+                          color: sec.seatsAvailable > 0 ? "#059669" : "#dc2626",
+                          fontWeight: 600,
+                          fontSize: "11px",
+                        }}
+                      >
                         {sec.seatsAvailable}/{sec.maximumEnrollment} seats
                       </span>
                     </div>
@@ -270,11 +311,14 @@ export function SemesterPlanner() {
               }}
             >
               <div>
-                <strong>{p.subject} {p.courseNumber}</strong>
+                <strong>
+                  {p.subject} {p.courseNumber}
+                </strong>
                 <span style={{ color: "#6b7280" }}> — {p.courseTitle}</span>
                 <br />
                 <span style={{ color: "#9ca3af", fontSize: "11px" }}>
-                  CRN {p.crn} · {p.instructor} · {p.meetingSummary} · {p.creditHours} cr
+                  CRN {p.crn} · {p.instructor} · {p.meetingSummary} ·{" "}
+                  {p.creditHours} cr
                 </span>
               </div>
               <button

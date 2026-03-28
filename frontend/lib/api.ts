@@ -86,7 +86,9 @@ class BetterSSBApi {
       method: "POST",
       headers: {
         "Content-Type": "text/plain",
-        ...(this.accessToken ? { Authorization: `Bearer ${this.accessToken}` } : {}),
+        ...(this.accessToken
+          ? { Authorization: `Bearer ${this.accessToken}` }
+          : {}),
       },
       body: text,
     });

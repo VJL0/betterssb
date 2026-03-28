@@ -11,7 +11,7 @@ interface UseRatingResult {
 
 export function useRating(
   professorName: string,
-  schoolName: string
+  schoolName: string,
 ): UseRatingResult {
   const [rating, setRating] = useState<RMPRating | null>(null);
   const [loading, setLoading] = useState(false);

@@ -392,7 +392,13 @@ export interface SSBRegPlanHeader {
 
 export interface SSBGetPlansResponse {
   plans: SSBRegPlanHeader[];
-  selectPlanConfig: { config: string; display: string; title: string; required: boolean; width: string }[];
+  selectPlanConfig: {
+    config: string;
+    display: string;
+    title: string;
+    required: boolean;
+    width: string;
+  }[];
   getThirdPartyData: boolean;
 }
 

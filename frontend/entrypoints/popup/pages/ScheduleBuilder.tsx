@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import type { Section, SchedulePreferences, GeneratedSchedule } from "@/types";
-import type { SSBTerm, SSBSection, SSBSectionSearchResponse } from "@/types/ssb";
+import type {
+  SSBTerm,
+  SSBSection,
+  SSBSectionSearchResponse,
+} from "@/types/ssb";
 import { sendMessage } from "@/lib/messaging";
 import { ssbSectionToInternal } from "@/lib/ssb-api";
 import { Button, Input, Card } from "@/components/ui";
@@ -58,7 +62,9 @@ export function ScheduleBuilder() {
         const body = res.data as SSBSectionSearchResponse;
         setSSBSections(body.data ?? []);
         if ((body.data ?? []).length === 0) {
-          setSearchError("No sections found. Try a different course (e.g. CIS2168).");
+          setSearchError(
+            "No sections found. Try a different course (e.g. CIS2168).",
+          );
         }
       } else {
         setSearchError(res.error ?? "Search failed. Is your SSB tab open?");
@@ -89,7 +95,9 @@ export function ScheduleBuilder() {
     setGenError(null);
 
     const preferences: SchedulePreferences = {
-      preferredDays: prefDays ? prefDays.split(",").map((d) => d.trim()) : undefined,
+      preferredDays: prefDays
+        ? prefDays.split(",").map((d) => d.trim())
+        : undefined,
       earliestTime: earliest || undefined,
       latestTime: latest || undefined,
     };
@@ -122,8 +130,12 @@ export function ScheduleBuilder() {
         if (mt.wednesday) days += "W";
         if (mt.thursday) days += "R";
         if (mt.friday) days += "F";
-        const start = mt.beginTime ? `${mt.beginTime.slice(0, 2)}:${mt.beginTime.slice(2)}` : "";
-        const end = mt.endTime ? `${mt.endTime.slice(0, 2)}:${mt.endTime.slice(2)}` : "";
+        const start = mt.beginTime
+          ? `${mt.beginTime.slice(0, 2)}:${mt.beginTime.slice(2)}`
+          : "";
+        const end = mt.endTime
+          ? `${mt.endTime.slice(0, 2)}:${mt.endTime.slice(2)}`
+          : "";
         return `${mt.meetingTypeDescription}: ${days} ${start}-${end} (${mt.buildingDescription} ${mt.room})`;
       })
       .join(" | ");
@@ -134,7 +146,14 @@ export function ScheduleBuilder() {
       <Card title="Search Sections">
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <div>
-            <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>
+            <label
+              style={{
+                fontSize: "12px",
+                fontWeight: 600,
+                display: "block",
+                marginBottom: "4px",
+              }}
+            >
               Term
             </label>
             <select
@@ -150,7 +169,9 @@ export function ScheduleBuilder() {
             >
               {terms.length === 0 && <option value="">Loading terms...</option>}
               {terms.map((t) => (
-                <option key={t.code} value={t.code}>{t.description}</option>
+                <option key={t.code} value={t.code}>
+                  {t.description}
+                </option>
               ))}
             </select>
           </div>
@@ -190,7 +211,9 @@ export function ScheduleBuilder() {
                 sec.faculty.find((f) => f.primaryIndicator)?.displayName ??
                 sec.faculty[0]?.displayName ??
                 "TBA";
-              const isAdded = selectedSections.some((s) => s.crn === sec.courseReferenceNumber);
+              const isAdded = selectedSections.some(
+                (s) => s.crn === sec.courseReferenceNumber,
+              );
 
               return (
                 <div
@@ -201,26 +224,39 @@ export function ScheduleBuilder() {
                     fontSize: "12px",
                   }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                    }}
+                  >
                     <div>
-                      <strong>{sec.subject} {sec.courseNumber}-{sec.sequenceNumber}</strong>
-                      {" "}(CRN: {sec.courseReferenceNumber})
-                      <br />
-                      <span style={{ color: "#6b7280" }}>{sec.courseTitle}</span>
+                      <strong>
+                        {sec.subject} {sec.courseNumber}-{sec.sequenceNumber}
+                      </strong>{" "}
+                      (CRN: {sec.courseReferenceNumber})
                       <br />
                       <span style={{ color: "#6b7280" }}>
-                        {primaryInstructor} · {sec.instructionalMethodDescription}
+                        {sec.courseTitle}
+                      </span>
+                      <br />
+                      <span style={{ color: "#6b7280" }}>
+                        {primaryInstructor} ·{" "}
+                        {sec.instructionalMethodDescription}
                       </span>
                       <br />
                       <span style={{ color: "#6b7280", fontSize: "11px" }}>
                         {formatMeetingDays(sec)}
                       </span>
                       <br />
-                      <span style={{
-                        color: sec.seatsAvailable > 0 ? "#059669" : "#dc2626",
-                        fontWeight: 600,
-                        fontSize: "11px",
-                      }}>
+                      <span
+                        style={{
+                          color: sec.seatsAvailable > 0 ? "#059669" : "#dc2626",
+                          fontWeight: 600,
+                          fontSize: "11px",
+                        }}
+                      >
                         {sec.seatsAvailable}/{sec.maximumEnrollment} seats
                         {sec.waitCount > 0 && ` · ${sec.waitCount} waitlisted`}
                       </span>
@@ -256,7 +292,8 @@ export function ScheduleBuilder() {
               }}
             >
               <span>
-                <strong>{s.courseId}</strong> — CRN {s.crn} — {s.days} {s.startTime}–{s.endTime}
+                <strong>{s.courseId}</strong> — CRN {s.crn} — {s.days}{" "}
+                {s.startTime}–{s.endTime}
               </span>
               <button
                 onClick={() => removeSection(s.crn)}
@@ -277,20 +314,53 @@ export function ScheduleBuilder() {
       )}
 
       <Card title="Preferences">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-          <Input label="Preferred Days" value={prefDays} onChange={(e) => setPrefDays(e.target.value)} placeholder="M,W,F" />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "8px",
+          }}
+        >
+          <Input
+            label="Preferred Days"
+            value={prefDays}
+            onChange={(e) => setPrefDays(e.target.value)}
+            placeholder="M,W,F"
+          />
           <div />
-          <Input label="Earliest" type="time" value={earliest} onChange={(e) => setEarliest(e.target.value)} />
-          <Input label="Latest" type="time" value={latest} onChange={(e) => setLatest(e.target.value)} />
+          <Input
+            label="Earliest"
+            type="time"
+            value={earliest}
+            onChange={(e) => setEarliest(e.target.value)}
+          />
+          <Input
+            label="Latest"
+            type="time"
+            value={latest}
+            onChange={(e) => setLatest(e.target.value)}
+          />
         </div>
       </Card>
 
-      <Button onClick={generate} loading={generating} disabled={selectedSections.length === 0}>
+      <Button
+        onClick={generate}
+        loading={generating}
+        disabled={selectedSections.length === 0}
+      >
         Generate Schedules
       </Button>
 
       {genError && (
-        <div style={{ color: "#dc2626", fontSize: "13px", padding: "8px 12px", background: "#fee2e2", borderRadius: "8px" }}>
+        <div
+          style={{
+            color: "#dc2626",
+            fontSize: "13px",
+            padding: "8px 12px",
+            background: "#fee2e2",
+            borderRadius: "8px",
+          }}
+        >
           {genError}
         </div>
       )}
