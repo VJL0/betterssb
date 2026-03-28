@@ -47,47 +47,24 @@ export function GoogleSignIn({ onCredential, loading }: GoogleSignInProps) {
 
   if (!clientId) {
     return (
-      <div style={hintStyle}>
-        Set your <strong>Google Client ID</strong> in Settings to enable sign-in.
+      <div className="py-2 text-center text-xs text-gray-500">
+        Set your <strong>Google Client ID</strong> in Settings to enable
+        sign-in.
       </div>
     );
   }
 
   return (
-    <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
+    <div className="relative flex justify-center">
       <div
         ref={btnRef}
-        style={{ opacity: loading ? 0.5 : 1, pointerEvents: loading ? "none" : "auto" }}
+        className={loading ? "pointer-events-none opacity-50" : ""}
       />
       {loading && (
-        <div style={overlayStyle}>
-          <span style={spinnerStyle} />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="size-5 animate-spin rounded-full border-2 border-gray-200 border-t-indigo-600" />
         </div>
       )}
     </div>
   );
 }
-
-const hintStyle: React.CSSProperties = {
-  fontSize: 12,
-  color: "#6b7280",
-  textAlign: "center",
-  padding: "8px 0",
-};
-
-const overlayStyle: React.CSSProperties = {
-  position: "absolute",
-  inset: 0,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
-const spinnerStyle: React.CSSProperties = {
-  width: 20,
-  height: 20,
-  border: "2px solid #e5e7eb",
-  borderTopColor: "#4f46e5",
-  borderRadius: "50%",
-  animation: "betterssb-spin 0.6s linear infinite",
-};

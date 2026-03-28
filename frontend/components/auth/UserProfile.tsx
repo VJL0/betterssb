@@ -8,16 +8,18 @@ interface UserProfileProps {
 
 export function UserProfile({ user, onLogout }: UserProfileProps) {
   return (
-    <div style={containerStyle}>
+    <div className="flex items-center gap-2.5 py-2">
       <img
         src={user.pictureUrl}
         alt=""
-        style={avatarStyle}
+        className="size-9 shrink-0 rounded-full border-2 border-gray-200 object-cover"
         referrerPolicy="no-referrer"
       />
-      <div style={infoStyle}>
-        <div style={nameStyle}>{user.name}</div>
-        <div style={emailStyle}>{user.email}</div>
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[13px] font-semibold text-gray-800">
+          {user.name}
+        </div>
+        <div className="truncate text-[11px] text-gray-500">{user.email}</div>
       </div>
       <Button variant="ghost" size="sm" onClick={onLogout}>
         Sign out
@@ -25,41 +27,3 @@ export function UserProfile({ user, onLogout }: UserProfileProps) {
     </div>
   );
 }
-
-const containerStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  padding: "8px 0",
-};
-
-const avatarStyle: React.CSSProperties = {
-  width: 36,
-  height: 36,
-  borderRadius: "50%",
-  border: "2px solid #e5e7eb",
-  objectFit: "cover",
-  flexShrink: 0,
-};
-
-const infoStyle: React.CSSProperties = {
-  flex: 1,
-  minWidth: 0,
-};
-
-const nameStyle: React.CSSProperties = {
-  fontSize: 13,
-  fontWeight: 600,
-  color: "#1f2937",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-};
-
-const emailStyle: React.CSSProperties = {
-  fontSize: 11,
-  color: "#6b7280",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-};

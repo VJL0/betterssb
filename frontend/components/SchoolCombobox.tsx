@@ -7,13 +7,16 @@ interface SchoolComboboxProps {
   onSelect: (school: RMPSchool) => void;
 }
 
-export function SchoolCombobox({ initialValue = "", onSelect }: SchoolComboboxProps) {
+export function SchoolCombobox({
+  initialValue = "",
+  onSelect,
+}: SchoolComboboxProps) {
   const [query, setQuery] = useState(initialValue);
   const [results, setResults] = useState<RMPSchool[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const search = useCallback(async (text: string) => {
     if (text.length < 2) {
@@ -52,7 +55,10 @@ export function SchoolCombobox({ initialValue = "", onSelect }: SchoolComboboxPr
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -61,31 +67,39 @@ export function SchoolCombobox({ initialValue = "", onSelect }: SchoolComboboxPr
   }, []);
 
   return (
-    <div ref={containerRef} style={wrapperStyle}>
-      <div style={inputWrapperStyle}>
+    <div ref={containerRef} className="relative w-full max-w-80">
+      <div className="relative flex items-center">
         <input
           type="text"
           value={query}
           onChange={(e) => handleInput(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
           placeholder="Search and select a school"
-          style={inputStyle}
+          className="w-full rounded-full border-[1.5px] border-gray-300 bg-white py-2.5 pr-9 pl-4 font-[inherit] text-sm text-gray-800 transition-colors duration-150 outline-none focus:border-indigo-400"
         />
         {loading ? (
-          <span style={spinnerStyle} />
+          <span className="absolute right-3 size-4 animate-spin rounded-full border-2 border-gray-200 border-t-gray-500" />
         ) : (
-          <svg style={iconStyle} viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+          <svg
+            className="pointer-events-none absolute right-3 size-[18px] text-gray-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clipRule="evenodd"
+            />
           </svg>
         )}
       </div>
 
       {open && results.length > 0 && (
-        <ul style={listStyle}>
+        <ul className="absolute inset-x-0 top-[calc(100%+4px)] z-50 m-0 max-h-[200px] list-none overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg">
           {results.map((school) => (
             <li
               key={school.id}
-              style={itemStyle}
+              className="cursor-pointer rounded-lg px-3 py-2 text-[13px] text-gray-700 transition-colors duration-100 hover:bg-gray-100"
               onMouseDown={() => handleSelect(school)}
             >
               {school.name}
@@ -96,74 +110,3 @@ export function SchoolCombobox({ initialValue = "", onSelect }: SchoolComboboxPr
     </div>
   );
 }
-
-const wrapperStyle: React.CSSProperties = {
-  position: "relative",
-  width: "100%",
-  maxWidth: 320,
-};
-
-const inputWrapperStyle: React.CSSProperties = {
-  position: "relative",
-  display: "flex",
-  alignItems: "center",
-};
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "10px 36px 10px 16px",
-  fontSize: 14,
-  border: "1.5px solid #d1d5db",
-  borderRadius: 24,
-  outline: "none",
-  background: "#fff",
-  color: "#1f2937",
-  fontFamily: "inherit",
-  transition: "border-color 0.15s ease",
-};
-
-const iconStyle: React.CSSProperties = {
-  position: "absolute",
-  right: 12,
-  width: 18,
-  height: 18,
-  color: "#9ca3af",
-  pointerEvents: "none",
-};
-
-const spinnerStyle: React.CSSProperties = {
-  position: "absolute",
-  right: 12,
-  width: 16,
-  height: 16,
-  border: "2px solid #e5e7eb",
-  borderTopColor: "#6b7280",
-  borderRadius: "50%",
-  animation: "betterssb-spin 0.6s linear infinite",
-};
-
-const listStyle: React.CSSProperties = {
-  position: "absolute",
-  top: "calc(100% + 4px)",
-  left: 0,
-  right: 0,
-  maxHeight: 200,
-  overflowY: "auto",
-  background: "#fff",
-  border: "1px solid #e5e7eb",
-  borderRadius: 12,
-  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-  listStyle: "none",
-  padding: 4,
-  margin: 0,
-  zIndex: 50,
-};
-
-const itemStyle: React.CSSProperties = {
-  padding: "8px 12px",
-  fontSize: 13,
-  color: "#374151",
-  cursor: "pointer",
-  borderRadius: 8,
-  transition: "background 0.1s ease",
-};

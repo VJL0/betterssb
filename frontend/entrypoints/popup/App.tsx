@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./App.css";
 import { useAuth } from "@/hooks/useAuth";
 import { GoogleSignIn } from "@/components/auth/GoogleSignIn";
 import { UserProfile } from "@/components/auth/UserProfile";
@@ -28,9 +27,11 @@ function App() {
 
   if (!isAuthenticated) {
     return (
-      <div className="popup-container">
-        <div className="login-screen">
-          <h1 className="login-title">BetterSSB</h1>
+      <div className="flex h-full flex-col bg-gray-50">
+        <div className="flex flex-1 flex-col items-center gap-5 px-6 pt-16 pb-8">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-800">
+            BetterSSB
+          </h1>
 
           <SchoolCombobox
             initialValue={schoolName}
@@ -38,13 +39,13 @@ function App() {
           />
 
           {schoolName && (
-            <div className="login-signin-section">
-              <p className="login-signin-label">
+            <div className="mt-auto flex flex-col items-center gap-4 pb-6">
+              <p className="text-sm text-gray-500">
                 Sign in for a better experience
               </p>
               <GoogleSignIn onCredential={login} loading={loading} />
               {error && (
-                <div className="login-error">{error}</div>
+                <div className="text-center text-xs text-red-600">{error}</div>
               )}
             </div>
           )}
@@ -54,17 +55,23 @@ function App() {
   }
 
   return (
-    <div className="popup-container">
-      <div className="popup-header">
-        <h1>BetterSSB</h1>
+    <div className="flex h-full flex-col bg-gray-50">
+      <div className="flex items-center gap-2 px-4 pt-2.5">
+        <h1 className="shrink-0 text-base font-bold text-gray-800">
+          BetterSSB
+        </h1>
         {user && <UserProfile user={user} onLogout={logout} />}
       </div>
 
-      <nav className="popup-tabs">
+      <nav className="mt-2.5 flex border-b border-gray-200 px-4">
         {TABS.map((tab) => (
           <button
             key={tab}
-            className={`popup-tab ${activeTab === tab ? "popup-tab--active" : ""}`}
+            className={`cursor-pointer border-b-2 px-3 py-2 text-[13px] font-medium transition-colors duration-150 ${
+              activeTab === tab
+                ? "border-indigo-600 text-indigo-600"
+                : "border-transparent text-gray-500 hover:text-indigo-600"
+            }`}
             onClick={() => setActiveTab(tab)}
           >
             {tab}
@@ -72,7 +79,7 @@ function App() {
         ))}
       </nav>
 
-      <div className="popup-content">
+      <div className="min-h-0 flex-1 overflow-y-auto p-4">
         {activeTab === "Schedule" && <ScheduleBuilder />}
         {activeTab === "Planner" && <SemesterPlanner />}
         {activeTab === "Chat" && <ChatPage />}
