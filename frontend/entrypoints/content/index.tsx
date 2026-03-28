@@ -9,6 +9,8 @@ import type {
   SSBSubmitRegistrationBatchPayload,
 } from "@/types/ssb";
 
+type Page = "planAhead" | "registration" | "results" | "plan" | "unknown";
+
 async function handleSSBMessage(
   msg: ExtensionMessage,
 ): Promise<ExtensionResponse> {
@@ -120,12 +122,19 @@ async function handleSSBMessage(
       return { success: true, data };
     }
     case "SSB_REG_ADD_CRNS": {
-      const { crnList, term } = msg.payload as { crnList: string[]; term: string };
+      const { crnList, term } = msg.payload as {
+        crnList: string[];
+        term: string;
+      };
       const data = await ssb.addCRNRegistrationItems(crnList, term);
       return { success: true, data };
     }
     case "SSB_REG_ADD_ITEM": {
-      const { term, crn, olr } = msg.payload as { term: string; crn: string; olr?: boolean };
+      const { term, crn, olr } = msg.payload as {
+        term: string;
+        crn: string;
+        olr?: boolean;
+      };
       const data = await ssb.addRegistrationItem(term, crn, olr);
       return { success: true, data };
     }
@@ -144,10 +153,7 @@ async function handleSSBMessage(
 }
 
 export default defineContentScript({
-  matches: [
-    "*://*.edu/StudentRegistrationSsb/*",
-    "*://*.edu/ssb/*",
-  ],
+  matches: ["*://*.edu/StudentRegistrationSsb/*", "*://*.edu/ssb/*"],
   cssInjectionMode: "ui",
 
   async main() {
@@ -169,25 +175,26 @@ export default defineContentScript({
       }
     });
 
-    function detectPage(): "search" | "registration" | "results" | "unknown" {
-      const url = window.location.href.toLowerCase();
-      if (url.includes("classsearch") || url.includes("searchresults")) return "search";
-      if (url.includes("registration") || url.includes("adddrop")) return "registration";
-      if (url.includes("results")) return "results";
+    function detectPage(): Page {
+      const currentUrl = window.location.href.toLowerCase();
+      const ssbPathSegments = currentUrl.split("/ssb/");
+      const path = ssbPathSegments[1];
+
+      if (path.includes("plan/plan")) return "planAhead";
+      // if (path.includes("classsearch") || path.includes("searchresults"))
+      //   return "search";
+      // if (path.includes("registration") || path.includes("adddrop"))
+      //   return "registration";
+      // if (path.includes("results")) return "results";
       return "unknown";
     }
 
     function activateModules() {
       const page = detectPage();
 
-      initUIEnhancer();
-
-      if (page === "search" || page === "results" || page === "unknown") {
+      // initUIEnhancer();
+      if (page === "planAhead") {
         initRMPRatings(observer);
-      }
-
-      if (page === "registration") {
-        initAutoRegister();
       }
     }
 

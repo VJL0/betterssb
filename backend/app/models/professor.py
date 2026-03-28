@@ -12,3 +12,9 @@ class RMPRating(BaseModel):
     num_ratings: int
     top_tags: list[str] = []
     rmp_url: str = ""
+
+
+class RMPSchool(BaseModel):
+    id: str
+    legacy_id: int
+    name: str

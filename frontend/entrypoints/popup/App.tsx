@@ -3,12 +3,14 @@ import "./App.css";
 import { useAuth } from "@/hooks/useAuth";
 import { GoogleSignIn } from "@/components/auth/GoogleSignIn";
 import { UserProfile } from "@/components/auth/UserProfile";
-import { Card } from "@/components/ui";
+import { SchoolCombobox } from "@/components/SchoolCombobox";
+import { useStorage } from "@/hooks/useStorage";
 import { ScheduleBuilder } from "./pages/ScheduleBuilder";
 import { SemesterPlanner } from "./pages/SemesterPlanner";
 import { ChatPage } from "./pages/ChatPage";
 import { TranscriptPage } from "./pages/TranscriptPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import type { RMPSchool } from "@/types";
 
 const TABS = ["Schedule", "Planner", "Chat", "Transcript", "Settings"] as const;
 type Tab = (typeof TABS)[number];
@@ -16,31 +18,36 @@ type Tab = (typeof TABS)[number];
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>("Schedule");
   const { user, isAuthenticated, loading, error, login, logout } = useAuth();
+  const [schoolName, setSchoolName] = useStorage("betterssb:schoolName", "");
+  const [, setSchoolId] = useStorage("betterssb:schoolId", "");
+
+  function handleSchoolSelect(school: RMPSchool) {
+    setSchoolName(school.name);
+    setSchoolId(school.id);
+  }
 
   if (!isAuthenticated) {
     return (
       <div className="popup-container">
         <div className="login-screen">
-          <div className="login-brand">
-            <h1 className="login-title">BetterSSB</h1>
-            <p className="login-subtitle">
-              Supercharge your university registration
-            </p>
-          </div>
+          <h1 className="login-title">BetterSSB</h1>
 
-          <Card>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center" }}>
-              <p style={{ fontSize: 13, color: "#6b7280", textAlign: "center", margin: 0 }}>
-                Sign in with your Google account to get started.
+          <SchoolCombobox
+            initialValue={schoolName}
+            onSelect={handleSchoolSelect}
+          />
+
+          {schoolName && (
+            <div className="login-signin-section">
+              <p className="login-signin-label">
+                Sign in for a better experience
               </p>
               <GoogleSignIn onCredential={login} loading={loading} />
               {error && (
-                <div style={{ fontSize: 12, color: "#dc2626", textAlign: "center" }}>
-                  {error}
-                </div>
+                <div className="login-error">{error}</div>
               )}
             </div>
-          </Card>
+          )}
         </div>
       </div>
     );

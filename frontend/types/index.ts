@@ -46,6 +46,12 @@ export interface Professor {
   rmpId?: string;
 }
 
+export interface RMPSchool {
+  id: string;
+  legacyId: number;
+  name: string;
+}
+
 export interface RMPRating {
   professorName: string;
   department: string;

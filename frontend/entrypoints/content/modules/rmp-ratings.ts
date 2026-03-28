@@ -41,7 +41,7 @@ function createBadge(rating: RMPRating): HTMLSpanElement {
   let tooltipHTML = rows
     .map(
       ([label, value]) =>
-        `<div class="betterssb-tooltip-row"><span class="betterssb-tooltip-label">${label}</span><span class="betterssb-tooltip-value">${value}</span></div>`
+        `<div class="betterssb-tooltip-row"><span class="betterssb-tooltip-label">${label}</span><span class="betterssb-tooltip-value">${value}</span></div>`,
     )
     .join("");
 
@@ -77,7 +77,8 @@ function findInstructorElements(): Element[] {
   const allTds = document.querySelectorAll("td");
   const instructorTds: Element[] = [];
   for (const td of allTds) {
-    const header = td.getAttribute("data-header") ?? td.getAttribute("aria-label") ?? "";
+    const header =
+      td.getAttribute("data-header") ?? td.getAttribute("aria-label") ?? "";
     if (/instructor|professor|faculty/i.test(header)) {
       instructorTds.push(td);
     }

@@ -1,4 +1,5 @@
 export type MessageType =
+  | "SEARCH_SCHOOLS"
   | "FETCH_RATING"
   | "GENERATE_SCHEDULE"
   | "CHAT"

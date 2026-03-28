@@ -1,5 +1,6 @@
 import type {
   RMPRating,
+  RMPSchool,
   Section,
   SchedulePreferences,
   GeneratedSchedule,
@@ -48,6 +49,12 @@ class BetterSSBApi {
     }
 
     return res.json();
+  }
+
+  async searchSchools(query: string): Promise<RMPSchool[]> {
+    return this.request<RMPSchool[]>(
+      `/rmp/schools?query=${encodeURIComponent(query)}`,
+    );
   }
 
   async searchProfessor(name: string, school: string): Promise<RMPRating[]> {

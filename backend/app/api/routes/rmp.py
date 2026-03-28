@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.config import Settings
 from app.core.deps import get_settings
-from app.models.professor import RMPRating
+from app.models.professor import RMPRating, RMPSchool
 from app.services.rmp_service import RMPService
 
 router = APIRouter(prefix="/rmp", tags=["rmp"])
@@ -12,6 +12,15 @@ router = APIRouter(prefix="/rmp", tags=["rmp"])
 
 def _rmp_service(settings: Settings = Depends(get_settings)) -> RMPService:
     return RMPService(auth_token=settings.RMP_AUTH_TOKEN)
+
+
+@router.get("/schools", response_model=list[RMPSchool])
+async def search_schools(
+    query: str,
+    service: RMPService = Depends(_rmp_service),
+) -> list[RMPSchool]:
+    """Search RateMyProfessors for schools by name."""
+    return await service.search_schools(query)
 
 
 @router.get("/search", response_model=list[RMPRating])

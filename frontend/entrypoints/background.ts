@@ -46,6 +46,13 @@ export default defineBackground(() => {
       if (customBaseUrl) api.setBaseUrl(customBaseUrl);
 
       switch (msg.type) {
+        case "SEARCH_SCHOOLS": {
+          const { query } = msg.payload as { query: string };
+          const schools = await api.searchSchools(query);
+          sendResponse({ success: true, data: schools });
+          break;
+        }
+
         case "FETCH_RATING": {
           const { name, school } = msg.payload as {
             name: string;
