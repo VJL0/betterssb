@@ -97,11 +97,7 @@ def _build_rmp_rating(node: dict) -> RMPRating:
         difficulty=node.get("avgDifficulty", 0.0),
         num_ratings=node.get("numRatings", 0),
         top_tags=[t["tagName"] for t in top_tags[:5]],
-        rmp_url=(
-            f"https://www.ratemyprofessors.com/professor/{legacy_id}"
-            if legacy_id
-            else ""
-        ),
+        rmp_url=(f"https://www.ratemyprofessors.com/professor/{legacy_id}" if legacy_id else ""),
     )
 
 
@@ -130,18 +126,11 @@ class RMPService:
         }
         try:
             async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(
-                    GRAPHQL_URL, json=payload, headers=self._headers
-                )
+                resp = await client.post(GRAPHQL_URL, json=payload, headers=self._headers)
                 resp.raise_for_status()
                 data = resp.json()
 
-            edges = (
-                data.get("data", {})
-                .get("newSearch", {})
-                .get("schools", {})
-                .get("edges", [])
-            )
+            edges = data.get("data", {}).get("newSearch", {}).get("schools", {}).get("edges", [])
             return [
                 RMPSchool(
                     id=edge["node"]["id"],
@@ -171,18 +160,11 @@ class RMPService:
         }
         try:
             async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(
-                    GRAPHQL_URL, json=payload, headers=self._headers
-                )
+                resp = await client.post(GRAPHQL_URL, json=payload, headers=self._headers)
                 resp.raise_for_status()
                 data = resp.json()
 
-            edges = (
-                data.get("data", {})
-                .get("newSearch", {})
-                .get("teachers", {})
-                .get("edges", [])
-            )
+            edges = data.get("data", {}).get("newSearch", {}).get("teachers", {}).get("edges", [])
             return [_build_rmp_rating(edge["node"]) for edge in edges if "node" in edge]
         except Exception:
             logger.exception("RMP search failed for %r", name)
@@ -196,9 +178,7 @@ class RMPService:
         }
         try:
             async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(
-                    GRAPHQL_URL, json=payload, headers=self._headers
-                )
+                resp = await client.post(GRAPHQL_URL, json=payload, headers=self._headers)
                 resp.raise_for_status()
                 data = resp.json()
 
