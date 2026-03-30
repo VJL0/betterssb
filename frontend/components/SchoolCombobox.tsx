@@ -12,6 +12,7 @@ export function SchoolCombobox({
   onSelect,
 }: SchoolComboboxProps) {
   const [query, setQuery] = useState(initialValue);
+  const [selectedName, setSelectedName] = useState(initialValue);
   const [results, setResults] = useState<RMPSchool[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,9 +50,25 @@ export function SchoolCombobox({
 
   function handleSelect(school: RMPSchool) {
     setQuery(school.name);
+    setSelectedName(school.name);
     setOpen(false);
     onSelect(school);
   }
+
+  function resetIfNotSelected() {
+    const typed = query.trim();
+    const selected = selectedName.trim();
+    if (typed !== selected) {
+      setQuery(selectedName);
+      setResults([]);
+      setOpen(false);
+    }
+  }
+
+  useEffect(() => {
+    setQuery(initialValue);
+    setSelectedName(initialValue);
+  }, [initialValue]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -59,6 +76,7 @@ export function SchoolCombobox({
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
       ) {
+        resetIfNotSelected();
         setOpen(false);
       }
     }
@@ -74,6 +92,7 @@ export function SchoolCombobox({
           value={query}
           onChange={(e) => handleInput(e.target.value)}
           onFocus={() => results.length > 0 && setOpen(true)}
+          onBlur={() => resetIfNotSelected()}
           placeholder="Search and select a school"
           className="w-full rounded-full border-[1.5px] border-gray-300 bg-white py-2.5 pr-9 pl-4 font-[inherit] text-sm text-gray-800 transition-colors duration-150 outline-none focus:border-indigo-400"
         />

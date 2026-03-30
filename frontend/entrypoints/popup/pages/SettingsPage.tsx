@@ -1,5 +1,6 @@
 import { useStorage } from "@/hooks/useStorage";
 import { Card, Input, Button } from "@/components/ui";
+import type { RMPSchool } from "@/types";
 
 function Toggle({
   label,
@@ -64,7 +65,7 @@ export function SettingsPage() {
     "betterssb:googleClientId",
     "",
   );
-  const [schoolName, setSchoolName] = useStorage("betterssb:schoolName", "");
+  const [school, setSchool] = useStorage<RMPSchool | null>("betterssb:school", null);
   const [autoRegCrns, setAutoRegCrns] = useStorage("betterssb:autoRegCrns", "");
   const [regTime, setRegTime] = useStorage("betterssb:registrationTime", "");
   const [enableRmp, setEnableRmp] = useStorage("betterssb:enableRmp", true);
@@ -97,8 +98,19 @@ export function SettingsPage() {
           />
           <Input
             label="School Name (for RMP)"
-            value={schoolName}
-            onChange={(e) => setSchoolName(e.target.value)}
+            value={school?.name ?? ""}
+            onChange={(e) => {
+              const name = e.target.value;
+              if (!name.trim()) {
+                setSchool(null);
+                return;
+              }
+              setSchool({
+                id: school?.id ?? "",
+                legacy_id: school?.legacy_id ?? 0,
+                name,
+              });
+            }}
             placeholder="University of Example"
           />
         </div>

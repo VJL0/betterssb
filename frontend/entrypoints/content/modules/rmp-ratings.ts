@@ -1,4 +1,4 @@
-import type { RMPRating } from "@/types";
+import type { RMPRating, RMPSchool } from "@/types";
 import { sendMessage } from "@/lib/messaging";
 import { getCachedRatings, cacheRating } from "@/lib/storage";
 import { getStorageItem } from "@/lib/storage";
@@ -120,8 +120,8 @@ async function processElement(el: Element, schoolName: string): Promise<void> {
 
 export function initRMPRatings(_observer?: MutationObserver): void {
   (async () => {
-    const schoolName =
-      (await getStorageItem<string>("betterssb:schoolName")) ?? "";
+    const school = await getStorageItem<RMPSchool>("betterssb:school");
+    const schoolName = school?.name ?? "";
     if (!schoolName) return;
 
     const elements = findInstructorElements();

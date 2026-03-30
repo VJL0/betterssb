@@ -17,12 +17,10 @@ type Tab = (typeof TABS)[number];
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>("Schedule");
   const { user, isAuthenticated, loading, error, login, logout } = useAuth();
-  const [schoolName, setSchoolName] = useStorage("betterssb:schoolName", "");
-  const [, setSchoolId] = useStorage("betterssb:schoolId", "");
+  const [school, setSchool] = useStorage<RMPSchool | null>("betterssb:school", null);
 
   function handleSchoolSelect(school: RMPSchool) {
-    setSchoolName(school.name);
-    setSchoolId(school.id);
+    setSchool(school);
   }
 
   if (!isAuthenticated) {
@@ -34,11 +32,11 @@ function App() {
           </h1>
 
           <SchoolCombobox
-            initialValue={schoolName}
+            initialValue={school?.name ?? ""}
             onSelect={handleSchoolSelect}
           />
 
-          {schoolName && (
+          {school?.name && (
             <div className="mt-auto flex flex-col items-center gap-4 pb-6">
               <p className="text-sm text-gray-500">
                 Sign in for a better experience
