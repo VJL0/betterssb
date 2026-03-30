@@ -1,22 +1,13 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 
+from app.api.deps import get_settings
 from app.core.config import Settings
-from app.core.deps import get_settings
-from app.services.chatbot_service import ChatbotService
+from app.domains.chatbot.schemas import ChatRequest, ChatResponse
+from app.domains.chatbot.service import ChatbotService
 
 router = APIRouter(prefix="/chat", tags=["chat"])
-
-
-class ChatRequest(BaseModel):
-    messages: list[dict]
-    context: str = ""
-
-
-class ChatResponse(BaseModel):
-    response: str
 
 
 @router.post("/", response_model=ChatResponse)

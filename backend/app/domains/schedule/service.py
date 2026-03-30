@@ -3,8 +3,7 @@ from __future__ import annotations
 import itertools
 from datetime import datetime
 
-from app.models.course import Section
-from app.models.schedule import GeneratedSchedule, SchedulePreferences
+from app.domains.schedule.schemas import GeneratedSchedule, SchedulePreferences, Section
 
 
 def _parse_time(t: str) -> datetime:

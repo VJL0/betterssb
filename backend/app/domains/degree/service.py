@@ -4,7 +4,7 @@ import re
 
 from bs4 import BeautifulSoup, Tag
 
-from app.models.degree import (
+from app.domains.degree.schemas import (
     CourseOption,
     CourseRef,
     DegreeProgram,

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from app.models.degree import DegreeProgram, SelectionType
-from app.services.bulletin_parser import BulletinParser
+from app.domains.degree.schemas import DegreeProgram, SelectionType
+from app.domains.degree.service import BulletinParser
 
 
 @pytest.fixture()

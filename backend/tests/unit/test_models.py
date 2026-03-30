@@ -3,8 +3,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from app.models.course import Course, Professor, Section
-from app.models.degree import (
+from app.domains.degree.schemas import (
     CourseOption,
     CourseRef,
     DegreeProgram,
@@ -16,9 +15,9 @@ from app.models.degree import (
     SelectionType,
     SuggestedPlan,
 )
-from app.models.professor import RMPRating
-from app.models.schedule import GeneratedSchedule, SchedulePreferences
-from app.models.transcript import DegreeRequirement, TranscriptCourse, TranscriptData
+from app.domains.rmp.schemas import RMPRating
+from app.domains.schedule.schemas import Course, GeneratedSchedule, Professor, SchedulePreferences, Section
+from app.domains.transcript.schemas import DegreeRequirement, TranscriptCourse, TranscriptData
 
 
 class TestCourseModels:

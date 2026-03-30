@@ -6,12 +6,17 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_db, get_settings
+from app.api.deps import get_db, get_settings
+from app.core.config import Settings
 from app.core.security import decode_access_token
-from app.models.user import User
-from app.services.auth_service import AuthService
+from app.domains.auth.models import User
+from app.domains.auth.service import AuthService
 
 _bearer = HTTPBearer(auto_error=False)
+
+
+def get_auth_service(settings: Settings = Depends(get_settings)) -> AuthService:
+    return AuthService(settings)
 
 
 async def get_current_user(

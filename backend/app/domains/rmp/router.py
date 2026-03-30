@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.api.deps import get_settings
 from app.core.config import Settings
-from app.core.deps import get_settings
-from app.models.professor import RMPRating, RMPSchool
-from app.services.rmp_service import RMPService
+from app.domains.rmp.schemas import RMPRating, RMPSchool
+from app.domains.rmp.service import RMPService
 
 router = APIRouter(prefix="/rmp", tags=["rmp"])
 

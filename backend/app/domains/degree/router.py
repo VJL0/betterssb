@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Body
 
-from app.models.degree import DegreeProgram
-from app.services.bulletin_parser import BulletinParser
+from app.domains.degree.schemas import DegreeProgram
+from app.domains.degree.service import BulletinParser
 
 router = APIRouter(prefix="/degree", tags=["degree"])
 

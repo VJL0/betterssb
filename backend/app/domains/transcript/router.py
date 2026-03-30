@@ -1,19 +1,13 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Body
-from pydantic import BaseModel
 
-from app.models.transcript import TranscriptCourse, TranscriptData
-from app.services.transcript_service import TranscriptService
+from app.domains.transcript.schemas import PrereqCheckRequest, TranscriptData
+from app.domains.transcript.service import TranscriptService
 
 router = APIRouter(prefix="/transcript", tags=["transcript"])
 
 _service = TranscriptService()
-
-
-class PrereqCheckRequest(BaseModel):
-    completed: list[TranscriptCourse]
-    required: list[str]
 
 
 @router.post("/parse", response_model=TranscriptData)

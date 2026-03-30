@@ -1,50 +1,20 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.auth import get_current_user
-from app.core.config import Settings
-from app.core.deps import get_db, get_settings
-from app.models.user import User
-from app.services.auth_service import AuthService
+from app.api.deps import get_db
+from app.domains.auth.dependencies import get_auth_service, get_current_user
+from app.domains.auth.models import User
+from app.domains.auth.schemas import (
+    GoogleLoginRequest,
+    RefreshRequest,
+    TokenResponse,
+    UserResponse,
+)
+from app.domains.auth.service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-
-# ── Schemas ──────────────────────────────────────────────────────────────────
-
-
-class GoogleLoginRequest(BaseModel):
-    credential: str
-
-
-class RefreshRequest(BaseModel):
-    refresh_token: str
-
-
-class UserResponse(BaseModel):
-    id: str
-    email: str
-    name: str
-    picture_url: str
-
-    model_config = {"from_attributes": True}
-
-
-class TokenResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-    user: UserResponse
-
-
-# ── Dependencies ─────────────────────────────────────────────────────────────
-
-
-def _auth_service(settings: Settings = Depends(get_settings)) -> AuthService:
-    return AuthService(settings)
 
 
 def _user_response(user: User) -> UserResponse:
@@ -56,15 +26,12 @@ def _user_response(user: User) -> UserResponse:
     )
 
 
-# ── Routes ───────────────────────────────────────────────────────────────────
-
-
 @router.post("/google", response_model=TokenResponse)
 async def google_login(
     body: GoogleLoginRequest,
     request: Request,
     db: AsyncSession = Depends(get_db),
-    service: AuthService = Depends(_auth_service),
+    service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     """Exchange a Google ID token for access + refresh tokens."""
     try:
@@ -91,7 +58,7 @@ async def refresh_tokens(
     body: RefreshRequest,
     request: Request,
     db: AsyncSession = Depends(get_db),
-    service: AuthService = Depends(_auth_service),
+    service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     """Rotate a refresh token pair."""
     try:
@@ -115,7 +82,7 @@ async def refresh_tokens(
 async def logout(
     body: RefreshRequest,
     db: AsyncSession = Depends(get_db),
-    service: AuthService = Depends(_auth_service),
+    service: AuthService = Depends(get_auth_service),
 ) -> dict[str, str]:
     """Revoke a refresh token."""
     await service.revoke_refresh_token(db, body.refresh_token)

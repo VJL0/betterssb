@@ -10,7 +10,7 @@ from alembic import context
 
 from app.core.config import Settings
 from app.core.database import Base
-from app.models.user import RefreshToken, User  # noqa: F401 — register models
+from app.domains.auth.models import RefreshToken, User  # noqa: F401 — register models
 
 config = context.config
 

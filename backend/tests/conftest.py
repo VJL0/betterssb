@@ -12,9 +12,8 @@ os.environ.setdefault(
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+from app.domains.schedule.schemas import SchedulePreferences, Section
 from app.main import app
-from app.models.course import Section
-from app.models.schedule import SchedulePreferences
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 

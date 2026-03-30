@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from app.core.database import Base
-from app.models.user import RefreshToken, User
+from app.domains.auth.models import RefreshToken, User
 
 
 class TestUserTable:

@@ -22,3 +22,8 @@ class DegreeRequirement(BaseModel):
     required_courses: list[str]
     completed_courses: list[str]
     remaining_courses: list[str]
+
+
+class PrereqCheckRequest(BaseModel):
+    completed: list[TranscriptCourse]
+    required: list[str]

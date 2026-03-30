@@ -1,21 +1,13 @@
 from __future__ import annotations
 
 from fastapi import APIRouter
-from pydantic import BaseModel
 
-from app.models.course import Section
-from app.models.schedule import GeneratedSchedule, SchedulePreferences
-from app.services.schedule_service import ScheduleService
+from app.domains.schedule.schemas import GenerateRequest, GeneratedSchedule
+from app.domains.schedule.service import ScheduleService
 
 router = APIRouter(prefix="/schedule", tags=["schedule"])
 
 _service = ScheduleService()
-
-
-class GenerateRequest(BaseModel):
-    sections: list[Section]
-    preferences: SchedulePreferences = SchedulePreferences()
-    max_results: int = 5
 
 
 @router.post("/generate", response_model=list[GeneratedSchedule])
