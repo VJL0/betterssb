@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Literal
 
-from pydantic import BaseModel
+from app.shared.schemas.base import BaseSchema
 
 
 class SelectionType(StrEnum):
@@ -14,7 +14,7 @@ class SelectionType(StrEnum):
     SELECT_N = "select_n"
 
 
-class CourseRef(BaseModel):
+class CourseRef(BaseSchema):
     """A reference to a single course in the bulletin."""
 
     subject: str
@@ -25,7 +25,7 @@ class CourseRef(BaseModel):
     bulletin_url: str = ""
 
 
-class CourseOption(BaseModel):
+class CourseOption(BaseSchema):
     """One choosable option within a requirement item.
 
     A single option can contain multiple corequisite courses that must
@@ -36,7 +36,7 @@ class CourseOption(BaseModel):
     is_honors_variant: bool = False
 
 
-class RequirementItem(BaseModel):
+class RequirementItem(BaseSchema):
     """A single line-item in a requirement group.
 
     Covers three patterns found on the bulletin:
@@ -53,7 +53,7 @@ class RequirementItem(BaseModel):
     footnotes: list[str] = []
 
 
-class RequirementGroup(BaseModel):
+class RequirementGroup(BaseSchema):
     """A named cluster of requirement items within a category.
 
     Examples: "Computer & Information Science courses",
@@ -65,7 +65,7 @@ class RequirementGroup(BaseModel):
     constraints: list[str] = []
 
 
-class RequirementCategory(BaseModel):
+class RequirementCategory(BaseSchema):
     """A top-level requirement section.
 
     Maps to the numbered <ol> items on the bulletin:
@@ -81,7 +81,7 @@ class RequirementCategory(BaseModel):
     notes: list[str] = []
 
 
-class LabScienceSequence(BaseModel):
+class LabScienceSequence(BaseSchema):
     """A lab-science department sequence (e.g. Biology, Chemistry, Physics).
 
     The student picks one sequence, then selects one course from A
@@ -96,7 +96,7 @@ class LabScienceSequence(BaseModel):
     footnotes: list[str] = []
 
 
-class PlanCourse(BaseModel):
+class PlanCourse(BaseSchema):
     """A single slot in the suggested academic plan grid."""
 
     course: CourseOption | None = None
@@ -104,7 +104,7 @@ class PlanCourse(BaseModel):
     credits: str = ""
 
 
-class PlanSemester(BaseModel):
+class PlanSemester(BaseSchema):
     """One semester in the suggested plan."""
 
     term: Literal["Fall", "Spring", "Summer"]
@@ -112,12 +112,12 @@ class PlanSemester(BaseModel):
     total_credits: str = ""
 
 
-class PlanYear(BaseModel):
+class PlanYear(BaseSchema):
     year: int
     semesters: list[PlanSemester]
 
 
-class SuggestedPlan(BaseModel):
+class SuggestedPlan(BaseSchema):
     """The 4-year suggested academic plan grid from the bulletin."""
 
     years: list[PlanYear]
@@ -125,7 +125,7 @@ class SuggestedPlan(BaseModel):
     footnotes: list[str] = []
 
 
-class DegreeProgram(BaseModel):
+class DegreeProgram(BaseSchema):
     """Complete degree requirements scraped from a Temple Bulletin page.
 
     This is the top-level structure returned by the parser.

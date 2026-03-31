@@ -107,7 +107,7 @@ export function SettingsPage() {
               }
               setSchool({
                 id: school?.id ?? "",
-                legacy_id: school?.legacy_id ?? 0,
+                legacyId: school?.legacyId ?? 0,
                 name,
               });
             }}

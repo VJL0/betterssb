@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from app.shared.schemas.base import BaseSchema
 
 
-class RMPRating(BaseModel):
+class RMPRating(BaseSchema):
     professor_name: str
     department: str = ""
     overall_rating: float
@@ -14,7 +14,7 @@ class RMPRating(BaseModel):
     rmp_url: str = ""
 
 
-class RMPSchool(BaseModel):
+class RMPSchool(BaseSchema):
     id: str
     legacy_id: int
     name: str

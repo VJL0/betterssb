@@ -48,7 +48,7 @@ export interface Professor {
 
 export interface RMPSchool {
   id: string;
-  legacy_id: number;
+  legacyId: number;
   name: string;
 }
 

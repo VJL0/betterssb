@@ -13,7 +13,7 @@ from app.core.database import Base
 from app.domains.auth.models import (
     RefreshToken,
     User,
-)  # noqa: F401 — register ORM models
+)
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

@@ -1,26 +1,24 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from app.shared.schemas.base import BaseSchema
 
 
-class GoogleLoginRequest(BaseModel):
+class GoogleLoginRequest(BaseSchema):
     credential: str
 
 
-class RefreshRequest(BaseModel):
+class RefreshRequest(BaseSchema):
     refresh_token: str
 
 
-class UserResponse(BaseModel):
+class UserResponse(BaseSchema):
     id: str
     email: str
     name: str
     picture_url: str
 
-    model_config = {"from_attributes": True}
 
-
-class TokenResponse(BaseModel):
+class TokenResponse(BaseSchema):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"

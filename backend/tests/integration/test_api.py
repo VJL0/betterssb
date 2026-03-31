@@ -89,7 +89,7 @@ class TestDegreeRoutes:
         assert resp.status_code == 200
         data = resp.json()
         assert "Computer Science" in data["name"]
-        assert data["degree_type"] == "BS"
+        assert data["degreeType"] == "BS"
         assert len(data["categories"]) >= 1
 
     async def test_parse_cybr_bulletin(self, client: AsyncClient, bulletin_cybr_html):
@@ -101,9 +101,9 @@ class TestDegreeRoutes:
         assert resp.status_code == 200
         data = resp.json()
         assert "Cybersecurity" in data["name"]
-        assert data["degree_type"] == "BS"
+        assert data["degreeType"] == "BS"
         assert len(data["categories"]) >= 1
-        assert len(data["lab_science_sequences"]) >= 1
+        assert len(data["labScienceSequences"]) >= 1
 
     async def test_parse_bulletin_empty(self, client: AsyncClient):
         html = "<html><head><title>Empty</title></head><body></body></html>"

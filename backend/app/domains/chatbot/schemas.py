@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from app.shared.schemas.base import BaseSchema
 
 
-class ChatRequest(BaseModel):
+class ChatRequest(BaseSchema):
     messages: list[dict]
     context: str = ""
 
 
-class ChatResponse(BaseModel):
+class ChatResponse(BaseSchema):
     response: str

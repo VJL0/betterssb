@@ -36,14 +36,14 @@ export function useAuth() {
         }
         const data = await resp.json();
         setTokens({
-          accessToken: data.access_token,
-          refreshToken: data.refresh_token,
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
         });
         setUser({
           id: data.user.id,
           email: data.user.email,
           name: data.user.name,
-          pictureUrl: data.user.picture_url,
+          pictureUrl: data.user.pictureUrl,
         });
       } catch (err: any) {
         setError(err.message ?? "Login failed");
@@ -60,7 +60,7 @@ export function useAuth() {
       await fetch(`${apiUrl}/auth/logout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh_token: tokens.refreshToken }),
+        body: JSON.stringify({ refreshToken: tokens.refreshToken }),
       }).catch(() => {});
     }
     setTokens(null);
@@ -73,7 +73,7 @@ export function useAuth() {
       const resp = await fetch(`${apiUrl}/auth/refresh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh_token: tokens.refreshToken }),
+        body: JSON.stringify({ refreshToken: tokens.refreshToken }),
       });
       if (!resp.ok) {
         await logout();
@@ -81,14 +81,14 @@ export function useAuth() {
       }
       const data = await resp.json();
       setTokens({
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
       });
       setUser({
         id: data.user.id,
         email: data.user.email,
         name: data.user.name,
-        pictureUrl: data.user.picture_url,
+        pictureUrl: data.user.pictureUrl,
       });
     } catch {
       await logout();

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from app.shared.schemas.base import BaseSchema
 
 
-class Course(BaseModel):
+class Course(BaseSchema):
     id: str
     subject: str
     course_number: str
@@ -12,7 +12,7 @@ class Course(BaseModel):
     description: str = ""
 
 
-class Section(BaseModel):
+class Section(BaseSchema):
     crn: str
     course_id: str
     instructor: str
@@ -25,13 +25,13 @@ class Section(BaseModel):
     term: str = ""
 
 
-class Professor(BaseModel):
+class Professor(BaseSchema):
     name: str
     department: str = ""
     rmp_id: str | None = None
 
 
-class SchedulePreferences(BaseModel):
+class SchedulePreferences(BaseSchema):
     preferred_days: list[str] | None = None
     earliest_time: str | None = "08:00"
     latest_time: str | None = "22:00"
@@ -39,13 +39,13 @@ class SchedulePreferences(BaseModel):
     min_gap_minutes: int | None = 10
 
 
-class GeneratedSchedule(BaseModel):
+class GeneratedSchedule(BaseSchema):
     sections: list[Section]
     score: float
     warnings: list[str] = []
 
 
-class GenerateRequest(BaseModel):
+class GenerateRequest(BaseSchema):
     sections: list[Section]
     preferences: SchedulePreferences = SchedulePreferences()
     max_results: int = 5
