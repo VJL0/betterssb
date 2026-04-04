@@ -1,6 +1,5 @@
 import { useStorage } from "@/hooks/useStorage";
 import { Card, Input, Button } from "@/components/ui";
-import type { RMPSchool } from "@/types";
 
 function Toggle({
   label,
@@ -65,15 +64,7 @@ export function SettingsPage() {
     "betterssb:googleClientId",
     "",
   );
-  const [school, setSchool] = useStorage<RMPSchool | null>("betterssb:school", null);
-  const [autoRegCrns, setAutoRegCrns] = useStorage("betterssb:autoRegCrns", "");
-  const [regTime, setRegTime] = useStorage("betterssb:registrationTime", "");
-  const [enableRmp, setEnableRmp] = useStorage("betterssb:enableRmp", true);
   const [enableUi, setEnableUi] = useStorage("betterssb:enableUi", true);
-  const [enableAutoReg, setEnableAutoReg] = useStorage(
-    "betterssb:enableAutoReg",
-    false,
-  );
   const [saved, setSaved] = useStorage("betterssb:_lastSave", 0);
 
   function handleSave() {
@@ -82,6 +73,18 @@ export function SettingsPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <p
+        style={{
+          fontSize: "13px",
+          color: "#4b5563",
+          lineHeight: 1.45,
+          margin: 0,
+        }}
+      >
+        Backend URL and OAuth client for development. Rate My Professor,
+        auto-register, and feature toggles live on their own tabs.
+      </p>
+
       <Card title="Connection">
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <Input
@@ -96,62 +99,18 @@ export function SettingsPage() {
             onChange={(e) => setGoogleClientId(e.target.value)}
             placeholder="xxxx.apps.googleusercontent.com"
           />
-          <Input
-            label="School Name (for RMP)"
-            value={school?.name ?? ""}
-            onChange={(e) => {
-              const name = e.target.value;
-              if (!name.trim()) {
-                setSchool(null);
-                return;
-              }
-              setSchool({
-                id: school?.id ?? "",
-                legacyId: school?.legacyId ?? 0,
-                name,
-              });
-            }}
-            placeholder="University of Example"
-          />
         </div>
       </Card>
 
-      <Card title="Auto-Registration">
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <Input
-            label="CRNs (comma-separated)"
-            value={autoRegCrns}
-            onChange={(e) => setAutoRegCrns(e.target.value)}
-            placeholder="12345, 67890"
-          />
-          <Input
-            label="Registration Time"
-            type="datetime-local"
-            value={regTime}
-            onChange={(e) => setRegTime(e.target.value)}
-          />
-        </div>
-      </Card>
-
-      <Card title="Features">
+      <Card title="Banner page tweaks">
         <Toggle
-          label="RateMyProfessor ratings"
-          checked={enableRmp}
-          onChange={(v) => setEnableRmp(v)}
-        />
-        <Toggle
-          label="UI enhancements"
+          label="UI enhancements on Banner pages"
           checked={enableUi}
           onChange={(v) => setEnableUi(v)}
         />
-        <Toggle
-          label="Auto-registration"
-          checked={enableAutoReg}
-          onChange={(v) => setEnableAutoReg(v)}
-        />
       </Card>
 
-      <Button onClick={handleSave}>Save Settings</Button>
+      <Button onClick={handleSave}>Save settings</Button>
 
       {saved > 0 && (
         <div
