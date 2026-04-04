@@ -35,33 +35,58 @@ const SSB_BASE = "/StudentRegistrationSsb/ssb";
 let _syncToken: string | null = null;
 let _uniqueSessionId: string | null = null;
 
-function syncToken(): string {
-  if (_syncToken) return _syncToken;
-
+function readSyncTokenFromDOM(): string {
   const meta = document.querySelector<HTMLMetaElement>(
     'meta[name="synchronizerToken"]',
   );
-  if (meta?.content) {
-    _syncToken = meta.content;
-    return _syncToken;
-  }
+  if (meta?.content) return meta.content;
 
   const input = document.querySelector<HTMLInputElement>(
     'input[name="synchronizerToken"]',
   );
-  if (input?.value) {
-    _syncToken = input.value;
-    return _syncToken;
-  }
+  if (input?.value) return input.value;
 
   const bodyText = document.body?.innerHTML ?? "";
   const match = bodyText.match(/synchronizerToken[^"]*"([0-9a-f-]{36})"/);
-  if (match) {
-    _syncToken = match[1];
-    return _syncToken;
-  }
+  if (match) return match[1];
 
   return "";
+}
+
+function syncToken(): string {
+  if (_syncToken) return _syncToken;
+  _syncToken = readSyncTokenFromDOM();
+  return _syncToken;
+}
+
+function invalidateSyncToken(): void {
+  _syncToken = null;
+}
+
+/**
+ * After term/search the server issues a new synchronizer token, served in
+ * the HTML of the classRegistration page the browser navigates to. We fetch
+ * that page and extract the token so subsequent XHR calls authenticate.
+ */
+async function refreshSyncTokenFromPage(): Promise<void> {
+  const url = `${SSB_BASE}/classRegistration/classRegistration`;
+  const res = await fetch(url, { credentials: "same-origin" });
+  if (!res.ok) return;
+
+  const html = await res.text();
+  const match = html.match(
+    /name\s*=\s*"synchronizerToken"\s+content\s*=\s*"([0-9a-f-]{36})"/,
+  );
+  if (match) {
+    _syncToken = match[1];
+    return;
+  }
+  const altMatch = html.match(
+    /synchronizerToken[^"]*"([0-9a-f-]{36})"/,
+  );
+  if (altMatch) {
+    _syncToken = altMatch[1];
+  }
 }
 
 function sessionId(): string {
@@ -458,7 +483,7 @@ export async function searchRegistrationTerm(
   term: string,
   altPin = "",
 ): Promise<unknown> {
-  return ssbPost("/term/search", {
+  return ssbPost("/term/search?mode=registration", {
     term,
     studyPath: "",
     studyPathText: "",
@@ -521,6 +546,67 @@ export async function submitRegistrationBatch(
   payload: SSBSubmitRegistrationBatchPayload,
 ): Promise<unknown> {
   return ssbPostJson("/classRegistration/submitRegistration/batch", payload);
+}
+
+export interface ExecuteRegistrationResult {
+  stagingFailures: { crn: string; message: string }[];
+  batchResponse: unknown;
+}
+
+/**
+ * Stages the given CRNs via addCRNRegistrationItems, then POSTs to
+ * submitRegistration/batch — the commit step that finalises registration.
+ *
+ * Returns both staging-level failures and the raw batch response so the
+ * caller can build a complete per-CRN result.
+ */
+export async function executeRegistrationSubmit(
+  term: string,
+  crnList: string[],
+): Promise<ExecuteRegistrationResult> {
+  const normalized = crnList.map((c) => c.trim()).filter(Boolean);
+  if (normalized.length === 0) {
+    throw new Error("No CRNs to register");
+  }
+
+  // Step 1 — save + search term (mirrors entries [6]+[7] in HAR)
+  await saveRegistrationTerm(term);
+  await searchRegistrationTerm(term);
+
+  // Step 2 — the browser navigates to classRegistration/classRegistration
+  // which issues a NEW synchronizer token.  We fetch that page to pick it up.
+  invalidateSyncToken();
+  await refreshSyncTokenFromPage();
+
+  const addRes = await addCRNRegistrationItems(normalized, term);
+  const aaData = addRes.aaData ?? [];
+
+  const stagingFailures = aaData
+    .filter((row) => !row.success)
+    .map((row) => ({
+      crn: row.courseReferenceNumber,
+      message: row.message || "Staging failed",
+    }));
+
+  const models = aaData
+    .filter((row) => row.success && row.model != null)
+    .map((row) => row.model);
+
+  if (models.length === 0) {
+    return {
+      stagingFailures,
+      batchResponse: null,
+    };
+  }
+
+  const batchResponse = await submitRegistrationBatch({
+    create: [],
+    update: models,
+    destroy: [],
+    uniqueSessionId: sessionId(),
+  });
+
+  return { stagingFailures, batchResponse };
 }
 
 export async function getTuitionFeeDetail(): Promise<SSBTuitionFeeResponse> {

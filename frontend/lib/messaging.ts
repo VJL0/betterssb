@@ -30,7 +30,8 @@ export type MessageType =
   | "SSB_REG_ADD_CRNS"
   | "SSB_REG_ADD_ITEM"
   | "SSB_REG_SUBMIT_BATCH"
-  | "SSB_REG_TUITION";
+  | "SSB_REG_TUITION"
+  | "SSB_AUTO_REGISTER_RUN";
 
 export interface ExtensionMessage {
   type: MessageType;

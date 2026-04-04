@@ -143,6 +143,14 @@ async function handleSSBMessage(
       const data = await ssb.submitRegistrationBatch(payload);
       return { success: true, data };
     }
+    case "SSB_AUTO_REGISTER_RUN": {
+      const { term, crnList } = msg.payload as {
+        term: string;
+        crnList: string[];
+      };
+      const result = await ssb.executeRegistrationSubmit(term, crnList);
+      return { success: true, data: result };
+    }
     case "SSB_REG_TUITION": {
       const data = await ssb.getTuitionFeeDetail();
       return { success: true, data };

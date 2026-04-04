@@ -1,88 +1,49 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { GoogleSignIn } from "@/components/auth/GoogleSignIn";
-import { UserProfile } from "@/components/auth/UserProfile";
-import { SchoolCombobox } from "@/components/SchoolCombobox";
-import { useStorage } from "@/hooks/useStorage";
-import { ScheduleBuilder } from "./pages/ScheduleBuilder";
-import { SemesterPlanner } from "./pages/SemesterPlanner";
-import { ChatPage } from "./pages/ChatPage";
-import { TranscriptPage } from "./pages/TranscriptPage";
-import { SettingsPage } from "./pages/SettingsPage";
-import type { RMPSchool } from "@/types";
+import { RateMyProfessorPage } from "./pages/RateMyProfessorPage";
+import { AutoRegisterPage } from "./pages/AutoRegisterPage";
+import { LoginPage } from "./pages/LoginPage";
+import { MorePage } from "./pages/MorePage";
 
-const TABS = ["Schedule", "Planner", "Chat", "Transcript", "Settings"] as const;
-type Tab = (typeof TABS)[number];
+const TABS = [
+  { id: "rmp", label: "RateMyProfessor" },
+  { id: "autoreg", label: "Auto register" },
+  { id: "login", label: "Login" },
+  { id: "more", label: "More" },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
 
 function App() {
-  const [activeTab, setActiveTab] = useState<Tab>("Schedule");
-  const { user, isAuthenticated, loading, error, login, logout } = useAuth();
-  const [school, setSchool] = useStorage<RMPSchool | null>("betterssb:school", null);
-
-  function handleSchoolSelect(school: RMPSchool) {
-    setSchool(school);
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="flex h-full flex-col bg-gray-50">
-        <div className="flex flex-1 flex-col items-center gap-5 px-6 pt-16 pb-8">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-800">
-            BetterSSB
-          </h1>
-
-          <SchoolCombobox
-            initialValue={school?.name ?? ""}
-            onSelect={handleSchoolSelect}
-          />
-
-          {school?.name && (
-            <div className="mt-auto flex flex-col items-center gap-4 pb-6">
-              <p className="text-sm text-gray-500">
-                Sign in for a better experience
-              </p>
-              <GoogleSignIn onCredential={login} loading={loading} />
-              {error && (
-                <div className="text-center text-xs text-red-600">{error}</div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
+  const [activeTab, setActiveTab] = useState<TabId>("rmp");
 
   return (
-    <div className="flex h-full flex-col bg-gray-50">
-      <div className="flex items-center gap-2 px-4 pt-2.5">
-        <h1 className="shrink-0 text-base font-bold text-gray-800">
-          BetterSSB
-        </h1>
-        {user && <UserProfile user={user} onLogout={logout} />}
+    <div className="flex h-full min-h-[420px] flex-col bg-gray-50">
+      <div className="shrink-0 px-3 pt-2.5">
+        <h1 className="text-base font-bold text-gray-800">BetterSSB</h1>
       </div>
 
-      <nav className="mt-2.5 flex border-b border-gray-200 px-4">
-        {TABS.map((tab) => (
+      <nav className="mt-2 flex shrink-0 gap-0.5 overflow-x-auto border-b border-gray-200 px-2 pb-px">
+        {TABS.map(({ id, label }) => (
           <button
-            key={tab}
-            className={`cursor-pointer border-b-2 px-3 py-2 text-[13px] font-medium transition-colors duration-150 ${
-              activeTab === tab
+            key={id}
+            type="button"
+            className={`shrink-0 cursor-pointer border-b-2 px-2 py-2 text-left text-[11px] leading-tight font-medium transition-colors duration-150 sm:text-[12px] ${
+              activeTab === id
                 ? "border-indigo-600 text-indigo-600"
                 : "border-transparent text-gray-500 hover:text-indigo-600"
             }`}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => setActiveTab(id)}
           >
-            {tab}
+            {label}
           </button>
         ))}
       </nav>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        {activeTab === "Schedule" && <ScheduleBuilder />}
-        {activeTab === "Planner" && <SemesterPlanner />}
-        {activeTab === "Chat" && <ChatPage />}
-        {activeTab === "Transcript" && <TranscriptPage />}
-        {activeTab === "Settings" && <SettingsPage />}
+      <div className="min-h-0 flex-1 overflow-y-auto p-3">
+        {activeTab === "rmp" && <RateMyProfessorPage />}
+        {activeTab === "autoreg" && <AutoRegisterPage />}
+        {activeTab === "login" && <LoginPage />}
+        {activeTab === "more" && <MorePage />}
       </div>
     </div>
   );

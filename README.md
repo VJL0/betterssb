@@ -23,9 +23,8 @@ betterssb/
 │   │   ├── background.ts          # Service worker: API relay, auth, alarms
 │   │   ├── content/               # Injected into Banner pages
 │   │   │   ├── index.tsx          # Content script entry
-│   │   │   └── modules/           # Feature modules toggled independently
-│   │   ├── popup/                 # Extension popup (quick actions)
-│   │   └── sidepanel/             # Side panel (planner, chatbot)
+│   │   │   └── modules/           # DOM / page-context features
+│   │   └── popup/                 # Extension popup (main UI)
 │   ├── components/                # Shared React components
 │   ├── lib/                       # API client, storage, messaging helpers
 │   ├── hooks/                     # Custom React hooks
@@ -33,18 +32,29 @@ betterssb/
 │
 ├── backend/           # API server (FastAPI + Python 3.14)
 │   └── app/
-│       ├── api/routes/            # REST endpoints by domain
-│       ├── models/                # Pydantic schemas
-│       ├── services/              # Business logic & external integrations
-│       └── core/                  # Config, middleware, deps
+│       ├── api/                   # App router & shared route dependencies
+│       ├── domains/               # Per-feature routers, services, Pydantic schemas
+│       ├── integrations/          # External clients (OpenAI, Google, RMP)
+│       ├── core/                  # Config, database, security
+│       └── shared/                # Cross-cutting schemas & helpers
 ```
 
 ### How It Works
 
-1. **Content Script** — Runs on Banner pages (`*://*.edu/StudentRegistrationSsb/*`). Observes the DOM, injects React components (ratings badges, UI improvements), and exposes hooks for auto-registration.
-2. **Popup / Side Panel** — Provides the schedule builder, semester planner, chatbot, and transcript upload outside the Banner DOM.
-3. **Background Service Worker** — Bridges the content script and popup with the backend API. Manages alarms for registration windows and caches data in `chrome.storage`.
-4. **Backend API** — Handles heavy lifting: Rate My Professor lookups, schedule optimization (constraint solver), transcript parsing, chatbot inference, and prerequisite validation.
+1. **Popup** — Primary UI: Google sign-in, school selection, schedule builder, semester planner, AI chat, transcript upload, and settings. Talks to the background worker and (for Banner data) to the content script via message passing.
+2. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). Handles anything that must execute in the page: calling Ellucian’s in-page APIs for the popup, injecting Rate My Professor badges on listings, and filling/submitting registration forms for auto-registration.
+3. **Background Service Worker** — Relays non-SSB work to the backend (schedules, chat, transcript parsing, RMP search), forwards `SSB_*` messages to an open Banner tab, registration alarms, and `chrome.storage`.
+4. **Backend API** — Rate My Professor lookups, schedule optimization, transcript parsing, chatbot inference, and prerequisite validation.
+
+**Where each feature lives**
+
+| Feature | Popup | Content |
+| --- | --- | --- |
+| Sign-in, school, settings | Yes | |
+| Schedule builder & semester planner | Yes | (SSB calls run in page) |
+| AI chat & transcript tools | Yes | |
+| Rate My Professor on course rows | | Yes |
+| Auto-registration (CRN fields / submit) | | Yes |
 
 ## Tech Stack
 
@@ -101,7 +111,7 @@ uv run fastapi dev    # starts the dev server at http://localhost:8000
 
 - **Hot reload** — `pnpm dev` in the frontend watches for changes and reloads the extension automatically.
 - **API docs** — Visit `http://localhost:8000/docs` for the interactive Swagger UI.
-- **Type safety** — Shared types in `frontend/types/` keep content scripts, popup, side panel, and API calls in sync.
+- **Type safety** — Shared types in `frontend/types/` keep content scripts, popup, and API calls in sync.
 
 ## Environment Variables
 

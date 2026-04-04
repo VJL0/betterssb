@@ -11,7 +11,6 @@ export default defineConfig({
       "storage",
       "alarms",
       "notifications",
-      "sidePanel",
       "identity",
       "tabs",
       "activeTab",
