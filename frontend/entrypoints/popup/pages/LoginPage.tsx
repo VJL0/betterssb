@@ -8,7 +8,7 @@ export function LoginPage() {
   if (isAuthenticated && user) {
     return (
       <div className="flex flex-col gap-4 pt-1">
-        <p className="text-[13px] text-gray-600">
+        <p className="text-sm text-gray-600">
           You&apos;re signed in. Your account is used for chat, transcript
           tools, and synced preferences.
         </p>
@@ -19,7 +19,7 @@ export function LoginPage() {
 
   return (
     <div className="flex flex-col gap-4 pt-1">
-      <p className="text-[13px] leading-snug text-gray-600">
+      <p className="text-sm text-gray-600">
         Sign in with Google to use the AI advisor, transcript parsing, and
         prerequisite checks. Rate My Professor and registration helpers work
         without signing in.

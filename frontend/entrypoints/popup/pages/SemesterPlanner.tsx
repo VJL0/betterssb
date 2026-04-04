@@ -6,6 +6,7 @@ import type {
 } from "@/types/ssb";
 import { sendMessage } from "@/lib/messaging";
 import { Card, Button, Input } from "@/components/ui";
+import { cn } from "@/lib/cn";
 
 interface PlannedItem {
   crn: string;
@@ -28,7 +29,6 @@ export function SemesterPlanner() {
 
   const [planned, setPlanned] = useState<PlannedItem[]>([]);
   const [addingCrns, setAddingCrns] = useState<Set<string>>(new Set());
-  const [submitStatus, setSubmitStatus] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -162,30 +162,15 @@ export function SemesterPlanner() {
   const plannedCrns = new Set(planned.map((p) => p.crn));
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div className="flex flex-col gap-3">
       <Card title="Plan Ahead — Search Courses">
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div className="flex flex-col gap-2">
           <div>
-            <label
-              style={{
-                fontSize: "12px",
-                fontWeight: 600,
-                display: "block",
-                marginBottom: "4px",
-              }}
-            >
-              Term
-            </label>
+            <label className="mb-1 block text-xs font-semibold">Term</label>
             <select
               value={selectedTerm}
               onChange={(e) => setSelectedTerm(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "6px 8px",
-                borderRadius: "6px",
-                border: "1px solid #d1d5db",
-                fontSize: "13px",
-              }}
+              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
             >
               {terms.length === 0 && <option value="">Loading terms...</option>}
               {terms.map((t) => (
@@ -195,8 +180,8 @@ export function SemesterPlanner() {
               ))}
             </select>
           </div>
-          <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
-            <div style={{ flex: 1 }}>
+          <div className="flex items-end gap-2">
+            <div className="min-w-0 flex-1">
               <Input
                 label="Course (e.g. CIS2168)"
                 value={courseQuery}
@@ -217,15 +202,13 @@ export function SemesterPlanner() {
         </div>
 
         {searchError && (
-          <div style={{ color: "#b45309", fontSize: "12px", marginTop: "8px" }}>
-            {searchError}
-          </div>
+          <div className="mt-2 text-xs text-amber-800">{searchError}</div>
         )}
       </Card>
 
       {ssbSections.length > 0 && (
         <Card title={`Sections (${ssbSections.length})`}>
-          <div style={{ maxHeight: "250px", overflowY: "auto" }}>
+          <div className="max-h-64 overflow-y-auto">
             {ssbSections.map((sec) => {
               const primaryInstructor =
                 sec.faculty.find((f) => f.primaryIndicator)?.displayName ??
@@ -237,40 +220,28 @@ export function SemesterPlanner() {
               return (
                 <div
                   key={sec.courseReferenceNumber}
-                  style={{
-                    padding: "8px 0",
-                    borderBottom: "1px solid #f3f4f6",
-                    fontSize: "12px",
-                  }}
+                  className="border-b border-gray-100 py-2 text-xs last:border-0"
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                    }}
-                  >
+                  <div className="flex items-start justify-between gap-2">
                     <div>
                       <strong>
                         {sec.subject} {sec.courseNumber}-{sec.sequenceNumber}
                       </strong>{" "}
                       (CRN: {sec.courseReferenceNumber})
                       <br />
-                      <span style={{ color: "#6b7280" }}>
-                        {sec.courseTitle}
-                      </span>
+                      <span className="text-gray-500">{sec.courseTitle}</span>
                       <br />
-                      <span style={{ color: "#6b7280" }}>
-                        {primaryInstructor} ·{" "}
-                        {sec.instructionalMethodDescription}
+                      <span className="text-gray-500">
+                        {primaryInstructor} · {sec.instructionalMethodDescription}
                       </span>
                       <br />
                       <span
-                        style={{
-                          color: sec.seatsAvailable > 0 ? "#059669" : "#dc2626",
-                          fontWeight: 600,
-                          fontSize: "11px",
-                        }}
+                        className={cn(
+                          "text-xs font-semibold",
+                          sec.seatsAvailable > 0
+                            ? "text-green-600"
+                            : "text-red-600",
+                        )}
                       >
                         {sec.seatsAvailable}/{sec.maximumEnrollment} seats
                       </span>
@@ -294,43 +265,30 @@ export function SemesterPlanner() {
 
       <Card title={`My Plan — ${totalCredits} Credits`}>
         {planned.length === 0 ? (
-          <div style={{ color: "#9ca3af", fontSize: "13px" }}>
+          <div className="text-sm text-gray-400">
             Search for courses above and add them to your plan.
           </div>
         ) : (
           planned.map((p) => (
             <div
               key={p.crn}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "8px 0",
-                borderBottom: "1px solid #f3f4f6",
-                fontSize: "13px",
-              }}
+              className="flex items-center justify-between border-b border-gray-100 py-2 text-sm last:border-0"
             >
               <div>
                 <strong>
                   {p.subject} {p.courseNumber}
                 </strong>
-                <span style={{ color: "#6b7280" }}> — {p.courseTitle}</span>
+                <span className="text-gray-500"> — {p.courseTitle}</span>
                 <br />
-                <span style={{ color: "#9ca3af", fontSize: "11px" }}>
+                <span className="text-xs text-gray-400">
                   CRN {p.crn} · {p.instructor} · {p.meetingSummary} ·{" "}
                   {p.creditHours} cr
                 </span>
               </div>
               <button
+                type="button"
                 onClick={() => removeFromPlan(p.crn)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#dc2626",
-                  cursor: "pointer",
-                  fontSize: "13px",
-                  fontFamily: "inherit",
-                }}
+                className="cursor-pointer border-0 bg-transparent text-sm text-red-600"
               >
                 Remove
               </button>
@@ -339,19 +297,6 @@ export function SemesterPlanner() {
         )}
       </Card>
 
-      {submitStatus && (
-        <div
-          style={{
-            fontSize: "13px",
-            padding: "8px 12px",
-            borderRadius: "8px",
-            background: submitStatus.includes("Error") ? "#fee2e2" : "#d1fae5",
-            color: submitStatus.includes("Error") ? "#dc2626" : "#059669",
-          }}
-        >
-          {submitStatus}
-        </div>
-      )}
     </div>
   );
 }

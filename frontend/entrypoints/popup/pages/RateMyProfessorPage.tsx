@@ -1,4 +1,5 @@
 import { useStorage } from "@/hooks/useStorage";
+import { cn } from "@/lib/cn";
 import { SchoolCombobox } from "@/components/SchoolCombobox";
 import { Card } from "@/components/ui";
 import type { RMPSchool } from "@/types";
@@ -13,21 +14,23 @@ function Toggle({
   onChange: (val: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between py-2 text-[13px]">
+    <label className="flex cursor-pointer items-center justify-between py-2 text-sm">
       <span className="text-gray-700">{label}</span>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative h-[22px] w-10 rounded-full transition-colors ${
-          checked ? "bg-indigo-600" : "bg-gray-300"
-        }`}
+        className={cn(
+          "relative h-6 w-11 rounded-full transition-colors",
+          checked ? "bg-indigo-600" : "bg-gray-300",
+        )}
       >
         <span
-          className={`absolute top-0.5 size-[18px] rounded-full bg-white shadow transition-[left] ${
-            checked ? "left-5" : "left-0.5"
-          }`}
+          className={cn(
+            "absolute top-0.5 size-5 rounded-full bg-white shadow transition-[left]",
+            checked ? "left-5" : "left-0.5",
+          )}
         />
       </button>
     </label>
@@ -43,7 +46,7 @@ export function RateMyProfessorPage() {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[13px] leading-snug text-gray-600">
+      <p className="text-sm text-gray-600">
         Pick your school so professor lookups match Rate My Professor. Ratings
         show on course and plan pages when enabled.
       </p>

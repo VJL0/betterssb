@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { cn } from "@/lib/cn";
 import { Spinner } from "./Spinner";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
@@ -11,47 +12,22 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
-const variantStyles: Record<ButtonVariant, React.CSSProperties> = {
-  primary: {
-    background: "#4f46e5",
-    color: "#fff",
-    border: "none",
-  },
-  secondary: {
-    background: "#f3f4f6",
-    color: "#1f2937",
-    border: "1px solid #d1d5db",
-  },
-  danger: {
-    background: "#dc2626",
-    color: "#fff",
-    border: "none",
-  },
-  ghost: {
-    background: "transparent",
-    color: "#4f46e5",
-    border: "none",
-  },
+const variantClass: Record<ButtonVariant, string> = {
+  primary: "bg-indigo-600 text-white border-transparent hover:bg-indigo-700",
+  secondary:
+    "bg-gray-100 text-gray-800 border border-gray-300 hover:bg-gray-200",
+  danger: "bg-red-600 text-white border-transparent hover:bg-red-700",
+  ghost: "bg-transparent text-indigo-600 border-transparent hover:bg-indigo-50",
 };
 
-const sizeStyles: Record<ButtonSize, React.CSSProperties> = {
-  sm: { padding: "4px 10px", fontSize: "12px" },
-  md: { padding: "8px 16px", fontSize: "14px" },
-  lg: { padding: "12px 24px", fontSize: "16px" },
+const sizeClass: Record<ButtonSize, string> = {
+  sm: "px-2.5 py-1 text-xs",
+  md: "px-4 py-2 text-sm",
+  lg: "px-6 py-3 text-base",
 };
 
-const baseStyle: React.CSSProperties = {
-  borderRadius: "8px",
-  fontWeight: 600,
-  cursor: "pointer",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "6px",
-  fontFamily: "inherit",
-  transition: "opacity 0.15s ease, transform 0.1s ease",
-  lineHeight: 1.4,
-};
+const baseClass =
+  "inline-flex items-center justify-center gap-1.5 rounded-lg border font-semibold leading-snug transition active:scale-95";
 
 export function Button({
   variant = "primary",
@@ -59,7 +35,7 @@ export function Button({
   loading = false,
   disabled,
   children,
-  style,
+  className,
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled || loading;
@@ -67,17 +43,16 @@ export function Button({
   return (
     <button
       disabled={isDisabled}
-      style={{
-        ...baseStyle,
-        ...variantStyles[variant],
-        ...sizeStyles[size],
-        opacity: isDisabled ? 0.55 : 1,
-        cursor: isDisabled ? "not-allowed" : "pointer",
-        ...style,
-      }}
+      className={cn(
+        baseClass,
+        variantClass[variant],
+        sizeClass[size],
+        isDisabled ? "cursor-not-allowed opacity-55" : "cursor-pointer",
+        className,
+      )}
       {...rest}
     >
-      {loading && <Spinner size={size === "lg" ? 18 : 14} />}
+      {loading && <Spinner />}
       {children}
     </button>
   );

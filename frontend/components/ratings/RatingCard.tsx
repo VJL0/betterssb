@@ -1,14 +1,15 @@
 import type { RMPRating } from "@/types";
 import { Card, Badge } from "@/components/ui";
+import { cn } from "@/lib/cn";
 
 interface RatingCardProps {
   rating: RMPRating;
 }
 
-function ratingColor(value: number): string {
-  if (value >= 4) return "#16a34a";
-  if (value >= 3) return "#ca8a04";
-  return "#dc2626";
+function scoreBoxClass(value: number): string {
+  if (value >= 4) return "bg-green-600";
+  if (value >= 3) return "bg-amber-500";
+  return "bg-red-600";
 }
 
 function tagBadgeColor(tag: string): "blue" | "gray" {
@@ -25,71 +26,47 @@ function tagBadgeColor(tag: string): "blue" | "gray" {
 export function RatingCard({ rating }: RatingCardProps) {
   return (
     <Card>
-      <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
+      <div className="flex items-start gap-4">
         <div
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: "12px",
-            background: ratingColor(rating.overallRating),
-            color: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "22px",
-            fontWeight: 700,
-            flexShrink: 0,
-          }}
+          className={cn(
+            "flex size-14 shrink-0 items-center justify-center rounded-xl text-2xl font-bold text-white",
+            scoreBoxClass(rating.overallRating),
+          )}
         >
           {rating.overallRating.toFixed(1)}
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 600, fontSize: "15px", color: "#1f2937" }}>
+        <div className="min-w-0 flex-1">
+          <div className="text-base font-semibold text-gray-800">
             {rating.professorName}
           </div>
-          <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "2px" }}>
+          <div className="mt-0.5 text-sm text-gray-500">
             {rating.department}
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "8px",
-              marginTop: "12px",
-              fontSize: "13px",
-            }}
-          >
+          <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
             <div>
-              <span style={{ color: "#6b7280" }}>Difficulty</span>
-              <div style={{ fontWeight: 600 }}>
+              <span className="text-gray-500">Difficulty</span>
+              <div className="font-semibold">
                 {rating.difficulty.toFixed(1)}/5
               </div>
             </div>
             {rating.wouldTakeAgainPct != null && (
               <div>
-                <span style={{ color: "#6b7280" }}>Would Take Again</span>
-                <div style={{ fontWeight: 600 }}>
+                <span className="text-gray-500">Would Take Again</span>
+                <div className="font-semibold">
                   {Math.round(rating.wouldTakeAgainPct)}%
                 </div>
               </div>
             )}
             <div>
-              <span style={{ color: "#6b7280" }}>Ratings</span>
-              <div style={{ fontWeight: 600 }}>{rating.numRatings}</div>
+              <span className="text-gray-500">Ratings</span>
+              <div className="font-semibold">{rating.numRatings}</div>
             </div>
           </div>
 
           {rating.topTags.length > 0 && (
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "4px",
-                marginTop: "10px",
-              }}
-            >
+            <div className="mt-2.5 flex flex-wrap gap-1">
               {rating.topTags.map((tag) => (
                 <Badge key={tag} text={tag} color={tagBadgeColor(tag)} />
               ))}
@@ -100,13 +77,7 @@ export function RatingCard({ rating }: RatingCardProps) {
             href={rating.rmpUrl}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: "inline-block",
-              marginTop: "10px",
-              fontSize: "13px",
-              color: "#4f46e5",
-              textDecoration: "none",
-            }}
+            className="mt-2.5 inline-block text-sm text-indigo-600 hover:underline"
           >
             View on RateMyProfessors &rarr;
           </a>

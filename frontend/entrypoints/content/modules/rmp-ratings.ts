@@ -14,19 +14,20 @@ const INSTRUCTOR_SELECTORS = [
   ".faculty-name",
 ];
 
-function ratingColorClass(rating: number): string {
-  if (rating >= 4) return "betterssb-rating-badge--green";
-  if (rating >= 3) return "betterssb-rating-badge--yellow";
-  return "betterssb-rating-badge--red";
+function ratingColorClasses(rating: number): string {
+  if (rating >= 4) return "bg-green-600 hover:bg-green-700";
+  if (rating >= 3) return "bg-amber-500 hover:bg-amber-600";
+  return "bg-red-600 hover:bg-red-700";
 }
 
 function createBadge(rating: RMPRating): HTMLSpanElement {
   const badge = document.createElement("span");
-  badge.className = `betterssb-rating-badge ${ratingColorClass(rating.overallRating)}`;
+  badge.className = `group relative ml-1.5 inline-flex cursor-pointer items-center justify-center rounded-full px-2 py-0.5 align-middle text-xs font-semibold text-white shadow-sm transition hover:scale-105 hover:shadow-md ${ratingColorClasses(rating.overallRating)}`;
   badge.textContent = rating.overallRating.toFixed(1);
 
   const tooltip = document.createElement("div");
-  tooltip.className = "betterssb-tooltip";
+  tooltip.className =
+    "pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-max max-w-xs -translate-x-1/2 rounded-lg border border-gray-200 bg-white p-3 text-left text-sm text-gray-800 opacity-0 shadow-lg transition-opacity group-hover:pointer-events-auto group-hover:opacity-100";
 
   const rows: [string, string][] = [
     ["Overall", `${rating.overallRating.toFixed(1)} / 5`],
@@ -41,15 +42,15 @@ function createBadge(rating: RMPRating): HTMLSpanElement {
   let tooltipHTML = rows
     .map(
       ([label, value]) =>
-        `<div class="betterssb-tooltip-row"><span class="betterssb-tooltip-label">${label}</span><span class="betterssb-tooltip-value">${value}</span></div>`,
+        `<div class="flex justify-between gap-4 py-0.5"><span class="text-gray-500">${label}</span><span class="font-semibold">${value}</span></div>`,
     )
     .join("");
 
   if (rating.topTags.length > 0) {
-    tooltipHTML += `<div class="betterssb-tooltip-tags">${rating.topTags.map((t) => `<span class="betterssb-tooltip-tag">${t}</span>`).join("")}</div>`;
+    tooltipHTML += `<div class="mt-1.5 flex flex-wrap gap-1">${rating.topTags.map((t) => `<span class="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-800">${t}</span>`).join("")}</div>`;
   }
 
-  tooltipHTML += `<a class="betterssb-tooltip-link" href="${rating.rmpUrl}" target="_blank" rel="noopener">View on RateMyProfessors</a>`;
+  tooltipHTML += `<a class="mt-2 block text-xs text-indigo-600 no-underline hover:underline" href="${rating.rmpUrl}" target="_blank" rel="noopener">View on RateMyProfessors</a>`;
 
   tooltip.innerHTML = tooltipHTML;
   badge.appendChild(tooltip);

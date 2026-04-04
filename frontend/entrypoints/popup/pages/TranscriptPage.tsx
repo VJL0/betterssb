@@ -60,25 +60,15 @@ export function TranscriptPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div className="flex flex-col gap-3">
       <Card title="Paste Transcript">
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Paste your transcript text here..."
-          style={{
-            width: "100%",
-            minHeight: "100px",
-            padding: "8px 12px",
-            borderRadius: "8px",
-            border: "1px solid #d1d5db",
-            fontSize: "13px",
-            fontFamily: "inherit",
-            resize: "vertical",
-            outline: "none",
-          }}
+          className="min-h-24 w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
         />
-        <div style={{ marginTop: "10px" }}>
+        <div className="mt-2.5">
           <Button onClick={parse} loading={loading} disabled={!text.trim()}>
             Parse Transcript
           </Button>
@@ -86,15 +76,7 @@ export function TranscriptPage() {
       </Card>
 
       {error && (
-        <div
-          style={{
-            color: "#dc2626",
-            fontSize: "13px",
-            padding: "8px 12px",
-            background: "#fee2e2",
-            borderRadius: "8px",
-          }}
-        >
+        <div className="rounded-lg bg-red-100 px-3 py-2 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -104,45 +86,24 @@ export function TranscriptPage() {
           <Card
             title={`Courses (${transcript.courses.length})${transcript.gpa != null ? ` — GPA: ${transcript.gpa.toFixed(2)}` : ""}`}
           >
-            <div style={{ overflowX: "auto" }}>
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  fontSize: "12px",
-                }}
-              >
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-xs">
                 <thead>
-                  <tr
-                    style={{
-                      borderBottom: "2px solid #e5e7eb",
-                      textAlign: "left",
-                    }}
-                  >
-                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>
-                      Course
-                    </th>
-                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>
-                      Title
-                    </th>
-                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>
-                      Grade
-                    </th>
-                    <th style={{ padding: "6px 8px", fontWeight: 600 }}>
-                      Credits
-                    </th>
+                  <tr className="border-b-2 border-gray-200 text-left">
+                    <th className="px-2 py-1.5 font-semibold">Course</th>
+                    <th className="px-2 py-1.5 font-semibold">Title</th>
+                    <th className="px-2 py-1.5 font-semibold">Grade</th>
+                    <th className="px-2 py-1.5 font-semibold">Credits</th>
                   </tr>
                 </thead>
                 <tbody>
                   {transcript.courses.map((c, i) => (
-                    <tr key={i} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                      <td style={{ padding: "6px 8px", fontWeight: 500 }}>
+                    <tr key={i} className="border-b border-gray-100">
+                      <td className="px-2 py-1.5 font-medium">
                         {c.subject} {c.courseNumber}
                       </td>
-                      <td style={{ padding: "6px 8px", color: "#6b7280" }}>
-                        {c.title}
-                      </td>
-                      <td style={{ padding: "6px 8px" }}>
+                      <td className="px-2 py-1.5 text-gray-500">{c.title}</td>
+                      <td className="px-2 py-1.5">
                         <Badge
                           text={c.grade}
                           color={
@@ -156,7 +117,7 @@ export function TranscriptPage() {
                           }
                         />
                       </td>
-                      <td style={{ padding: "6px 8px" }}>{c.credits}</td>
+                      <td className="px-2 py-1.5">{c.credits}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -165,34 +126,16 @@ export function TranscriptPage() {
           </Card>
 
           <Card title="Check Prerequisites">
-            <div
-              style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}
-            >
-              <div style={{ flex: 1 }}>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    color: "#374151",
-                    marginBottom: "4px",
-                  }}
-                >
+            <div className="flex items-end gap-2">
+              <div className="min-w-0 flex-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700">
                   Required courses (comma-separated)
                 </label>
                 <input
                   value={prereqInput}
                   onChange={(e) => setPrereqInput(e.target.value)}
                   placeholder="CS 201, MATH 301"
-                  style={{
-                    width: "100%",
-                    padding: "8px 12px",
-                    borderRadius: "8px",
-                    border: "1px solid #d1d5db",
-                    fontSize: "14px",
-                    fontFamily: "inherit",
-                    outline: "none",
-                  }}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                 />
               </div>
               <Button
@@ -206,29 +149,19 @@ export function TranscriptPage() {
             </div>
 
             {prereqs && (
-              <div
-                style={{
-                  marginTop: "12px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "6px",
-                }}
-              >
+              <div className="mt-3 flex flex-col gap-1.5">
                 {Object.entries(prereqs).map(([course, met]) => (
                   <div
                     key={course}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      fontSize: "13px",
-                    }}
+                    className="flex items-center gap-2 text-sm"
                   >
-                    <span style={{ fontSize: "16px" }}>
-                      {met ? "✅" : "❌"}
-                    </span>
-                    <span style={{ fontWeight: 500 }}>{course}</span>
-                    <span style={{ color: met ? "#16a34a" : "#dc2626" }}>
+                    <span className="text-base">{met ? "✅" : "❌"}</span>
+                    <span className="font-medium">{course}</span>
+                    <span
+                      className={
+                        met ? "text-green-600" : "text-red-600"
+                      }
+                    >
                       {met ? "Satisfied" : "Not met"}
                     </span>
                   </div>
