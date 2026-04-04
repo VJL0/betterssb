@@ -1,50 +1,33 @@
 import type { InputHTMLAttributes } from "react";
+import { cn } from "@/lib/cn";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
 }
 
-const wrapperStyle: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "4px",
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: "13px",
-  fontWeight: 500,
-  color: "#374151",
-};
-
-const inputStyle: React.CSSProperties = {
-  padding: "8px 12px",
-  fontSize: "14px",
-  borderRadius: "8px",
-  border: "1px solid #d1d5db",
-  fontFamily: "inherit",
-  outline: "none",
-  transition: "border-color 0.15s ease, box-shadow 0.15s ease",
-};
-
-const errorStyle: React.CSSProperties = {
-  fontSize: "12px",
-  color: "#dc2626",
-};
-
-export function Input({ label, error, style, ...rest }: InputProps) {
+export function Input({
+  label,
+  error,
+  className,
+  ...rest
+}: InputProps) {
   return (
-    <div style={wrapperStyle}>
-      {label && <label style={labelStyle}>{label}</label>}
+    <div className="flex flex-col gap-1">
+      {label && (
+        <label className="text-sm font-medium text-gray-700">{label}</label>
+      )}
       <input
-        style={{
-          ...inputStyle,
-          borderColor: error ? "#dc2626" : "#d1d5db",
-          ...style,
-        }}
+        className={cn(
+          "rounded-lg border px-3 py-2 text-sm outline-none transition-colors",
+          error
+            ? "border-red-600 focus:border-red-600 focus:ring-2 focus:ring-red-200"
+            : "border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200",
+          className,
+        )}
         {...rest}
       />
-      {error && <span style={errorStyle}>{error}</span>}
+      {error && <span className="text-xs text-red-600">{error}</span>}
     </div>
   );
 }

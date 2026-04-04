@@ -9,28 +9,7 @@ import type {
 } from "@/types/ssb";
 import { Button, Card, Input, Spinner } from "@/components/ui";
 import type { AutoRegBatchResultRecord } from "@/lib/auto-reg-batch-result";
-
-const selectWrapperStyle: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "4px",
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: "13px",
-  fontWeight: 500,
-  color: "#374151",
-};
-
-const selectStyle: React.CSSProperties = {
-  padding: "8px 12px",
-  fontSize: "14px",
-  borderRadius: "8px",
-  border: "1px solid #d1d5db",
-  fontFamily: "inherit",
-  outline: "none",
-  backgroundColor: "#fff",
-};
+import { cn } from "@/lib/cn";
 
 function FieldSelect({
   label,
@@ -46,14 +25,13 @@ function FieldSelect({
   children: React.ReactNode;
 }) {
   return (
-    <div style={selectWrapperStyle}>
-      <label style={labelStyle}>{label}</label>
+    <div className="flex flex-col gap-1">
+      <label className="text-sm font-medium text-gray-700">{label}</label>
       <select
-        style={{
-          ...selectStyle,
-          opacity: disabled ? 0.6 : 1,
-          cursor: disabled ? "not-allowed" : "pointer",
-        }}
+        className={cn(
+          "rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none",
+          disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
+        )}
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
@@ -279,25 +257,25 @@ export function AutoRegisterPage() {
 
   return (
     <div className="flex flex-col gap-3 pb-1">
-      <p className="text-[13px] leading-snug text-gray-600">
+      <p className="text-sm text-gray-600">
         Pick a term and plan to load section CRNs automatically, or enter CRNs
         yourself. Set when the auto-register helper should run, then activate.
       </p>
 
       <Card title="Term &amp; plan">
         {dataLoading || !storageReady ? (
-          <div className="flex items-center gap-2 py-3 text-[13px] text-gray-600">
+          <div className="flex items-center gap-2 py-3 text-sm text-gray-600">
             <Spinner />
             <span>Loading terms and plans…</span>
           </div>
         ) : loadError ? (
-          <p className="text-[13px] leading-snug text-amber-800">
+          <p className="text-sm text-amber-800">
             {loadError} Open{" "}
             <span className="font-medium">Register for Classes</span> on your
             school&apos;s site in a tab, then try again.
           </p>
         ) : terms.length === 0 ? (
-          <p className="text-[13px] text-gray-600">
+          <p className="text-sm text-gray-600">
             No terms returned. Open registration in a browser tab and refresh
             this panel.
           </p>
@@ -333,7 +311,7 @@ export function AutoRegisterPage() {
             </FieldSelect>
 
             {!manualMode && !locked && (
-              <p className="text-[12px] leading-snug text-gray-600">
+              <p className="text-xs text-gray-600">
                 CRNs update from the courses in this plan.
                 {!planModeOk && selectedPlan && (
                   <span className="mt-1 block text-amber-800">
@@ -350,7 +328,7 @@ export function AutoRegisterPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => void switchToManual()}
-                style={{ alignSelf: "flex-start", paddingLeft: 0 }}
+                className="self-start pl-0"
               >
                 Enter CRNs manually instead
               </Button>
@@ -371,7 +349,7 @@ export function AutoRegisterPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => void switchToPlan()}
-                    style={{ alignSelf: "flex-start", paddingLeft: 0 }}
+                    className="self-start pl-0"
                   >
                     Use term &amp; plan instead
                   </Button>
@@ -380,7 +358,7 @@ export function AutoRegisterPage() {
             )}
 
             {locked && (
-              <p className="rounded-lg bg-gray-50 px-3 py-2 text-[12px] text-gray-700">
+              <p className="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-700">
                 <span className="font-medium">Armed: </span>
                 {manualMode
                   ? `Manual CRNs (${parseManualCrns(autoRegCrns).length} sections)`
@@ -401,7 +379,7 @@ export function AutoRegisterPage() {
           onChange={(e) => void setRegTime(e.target.value)}
           disabled={formDisabled}
         />
-        <p className="mt-1.5 text-[12px] text-gray-500">
+        <p className="mt-1.5 text-xs text-gray-500">
           Reminders fire up to 5 minutes before. The batch POST runs once, on a
           one-shot alarm at this time (same endpoint as Banner&apos;s submit).
         </p>
@@ -410,19 +388,19 @@ export function AutoRegisterPage() {
       {lastBatchResult && (
         <Card title="Last batch result">
           <div className="mb-2 flex items-baseline gap-2">
-            <span className="text-[11px] text-gray-500">
+            <span className="text-xs text-gray-500">
               {new Date(lastBatchResult.at).toLocaleString()}
             </span>
             {lastBatchResult.ok ? (
-              <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700">
+              <span className="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800">
                 All registered
               </span>
             ) : lastBatchResult.error ? (
-              <span className="rounded bg-red-50 px-1.5 py-0.5 text-[11px] font-medium text-red-700">
+              <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-800">
                 Error
               </span>
             ) : (
-              <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
+              <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">
                 {lastBatchResult.registeredCount} registered,{" "}
                 {lastBatchResult.failedCount} failed
               </span>
@@ -430,13 +408,13 @@ export function AutoRegisterPage() {
           </div>
 
           {lastBatchResult.error && (
-            <p className="mb-2 text-[12px] leading-snug text-red-700">
+            <p className="mb-2 text-xs text-red-700">
               {lastBatchResult.error}
             </p>
           )}
 
           {lastBatchResult.registeredHours && (
-            <p className="mb-2 text-[12px] text-gray-600">
+            <p className="mb-2 text-xs text-gray-600">
               {lastBatchResult.registeredHours} credit hrs registered
               {lastBatchResult.billingHours
                 ? ` · ${lastBatchResult.billingHours} billing hrs`
@@ -449,19 +427,20 @@ export function AutoRegisterPage() {
               {lastBatchResult.crnResults.map((r, i) => (
                 <div
                   key={`${i}-${r.crn}`}
-                  className={`rounded-md border px-2.5 py-1.5 text-[12px] leading-snug ${
+                  className={cn(
+                    "rounded-md border px-2.5 py-1.5 text-xs",
                     r.ok
-                      ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                      : "border-red-200 bg-red-50 text-red-800"
-                  }`}
+                      ? "border-green-200 bg-green-50 text-green-900"
+                      : "border-red-200 bg-red-50 text-red-900",
+                  )}
                 >
                   <span className="font-medium">
                     {r.label || `CRN ${r.crn}`}
                   </span>
-                  <span className="mx-1.5 text-[10px] opacity-60">
+                  <span className="mx-1.5 text-xs opacity-60">
                     {r.ok ? "OK" : "FAIL"}
                   </span>
-                  <span className="text-[11px] opacity-80">{r.detail}</span>
+                  <span className="text-xs opacity-80">{r.detail}</span>
                 </div>
               ))}
             </div>
@@ -477,7 +456,7 @@ export function AutoRegisterPage() {
             size="lg"
             disabled={!canActivate}
             onClick={() => void handleActivate()}
-            style={{ width: "100%" }}
+            className="w-full"
           >
             Activate
           </Button>
@@ -487,7 +466,7 @@ export function AutoRegisterPage() {
             variant="danger"
             size="lg"
             onClick={() => void handleDeactivate()}
-            style={{ width: "100%" }}
+            className="w-full"
           >
             Deactivate
           </Button>
@@ -497,7 +476,7 @@ export function AutoRegisterPage() {
           storageReady &&
           !dataLoading &&
           !loadError && (
-            <p className="text-center text-[11px] text-gray-500">
+            <p className="text-center text-xs text-gray-500">
               {!runTimeOk &&
                 !sectionsOk &&
                 "Set a run time and valid sections (plan or CRNs)."}

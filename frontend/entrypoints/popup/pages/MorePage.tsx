@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { cn } from "@/lib/cn";
 import { ScheduleBuilder } from "./ScheduleBuilder";
 import { SemesterPlanner } from "./SemesterPlanner";
 import { ChatPage } from "./ChatPage";
@@ -24,11 +25,12 @@ export function MorePage() {
           <button
             key={tab}
             type="button"
-            className={`cursor-pointer rounded-md px-2 py-1.5 text-[12px] font-medium transition-colors duration-150 ${
+            className={cn(
+              "cursor-pointer rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
               sub === tab
                 ? "bg-indigo-50 text-indigo-700"
-                : "text-gray-500 hover:bg-gray-100 hover:text-indigo-600"
-            }`}
+                : "text-gray-500 hover:bg-gray-100 hover:text-indigo-600",
+            )}
             onClick={() => setSub(tab)}
           >
             {tab}

@@ -16,10 +16,10 @@ export function UserProfile({ user, onLogout }: UserProfileProps) {
         referrerPolicy="no-referrer"
       />
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[13px] font-semibold text-gray-800">
+        <div className="truncate text-sm font-semibold text-gray-800">
           {user.name}
         </div>
-        <div className="truncate text-[11px] text-gray-500">{user.email}</div>
+        <div className="truncate text-xs text-gray-500">{user.email}</div>
       </div>
       <Button variant="ghost" size="sm" onClick={onLogout}>
         Sign out

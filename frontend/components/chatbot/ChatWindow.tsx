@@ -2,52 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import type { ChatMessage } from "@/types";
 import { sendMessage } from "@/lib/messaging";
 import { Button } from "@/components/ui";
+import { cn } from "@/lib/cn";
 
-const containerStyle: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  height: "100%",
-  minHeight: 0,
-};
-
-const messagesStyle: React.CSSProperties = {
-  flex: 1,
-  overflowY: "auto",
-  padding: "12px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-};
-
-const inputBarStyle: React.CSSProperties = {
-  display: "flex",
-  gap: "8px",
-  padding: "12px",
-  borderTop: "1px solid #e5e7eb",
-};
-
-const inputStyle: React.CSSProperties = {
-  flex: 1,
-  padding: "8px 12px",
-  borderRadius: "8px",
-  border: "1px solid #d1d5db",
-  fontSize: "14px",
-  fontFamily: "inherit",
-  outline: "none",
-};
-
-function bubbleStyle(role: "user" | "assistant"): React.CSSProperties {
-  return {
-    maxWidth: "80%",
-    padding: "8px 12px",
-    borderRadius: "12px",
-    fontSize: "13px",
-    lineHeight: 1.5,
-    alignSelf: role === "user" ? "flex-end" : "flex-start",
-    background: role === "user" ? "#4f46e5" : "#f3f4f6",
-    color: role === "user" ? "#fff" : "#1f2937",
-    wordBreak: "break-word",
-  };
+function bubbleClass(role: "user" | "assistant"): string {
+  return cn(
+    "w-4/5 rounded-xl px-3 py-2 text-sm break-words",
+    role === "user"
+      ? "self-end bg-indigo-600 text-white"
+      : "self-start bg-gray-100 text-gray-800",
+  );
 }
 
 export function ChatWindow() {
@@ -103,42 +66,38 @@ export function ChatWindow() {
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      void handleSend();
     }
   }
 
   return (
-    <div style={containerStyle}>
-      <div ref={scrollRef} style={messagesStyle}>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div
+        ref={scrollRef}
+        className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-3"
+      >
         {messages.length === 0 && (
-          <div
-            style={{
-              textAlign: "center",
-              color: "#9ca3af",
-              fontSize: "13px",
-              marginTop: "40px",
-            }}
-          >
+          <div className="mt-10 text-center text-sm text-gray-400">
             Ask anything about courses, schedules, or registration.
           </div>
         )}
         {messages
           .filter((m) => m.role !== "system")
           .map((m, i) => (
-            <div key={i} style={bubbleStyle(m.role as "user" | "assistant")}>
+            <div key={i} className={bubbleClass(m.role as "user" | "assistant")}>
               {m.content}
             </div>
           ))}
         {loading && (
-          <div style={bubbleStyle("assistant")}>
-            <span style={{ opacity: 0.6 }}>Thinking...</span>
+          <div className={bubbleClass("assistant")}>
+            <span className="opacity-60">Thinking...</span>
           </div>
         )}
       </div>
 
-      <div style={inputBarStyle}>
+      <div className="flex gap-2 border-t border-gray-200 p-3">
         <input
-          style={inputStyle}
+          className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -147,7 +106,7 @@ export function ChatWindow() {
         />
         <Button
           size="sm"
-          onClick={handleSend}
+          onClick={() => void handleSend()}
           loading={loading}
           disabled={!input.trim()}
         >

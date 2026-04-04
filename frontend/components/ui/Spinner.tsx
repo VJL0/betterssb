@@ -1,23 +1,8 @@
-interface SpinnerProps {
-  size?: number;
-}
-
-export function Spinner({ size = 18 }: SpinnerProps) {
-  const borderWidth = Math.max(2, Math.round(size / 8));
-
+export function Spinner() {
   return (
     <span
-      style={{
-        display: "inline-block",
-        width: size,
-        height: size,
-        border: `${borderWidth}px solid #e5e7eb`,
-        borderTopColor: "#4f46e5",
-        borderRadius: "50%",
-        animation: "betterssb-spin 0.6s linear infinite",
-      }}
-    >
-      <style>{`@keyframes betterssb-spin { to { transform: rotate(360deg); } }`}</style>
-    </span>
+      aria-hidden
+      className="inline-block size-4 animate-spin rounded-full border-2 border-solid border-gray-200 border-t-indigo-600"
+    />
   );
 }

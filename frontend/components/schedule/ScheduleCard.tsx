@@ -11,19 +11,13 @@ interface ScheduleCardProps {
 export function ScheduleCard({ schedule, index, onSelect }: ScheduleCardProps) {
   return (
     <Card>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px",
-        }}
-      >
+      <div className="mb-3 flex items-center justify-between">
         <div>
-          <span style={{ fontWeight: 600, fontSize: "15px", color: "#1f2937" }}>
+          <span className="text-base font-semibold text-gray-800">
             Option {index + 1}
           </span>
           <Badge
+            className="ml-2 align-middle"
             text={`Score: ${schedule.score.toFixed(1)}`}
             color={
               schedule.score >= 80
@@ -40,24 +34,11 @@ export function ScheduleCard({ schedule, index, onSelect }: ScheduleCardProps) {
       </div>
 
       {schedule.warnings.length > 0 && (
-        <div
-          style={{
-            marginBottom: "10px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-          }}
-        >
+        <div className="mb-2.5 flex flex-col gap-1">
           {schedule.warnings.map((w, i) => (
             <div
               key={i}
-              style={{
-                fontSize: "12px",
-                color: "#92400e",
-                background: "#fef3c7",
-                padding: "4px 8px",
-                borderRadius: "6px",
-              }}
+              className="rounded-md bg-amber-100 px-2 py-1 text-xs text-amber-900"
             >
               {w}
             </div>
