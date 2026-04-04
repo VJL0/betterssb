@@ -6,6 +6,16 @@ import {
   type AutoRegBatchResultRecord,
   type StagingFailure,
 } from "@/lib/auto-reg-batch-result";
+import { parseManualCrns } from "@/lib/auto-reg-helpers";
+import {
+  AUTO_REG_SCHEDULE_CONFIG_KEY,
+  getAutoRegScheduleConfig,
+} from "@/lib/auto-reg-schedule-config";
+import {
+  AUTO_REG_RUN_STATE_KEY,
+  getAutoRegRunState,
+  patchAutoRegRunState,
+} from "@/lib/auto-reg-run-state";
 import { getStorageItem, setStorageItem } from "@/lib/storage";
 import type {
   Section,
@@ -22,11 +32,11 @@ const AUTO_REG_FIRE_ALARM = "betterssb-auto-reg-fire";
 /** Fires once at `when` — batch runs only from this alarm (single attempt). */
 async function syncAutoRegFireAlarm(): Promise<void> {
   await chrome.alarms.clear(AUTO_REG_FIRE_ALARM);
-  const armed = await getStorageItem<boolean>("betterssb:autoRegActivated");
-  const targetTime = await getStorageItem<string>("betterssb:registrationTime");
-  if (!armed || !targetTime?.trim()) return;
+  const { armed } = await getAutoRegRunState();
+  const { scheduledRunAt } = await getAutoRegScheduleConfig();
+  if (!armed || !scheduledRunAt?.trim()) return;
 
-  const when = new Date(targetTime).getTime();
+  const when = new Date(scheduledRunAt).getTime();
   if (!Number.isFinite(when) || when <= Date.now()) return;
 
   await chrome.alarms.create(AUTO_REG_FIRE_ALARM, { when });
@@ -54,12 +64,13 @@ function isSSBMessage(type: string): boolean {
   return type.startsWith("SSB_");
 }
 
-function buildAutoRegRunKey(
-  targetTime: string,
-  term: string,
+/** Stable idempotency key for a specific batch attempt (time + term + CRNs). */
+function buildBatchDedupeKey(
+  scheduledRunAt: string,
+  termCode: string,
   crnList: string[],
 ): string {
-  return `${targetTime}|${term}|${crnList.join(",")}`;
+  return `${scheduledRunAt}|${termCode}|${crnList.join(",")}`;
 }
 
 export default defineBackground(() => {
@@ -149,8 +160,8 @@ export default defineBackground(() => {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
     if (
-      "betterssb:autoRegActivated" in changes ||
-      "betterssb:registrationTime" in changes
+      AUTO_REG_RUN_STATE_KEY in changes ||
+      AUTO_REG_SCHEDULE_CONFIG_KEY in changes
     ) {
       void syncAutoRegFireAlarm();
     }
@@ -160,12 +171,10 @@ export default defineBackground(() => {
 
   chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === REG_CHECK_ALARM) {
-      const armed = await getStorageItem<boolean>("betterssb:autoRegActivated");
+      const { armed, reminderForScheduledRunAt } = await getAutoRegRunState();
       if (!armed) return;
 
-      const targetTime = await getStorageItem<string>(
-        "betterssb:registrationTime",
-      );
+      const { scheduledRunAt: targetTime } = await getAutoRegScheduleConfig();
       if (!targetTime) return;
 
       const target = new Date(targetTime).getTime();
@@ -173,11 +182,8 @@ export default defineBackground(() => {
       const diffMinutes = (target - now) / 60_000;
 
       if (diffMinutes > 0 && diffMinutes <= 5) {
-        const reminderKey = await getStorageItem<string>(
-          "betterssb:regReminderSentFor",
-        );
-        if (reminderKey === targetTime) return;
-        await setStorageItem("betterssb:regReminderSentFor", targetTime);
+        if (reminderForScheduledRunAt === targetTime) return;
+        await patchAutoRegRunState({ reminderForScheduledRunAt: targetTime });
         chrome.notifications.create("betterssb-reg-reminder", {
           type: "basic",
           iconUrl: "icon/128.png",
@@ -191,12 +197,11 @@ export default defineBackground(() => {
 
     if (alarm.name !== AUTO_REG_FIRE_ALARM) return;
 
-    const armed = await getStorageItem<boolean>("betterssb:autoRegActivated");
-    if (!armed) return;
+    const runState = await getAutoRegRunState();
+    if (!runState.armed) return;
 
-    const targetTime = await getStorageItem<string>(
-      "betterssb:registrationTime",
-    );
+    const schedule = await getAutoRegScheduleConfig();
+    const { scheduledRunAt: targetTime, term, crns: crnsRaw } = schedule;
     if (!targetTime) return;
 
     const targetMs = new Date(targetTime).getTime();
@@ -205,23 +210,19 @@ export default defineBackground(() => {
     const now = Date.now();
     if (now < targetMs) return;
 
-    const term = await getStorageItem<string>("betterssb:autoRegTerm");
-    const crnsRaw = await getStorageItem<string>("betterssb:autoRegCrns");
     if (!term?.trim() || !crnsRaw?.trim()) return;
 
-    const crnList = crnsRaw
-      .split(/[,\s]+/)
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
+    const crnList = parseManualCrns(crnsRaw);
     if (crnList.length === 0) return;
 
-    const runKey = buildAutoRegRunKey(targetTime, term.trim(), crnList);
-    const attempted = await getStorageItem<string>(
-      "betterssb:autoRegAttemptedKey",
+    const batchDedupeKey = buildBatchDedupeKey(
+      targetTime,
+      term.trim(),
+      crnList,
     );
-    if (attempted === runKey) return;
+    if (runState.dedupeRunKey === batchDedupeKey) return;
 
-    await setStorageItem("betterssb:autoRegAttemptedKey", runKey);
+    await patchAutoRegRunState({ dedupeRunKey: batchDedupeKey });
 
     const result = await relayToSSBTab({
       type: "SSB_AUTO_REGISTER_RUN",
@@ -240,11 +241,10 @@ export default defineBackground(() => {
         raw?.stagingFailures ?? [],
         at,
       );
-      await setStorageItem(
-        "betterssb:autoRegLastResult",
-        JSON.stringify(record),
-      );
-      await setStorageItem("betterssb:autoRegActivated", false);
+      await patchAutoRegRunState({
+        lastBatchResultJson: JSON.stringify(record),
+        armed: false,
+      });
       await chrome.alarms.clear(AUTO_REG_FIRE_ALARM);
       chrome.notifications.create("betterssb-reg-done", {
         type: "basic",
@@ -269,11 +269,10 @@ export default defineBackground(() => {
         summary: err,
         error: err,
       };
-      await setStorageItem(
-        "betterssb:autoRegLastResult",
-        JSON.stringify(record),
-      );
-      await setStorageItem("betterssb:autoRegActivated", false);
+      await patchAutoRegRunState({
+        lastBatchResultJson: JSON.stringify(record),
+        armed: false,
+      });
       await chrome.alarms.clear(AUTO_REG_FIRE_ALARM);
       chrome.notifications.create("betterssb-reg-fail", {
         type: "basic",

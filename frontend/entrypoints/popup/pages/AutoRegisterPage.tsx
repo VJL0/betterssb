@@ -1,14 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import { useStorage } from "@/hooks/useStorage";
-import { sendMessage } from "@/lib/messaging";
-import { setStorageItem } from "@/lib/storage";
-import type {
-  SSBGetPlansResponse,
-  SSBRegPlanHeader,
-  SSBTerm,
-} from "@/types/ssb";
+import { useAutoRegRunState } from "@/hooks/useAutoRegRunState";
+import { useAutoRegScheduleConfig } from "@/hooks/useAutoRegScheduleConfig";
+import {
+  crnsFromPlanHeader,
+  findPlanById,
+  getPlansForTerm,
+  hasScheduledRunAt,
+  isPlanModeSectionsOk,
+  mergeTermsFromPlans,
+  normalizeCrnList,
+  parseAutoRegBatchResultJson,
+  parseManualCrns,
+  resolvePlanIdToValid,
+  resolveTermCodeToValid,
+} from "@/lib/auto-reg-helpers";
+import { getPlans, getTerms } from "@/lib/ssb-reg-messages";
+import type { SSBGetPlansResponse, SSBTerm } from "@/types/ssb";
 import { Button, Card, Input, Spinner } from "@/components/ui";
-import type { AutoRegBatchResultRecord } from "@/lib/auto-reg-batch-result";
 import { cn } from "@/lib/cn";
 
 function FieldSelect({
@@ -42,64 +50,24 @@ function FieldSelect({
   );
 }
 
-function mergeTermsFromPlans(terms: SSBTerm[], plans: SSBRegPlanHeader[]) {
-  const byCode = new Map(terms.map((t) => [t.code, t]));
-  for (const p of plans) {
-    if (!byCode.has(p.term)) {
-      byCode.set(p.term, { code: p.term, description: p.term });
-    }
-  }
-  return Array.from(byCode.values()).sort((a, b) =>
-    a.code.localeCompare(b.code),
-  );
-}
-
-function parseManualCrns(raw: string): string[] {
-  return raw
-    .split(/[,\s]+/)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-}
-
-function crnsFromPlanHeader(plan: SSBRegPlanHeader | null): string[] {
-  if (!plan?.planCourses?.length) return [];
-  return plan.planCourses
-    .map((c) => String(c.courseReferenceNumber ?? "").trim())
-    .filter((c) => c.length > 0);
-}
-
-function normalizeCrnList(raw: string): string {
-  return parseManualCrns(raw).slice().sort().join(",");
-}
-
 export function AutoRegisterPage() {
-  const [autoRegCrns, setAutoRegCrns] = useStorage("betterssb:autoRegCrns", "");
-  const [regTime, setRegTime] = useStorage("betterssb:registrationTime", "");
-  const [autoRegTerm, setAutoRegTerm, termStorageLoading] = useStorage(
-    "betterssb:autoRegTerm",
-    "",
-  );
-  const [autoRegPlanId, setAutoRegPlanId, planIdStorageLoading] = useStorage(
-    "betterssb:autoRegPlanId",
-    "",
-  );
-  const [manualMode, setManualMode, manualStorageLoading] = useStorage(
-    "betterssb:autoRegManualMode",
-    false,
-  );
-  const [activated, setActivated, activatedStorageLoading] = useStorage(
-    "betterssb:autoRegActivated",
-    false,
-  );
-  const [lastResultRaw] = useStorage("betterssb:autoRegLastResult", "");
+  const [scheduleConfig, updateScheduleConfig, scheduleConfigLoading] =
+    useAutoRegScheduleConfig();
+  const [runState, updateRunState, runStateLoading] = useAutoRegRunState();
+  const {
+    term: selectedTermCode,
+    crns: crnsCsv,
+    scheduledRunAt,
+    planId: selectedPlanId,
+    manualMode,
+  } = scheduleConfig;
+  const { armed, lastBatchResultJson } = runState;
 
   const [terms, setTerms] = useState<SSBTerm[]>([]);
   const [plansResponse, setPlansResponse] =
     useState<SSBGetPlansResponse | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-
-  const locked = activated;
 
   useEffect(() => {
     let cancelled = false;
@@ -109,8 +77,8 @@ export function AutoRegisterPage() {
       setLoadError(null);
       try {
         const [termsRes, plansRes] = await Promise.all([
-          sendMessage({ type: "SSB_REG_GET_TERMS", payload: {} }),
-          sendMessage({ type: "SSB_REG_GET_PLANS", payload: {} }),
+          getTerms(),
+          getPlans(),
         ]);
         if (cancelled) return;
 
@@ -156,104 +124,97 @@ export function AutoRegisterPage() {
   }, []);
 
   useEffect(() => {
-    if (termStorageLoading || terms.length === 0) return;
-    const ok = autoRegTerm && terms.some((t) => t.code === autoRegTerm);
-    if (!ok) void setAutoRegTerm(terms[0].code);
-  }, [termStorageLoading, terms, autoRegTerm, setAutoRegTerm]);
+    if (scheduleConfigLoading || terms.length === 0) return;
+    const next = resolveTermCodeToValid(selectedTermCode, terms);
+    if (next !== selectedTermCode) void updateScheduleConfig({ term: next });
+  }, [scheduleConfigLoading, terms, selectedTermCode, updateScheduleConfig]);
 
-  const plansForTerm = useMemo(() => {
-    if (!plansResponse?.plans?.length || !autoRegTerm) return [];
-    return plansResponse.plans.filter((p) => p.term === autoRegTerm);
-  }, [plansResponse, autoRegTerm]);
+  const plansForTerm = useMemo(
+    () => getPlansForTerm(plansResponse?.plans, selectedTermCode),
+    [plansResponse, selectedTermCode],
+  );
 
   useEffect(() => {
-    if (planIdStorageLoading) return;
-    if (plansForTerm.length === 0) {
-      if (autoRegPlanId) void setAutoRegPlanId("");
-      return;
-    }
-    const n = parseInt(autoRegPlanId, 10);
-    const valid = plansForTerm.some((p) => p.id === n);
-    if (!autoRegPlanId || !valid) {
-      void setAutoRegPlanId(String(plansForTerm[0].id));
-    }
-  }, [planIdStorageLoading, plansForTerm, autoRegPlanId, setAutoRegPlanId]);
+    if (scheduleConfigLoading) return;
+    const next = resolvePlanIdToValid(selectedPlanId, plansForTerm);
+    if (next !== selectedPlanId) void updateScheduleConfig({ planId: next });
+  }, [
+    scheduleConfigLoading,
+    plansForTerm,
+    selectedPlanId,
+    updateScheduleConfig,
+  ]);
 
-  const selectedPlan = useMemo(() => {
-    const id = parseInt(autoRegPlanId, 10);
-    if (Number.isNaN(id)) return null;
-    return plansForTerm.find((p) => p.id === id) ?? null;
-  }, [plansForTerm, autoRegPlanId]);
+  const selectedPlan = useMemo(
+    () => findPlanById(plansForTerm, selectedPlanId),
+    [plansForTerm, selectedPlanId],
+  );
 
   const planCrns = useMemo(
     () => crnsFromPlanHeader(selectedPlan),
     [selectedPlan],
   );
 
-  const lastBatchResult = useMemo((): AutoRegBatchResultRecord | null => {
-    const raw = lastResultRaw.trim();
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw) as AutoRegBatchResultRecord;
-    } catch {
-      return null;
-    }
-  }, [lastResultRaw]);
+  const lastBatchResult = useMemo(
+    () => parseAutoRegBatchResultJson(lastBatchResultJson),
+    [lastBatchResultJson],
+  );
 
   useEffect(() => {
-    if (locked || manualMode || !selectedPlan) return;
+    if (armed || manualMode || !selectedPlan) return;
     const next = planCrns.join(", ");
-    if (normalizeCrnList(next) !== normalizeCrnList(autoRegCrns)) {
-      void setAutoRegCrns(next);
+    if (normalizeCrnList(next) !== normalizeCrnList(crnsCsv)) {
+      void updateScheduleConfig({ crns: next });
     }
-  }, [locked, manualMode, selectedPlan, planCrns, autoRegCrns, setAutoRegCrns]);
+  }, [
+    armed,
+    manualMode,
+    selectedPlan,
+    planCrns,
+    crnsCsv,
+    updateScheduleConfig,
+  ]);
 
-  const storageReady =
-    !termStorageLoading &&
-    !planIdStorageLoading &&
-    !manualStorageLoading &&
-    !activatedStorageLoading;
+  const storageReady = !scheduleConfigLoading && !runStateLoading;
 
-  const manualCrnsOk = parseManualCrns(autoRegCrns).length > 0;
-  const planModeOk =
-    plansForTerm.length > 0 && selectedPlan !== null && planCrns.length > 0;
+  const manualCrnsOk = parseManualCrns(crnsCsv).length > 0;
+  const planModeOk = isPlanModeSectionsOk(plansForTerm, selectedPlan, planCrns);
   const sectionsOk = manualMode ? manualCrnsOk : planModeOk;
 
-  const runTimeOk = regTime.trim().length > 0;
+  const scheduledRunAtOk = hasScheduledRunAt(scheduledRunAt);
 
   const canActivate =
     storageReady &&
     !dataLoading &&
     !loadError &&
     terms.length > 0 &&
-    runTimeOk &&
+    scheduledRunAtOk &&
     sectionsOk;
 
   async function handleActivate() {
-    if (!canActivate || locked) return;
+    if (!canActivate || armed) return;
     if (!manualMode && selectedPlan) {
       const next = planCrns.join(", ");
-      await setAutoRegCrns(next);
+      await updateScheduleConfig({ crns: next });
     }
-    await setStorageItem("betterssb:autoRegAttemptedKey", "");
-    await setActivated(true);
+    await updateRunState({ dedupeRunKey: "", armed: true });
   }
 
   async function handleDeactivate() {
-    await setActivated(false);
+    await updateRunState({ armed: false });
   }
 
   async function switchToManual() {
-    if (locked) return;
-    await setManualMode(true);
+    if (armed) return;
+    await updateScheduleConfig({ manualMode: true });
   }
 
   async function switchToPlan() {
-    if (locked) return;
-    await setManualMode(false);
+    if (armed) return;
+    await updateScheduleConfig({ manualMode: false });
   }
 
-  const formDisabled = locked || !storageReady || dataLoading;
+  const formDisabled = armed || !storageReady || dataLoading;
 
   return (
     <div className="flex flex-col gap-3 pb-1">
@@ -283,8 +244,8 @@ export function AutoRegisterPage() {
           <div className="flex flex-col gap-2.5">
             <FieldSelect
               label="Term"
-              value={autoRegTerm}
-              onChange={(v) => void setAutoRegTerm(v)}
+              value={selectedTermCode}
+              onChange={(v) => void updateScheduleConfig({ term: v })}
               disabled={formDisabled}
             >
               {terms.map((t) => (
@@ -295,8 +256,8 @@ export function AutoRegisterPage() {
             </FieldSelect>
             <FieldSelect
               label="Plan"
-              value={autoRegPlanId}
-              onChange={(v) => void setAutoRegPlanId(v)}
+              value={selectedPlanId}
+              onChange={(v) => void updateScheduleConfig({ planId: v })}
               disabled={formDisabled || plansForTerm.length === 0 || manualMode}
             >
               {plansForTerm.length === 0 ? (
@@ -310,7 +271,7 @@ export function AutoRegisterPage() {
               )}
             </FieldSelect>
 
-            {!manualMode && !locked && (
+            {!manualMode && !armed && (
               <p className="text-xs text-gray-600">
                 CRNs update from the courses in this plan.
                 {!planModeOk && selectedPlan && (
@@ -322,7 +283,7 @@ export function AutoRegisterPage() {
               </p>
             )}
 
-            {!locked && !manualMode && (
+            {!armed && !manualMode && (
               <Button
                 type="button"
                 variant="ghost"
@@ -338,12 +299,14 @@ export function AutoRegisterPage() {
               <>
                 <Input
                   label="CRNs (comma-separated)"
-                  value={autoRegCrns}
-                  onChange={(e) => void setAutoRegCrns(e.target.value)}
+                  value={crnsCsv}
+                  onChange={(e) =>
+                    void updateScheduleConfig({ crns: e.target.value })
+                  }
                   placeholder="12345, 67890"
                   disabled={formDisabled}
                 />
-                {!locked && (
+                {!armed && (
                   <Button
                     type="button"
                     variant="ghost"
@@ -357,11 +320,11 @@ export function AutoRegisterPage() {
               </>
             )}
 
-            {locked && (
+            {armed && (
               <p className="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-700">
                 <span className="font-medium">Armed: </span>
                 {manualMode
-                  ? `Manual CRNs (${parseManualCrns(autoRegCrns).length} sections)`
+                  ? `Manual CRNs (${parseManualCrns(crnsCsv).length} sections)`
                   : selectedPlan
                     ? `${selectedPlan.description || "Plan"} — ${planCrns.length} section(s)`
                     : "—"}
@@ -375,8 +338,10 @@ export function AutoRegisterPage() {
         <Input
           label="When to run auto-register"
           type="datetime-local"
-          value={regTime}
-          onChange={(e) => void setRegTime(e.target.value)}
+          value={scheduledRunAt}
+          onChange={(e) =>
+            void updateScheduleConfig({ scheduledRunAt: e.target.value })
+          }
           disabled={formDisabled}
         />
         <p className="mt-1.5 text-xs text-gray-500">
@@ -408,9 +373,7 @@ export function AutoRegisterPage() {
           </div>
 
           {lastBatchResult.error && (
-            <p className="mb-2 text-xs text-red-700">
-              {lastBatchResult.error}
-            </p>
+            <p className="mb-2 text-xs text-red-700">{lastBatchResult.error}</p>
           )}
 
           {lastBatchResult.registeredHours && (
@@ -449,7 +412,7 @@ export function AutoRegisterPage() {
       )}
 
       <div className="mt-1 flex flex-col gap-2">
-        {!locked ? (
+        {!armed ? (
           <Button
             type="button"
             variant="primary"
@@ -472,16 +435,16 @@ export function AutoRegisterPage() {
           </Button>
         )}
         {!canActivate &&
-          !locked &&
+          !armed &&
           storageReady &&
           !dataLoading &&
           !loadError && (
             <p className="text-center text-xs text-gray-500">
-              {!runTimeOk &&
+              {!scheduledRunAtOk &&
                 !sectionsOk &&
                 "Set a run time and valid sections (plan or CRNs)."}
-              {!runTimeOk && sectionsOk && "Set a run time."}
-              {runTimeOk &&
+              {!scheduledRunAtOk && sectionsOk && "Set a run time."}
+              {scheduledRunAtOk &&
                 !sectionsOk &&
                 (manualMode
                   ? "Enter at least one CRN."
