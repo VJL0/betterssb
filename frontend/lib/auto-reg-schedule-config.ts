@@ -26,7 +26,8 @@ export const DEFAULT_AUTO_REG_SCHEDULE_CONFIG: AutoRegScheduleConfig = {
 };
 
 export function normalizeScheduleConfig(raw: unknown): AutoRegScheduleConfig {
-  if (!raw || typeof raw !== "object") return { ...DEFAULT_AUTO_REG_SCHEDULE_CONFIG };
+  if (!raw || typeof raw !== "object")
+    return { ...DEFAULT_AUTO_REG_SCHEDULE_CONFIG };
   const o = raw as Record<string, unknown>;
   if (
     typeof o.term !== "string" ||

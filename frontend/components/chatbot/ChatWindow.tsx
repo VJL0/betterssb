@@ -84,7 +84,10 @@ export function ChatWindow() {
         {messages
           .filter((m) => m.role !== "system")
           .map((m, i) => (
-            <div key={i} className={bubbleClass(m.role as "user" | "assistant")}>
+            <div
+              key={i}
+              className={bubbleClass(m.role as "user" | "assistant")}
+            >
               {m.content}
             </div>
           ))}

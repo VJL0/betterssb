@@ -81,9 +81,7 @@ async function refreshSyncTokenFromPage(): Promise<void> {
     _syncToken = match[1];
     return;
   }
-  const altMatch = html.match(
-    /synchronizerToken[^"]*"([0-9a-f-]{36})"/,
-  );
+  const altMatch = html.match(/synchronizerToken[^"]*"([0-9a-f-]{36})"/);
   if (altMatch) {
     _syncToken = altMatch[1];
   }

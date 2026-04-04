@@ -121,7 +121,7 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
             >
               <div
                 className={cn(
-                  "absolute left-0.5 right-0.5 flex flex-col overflow-hidden rounded px-1 py-0.5 text-xs font-medium text-white",
+                  "absolute right-0.5 left-0.5 flex flex-col overflow-hidden rounded px-1 py-0.5 text-xs font-medium text-white",
                   bgClass,
                 )}
                 style={{

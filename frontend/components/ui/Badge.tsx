@@ -20,7 +20,7 @@ export function Badge({ text, color = "gray", className }: BadgeProps) {
   return (
     <span
       className={cn(
-        "inline-block rounded-full px-2 py-0.5 text-xs font-medium leading-normal",
+        "inline-block rounded-full px-2 py-0.5 text-xs leading-normal font-medium",
         colorClass[color],
         className,
       )}

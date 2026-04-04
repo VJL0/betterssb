@@ -106,8 +106,6 @@ export function isPlanModeSectionsOk(
   planCrns: string[],
 ): boolean {
   return (
-    plansForTerm.length > 0 &&
-    selectedPlan !== null &&
-    planCrns.length > 0
+    plansForTerm.length > 0 && selectedPlan !== null && planCrns.length > 0
   );
 }
