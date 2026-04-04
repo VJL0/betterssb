@@ -46,13 +46,10 @@ export function useAutoRegScheduleConfig(): [
     };
   }, []);
 
-  const patch = useCallback(
-    async (partial: Partial<AutoRegScheduleConfig>) => {
-      const next = await patchAutoRegScheduleConfig(partial);
-      setValueState(next);
-    },
-    [],
-  );
+  const patch = useCallback(async (partial: Partial<AutoRegScheduleConfig>) => {
+    const next = await patchAutoRegScheduleConfig(partial);
+    setValueState(next);
+  }, []);
 
   return [value, patch, loading];
 }

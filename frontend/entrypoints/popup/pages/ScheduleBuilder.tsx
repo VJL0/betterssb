@@ -214,7 +214,8 @@ export function ScheduleBuilder() {
                       <span className="text-gray-500">{sec.courseTitle}</span>
                       <br />
                       <span className="text-gray-500">
-                        {primaryInstructor} · {sec.instructionalMethodDescription}
+                        {primaryInstructor} ·{" "}
+                        {sec.instructionalMethodDescription}
                       </span>
                       <br />
                       <span className="text-xs text-gray-500">

@@ -25,8 +25,7 @@ export function SearchCombobox<T>({
   minQueryLength = 2,
   debounceMs = 300,
   className = "",
-  inputClassName =
-    "w-full rounded-full border border-gray-300 bg-white py-2.5 pr-9 pl-4 text-sm text-gray-800 outline-none transition-colors focus:border-indigo-500",
+  inputClassName = "w-full rounded-full border border-gray-300 bg-white py-2.5 pr-9 pl-4 text-sm text-gray-800 outline-none transition-colors focus:border-indigo-500",
 }: SearchComboboxProps<T>) {
   const [query, setQuery] = useState(initialValue);
   const [selectedLabel, setSelectedLabel] = useState(initialValue);

@@ -151,17 +151,10 @@ export function TranscriptPage() {
             {prereqs && (
               <div className="mt-3 flex flex-col gap-1.5">
                 {Object.entries(prereqs).map(([course, met]) => (
-                  <div
-                    key={course}
-                    className="flex items-center gap-2 text-sm"
-                  >
+                  <div key={course} className="flex items-center gap-2 text-sm">
                     <span className="text-base">{met ? "✅" : "❌"}</span>
                     <span className="font-medium">{course}</span>
-                    <span
-                      className={
-                        met ? "text-green-600" : "text-red-600"
-                      }
-                    >
+                    <span className={met ? "text-green-600" : "text-red-600"}>
                       {met ? "Satisfied" : "Not met"}
                     </span>
                   </div>
