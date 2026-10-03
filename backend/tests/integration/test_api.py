@@ -115,3 +115,24 @@ class TestDegreeRoutes:
         assert resp.status_code == 200
         data = resp.json()
         assert data["categories"] == []
+
+
+class TestDarsRoutes:
+    async def test_parse_uploaded_audit(self, client: AsyncClient, dars_audit_html):
+        resp = await client.post(
+            "/api/v1/dars/audits/parse",
+            content=dars_audit_html,
+            headers={"Content-Type": "text/html"},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["programCode"] == "ST-CSCI-BS"
+        assert [r["code"] for r in data["requirements"]] == ["WARNING", "GENED-GW", "CISS.TBS", "CAS-ULS"]
+
+    async def test_parse_rejects_non_audit_html(self, client: AsyncClient):
+        resp = await client.post(
+            "/api/v1/dars/audits/parse",
+            content="<html><body>not an audit</body></html>",
+            headers={"Content-Type": "text/html"},
+        )
+        assert resp.status_code == 422
