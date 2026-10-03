@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+import pytest
 from httpx import AsyncClient
+
+from app.domains.dars.router import _dars_service
+from app.domains.dars.schemas import Audit
+from app.integrations.dars.client import DarsSessionError
+from app.main import app
 
 
 class TestHealthCheck:
@@ -115,3 +121,63 @@ class TestDegreeRoutes:
         assert resp.status_code == 200
         data = resp.json()
         assert data["categories"] == []
+
+
+class TestDarsRoutes:
+    @pytest.fixture()
+    def stub_service(self):
+        class StubService:
+            def __init__(self) -> None:
+                self.session_ids: list[str] = []
+                self.error: Exception | None = None
+
+            async def run_audit(self, session_id: str) -> Audit:
+                self.session_ids.append(session_id)
+                if self.error:
+                    raise self.error
+                return Audit(program_title="COMPUTER SCIENCE - B.S.")
+
+        stub = StubService()
+        app.dependency_overrides[_dars_service] = lambda: stub
+        yield stub
+        app.dependency_overrides.pop(_dars_service, None)
+
+    async def test_run_audit(self, client: AsyncClient, stub_service):
+        resp = await client.post("/api/v1/dars/audits", json={"sessionId": "ABCDEF0123456789"})
+        assert resp.status_code == 200
+        assert resp.json()["programTitle"] == "COMPUTER SCIENCE - B.S."
+
+    async def test_accepts_pasted_cookie_pair(self, client: AsyncClient, stub_service):
+        resp = await client.post("/api/v1/dars/audits", json={"sessionId": " JSESSIONID=ABCDEF0123456789; "})
+        assert resp.status_code == 200
+        assert stub_service.session_ids == ["ABCDEF0123456789"]
+
+    async def test_rejects_malformed_session_id(self, client: AsyncClient, stub_service):
+        resp = await client.post("/api/v1/dars/audits", json={"sessionId": "abc\r\nX-Injected: 1"})
+        assert resp.status_code == 422
+        assert stub_service.session_ids == []
+
+    async def test_expired_session_is_401(self, client: AsyncClient, stub_service):
+        stub_service.error = DarsSessionError("expired")
+        resp = await client.post("/api/v1/dars/audits", json={"sessionId": "ABCDEF0123456789"})
+        assert resp.status_code == 401
+        assert "JSESSIONID" in resp.json()["detail"]
+
+    async def test_parse_uploaded_audit(self, client: AsyncClient, dars_audit_html):
+        resp = await client.post(
+            "/api/v1/dars/audits/parse",
+            content=dars_audit_html,
+            headers={"Content-Type": "text/html"},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["programCode"] == "ST-CSCI-BS"
+        assert [r["code"] for r in data["requirements"]] == ["WARNING", "GENED-GW", "CISS.TBS", "CAS-ULS"]
+
+    async def test_parse_rejects_non_audit_html(self, client: AsyncClient):
+        resp = await client.post(
+            "/api/v1/dars/audits/parse",
+            content="<html><body>not an audit</body></html>",
+            headers={"Content-Type": "text/html"},
+        )
+        assert resp.status_code == 422
