@@ -15,7 +15,11 @@ export default defineConfig({
       "tabs",
       "activeTab",
     ],
-    host_permissions: ["*://*.edu/StudentRegistrationSsb/*", "*://*.edu/ssb/*"],
+    host_permissions: [
+      "*://*.edu/StudentRegistrationSsb/*",
+      "*://*.edu/ssb/*",
+      "*://prd-dars.temple.edu/selfservice/*",
+    ],
   },
   webExt: {
     disabled: true,

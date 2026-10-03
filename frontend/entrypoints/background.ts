@@ -25,6 +25,10 @@ import type {
 } from "@/types";
 
 const SSB_URL_PATTERN = "*://*.edu/StudentRegistrationSsb/*";
+const DARS_URL_PATTERN = "*://prd-dars.temple.edu/selfservice/*";
+const DARS_START_URL =
+  "https://prd-dars.temple.edu/selfservice/audit/create.html";
+const DARS_TAB_READY_TIMEOUT_MS = 150_000;
 
 const REG_CHECK_ALARM = "betterssb-reg-check";
 const AUTO_REG_FIRE_ALARM = "betterssb-auto-reg-fire";
@@ -64,6 +68,58 @@ function isSSBMessage(type: string): boolean {
   return type.startsWith("SSB_");
 }
 
+/** A DARS tab is usable once it's on a `/selfservice/` page (i.e. past SSO login). */
+function isDarsReady(tab: chrome.tabs.Tab): boolean {
+  return !!tab.url?.includes("/selfservice/");
+}
+
+/**
+ * Finds a logged-in DARS tab, or opens one and waits for the student to finish
+ * signing in (SSO + Duo) before resolving with its id.
+ */
+async function getOrOpenDarsTab(): Promise<number> {
+  const tabs = await chrome.tabs.query({ url: DARS_URL_PATTERN });
+  const ready = tabs.find(isDarsReady);
+  if (ready?.id != null) return ready.id;
+
+  const tab =
+    tabs[0] ??
+    (await chrome.tabs.create({ url: DARS_START_URL, active: true }));
+  const tabId = tab.id;
+  if (tabId == null) throw new Error("Could not open a DARS tab.");
+
+  const deadline = Date.now() + DARS_TAB_READY_TIMEOUT_MS;
+  for (;;) {
+    const current = await chrome.tabs.get(tabId).catch(() => null);
+    if (!current)
+      throw new Error("The DARS tab was closed before sign-in finished.");
+    if (isDarsReady(current)) return tabId;
+    if (Date.now() >= deadline) {
+      throw new Error(
+        "Timed out waiting for DARS sign-in. Sign in, then try again.",
+      );
+    }
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+}
+
+/** Relays a message to the DARS content script, retrying while it finishes loading. */
+async function relayToDarsTab(
+  msg: ExtensionMessage,
+): Promise<ExtensionResponse> {
+  const tabId = await getOrOpenDarsTab();
+  let lastError = "DARS tab did not respond.";
+  for (let attempt = 0; attempt < 10; attempt++) {
+    try {
+      return await sendTabMessage(tabId, msg);
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : lastError;
+      await new Promise((r) => setTimeout(r, 500));
+    }
+  }
+  return { success: false, error: lastError };
+}
+
 /** Stable idempotency key for a specific batch attempt (time + term + CRNs). */
 function buildBatchDedupeKey(
   scheduledRunAt: string,
@@ -78,6 +134,12 @@ export default defineBackground(() => {
     try {
       if (isSSBMessage(msg.type)) {
         const result = await relayToSSBTab(msg);
+        sendResponse(result);
+        return;
+      }
+
+      if (msg.type === "DARS_RUN_AUDIT") {
+        const result = await relayToDarsTab(msg);
         sendResponse(result);
         return;
       }
