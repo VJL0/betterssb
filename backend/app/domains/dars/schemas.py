@@ -1,28 +1,10 @@
 from __future__ import annotations
 
-import re
 from typing import Literal
-
-from pydantic import field_validator
 
 from app.shared.schemas.base import BaseSchema
 
 AuditStatus = Literal["complete", "incomplete", "in_progress", "none"]
-
-_SESSION_ID_RE = re.compile(r"^[A-Za-z0-9._\-]{8,256}$")
-
-
-class RunAuditRequest(BaseSchema):
-    session_id: str
-
-    @field_validator("session_id")
-    @classmethod
-    def _clean_session_id(cls, value: str) -> str:
-        """Accept the bare cookie value or a pasted `JSESSIONID=...` pair."""
-        value = value.strip().removeprefix("JSESSIONID=").strip().strip(";")
-        if not _SESSION_ID_RE.match(value):
-            raise ValueError("Not a valid JSESSIONID value")
-        return value
 
 
 class Progress(BaseSchema):

@@ -1,37 +1,22 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type DragEvent,
-  type FormEvent,
-} from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import { AuditReport } from "./components/AuditReport";
 import { StatusIcon } from "./components/StatusBadge";
-import {
-  AuditError,
-  formatCredits,
-  isNoteOnly,
-  runAudit,
-  runFromFile,
-  type Audit,
-} from "./lib/dars";
+import { formatCredits, isNoteOnly, runFromFile, type Audit } from "./lib/dars";
 import { runViaExtension, waitForExtension } from "./lib/extension";
 
 const DARS_URL = "https://prd-dars.temple.edu/selfservice/";
 
-type Method = "extension" | "upload" | "paste";
+type Method = "extension" | "upload";
 
 type RunState =
   | { kind: "idle" }
   | { kind: "running"; startedAt: number; label: string }
-  | { kind: "error"; message: string; sessionExpired: boolean }
+  | { kind: "error"; message: string }
   | { kind: "done"; audit: Audit };
 
 function App() {
   const [method, setMethod] = useState<Method>("upload");
   const [extVersion, setExtVersion] = useState<string | null>(null);
-  // The session id is a live DARS login: keep it in memory only, never in storage.
-  const [sessionId, setSessionId] = useState("");
   const [run, setRun] = useState<RunState>({ kind: "idle" });
 
   useEffect(() => {
@@ -49,7 +34,6 @@ function App() {
       setRun({
         kind: "error",
         message: err instanceof Error ? err.message : "Something went wrong.",
-        sessionExpired: err instanceof AuditError && err.sessionExpired,
       });
     }
   }
@@ -96,16 +80,6 @@ function App() {
             }
           />
         )}
-        {method === "paste" && (
-          <PastePanel
-            sessionId={sessionId}
-            setSessionId={setSessionId}
-            running={running}
-            onRun={() =>
-              execute("Running your audit in DARS…", () => runAudit(sessionId))
-            }
-          />
-        )}
 
         {run.kind === "running" && (
           <RunningNotice startedAt={run.startedAt} label={run.label} />
@@ -116,20 +90,6 @@ function App() {
             className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900"
           >
             <p className="font-medium">{run.message}</p>
-            {run.sessionExpired && (
-              <p className="mt-1">
-                Open{" "}
-                <a
-                  href={DARS_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline"
-                >
-                  DARS
-                </a>
-                , log in, then try again.
-              </p>
-            )}
           </div>
         )}
         {run.kind === "done" && <AuditSummary audit={run.audit} />}
@@ -160,7 +120,6 @@ function MethodTabs({
   const tabs: { id: Method; label: string }[] = [
     { id: "extension", label: extInstalled ? "Extension" : "Extension •" },
     { id: "upload", label: "Upload file" },
-    { id: "paste", label: "Paste cookie" },
   ];
   return (
     <div
@@ -306,55 +265,6 @@ function UploadPanel({
         </ol>
       </details>
     </div>
-  );
-}
-
-function PastePanel({
-  sessionId,
-  setSessionId,
-  running,
-  onRun,
-}: {
-  sessionId: string;
-  setSessionId: (v: string) => void;
-  running: boolean;
-  onRun: () => void;
-}) {
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    onRun();
-  }
-  return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3">
-      <p className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-500">
-        Advanced. Pasting a session cookie hands a live login to our server —
-        prefer the extension or file upload. Used only for this audit, never
-        stored.
-      </p>
-      <label htmlFor="session" className="text-sm font-medium">
-        DARS session (<code className="text-xs">JSESSIONID</code>)
-      </label>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <input
-          id="session"
-          type="password"
-          autoComplete="off"
-          spellCheck={false}
-          placeholder="Paste your JSESSIONID"
-          value={sessionId}
-          onChange={(e) => setSessionId(e.target.value)}
-          className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-sm shadow-sm focus:border-slate-500 focus:ring-2 focus:ring-slate-200 focus:outline-none"
-        />
-        <button
-          type="submit"
-          disabled={running || !sessionId.trim()}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {running && <Spinner />}
-          {running ? "Running…" : "Run audit"}
-        </button>
-      </div>
-    </form>
   );
 }
 

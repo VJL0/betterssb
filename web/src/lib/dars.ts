@@ -50,14 +50,7 @@ export interface Audit {
   requirements: Requirement[];
 }
 
-export class AuditError extends Error {
-  readonly sessionExpired: boolean;
-
-  constructor(message: string, sessionExpired = false) {
-    super(message);
-    this.sessionExpired = sessionExpired;
-  }
-}
+export class AuditError extends Error {}
 
 async function detail(res: Response, fallback: string): Promise<string> {
   const body = (await res.json().catch(() => null)) as {
@@ -91,29 +84,6 @@ export async function parseAuditHtml(
 /** Reads a saved printer-friendly DARS audit file and parses it. */
 export async function runFromFile(file: File): Promise<Audit> {
   return parseAuditHtml(await file.text());
-}
-
-/** Runs a fresh audit in DARS via the backend, using a pasted JSESSIONID. */
-export async function runAudit(
-  sessionId: string,
-  signal?: AbortSignal,
-): Promise<Audit> {
-  const res = await fetch("/api/v1/dars/audits", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId }),
-    signal,
-  });
-  if (res.ok) return (await res.json()) as Audit;
-  throw new AuditError(
-    await detail(
-      res,
-      res.status === 422
-        ? "That doesn't look like a JSESSIONID value."
-        : `The audit failed (HTTP ${res.status}).`,
-    ),
-    res.status === 401,
-  );
 }
 
 /** A requirement that is only explanatory text (DARS banners like WARNING, MAJOR, SUMMARY). */
