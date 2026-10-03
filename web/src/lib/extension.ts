@@ -25,7 +25,7 @@ function isBridgeResponse(data: unknown, id: string): data is BridgeResponse {
 }
 
 /** The installed extension's version, or null if it isn't present on this page. */
-export function extensionVersion(): string | null {
+function extensionVersion(): string | null {
   return document.documentElement.dataset.betterssbExtension ?? null;
 }
 

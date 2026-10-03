@@ -50,8 +50,6 @@ export interface Audit {
   requirements: Requirement[];
 }
 
-export class AuditError extends Error {}
-
 async function detail(res: Response, fallback: string): Promise<string> {
   const body = (await res.json().catch(() => null)) as {
     detail?: unknown;
@@ -71,7 +69,7 @@ export async function parseAuditHtml(
     signal,
   });
   if (res.ok) return (await res.json()) as Audit;
-  throw new AuditError(
+  throw new Error(
     await detail(
       res,
       res.status === 422
