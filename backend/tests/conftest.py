@@ -35,6 +35,11 @@ def bulletin_cybr_html() -> str:
 
 
 @pytest.fixture()
+def dars_audit_html() -> str:
+    return (FIXTURES_DIR / "dars_audit.html").read_text()
+
+
+@pytest.fixture()
 def sample_sections() -> list[Section]:
     """Two courses, two sections each — no inherent conflicts."""
     return [
