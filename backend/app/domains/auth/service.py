@@ -1,91 +1,72 @@
 from __future__ import annotations
 
-import logging
-import uuid
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings
-from app.core.security import create_access_token, generate_refresh_token, hash_token
+from app.core.security import generate_session_token, hash_token
 from app.domains.auth import repository as auth_repo
 from app.domains.auth.models import User
-from app.integrations.google.client import GoogleAuthClient
 
-logger = logging.getLogger(__name__)
+# Refresh `last_seen_at` at most this often, so most requests don't write.
+SESSION_TOUCH_INTERVAL = timedelta(minutes=5)
+
+
+class InactiveUserError(Exception):
+    """The user for this Google account is deactivated."""
 
 
 class AuthService:
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
-        self._google = GoogleAuthClient(settings.GOOGLE_CLIENT_ID)
 
-    async def verify_google_token(self, credential: str) -> dict:
-        """Verify a Google ID token (from Sign In With Google) and return claims."""
-        return await self._google.verify_id_token(credential)
-
-    async def authenticate(
+    async def start_session(
         self,
         db: AsyncSession,
         google_claims: dict,
         *,
-        device_info: str = "",
+        previous_token: str | None = None,
+        user_agent: str = "",
         ip_address: str = "",
-    ) -> tuple[str, str, User]:
-        """Upsert the user and return (access_token, refresh_token, user)."""
+    ) -> str:
+        """Upsert the user, start a session, and return its raw token.
+
+        Deletes the browser's previous session, so each sign-in gets a new token.
+
+        Raises:
+            InactiveUserError: The user is deactivated.
+        """
+        if previous_token:
+            await auth_repo.delete_session(db, hash_token(previous_token))
+
         user = await auth_repo.upsert_user(db, google_claims)
+        if not user.is_active:
+            raise InactiveUserError(str(user.id))
 
-        access_token = create_access_token(user.id, self._settings)
-        raw_refresh, refresh_hash = generate_refresh_token()
-
-        await auth_repo.create_refresh_token(
+        raw_token, token_hash = generate_session_token()
+        now = datetime.now(UTC)
+        await auth_repo.create_session(
             db,
             user_id=user.id,
-            token_hash=refresh_hash,
-            expires_at=datetime.now(UTC) + timedelta(days=self._settings.REFRESH_TOKEN_EXPIRE_DAYS),
-            device_info=device_info,
+            token_hash=token_hash,
+            last_seen_at=now,
+            expires_at=now + timedelta(days=self._settings.SESSION_ABSOLUTE_TIMEOUT_DAYS),
+            user_agent=user_agent,
             ip_address=ip_address,
         )
+        return raw_token
 
-        return access_token, raw_refresh, user
-
-    async def refresh_tokens(
-        self,
-        db: AsyncSession,
-        raw_refresh: str,
-        *,
-        device_info: str = "",
-        ip_address: str = "",
-    ) -> tuple[str, str, User]:
-        """Rotate a refresh token pair. Old token is revoked."""
-        token_hash = hash_token(raw_refresh)
-
-        old_rt = await auth_repo.get_valid_refresh_token(db, token_hash)
-        if old_rt is None:
-            raise ValueError("Invalid or expired refresh token")
-
-        old_rt.revoked = True
-
-        user = await db.get(User, old_rt.user_id)
-        if user is None or not user.is_active:
-            raise ValueError("User not found or inactive")
-
-        access_token = create_access_token(user.id, self._settings)
-        new_raw, new_hash = generate_refresh_token()
-
-        await auth_repo.create_refresh_token(
+    async def get_session_user(self, db: AsyncSession, raw_token: str) -> User | None:
+        """Return the session's user, or None if the session is invalid or timed out."""
+        now = datetime.now(UTC)
+        return await auth_repo.get_session_user(
             db,
-            user_id=user.id,
-            token_hash=new_hash,
-            expires_at=datetime.now(UTC) + timedelta(days=self._settings.REFRESH_TOKEN_EXPIRE_DAYS),
-            device_info=device_info,
-            ip_address=ip_address,
+            hash_token(raw_token),
+            now=now,
+            idle_since=now - timedelta(days=self._settings.SESSION_IDLE_TIMEOUT_DAYS),
+            touch_before=now - SESSION_TOUCH_INTERVAL,
         )
 
-        return access_token, new_raw, user
-
-    async def revoke_refresh_token(self, db: AsyncSession, raw_refresh: str) -> None:
-        await auth_repo.revoke_refresh_token(db, hash_token(raw_refresh))
-
-    async def get_user_by_id(self, db: AsyncSession, user_id: uuid.UUID) -> User | None:
-        return await auth_repo.get_user_by_id(db, user_id)
+    async def end_session(self, db: AsyncSession, raw_token: str) -> None:
+        await auth_repo.delete_session(db, hash_token(raw_token))

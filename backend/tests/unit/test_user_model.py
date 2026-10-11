@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from app.core.database import Base
-from app.domains.auth.models import RefreshToken, User
+from app.domains.auth.models import User, UserSession
 
 
 class TestUserTable:
@@ -32,26 +32,26 @@ class TestUserTable:
         assert col.unique is True
 
 
-class TestRefreshTokenTable:
+class TestUserSessionTable:
     def test_table_name(self):
-        assert RefreshToken.__tablename__ == "refresh_tokens"
+        assert UserSession.__tablename__ == "sessions"
 
     def test_columns_exist(self):
-        cols = {c.name for c in RefreshToken.__table__.columns}
+        cols = {c.name for c in UserSession.__table__.columns}
         expected = {
             "id",
             "user_id",
             "token_hash",
-            "expires_at",
-            "revoked",
-            "device_info",
-            "ip_address",
             "created_at",
+            "last_seen_at",
+            "expires_at",
+            "user_agent",
+            "ip_address",
         }
         assert expected <= cols
 
     def test_token_hash_unique(self):
-        col = RefreshToken.__table__.c.token_hash
+        col = UserSession.__table__.c.token_hash
         assert col.unique is True
 
 
@@ -59,4 +59,4 @@ class TestBaseMetadata:
     def test_models_registered(self):
         tables = set(Base.metadata.tables.keys())
         assert "users" in tables
-        assert "refresh_tokens" in tables
+        assert "sessions" in tables
