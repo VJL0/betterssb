@@ -66,7 +66,7 @@ betterssb/
 | Backend | FastAPI, Python 3.14 |
 | Database | PostgreSQL 18 (Docker), SQLAlchemy 2 |
 | Cache | Redis 8 (Docker), short-lived data only |
-| Auth | Google Sign-In, JWT + refresh token rotation |
+| Auth | Google OAuth 2.0 / OpenID Connect (Authlib), server-side sessions |
 | AI / LLM | OpenAI API |
 | RMP Data | Rate My Professor GraphQL API |
 
@@ -135,14 +135,28 @@ Copy `backend/.env.example` to `backend/.env` and fill in:
 
 ```env
 DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
-GOOGLE_CLIENT_ID=...           # Google Cloud Console → OAuth 2.0 Client ID
+REDIS_URL=redis://localhost:6379/0
+GOOGLE_CLIENT_ID=...           # Google Cloud Console → OAuth client ID (Web application)
 GOOGLE_CLIENT_SECRET=...       # Matching secret
-JWT_SECRET=...                 # Required, 32+ chars: openssl rand -hex 32
+GOOGLE_REDIRECT_URI=http://localhost:8000/api/v1/auth/google/callback
+FRONTEND_URL=http://localhost:5173
+SESSION_SECRET=...             # Required, 32+ chars: openssl rand -hex 32
 OPENAI_API_KEY=sk-...          # Required for chatbot
 RMP_AUTH_TOKEN=...              # Rate My Professor auth (optional, has fallback)
 ```
 
-The API won't start without a valid `JWT_SECRET`.
+The API won't start without `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a valid `SESSION_SECRET`.
+
+### Authentication
+
+Sign-in is Google only, using the OAuth 2.0 authorization code flow with OpenID Connect, via [Authlib](https://docs.authlib.org/).
+
+1. `GET /api/v1/auth/google/login` redirects to Google with `state`, `nonce`, and a PKCE challenge. Those values are kept in Redis for 10 minutes. A short-lived signed cookie ties them to the browser that started the flow.
+2. `GET /api/v1/auth/google/callback` checks `state`, exchanges the code, and validates the ID token locally against Google's keys (signature, `iss`, `aud`, `exp`, `nonce`). It then upserts the user by Google's `sub` (never by email), opens a session, and redirects to `FRONTEND_URL`. If sign-in fails, it appends `?auth_error=access_denied|failed|account_disabled`.
+3. Sessions are server-side, in the Postgres `sessions` table. The `__Host-sid` cookie (`HttpOnly`, `Secure`, `SameSite=Lax`) holds a random 256-bit token, and only its SHA-256 hash is stored. Sessions expire after `SESSION_IDLE_TIMEOUT_DAYS` of inactivity or `SESSION_ABSOLUTE_TIMEOUT_DAYS` total. Each sign-in issues a new ID.
+4. `POST /api/v1/auth/logout` deletes the session row and clears the cookie. `GET /api/v1/auth/me` returns the current user, or `401`.
+
+Only identity scopes (`openid email profile`) are requested. Google's access token is discarded after sign-in, and no refresh token is requested or stored.
 
 The API has no CORS. The web app calls it same-origin at `/api` (Vite proxies it in dev; in production serve both from one domain with `/api` routed to the backend). The extension gets the API host in its `host_permissions`, which lets it call the API without CORS.
 
