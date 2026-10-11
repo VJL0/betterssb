@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from app.core.config import Settings
+from app.core.config import DatabaseSettings
 from app.core.database import Base
 from app.domains.auth.models import RefreshToken, User  # noqa: F401 — register models
 
@@ -17,7 +17,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-settings = Settings()
+settings = DatabaseSettings()
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 target_metadata = Base.metadata

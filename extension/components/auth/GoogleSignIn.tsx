@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useStorage } from "@/hooks/useStorage";
+import { GOOGLE_CLIENT_ID } from "@/lib/config";
 
 interface GoogleSignInProps {
   onCredential: (credential: string) => void;
@@ -10,7 +10,7 @@ const GOOGLE_GSI_URL = "https://accounts.google.com/gsi/client";
 
 export function GoogleSignIn({ onCredential, loading }: GoogleSignInProps) {
   const btnRef = useRef<HTMLDivElement>(null);
-  const [clientId] = useStorage("betterssb:googleClientId", "");
+  const clientId = GOOGLE_CLIENT_ID;
   useEffect(() => {
     if (!clientId) return;
 
@@ -48,8 +48,7 @@ export function GoogleSignIn({ onCredential, loading }: GoogleSignInProps) {
   if (!clientId) {
     return (
       <div className="py-2 text-center text-xs text-gray-500">
-        Set your <strong>Google Client ID</strong> in Settings to enable
-        sign-in.
+        Sign-in isn&apos;t available in this build.
       </div>
     );
   }
