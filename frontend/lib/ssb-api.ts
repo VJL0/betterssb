@@ -48,7 +48,7 @@ function readSyncTokenFromDOM(): string {
 
   const bodyText = document.body?.innerHTML ?? "";
   const match = bodyText.match(/synchronizerToken[^"]*"([0-9a-f-]{36})"/);
-  if (match) return match[1];
+  if (match) return match[1]!;
 
   return "";
 }
@@ -78,12 +78,12 @@ async function refreshSyncTokenFromPage(): Promise<void> {
     /name\s*=\s*"synchronizerToken"\s+content\s*=\s*"([0-9a-f-]{36})"/,
   );
   if (match) {
-    _syncToken = match[1];
+    _syncToken = match[1]!;
     return;
   }
   const altMatch = html.match(/synchronizerToken[^"]*"([0-9a-f-]{36})"/);
   if (altMatch) {
-    _syncToken = altMatch[1];
+    _syncToken = altMatch[1]!;
   }
 }
 

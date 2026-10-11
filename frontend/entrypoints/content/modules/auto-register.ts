@@ -43,7 +43,7 @@ export async function registerForSections(crns: string[]): Promise<void> {
   }
 
   for (let i = 0; i < crns.length && i < inputs.length; i++) {
-    setNativeValue(inputs[i], crns[i]);
+    setNativeValue(inputs[i]!, crns[i]!);
     await new Promise((r) => setTimeout(r, 100));
   }
 

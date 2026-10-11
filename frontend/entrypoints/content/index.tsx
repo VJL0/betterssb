@@ -186,7 +186,7 @@ export default defineContentScript({
     function detectPage(): Page {
       const currentUrl = window.location.href.toLowerCase();
       const ssbPathSegments = currentUrl.split("/ssb/");
-      const path = ssbPathSegments[1];
+      const path = ssbPathSegments[1] ?? "";
 
       if (path.includes("plan/plan")) return "planAhead";
       // if (path.includes("classsearch") || path.includes("searchresults"))

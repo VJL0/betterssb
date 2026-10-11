@@ -73,7 +73,7 @@ betterssb/
 
 ### Prerequisites
 
-- **Node.js** ≥ 20 and **pnpm** ≥ 9
+- **Node.js** ≥ 22 and **pnpm** ≥ 9
 - **Python** ≥ 3.14 and **uv** (Python package manager)
 - **Docker** and **Docker Compose** (for PostgreSQL)
 - A Chromium-based browser
@@ -89,7 +89,7 @@ docker compose up -d   # starts PostgreSQL on port 5432
 ```bash
 cd frontend
 pnpm install
-pnpm dev            # launches Chrome with the extension loaded
+pnpm dev            # dev build with hot reload → frontend/.output/chrome-mv3-dev
 ```
 
 ### Backend (API Server)
@@ -103,9 +103,9 @@ uv run fastapi dev    # starts the dev server at http://localhost:8000
 
 ### Loading the Extension Manually
 
-1. Run `pnpm build` in `frontend/`.
+1. Run `pnpm dev` (or `pnpm build` for a production bundle) in `frontend/`.
 2. Open `chrome://extensions`, enable **Developer mode**.
-3. Click **Load unpacked** and select `frontend/.output/chrome-mv3`.
+3. Click **Load unpacked** and select `frontend/.output/chrome-mv3-dev` (or `frontend/.output/chrome-mv3` for `pnpm build`).
 
 ## Development
 

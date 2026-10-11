@@ -6,7 +6,7 @@ WXT-based MV3 extension that injects into Ellucian Self-Service Banner and ships
 
 ```bash
 pnpm install
-pnpm dev          # Chrome + hot reload
+pnpm dev          # dev build + hot reload → load .output/chrome-mv3-dev unpacked
 pnpm build        # production bundle → .output/chrome-mv3
 ```
 

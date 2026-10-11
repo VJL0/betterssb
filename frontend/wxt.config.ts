@@ -21,9 +21,6 @@ export default defineConfig({
       "*://prd-dars.temple.edu/selfservice/*",
     ],
   },
-  webExt: {
-    disabled: true,
-  },
   vite: () => ({
     plugins: [tailwindcss()],
   }),

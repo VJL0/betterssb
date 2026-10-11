@@ -29,7 +29,7 @@ const BG_CLASSES = [
 ];
 
 function timeToMinutes(time: string): number {
-  const [h, m] = time.split(":").map(Number);
+  const [h = 0, m = 0] = time.split(":").map(Number);
   return h * 60 + m;
 }
 
@@ -49,7 +49,7 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
 
   function getBgClass(courseId: string): string {
     if (!courseColorMap.has(courseId)) {
-      courseColorMap.set(courseId, BG_CLASSES[colorIdx % BG_CLASSES.length]);
+      courseColorMap.set(courseId, BG_CLASSES[colorIdx % BG_CLASSES.length]!);
       colorIdx++;
     }
     return courseColorMap.get(courseId)!;
