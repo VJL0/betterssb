@@ -29,7 +29,7 @@ export function useAutoRegScheduleConfig(): [
     });
 
     const listener = (
-      changes: Record<string, chrome.storage.StorageChange>,
+      changes: Record<string, Browser.storage.StorageChange>,
     ) => {
       if (AUTO_REG_SCHEDULE_CONFIG_KEY in changes) {
         const raw = changes[AUTO_REG_SCHEDULE_CONFIG_KEY].newValue;
@@ -39,10 +39,10 @@ export function useAutoRegScheduleConfig(): [
       }
     };
 
-    chrome.storage.local.onChanged.addListener(listener);
+    browser.storage.local.onChanged.addListener(listener);
     return () => {
       cancelled = true;
-      chrome.storage.local.onChanged.removeListener(listener);
+      browser.storage.local.onChanged.removeListener(listener);
     };
   }, []);
 

@@ -46,7 +46,7 @@ export interface ExtensionResponse {
 }
 
 export function sendMessage(msg: ExtensionMessage): Promise<ExtensionResponse> {
-  return chrome.runtime.sendMessage<ExtensionMessage, ExtensionResponse>(msg);
+  return browser.runtime.sendMessage<ExtensionMessage, ExtensionResponse>(msg);
 }
 
 /**
@@ -56,7 +56,7 @@ export function sendTabMessage(
   tabId: number,
   msg: ExtensionMessage,
 ): Promise<ExtensionResponse> {
-  return chrome.tabs.sendMessage<ExtensionMessage, ExtensionResponse>(
+  return browser.tabs.sendMessage<ExtensionMessage, ExtensionResponse>(
     tabId,
     msg,
   );
@@ -68,10 +68,10 @@ export function onMessage(
     sendResponse: (res: ExtensionResponse) => void,
   ) => void,
 ): void {
-  chrome.runtime.onMessage.addListener(
+  browser.runtime.onMessage.addListener(
     (
       message: ExtensionMessage,
-      _sender: chrome.runtime.MessageSender,
+      _sender: Browser.runtime.MessageSender,
       sendResponse: (res: ExtensionResponse) => void,
     ) => {
       handler(message, sendResponse);
@@ -89,10 +89,10 @@ export function onContentMessage(
     sendResponse: (res: ExtensionResponse) => void,
   ) => void,
 ): void {
-  chrome.runtime.onMessage.addListener(
+  browser.runtime.onMessage.addListener(
     (
       message: ExtensionMessage,
-      _sender: chrome.runtime.MessageSender,
+      _sender: Browser.runtime.MessageSender,
       sendResponse: (res: ExtensionResponse) => void,
     ) => {
       handler(message, sendResponse);
