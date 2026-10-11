@@ -1,18 +1,25 @@
 from __future__ import annotations
 
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
-class Settings(BaseSettings):
-    """Application-wide configuration loaded from environment / .env file."""
+class DatabaseSettings(BaseSettings):
+    """Just the database URL, for tools (Alembic) that need nothing else."""
 
-    # Database
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
+
+    model_config = {"env_file": ".env", "extra": "ignore"}
+
+
+class Settings(DatabaseSettings):
+    """Application-wide configuration loaded from environment / .env file."""
 
     # Auth
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
-    JWT_SECRET: str = "change-me-in-production"
+    # Required, no default: the app refuses to start with a missing or weak key.
+    JWT_SECRET: str = Field(min_length=32)
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
@@ -20,8 +27,3 @@ class Settings(BaseSettings):
     # External services
     OPENAI_API_KEY: str = ""
     RMP_AUTH_TOKEN: str = ""
-
-    # Server
-    CORS_ORIGINS: list[str] = ["chrome-extension://*"]
-
-    model_config = {"env_file": ".env"}

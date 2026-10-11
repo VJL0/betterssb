@@ -18,7 +18,7 @@ A Chrome extension that supercharges Ellucian Self-Service Banner (SSB) — the 
 
 ```
 betterssb/
-├── frontend/          # Chrome extension (WXT + React + TypeScript)
+├── extension/         # Chrome extension (WXT + React + TypeScript)
 │   ├── entrypoints/
 │   │   ├── background.ts          # Service worker: API relay, auth, alarms
 │   │   ├── content/               # Injected into Banner pages
@@ -41,7 +41,7 @@ betterssb/
 
 ### How It Works
 
-1. **Popup** — Primary UI: Google sign-in, school selection, schedule builder, semester planner, AI chat, transcript upload, and settings. Talks to the background worker and (for Banner data) to the content script via message passing.
+1. **Popup** — Primary UI: Google sign-in, school selection, schedule builder, semester planner, AI chat, and transcript upload. Talks to the background worker and (for Banner data) to the content script via message passing.
 2. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). Handles anything that must execute in the page: calling Ellucian’s in-page APIs for the popup, injecting Rate My Professor badges on listings, and filling/submitting registration forms for auto-registration.
 3. **Background Service Worker** — Relays non-SSB work to the backend (schedules, chat, transcript parsing, RMP search), forwards `SSB_*` messages to an open Banner tab, registration alarms, and `chrome.storage`.
 4. **Backend API** — Rate My Professor lookups, schedule optimization, transcript parsing, chatbot inference, and prerequisite validation.
@@ -50,7 +50,7 @@ betterssb/
 
 | Feature | Popup | Content |
 | --- | --- | --- |
-| Sign-in, school, settings | Yes | |
+| Sign-in, school | Yes | |
 | Schedule builder & semester planner | Yes | (SSB calls run in page) |
 | AI chat & transcript tools | Yes | |
 | Rate My Professor on course rows | | Yes |
@@ -91,9 +91,9 @@ Redis holds short-lived data only (caches, rate limits, OAuth state). It runs wi
 ### Frontend (Chrome Extension)
 
 ```bash
-cd frontend
+cd extension
 pnpm install
-pnpm dev            # dev build with hot reload → frontend/.output/chrome-mv3-dev
+pnpm dev            # dev build with hot reload → extension/.output/chrome-mv3-dev
 ```
 
 ### Backend (API Server)
@@ -102,20 +102,32 @@ pnpm dev            # dev build with hot reload → frontend/.output/chrome-mv3-
 cd backend
 cp .env.example .env  # then fill in your secrets
 uv sync
-uv run fastapi dev    # starts the dev server at http://localhost:8000
+uv run alembic upgrade head              # create/update the database schema
+uv run uvicorn app.main:app --reload     # dev server at http://localhost:8000
 ```
+
+In production, run migrations, then start Uvicorn without `--reload`:
+
+```bash
+uv run alembic upgrade head
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+Behind a load balancer or reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy's address so client IPs are read from `X-Forwarded-For`. `WEB_CONCURRENCY` can replace `--workers`.
+
+The app never creates tables itself. After changing a model, generate a migration with `uv run alembic revision --autogenerate -m "..."`, review it, and commit it. Run `alembic upgrade head` as a deploy step before starting the new version.
 
 ### Loading the Extension Manually
 
-1. Run `pnpm dev` (or `pnpm build` for a production bundle) in `frontend/`.
+1. Run `pnpm dev` (or `pnpm build` for a production bundle) in `extension/`.
 2. Open `chrome://extensions`, enable **Developer mode**.
-3. Click **Load unpacked** and select `frontend/.output/chrome-mv3-dev` (or `frontend/.output/chrome-mv3` for `pnpm build`).
+3. Click **Load unpacked** and select `extension/.output/chrome-mv3-dev` (or `extension/.output/chrome-mv3` for `pnpm build`).
 
 ## Development
 
-- **Hot reload** — `pnpm dev` in the frontend watches for changes and reloads the extension automatically.
+- **Hot reload** — `pnpm dev` in `extension/` watches for changes and reloads the extension automatically.
 - **API docs** — Visit `http://localhost:8000/docs` for the interactive Swagger UI.
-- **Type safety** — Shared types in `frontend/types/` keep content scripts, popup, and API calls in sync.
+- **Type safety** — Shared types in `extension/types/` keep content scripts, popup, and API calls in sync.
 
 ## Environment Variables
 
@@ -125,9 +137,20 @@ Copy `backend/.env.example` to `backend/.env` and fill in:
 DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
 GOOGLE_CLIENT_ID=...           # Google Cloud Console → OAuth 2.0 Client ID
 GOOGLE_CLIENT_SECRET=...       # Matching secret
-JWT_SECRET=...                 # Random 64+ char string
+JWT_SECRET=...                 # Required, 32+ chars: openssl rand -hex 32
 OPENAI_API_KEY=sk-...          # Required for chatbot
 RMP_AUTH_TOKEN=...              # Rate My Professor auth (optional, has fallback)
+```
+
+The API won't start without a valid `JWT_SECRET`.
+
+The API has no CORS. The web app calls it same-origin at `/api` (Vite proxies it in dev; in production serve both from one domain with `/api` routed to the backend). The extension gets the API host in its `host_permissions`, which lets it call the API without CORS.
+
+The extension reads its config at build time. Copy `extension/.env.example` to `extension/.env` (or `.env.production` for release builds):
+
+```env
+WXT_API_URL=http://localhost:8000/api/v1   # Backend API base URL
+WXT_GOOGLE_CLIENT_ID=...                   # Same OAuth client ID as the backend
 ```
 
 ## Contributing

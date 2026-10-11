@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import type { AuthUser, AuthTokens } from "@/types";
 import { useStorage } from "./useStorage";
+import { API_URL as apiUrl } from "@/lib/config";
 
 const STORAGE_KEY_TOKENS = "betterssb:auth:tokens";
 const STORAGE_KEY_USER = "betterssb:auth:user";
@@ -11,10 +12,6 @@ export function useAuth() {
     null,
   );
   const [user, setUser] = useStorage<AuthUser | null>(STORAGE_KEY_USER, null);
-  const [apiUrl] = useStorage(
-    "betterssb:apiUrl",
-    "http://localhost:8000/api/v1",
-  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +49,7 @@ export function useAuth() {
         setLoading(false);
       }
     },
-    [apiUrl, setTokens, setUser],
+    [setTokens, setUser],
   );
 
   const logout = useCallback(async () => {
@@ -65,7 +62,7 @@ export function useAuth() {
     }
     setTokens(null);
     setUser(null);
-  }, [apiUrl, tokens, setTokens, setUser]);
+  }, [tokens, setTokens, setUser]);
 
   const refresh = useCallback(async () => {
     if (!tokens?.refreshToken) return;
@@ -93,7 +90,7 @@ export function useAuth() {
     } catch {
       await logout();
     }
-  }, [apiUrl, tokens, setTokens, setUser, logout]);
+  }, [tokens, setTokens, setUser, logout]);
 
   return {
     user,
