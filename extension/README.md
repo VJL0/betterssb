@@ -1,4 +1,4 @@
-# BetterSSB — Chrome extension (frontend)
+# BetterSSB — Chrome extension
 
 WXT-based MV3 extension that injects into Ellucian Self-Service Banner and ships the popup, content scripts, and background service worker.
 

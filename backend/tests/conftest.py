@@ -8,6 +8,7 @@ os.environ.setdefault(
     "DATABASE_URL",
     "sqlite+aiosqlite:///",
 )
+os.environ.setdefault("JWT_SECRET", "test-secret-key-for-tests-at-least-32-bytes")
 
 import pytest
 from httpx import ASGITransport, AsyncClient

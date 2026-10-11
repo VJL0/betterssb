@@ -4,15 +4,8 @@ import { ScheduleBuilder } from "./ScheduleBuilder";
 import { SemesterPlanner } from "./SemesterPlanner";
 import { ChatPage } from "./ChatPage";
 import { TranscriptPage } from "./TranscriptPage";
-import { SettingsPage } from "./SettingsPage";
 
-const SUB_TABS = [
-  "Schedule",
-  "Planner",
-  "Chat",
-  "Transcript",
-  "Settings",
-] as const;
+const SUB_TABS = ["Schedule", "Planner", "Chat", "Transcript"] as const;
 type SubTab = (typeof SUB_TABS)[number];
 
 export function MorePage() {
@@ -43,7 +36,6 @@ export function MorePage() {
         {sub === "Planner" && <SemesterPlanner />}
         {sub === "Chat" && <ChatPage />}
         {sub === "Transcript" && <TranscriptPage />}
-        {sub === "Settings" && <SettingsPage />}
       </div>
     </div>
   );

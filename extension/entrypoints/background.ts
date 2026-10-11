@@ -16,7 +16,6 @@ import {
   getAutoRegRunState,
   patchAutoRegRunState,
 } from "@/lib/auto-reg-run-state";
-import { getStorageItem, setStorageItem } from "@/lib/storage";
 import type {
   Section,
   SchedulePreferences,
@@ -143,9 +142,6 @@ export default defineBackground(() => {
         sendResponse(result);
         return;
       }
-
-      const customBaseUrl = await getStorageItem<string>("betterssb:apiUrl");
-      if (customBaseUrl) api.setBaseUrl(customBaseUrl);
 
       switch (msg.type) {
         case "SEARCH_SCHOOLS": {

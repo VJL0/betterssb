@@ -1,3 +1,4 @@
+import { API_URL } from "@/lib/config";
 import type {
   RMPRating,
   RMPSchool,
@@ -13,12 +14,8 @@ class BetterSSBApi {
   private baseUrl: string;
   private accessToken: string | null = null;
 
-  constructor(baseUrl = "http://localhost:8000/api/v1") {
+  constructor(baseUrl = API_URL) {
     this.baseUrl = baseUrl.replace(/\/+$/, "");
-  }
-
-  setBaseUrl(url: string) {
-    this.baseUrl = url.replace(/\/+$/, "");
   }
 
   setAccessToken(token: string | null) {

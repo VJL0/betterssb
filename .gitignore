@@ -28,7 +28,7 @@ data/
 *.sw?
 
 # WXT
-frontend/.wxt/
+extension/.wxt/
 web-ext.config.ts
 stats.html
 stats-*.json
