@@ -24,13 +24,14 @@ from sqlalchemy.pool import StaticPool
 from app.core.database import Base
 from app.core.security import hash_token
 from app.domains.auth.models import User, UserSession
+from app.domains.auth.service import SESSION_IDLE_TIMEOUT
 from app.integrations.google.client import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
 from app.main import app
 
 settings = app.state.settings
 
 SESSION_COOKIE = "__Host-Http-sid"
-STATE_COOKIE = "__Host-Http-oauth_state"
+STATE_COOKIE = "__Host-Http-oauth"
 
 
 class FakeCache:
@@ -88,7 +89,12 @@ class FakeGoogle:
             "nonce": self.nonce,
         } | self.id_token_overrides
         id_token = jwt.encode({"alg": "RS256", "kid": "test-key"}, claims, self.key)
-        return {"access_token": "ya29.test", "token_type": "Bearer", "expires_in": 3599, "id_token": id_token}
+        return {
+            "access_token": "ya29.test",
+            "token_type": "Bearer",
+            "expires_in": 3599,
+            "id_token": id_token,
+        }
 
 
 @pytest.fixture()
@@ -109,7 +115,9 @@ def cache() -> FakeCache:
 
 @pytest.fixture()
 def google(cache: FakeCache, monkeypatch: pytest.MonkeyPatch) -> FakeGoogle:
-    client = GoogleOAuthClient(settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET, cache=cache)
+    client = GoogleOAuthClient(
+        settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET, cache=cache
+    )
     monkeypatch.setattr(app.state, "google", client, raising=False)
     return FakeGoogle(client)
 
@@ -118,22 +126,31 @@ async def start_login(client: AsyncClient, google: FakeGoogle) -> dict[str, str]
     """Start sign-in and return the query params of Google's authorization URL."""
     resp = await client.get("/api/v1/auth/google/login")
     assert resp.status_code == 302
-    params = {k: v[0] for k, v in parse_qs(urlparse(resp.headers["location"]).query).items()}
+    params = {
+        k: v[0] for k, v in parse_qs(urlparse(resp.headers["location"]).query).items()
+    }
     google.nonce = params["nonce"]
     return params
 
 
 async def sign_in(client: AsyncClient, google: FakeGoogle) -> Response:
     params = await start_login(client, google)
-    return await client.get("/api/v1/auth/google/callback", params={"code": "auth-code", "state": params["state"]})
+    return await client.get(
+        "/api/v1/auth/google/callback",
+        params={"code": "auth-code", "state": params["state"]},
+    )
 
 
 def set_cookie_header(resp: Response, name: str) -> str:
-    return next(h for h in resp.headers.get_list("set-cookie") if h.startswith(f"{name}="))
+    return next(
+        h for h in resp.headers.get_list("set-cookie") if h.startswith(f"{name}=")
+    )
 
 
 class TestLogin:
-    async def test_redirects_to_google_with_pkce_state_and_nonce(self, client: AsyncClient, google, cache):
+    async def test_redirects_to_google_with_pkce_state_and_nonce(
+        self, client: AsyncClient, google, cache
+    ):
         resp = await client.get("/api/v1/auth/google/login")
 
         assert resp.status_code == 302
@@ -148,7 +165,9 @@ class TestLogin:
         assert params["prompt"] == "select_account"
         assert params["code_challenge"] and params["state"] and params["nonce"]
 
-    async def test_handshake_data_stays_server_side(self, client: AsyncClient, google, cache):
+    async def test_handshake_data_stays_server_side(
+        self, client: AsyncClient, google, cache
+    ):
         params = await start_login(client, google)
 
         # State, nonce, and PKCE verifier live in the cache...
@@ -167,7 +186,9 @@ class TestLogin:
 
 
 class TestCallback:
-    async def test_sign_in_opens_a_session(self, client: AsyncClient, db, google, cache):
+    async def test_sign_in_opens_a_session(
+        self, client: AsyncClient, db, google, cache
+    ):
         resp = await sign_in(client, google)
 
         assert resp.status_code == 303
@@ -233,7 +254,9 @@ class TestCallback:
         ],
         ids=["wrong-audience", "wrong-issuer", "wrong-nonce", "expired"],
     )
-    async def test_rejects_invalid_id_token(self, client: AsyncClient, db, google, overrides):
+    async def test_rejects_invalid_id_token(
+        self, client: AsyncClient, db, google, overrides
+    ):
         google.id_token_overrides = overrides
         resp = await sign_in(client, google)
 
@@ -243,16 +266,23 @@ class TestCallback:
 
     async def test_rejects_unknown_state(self, client: AsyncClient, db, google):
         await start_login(client, google)
-        resp = await client.get("/api/v1/auth/google/callback", params={"code": "c", "state": "forged"})
+        resp = await client.get(
+            "/api/v1/auth/google/callback", params={"code": "c", "state": "forged"}
+        )
 
         assert resp.headers["location"].endswith("?auth_error=failed")
         assert google.token_requests == []
 
-    async def test_rejects_callback_from_another_browser(self, client: AsyncClient, db, google):
-        """Login CSRF: a valid state is useless without the cookie of the browser that started the flow."""
+    async def test_rejects_callback_from_another_browser(
+        self, client: AsyncClient, db, google
+    ):
+        """Login CSRF: state alone is useless without the starting browser's cookie."""
         params = await start_login(client, google)
         client.cookies.clear()
-        resp = await client.get("/api/v1/auth/google/callback", params={"code": "c", "state": params["state"]})
+        resp = await client.get(
+            "/api/v1/auth/google/callback",
+            params={"code": "c", "state": params["state"]},
+        )
 
         assert resp.headers["location"].endswith("?auth_error=failed")
         assert google.token_requests == []
@@ -260,7 +290,8 @@ class TestCallback:
     async def test_user_cancelled(self, client: AsyncClient, db, google):
         params = await start_login(client, google)
         resp = await client.get(
-            "/api/v1/auth/google/callback", params={"error": "access_denied", "state": params["state"]}
+            "/api/v1/auth/google/callback",
+            params={"error": "access_denied", "state": params["state"]},
         )
         assert resp.headers["location"].endswith("?auth_error=access_denied")
 
@@ -283,7 +314,9 @@ class TestCallback:
 
         assert first != second
         async with db() as session:
-            hashes = (await session.execute(select(UserSession.token_hash))).scalars().all()
+            hashes = (
+                (await session.execute(select(UserSession.token_hash))).scalars().all()
+            )
         assert hashes == [hash_token(second)]
 
 
@@ -297,7 +330,9 @@ class TestSession:
         resp = await client.get("/api/v1/auth/me")
         assert resp.status_code == 401
 
-    async def test_logout_ends_the_session_server_side(self, client: AsyncClient, db, google):
+    async def test_logout_ends_the_session_server_side(
+        self, client: AsyncClient, db, google
+    ):
         await sign_in(client, google)
         token = client.cookies[SESSION_COOKIE]
 
@@ -311,10 +346,13 @@ class TestSession:
 
     async def test_idle_timeout(self, client: AsyncClient, db, google):
         await sign_in(client, google)
-        idle = timedelta(days=settings.SESSION_IDLE_TIMEOUT_DAYS)
         async with db() as session:
             await session.execute(
-                update(UserSession).values(last_seen_at=datetime.now(UTC) - idle - timedelta(minutes=1))
+                update(UserSession).values(
+                    last_seen_at=datetime.now(UTC)
+                    - SESSION_IDLE_TIMEOUT
+                    - timedelta(minutes=1)
+                )
             )
             await session.commit()
 
@@ -323,12 +361,18 @@ class TestSession:
     async def test_absolute_timeout(self, client: AsyncClient, db, google):
         await sign_in(client, google)
         async with db() as session:
-            await session.execute(update(UserSession).values(expires_at=datetime.now(UTC) - timedelta(minutes=1)))
+            await session.execute(
+                update(UserSession).values(
+                    expires_at=datetime.now(UTC) - timedelta(minutes=1)
+                )
+            )
             await session.commit()
 
         assert (await client.get("/api/v1/auth/me")).status_code == 401
 
-    async def test_activity_extends_the_idle_window(self, client: AsyncClient, db, google):
+    async def test_activity_extends_the_idle_window(
+        self, client: AsyncClient, db, google
+    ):
         await sign_in(client, google)
         an_hour_ago = datetime.now(UTC) - timedelta(hours=1)
         async with db() as session:
@@ -338,5 +382,7 @@ class TestSession:
         assert (await client.get("/api/v1/auth/me")).status_code == 200
 
         async with db() as session:
-            last_seen = (await session.execute(select(UserSession.last_seen_at))).scalar_one()
+            last_seen = (
+                await session.execute(select(UserSession.last_seen_at))
+            ).scalar_one()
         assert last_seen.replace(tzinfo=UTC) > an_hour_ago + timedelta(minutes=59)

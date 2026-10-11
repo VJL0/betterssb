@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pydantic import Field
+
 from app.shared.schemas.base import BaseSchema
 
 
@@ -42,7 +44,7 @@ class SchedulePreferences(BaseSchema):
 class GeneratedSchedule(BaseSchema):
     sections: list[Section]
     score: float
-    warnings: list[str] = []
+    warnings: list[str] = Field(default_factory=list)
 
 
 class GenerateRequest(BaseSchema):

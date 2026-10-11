@@ -73,7 +73,8 @@ async def get_session_user(
 ) -> User | None:
     """Return the session's user, or None if the session is unknown, expired, or idle.
 
-    Updates `last_seen_at` only once it's older than `touch_before`, so most requests don't write.
+    Updates `last_seen_at` only once it's older than `touch_before`, so most
+    requests don't write.
     """
     stale = UserSession.last_seen_at < touch_before
     stmt = (
@@ -92,7 +93,11 @@ async def get_session_user(
 
     user, session_id, is_stale = row
     if is_stale:
-        await db.execute(update(UserSession).where(UserSession.id == session_id).values(last_seen_at=now))
+        await db.execute(
+            update(UserSession)
+            .where(UserSession.id == session_id)
+            .values(last_seen_at=now)
+        )
         await db.commit()
     return user
 
