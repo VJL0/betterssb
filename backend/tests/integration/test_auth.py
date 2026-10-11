@@ -8,6 +8,7 @@ from __future__ import annotations
 import base64
 import json
 import time
+import uuid
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime, timedelta
 from urllib.parse import parse_qs, urlparse
@@ -190,7 +191,7 @@ class TestCallback:
         assert me.status_code == 200
         assert me.headers["cache-control"] == "no-store"
         user = me.json()
-        del user["id"]
+        assert uuid.UUID(user.pop("id")).version == 7
         assert user == {
             "email": "student@temple.edu",
             "name": "Test Student",

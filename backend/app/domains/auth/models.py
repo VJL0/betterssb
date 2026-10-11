@@ -12,7 +12,7 @@ from app.core.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid7)
     email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False, default="")
     picture_url: Mapped[str] = mapped_column(Text, nullable=False, default="")
@@ -46,15 +46,13 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
-    __table_args__ = (Index("ix_users_google_sub", "google_sub"),)
-
 
 class UserSession(Base):
     """A signed-in browser, looked up by the hash of its cookie token."""
 
     __tablename__ = "sessions"
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid7)
     user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
