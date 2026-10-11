@@ -11,7 +11,6 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.router import api_router
 from app.core.config import Settings
-from app.core.security import OAUTH_STATE_COOKIE, cookie_name
 from app.integrations.google.client import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
 
 logger = logging.getLogger(__name__)
@@ -24,11 +23,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         format="%(asctime)s %(levelname)-8s [%(name)s] %(message)s",
     )
     settings: Settings = app.state.settings
-    # Schema is managed by Alembic (`alembic upgrade head`), not at startup.
-    engine = create_async_engine(settings.DATABASE_URL, pool_size=10, max_overflow=20, pool_pre_ping=True)
+    engine = create_async_engine(settings.DATABASE_URL, pool_pre_ping=True)
     async with Redis.from_url(settings.REDIS_URL) as redis:
         app.state.session_factory = async_sessionmaker(engine, expire_on_commit=False)
-        app.state.google = GoogleOAuthClient(settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET, cache=redis)
+        app.state.google = GoogleOAuthClient(
+            settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET, cache=redis
+        )
         try:
             yield
         finally:
@@ -40,14 +40,16 @@ settings = Settings()  # Fail fast on missing or invalid config.
 app = FastAPI(title="BetterSSB API", version="0.1.0", lifespan=lifespan)
 app.state.settings = settings
 
-# Signed cookie for the OAuth handshake only. Signed-in sessions are server-side; see app/domains/auth.
+# Signed cookie for the OAuth handshake only. Signed-in sessions are server-side;
+# see app/domains/auth.
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.SESSION_SECRET,
-    session_cookie=cookie_name(OAUTH_STATE_COOKIE, settings.SESSION_COOKIE_SECURE),
+    session_cookie="__Host-Http-oauth",
     max_age=HANDSHAKE_TTL_SECONDS,
-    same_site="lax",  # Strict would drop it on the redirect back from Google.
-    https_only=settings.SESSION_COOKIE_SECURE,
+    path="/",
+    same_site="lax",
+    https_only=True,
 )
 
 app.include_router(api_router)

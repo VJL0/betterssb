@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.domains.schedule.schemas import GenerateRequest, GeneratedSchedule
+from app.domains.schedule.schemas import GeneratedSchedule, GenerateRequest
 from app.domains.schedule.service import ScheduleService
 
 router = APIRouter(prefix="/schedule", tags=["schedule"])

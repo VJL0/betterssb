@@ -106,10 +106,17 @@ class RMPClient:
         }
         try:
             async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(GRAPHQL_URL, json=payload, headers=self._headers)
+                resp = await client.post(
+                    GRAPHQL_URL, json=payload, headers=self._headers
+                )
                 resp.raise_for_status()
                 data = resp.json()
-            return data.get("data", {}).get("newSearch", {}).get("schools", {}).get("edges", [])
+            return (
+                data.get("data", {})
+                .get("newSearch", {})
+                .get("schools", {})
+                .get("edges", [])
+            )
         except Exception:
             logger.exception("RMP school search failed for %r", text)
             return []
@@ -121,10 +128,17 @@ class RMPClient:
         }
         try:
             async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(GRAPHQL_URL, json=payload, headers=self._headers)
+                resp = await client.post(
+                    GRAPHQL_URL, json=payload, headers=self._headers
+                )
                 resp.raise_for_status()
                 data = resp.json()
-            return data.get("data", {}).get("newSearch", {}).get("teachers", {}).get("edges", [])
+            return (
+                data.get("data", {})
+                .get("newSearch", {})
+                .get("teachers", {})
+                .get("edges", [])
+            )
         except Exception:
             logger.exception("RMP teacher search failed for %r", name)
             return []
@@ -136,7 +150,9 @@ class RMPClient:
         }
         try:
             async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(GRAPHQL_URL, json=payload, headers=self._headers)
+                resp = await client.post(
+                    GRAPHQL_URL, json=payload, headers=self._headers
+                )
                 resp.raise_for_status()
                 data = resp.json()
             return data.get("data", {}).get("node")

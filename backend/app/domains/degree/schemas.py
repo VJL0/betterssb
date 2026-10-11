@@ -3,6 +3,8 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Literal
 
+from pydantic import Field
+
 from app.shared.schemas.base import BaseSchema
 
 
@@ -49,8 +51,8 @@ class RequirementItem(BaseSchema):
     description: str = ""
     credits: float | None = None
     credits_range: str = ""
-    options: list[CourseOption] = []
-    footnotes: list[str] = []
+    options: list[CourseOption] = Field(default_factory=list)
+    footnotes: list[str] = Field(default_factory=list)
 
 
 class RequirementGroup(BaseSchema):
@@ -62,7 +64,7 @@ class RequirementGroup(BaseSchema):
 
     name: str
     items: list[RequirementItem]
-    constraints: list[str] = []
+    constraints: list[str] = Field(default_factory=list)
 
 
 class RequirementCategory(BaseSchema):
@@ -77,8 +79,8 @@ class RequirementCategory(BaseSchema):
     name: str
     total_credits: str = ""
     description: str = ""
-    groups: list[RequirementGroup] = []
-    notes: list[str] = []
+    groups: list[RequirementGroup] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
 
 
 class LabScienceSequence(BaseSchema):
@@ -91,9 +93,9 @@ class LabScienceSequence(BaseSchema):
     department: str
     science_a_label: str = "Lab Science A"
     science_b_label: str = "Lab Science B"
-    science_a_options: list[CourseOption] = []
-    science_b_options: list[CourseOption] = []
-    footnotes: list[str] = []
+    science_a_options: list[CourseOption] = Field(default_factory=list)
+    science_b_options: list[CourseOption] = Field(default_factory=list)
+    footnotes: list[str] = Field(default_factory=list)
 
 
 class PlanCourse(BaseSchema):
@@ -122,7 +124,7 @@ class SuggestedPlan(BaseSchema):
 
     years: list[PlanYear]
     total_credits: str = ""
-    footnotes: list[str] = []
+    footnotes: list[str] = Field(default_factory=list)
 
 
 class DegreeProgram(BaseSchema):
@@ -138,8 +140,8 @@ class DegreeProgram(BaseSchema):
     bulletin_url: str = ""
     bulletin_year: str = ""
     total_credits: str = ""
-    categories: list[RequirementCategory] = []
-    lab_science_sequences: list[LabScienceSequence] = []
+    categories: list[RequirementCategory] = Field(default_factory=list)
+    lab_science_sequences: list[LabScienceSequence] = Field(default_factory=list)
     suggested_plan: SuggestedPlan | None = None
-    distinction_criteria: list[str] = []
-    footnotes: list[str] = []
+    distinction_criteria: list[str] = Field(default_factory=list)
+    footnotes: list[str] = Field(default_factory=list)

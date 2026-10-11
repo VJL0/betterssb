@@ -127,7 +127,12 @@ class TestDarsRoutes:
         assert resp.status_code == 200
         data = resp.json()
         assert data["programCode"] == "ST-CSCI-BS"
-        assert [r["code"] for r in data["requirements"]] == ["WARNING", "GENED-GW", "CISS.TBS", "CAS-ULS"]
+        assert [r["code"] for r in data["requirements"]] == [
+            "WARNING",
+            "GENED-GW",
+            "CISS.TBS",
+            "CAS-ULS",
+        ]
 
     async def test_parse_rejects_non_audit_html(self, client: AsyncClient):
         resp = await client.post(

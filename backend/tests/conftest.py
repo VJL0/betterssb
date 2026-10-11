@@ -24,7 +24,9 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 @pytest.fixture()
 async def client():
     # HTTPS, or httpx won't send Secure cookies.
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="https://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="https://test"
+    ) as ac:
         yield ac
 
 
@@ -47,10 +49,38 @@ def dars_audit_html() -> str:
 def sample_sections() -> list[Section]:
     """Two courses, two sections each — no inherent conflicts."""
     return [
-        Section(crn="10001", course_id="CIS1068", instructor="Smith", days="MWF", start_time="09:00", end_time="09:50"),
-        Section(crn="10002", course_id="CIS1068", instructor="Jones", days="TR", start_time="11:00", end_time="12:15"),
-        Section(crn="20001", course_id="MATH1041", instructor="Doe", days="MWF", start_time="10:00", end_time="10:50"),
-        Section(crn="20002", course_id="MATH1041", instructor="Lee", days="TR", start_time="14:00", end_time="15:15"),
+        Section(
+            crn="10001",
+            course_id="CIS1068",
+            instructor="Smith",
+            days="MWF",
+            start_time="09:00",
+            end_time="09:50",
+        ),
+        Section(
+            crn="10002",
+            course_id="CIS1068",
+            instructor="Jones",
+            days="TR",
+            start_time="11:00",
+            end_time="12:15",
+        ),
+        Section(
+            crn="20001",
+            course_id="MATH1041",
+            instructor="Doe",
+            days="MWF",
+            start_time="10:00",
+            end_time="10:50",
+        ),
+        Section(
+            crn="20002",
+            course_id="MATH1041",
+            instructor="Lee",
+            days="TR",
+            start_time="14:00",
+            end_time="15:15",
+        ),
     ]
 
 
@@ -58,8 +88,22 @@ def sample_sections() -> list[Section]:
 def conflicting_sections() -> list[Section]:
     """Two courses whose only sections overlap on MWF 09:00-09:50."""
     return [
-        Section(crn="30001", course_id="CIS2168", instructor="Alpha", days="MWF", start_time="09:00", end_time="09:50"),
-        Section(crn="40001", course_id="CIS2107", instructor="Beta", days="MWF", start_time="09:30", end_time="10:20"),
+        Section(
+            crn="30001",
+            course_id="CIS2168",
+            instructor="Alpha",
+            days="MWF",
+            start_time="09:00",
+            end_time="09:50",
+        ),
+        Section(
+            crn="40001",
+            course_id="CIS2107",
+            instructor="Beta",
+            days="MWF",
+            start_time="09:30",
+            end_time="10:20",
+        ),
     ]
 
 

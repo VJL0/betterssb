@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import secrets
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import Settings
-from app.core.security import generate_session_token, hash_token
+from app.core.security import hash_token
 from app.domains.auth import repository as auth_repo
 from app.domains.auth.models import User
 
+SESSION_IDLE_TIMEOUT = timedelta(days=7)
+SESSION_ABSOLUTE_TIMEOUT = timedelta(days=30)
 # Refresh `last_seen_at` at most this often, so most requests don't write.
 SESSION_TOUCH_INTERVAL = timedelta(minutes=5)
 
@@ -18,9 +20,6 @@ class InactiveUserError(Exception):
 
 
 class AuthService:
-    def __init__(self, settings: Settings) -> None:
-        self._settings = settings
-
     async def start_session(
         self,
         db: AsyncSession,
@@ -44,14 +43,14 @@ class AuthService:
         if not user.is_active:
             raise InactiveUserError(str(user.id))
 
-        raw_token, token_hash = generate_session_token()
+        raw_token = secrets.token_urlsafe(32)
         now = datetime.now(UTC)
         await auth_repo.create_session(
             db,
             user_id=user.id,
-            token_hash=token_hash,
+            token_hash=hash_token(raw_token),
             last_seen_at=now,
-            expires_at=now + timedelta(days=self._settings.SESSION_ABSOLUTE_TIMEOUT_DAYS),
+            expires_at=now + SESSION_ABSOLUTE_TIMEOUT,
             user_agent=user_agent,
             ip_address=ip_address,
         )
@@ -64,7 +63,7 @@ class AuthService:
             db,
             hash_token(raw_token),
             now=now,
-            idle_since=now - timedelta(days=self._settings.SESSION_IDLE_TIMEOUT_DAYS),
+            idle_since=now - SESSION_IDLE_TIMEOUT,
             touch_before=now - SESSION_TOUCH_INTERVAL,
         )
 

@@ -16,20 +16,41 @@ from app.domains.degree.schemas import (
     SuggestedPlan,
 )
 from app.domains.rmp.schemas import RMPRating
-from app.domains.schedule.schemas import Course, GeneratedSchedule, Professor, SchedulePreferences, Section
-from app.domains.transcript.schemas import DegreeRequirement, TranscriptCourse, TranscriptData
+from app.domains.schedule.schemas import (
+    Course,
+    GeneratedSchedule,
+    Professor,
+    SchedulePreferences,
+    Section,
+)
+from app.domains.transcript.schemas import (
+    DegreeRequirement,
+    TranscriptCourse,
+    TranscriptData,
+)
 
 
 class TestCourseModels:
     def test_course_creation(self):
-        c = Course(id="CIS1068", subject="CIS", course_number="1068", title="Program Design", credits=4.0)
+        c = Course(
+            id="CIS1068",
+            subject="CIS",
+            course_number="1068",
+            title="Program Design",
+            credits=4.0,
+        )
         assert c.subject == "CIS"
         assert c.credits == 4.0
         assert c.description == ""
 
     def test_section_defaults(self):
         s = Section(
-            crn="10001", course_id="CIS1068", instructor="Smith", days="MWF", start_time="09:00", end_time="09:50"
+            crn="10001",
+            course_id="CIS1068",
+            instructor="Smith",
+            days="MWF",
+            start_time="09:00",
+            end_time="09:50",
         )
         assert s.seats_available == 0
         assert s.location == ""
@@ -44,7 +65,12 @@ class TestCourseModels:
 
 class TestRMPRating:
     def test_rating_with_defaults(self):
-        r = RMPRating(professor_name="Test Prof", overall_rating=4.5, difficulty=2.0, num_ratings=50)
+        r = RMPRating(
+            professor_name="Test Prof",
+            overall_rating=4.5,
+            difficulty=2.0,
+            num_ratings=50,
+        )
         assert r.would_take_again_pct is None
         assert r.top_tags == []
         assert r.rmp_url == ""
@@ -75,7 +101,12 @@ class TestScheduleModels:
 
     def test_generated_schedule(self):
         sec = Section(
-            crn="10001", course_id="CIS1068", instructor="X", days="MWF", start_time="09:00", end_time="09:50"
+            crn="10001",
+            course_id="CIS1068",
+            instructor="X",
+            days="MWF",
+            start_time="09:00",
+            end_time="09:50",
         )
         gs = GeneratedSchedule(sections=[sec], score=95.0)
         assert len(gs.sections) == 1
@@ -136,8 +167,14 @@ class TestDegreeModels:
             selection_type=SelectionType.SELECT_ONE,
             description="Select one introductory course",
             options=[
-                CourseOption(courses=[CourseRef(subject="CIS", number="1051", title="Intro to IT")]),
-                CourseOption(courses=[CourseRef(subject="CIS", number="1057", title="Intro C++")]),
+                CourseOption(
+                    courses=[
+                        CourseRef(subject="CIS", number="1051", title="Intro to IT")
+                    ]
+                ),
+                CourseOption(
+                    courses=[CourseRef(subject="CIS", number="1057", title="Intro C++")]
+                ),
             ],
         )
         assert len(item.options) == 2
@@ -155,7 +192,11 @@ class TestDegreeModels:
     def test_lab_science_sequence(self):
         seq = LabScienceSequence(
             department="Biology",
-            science_a_options=[CourseOption(courses=[CourseRef(subject="BIOL", number="1011", title="Bio I")])],
+            science_a_options=[
+                CourseOption(
+                    courses=[CourseRef(subject="BIOL", number="1011", title="Bio I")]
+                )
+            ],
         )
         assert seq.science_a_label == "Lab Science A"
         assert len(seq.science_a_options) == 1

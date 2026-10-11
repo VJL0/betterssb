@@ -65,7 +65,22 @@ class TranscriptService:
             Mapping of each required course to whether it was completed with a
             passing grade.
         """
-        passing_grades = {"A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "P", "S"}
+        passing_grades = {
+            "A+",
+            "A",
+            "A-",
+            "B+",
+            "B",
+            "B-",
+            "C+",
+            "C",
+            "C-",
+            "D+",
+            "D",
+            "D-",
+            "P",
+            "S",
+        }
 
         completed_set: set[str] = set()
         for course in completed:

@@ -28,10 +28,6 @@ class Settings(DatabaseSettings):
     # Sessions
     # Signs the OAuth handshake cookie.
     SESSION_SECRET: str = Field(min_length=32)
-    SESSION_IDLE_TIMEOUT_DAYS: int = 7
-    SESSION_ABSOLUTE_TIMEOUT_DAYS: int = 30
-    # Browsers treat http://localhost as secure, so leave this on in dev too.
-    SESSION_COOKIE_SECURE: bool = True
 
     # External services
     OPENAI_API_KEY: str = ""

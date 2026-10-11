@@ -47,7 +47,9 @@ def _full_url(href: str) -> str:
     return href if href.startswith("http") else f"{BULLETIN_BASE}{href}"
 
 
-def _ref_from_link(tag: Tag, title_text: str = "", credits: float | None = None) -> CourseRef:
+def _ref_from_link(
+    tag: Tag, title_text: str = "", credits: float | None = None
+) -> CourseRef:
     title_attr = tag.get("title", "")
     href = tag.get("href", "")
     parts = _extract_course_code(title_attr)
@@ -68,15 +70,15 @@ def _ref_from_link(tag: Tag, title_text: str = "", credits: float | None = None)
 
 class _TableRow:
     __slots__ = (
-        "is_area_header",
-        "is_orclass",
-        "is_comment",
-        "is_total",
         "code_text",
-        "title_text",
         "credits_text",
-        "links",
         "indented",
+        "is_area_header",
+        "is_comment",
+        "is_orclass",
+        "is_total",
+        "links",
+        "title_text",
     )
 
     def __init__(self) -> None:
@@ -162,10 +164,17 @@ def _build_groups(rows: list[_TableRow]) -> list[RequirementGroup]:
         # --- or-class alternative ---
         if row.is_orclass and row.links:
             target = pending or (current.items[-1] if current.items else None)
-            if target and target.selection_type in (SelectionType.REQUIRED, SelectionType.SELECT_ONE):
+            if target and target.selection_type in (
+                SelectionType.REQUIRED,
+                SelectionType.SELECT_ONE,
+            ):
                 target.selection_type = SelectionType.SELECT_ONE
                 ref = _ref_from_link(row.links[0], title)
-                target.options.append(CourseOption(courses=[ref], is_honors_variant="honors" in title.lower()))
+                target.options.append(
+                    CourseOption(
+                        courses=[ref], is_honors_variant="honors" in title.lower()
+                    )
+                )
             continue
 
         # --- comment row (selection instruction) ---
@@ -173,12 +182,17 @@ def _build_groups(rows: list[_TableRow]) -> list[RequirementGroup]:
             _flush_pending()
             comment = title or code
             if "select" in comment.lower():
-                sel = SelectionType.SELECT_N if "credit" in comment.lower() else SelectionType.SELECT_ONE
+                sel = (
+                    SelectionType.SELECT_N
+                    if "credit" in comment.lower()
+                    else SelectionType.SELECT_ONE
+                )
                 pending = RequirementItem(
                     selection_type=sel,
                     description=comment,
                     credits=credits,
-                    credits_range=credits_range or (row.credits_text.strip() if credits else ""),
+                    credits_range=credits_range
+                    or (row.credits_text.strip() if credits else ""),
                 )
             continue
 
@@ -206,7 +220,9 @@ def _build_groups(rows: list[_TableRow]) -> list[RequirementGroup]:
     return groups
 
 
-def _option_from_links(links: list[Tag], title_text: str, credits: float | None) -> CourseOption:
+def _option_from_links(
+    links: list[Tag], title_text: str, credits: float | None
+) -> CourseOption:
     if len(links) > 1:
         refs = [_ref_from_link(a, "") for a in links]
         for ref in refs:
@@ -215,7 +231,9 @@ def _option_from_links(links: list[Tag], title_text: str, credits: float | None)
         return CourseOption(courses=refs)
 
     ref = _ref_from_link(links[0], title_text, credits)
-    ref.writing_intensive = "(wi)" in title_text.lower() or "writing" in title_text.lower()
+    ref.writing_intensive = (
+        "(wi)" in title_text.lower() or "writing" in title_text.lower()
+    )
     return CourseOption(courses=[ref], is_honors_variant="honors" in title_text.lower())
 
 
@@ -237,7 +255,8 @@ def _parse_lab_sequences(rows: list[_TableRow]) -> list[LabScienceSequence]:
 
         if row.is_area_header and not row.links:
             if "sequence" in lower or (
-                any(d in lower for d in ("biology", "chemistry", "physics", "earth")) and "select" not in lower
+                any(d in lower for d in ("biology", "chemistry", "physics", "earth"))
+                and "select" not in lower
             ):
                 if current:
                     sequences.append(current)
@@ -339,12 +358,19 @@ def _classify_tables(tables: list[Tag]) -> tuple[Tag | None, Tag | None, Tag | N
     wi: Tag | None = None
 
     for t in tables:
-        headers = [_clean(span.get_text()) for span in t.find_all("span", class_="areaheader")]
+        headers = [
+            _clean(span.get_text()) for span in t.find_all("span", class_="areaheader")
+        ]
         joined = " ".join(headers).lower()
 
-        if any(kw in joined for kw in ("computer", "mathematics", "elective", "science course")):
+        if any(
+            kw in joined
+            for kw in ("computer", "mathematics", "elective", "science course")
+        ):
             main = t
-        elif any(kw in joined for kw in ("sequence", "biology", "chemistry", "physics")):
+        elif any(
+            kw in joined for kw in ("sequence", "biology", "chemistry", "physics")
+        ):
             lab = t
         elif wi is None:
             wi = t

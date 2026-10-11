@@ -6,7 +6,14 @@ import re
 
 from bs4 import BeautifulSoup, Tag
 
-from app.domains.dars.schemas import Audit, AuditCourse, AuditStatus, Progress, Requirement, SubRequirement
+from app.domains.dars.schemas import (
+    Audit,
+    AuditCourse,
+    AuditStatus,
+    Progress,
+    Requirement,
+    SubRequirement,
+)
 
 _STATUS_CLASSES: dict[str, AuditStatus] = {
     "Status_OK": "complete",
@@ -35,19 +42,32 @@ def parse_audit(html: str) -> Audit:
         catalog_year=header.get("Catalog Year", ""),
         prepared_on=header.get("Prepared On", ""),
         complete=complete,
-        requirements=[_requirement(el) for el in soup.select("#auditRequirements .requirement")],
+        requirements=[
+            _requirement(el) for el in soup.select("#auditRequirements .requirement")
+        ],
     )
 
 
 def _header_fields(soup: BeautifulSoup) -> dict[str, str]:
     labels = soup.select(".auditHeader .auditHeaderEntryLabel")
     values = soup.select(".auditHeader .auditHeaderEntry")
-    return {_text(label): _text(value) for label, value in zip(labels, values, strict=False) if _text(label)}
+    return {
+        _text(label): _text(value)
+        for label, value in zip(labels, values, strict=False)
+        if _text(label)
+    }
 
 
 def _requirement(el: Tag) -> Requirement:
     code = (el.get("rname") or "").strip()
-    category = next((c.removeprefix("category_") for c in el.get("class", []) if c.startswith("category_")), "")
+    category = next(
+        (
+            c.removeprefix("category_")
+            for c in el.get("class", [])
+            if c.startswith("category_")
+        ),
+        "",
+    )
     totals = el.select_one(".requirementTotals")
     return Requirement(
         code=code,
@@ -58,13 +78,17 @@ def _requirement(el: Tag) -> Requirement:
         earned=_progress(totals.select_one("tr.reqEarned")) if totals else None,
         in_progress=_progress(totals.select_one("tr.reqIpDetail")) if totals else None,
         needs=_progress(totals.select_one("tr.reqNeeds")) if totals else None,
-        subrequirements=[_subrequirement(sub, _status(el)) for sub in el.select(".subrequirement")],
+        subrequirements=[
+            _subrequirement(sub, _status(el)) for sub in el.select(".subrequirement")
+        ],
     )
 
 
 def _subrequirement(el: Tag, parent_status: AuditStatus) -> SubRequirement:
     status_el = el.select_one(".subreqPretext .status")
-    has_own_status = status_el is not None and any(c.startswith("Status_") for c in status_el.get("class", []))
+    has_own_status = status_el is not None and any(
+        c.startswith("Status_") for c in status_el.get("class", [])
+    )
     totals = el.select_one(".subrequirementTotals")
     return SubRequirement(
         number=_text(el.select_one(".subreqNumber")).rstrip(")"),
@@ -72,7 +96,9 @@ def _subrequirement(el: Tag, parent_status: AuditStatus) -> SubRequirement:
         # Single, untitled sub-requirements carry no status of their own; they mirror the requirement.
         status=_status(status_el) if has_own_status else parent_status,
         earned=_progress(totals.select_one("tr.subreqEarned")) if totals else None,
-        in_progress=_progress(totals.select_one("tr.subreqIpHours")) if totals else None,
+        in_progress=_progress(totals.select_one("tr.subreqIpHours"))
+        if totals
+        else None,
         needs=_progress(el.select_one(".subreqNeeds")),
         courses=[_course(row) for row in el.select("tr.takenCourse")],
         select_from=_select_from(el),
