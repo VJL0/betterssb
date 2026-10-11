@@ -3,14 +3,10 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import select
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.auth.models import RefreshToken, User
-
-
-async def get_user_by_id(db: AsyncSession, user_id: uuid.UUID) -> User | None:
-    return await db.get(User, user_id)
+from app.domains.auth.models import User, UserSession
 
 
 async def get_user_by_google_sub(db: AsyncSession, google_sub: str) -> User | None:
@@ -44,41 +40,63 @@ async def upsert_user(db: AsyncSession, claims: dict) -> User:
     return user
 
 
-async def create_refresh_token(
+async def create_session(
     db: AsyncSession,
     *,
     user_id: uuid.UUID,
     token_hash: str,
+    last_seen_at: datetime,
     expires_at: datetime,
-    device_info: str = "",
+    user_agent: str = "",
     ip_address: str = "",
-) -> RefreshToken:
-    rt = RefreshToken(
+) -> UserSession:
+    session = UserSession(
         user_id=user_id,
         token_hash=token_hash,
+        last_seen_at=last_seen_at,
         expires_at=expires_at,
-        device_info=device_info,
+        user_agent=user_agent,
         ip_address=ip_address,
     )
-    db.add(rt)
+    db.add(session)
     await db.commit()
-    return rt
+    return session
 
 
-async def get_valid_refresh_token(db: AsyncSession, token_hash: str) -> RefreshToken | None:
-    stmt = select(RefreshToken).where(
-        RefreshToken.token_hash == token_hash,
-        RefreshToken.revoked.is_(False),
-        RefreshToken.expires_at > datetime.now(UTC),
+async def get_session_user(
+    db: AsyncSession,
+    token_hash: str,
+    *,
+    now: datetime,
+    idle_since: datetime,
+    touch_before: datetime,
+) -> User | None:
+    """Return the session's user, or None if the session is unknown, expired, or idle.
+
+    Updates `last_seen_at` only once it's older than `touch_before`, so most requests don't write.
+    """
+    stale = UserSession.last_seen_at < touch_before
+    stmt = (
+        select(User, UserSession.id, stale)
+        .join(UserSession.user)
+        .where(
+            UserSession.token_hash == token_hash,
+            UserSession.expires_at > now,
+            UserSession.last_seen_at > idle_since,
+            User.is_active.is_(True),
+        )
     )
-    result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    row = (await db.execute(stmt)).one_or_none()
+    if row is None:
+        return None
 
-
-async def revoke_refresh_token(db: AsyncSession, token_hash: str) -> None:
-    stmt = select(RefreshToken).where(RefreshToken.token_hash == token_hash)
-    result = await db.execute(stmt)
-    rt = result.scalar_one_or_none()
-    if rt:
-        rt.revoked = True
+    user, session_id, is_stale = row
+    if is_stale:
+        await db.execute(update(UserSession).where(UserSession.id == session_id).values(last_seen_at=now))
         await db.commit()
+    return user
+
+
+async def delete_session(db: AsyncSession, token_hash: str) -> None:
+    await db.execute(delete(UserSession).where(UserSession.token_hash == token_hash))
+    await db.commit()

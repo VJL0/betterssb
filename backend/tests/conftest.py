@@ -8,7 +8,9 @@ os.environ.setdefault(
     "DATABASE_URL",
     "sqlite+aiosqlite:///",
 )
-os.environ.setdefault("JWT_SECRET", "test-secret-key-for-tests-at-least-32-bytes")
+os.environ.setdefault("SESSION_SECRET", "test-secret-key-for-tests-at-least-32-bytes")
+os.environ.setdefault("GOOGLE_CLIENT_ID", "test-client-id.apps.googleusercontent.com")
+os.environ.setdefault("GOOGLE_CLIENT_SECRET", "test-client-secret")
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -21,7 +23,8 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 @pytest.fixture()
 async def client():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    # HTTPS, or httpx won't send Secure cookies.
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="https://test") as ac:
         yield ac
 
 

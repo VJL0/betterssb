@@ -12,7 +12,7 @@ from app.core.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid7)
     email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False, default="")
     picture_url: Mapped[str] = mapped_column(Text, nullable=False, default="")
@@ -41,47 +41,51 @@ class User(Base):
         nullable=True,
     )
 
-    refresh_tokens: Mapped[list[RefreshToken]] = relationship(
+    sessions: Mapped[list[UserSession]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
     )
 
-    __table_args__ = (Index("ix_users_google_sub", "google_sub"),)
 
+class UserSession(Base):
+    """A signed-in browser, looked up by the hash of its cookie token."""
 
-class RefreshToken(Base):
-    __tablename__ = "refresh_tokens"
+    __tablename__ = "sessions"
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid7)
     user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
     )
     token_hash: Mapped[str] = mapped_column(
-        String(128),
+        String(64),
         unique=True,
         nullable=False,
-        comment="SHA-256 hash of the raw refresh token",
+        comment="SHA-256 hash of the raw session token",
     )
-    expires_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-    )
-    revoked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-
-    device_info: Mapped[str] = mapped_column(Text, nullable=False, default="")
-    ip_address: Mapped[str] = mapped_column(String(45), nullable=False, default="")
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
         server_default=func.now(),
     )
+    last_seen_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        comment="Last activity, for the idle timeout",
+    )
+    expires_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        comment="Absolute expiry, set at sign-in",
+    )
 
-    user: Mapped[User] = relationship(back_populates="refresh_tokens")
+    user_agent: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    ip_address: Mapped[str] = mapped_column(String(45), nullable=False, default="")
+
+    user: Mapped[User] = relationship(back_populates="sessions")
 
     __table_args__ = (
-        Index("ix_refresh_tokens_user_id", "user_id"),
-        Index("ix_refresh_tokens_token_hash", "token_hash"),
-        Index("ix_refresh_tokens_expires_at", "expires_at"),
+        Index("ix_sessions_user_id", "user_id"),
+        Index("ix_sessions_expires_at", "expires_at"),
     )

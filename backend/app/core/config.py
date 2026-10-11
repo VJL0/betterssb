@@ -15,14 +15,23 @@ class DatabaseSettings(BaseSettings):
 class Settings(DatabaseSettings):
     """Application-wide configuration loaded from environment / .env file."""
 
-    # Auth
-    GOOGLE_CLIENT_ID: str = ""
-    GOOGLE_CLIENT_SECRET: str = ""
-    # Required, no default: the app refuses to start with a missing or weak key.
-    JWT_SECRET: str = Field(min_length=32)
-    JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+    REDIS_URL: str = "redis://localhost:6379/0"
+
+    # Google sign-in
+    GOOGLE_CLIENT_ID: str = Field(min_length=1)
+    GOOGLE_CLIENT_SECRET: str = Field(min_length=1)
+    # Must exactly match an authorized redirect URI on the Google OAuth client.
+    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/google/callback"
+    # Where the browser goes after sign-in.
+    FRONTEND_URL: str = "http://localhost:5173"
+
+    # Sessions
+    # Signs the OAuth handshake cookie.
+    SESSION_SECRET: str = Field(min_length=32)
+    SESSION_IDLE_TIMEOUT_DAYS: int = 7
+    SESSION_ABSOLUTE_TIMEOUT_DAYS: int = 30
+    # Browsers treat http://localhost as secure, so leave this on in dev too.
+    SESSION_COOKIE_SECURE: bool = True
 
     # External services
     OPENAI_API_KEY: str = ""
