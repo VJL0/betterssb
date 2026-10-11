@@ -27,8 +27,3 @@ class Settings(DatabaseSettings):
     # External services
     OPENAI_API_KEY: str = ""
     RMP_AUTH_TOKEN: str = ""
-
-    # Server. Origins are matched exactly; the regex is for local dev, where an
-    # unpacked extension's ID isn't known ahead of time.
-    CORS_ORIGINS: list[str] = []
-    CORS_ORIGIN_REGEX: str | None = None

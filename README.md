@@ -140,11 +140,11 @@ GOOGLE_CLIENT_SECRET=...       # Matching secret
 JWT_SECRET=...                 # Required, 32+ chars: openssl rand -hex 32
 OPENAI_API_KEY=sk-...          # Required for chatbot
 RMP_AUTH_TOKEN=...              # Rate My Professor auth (optional, has fallback)
-CORS_ORIGINS=[...]             # Exact allowed origins (extension + web app)
-CORS_ORIGIN_REGEX=...          # Local dev only — see .env.example
 ```
 
-The API won't start without a valid `JWT_SECRET`. In production, list the published extension's `chrome-extension://<id>` origin and the web app's origin in `CORS_ORIGINS`, and leave `CORS_ORIGIN_REGEX` unset.
+The API won't start without a valid `JWT_SECRET`.
+
+The API has no CORS. The web app calls it same-origin at `/api` (Vite proxies it in dev; in production serve both from one domain with `/api` routed to the backend). The extension gets the API host in its `host_permissions`, which lets it call the API without CORS.
 
 The extension reads its config at build time. Copy `extension/.env.example` to `extension/.env` (or `.env.production` for release builds):
 
