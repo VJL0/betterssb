@@ -19,7 +19,11 @@ def _build_rmp_rating(node: dict) -> RMPRating:
         difficulty=node.get("avgDifficulty", 0.0),
         num_ratings=node.get("numRatings", 0),
         top_tags=[t["tagName"] for t in top_tags[:5]],
-        rmp_url=(f"https://www.ratemyprofessors.com/professor/{legacy_id}" if legacy_id else ""),
+        rmp_url=(
+            f"https://www.ratemyprofessors.com/professor/{legacy_id}"
+            if legacy_id
+            else ""
+        ),
     )
 
 

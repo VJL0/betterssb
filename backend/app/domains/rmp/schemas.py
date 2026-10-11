@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pydantic import Field
+
 from app.shared.schemas.base import BaseSchema
 
 
@@ -10,7 +12,7 @@ class RMPRating(BaseSchema):
     would_take_again_pct: float | None = None
     difficulty: float
     num_ratings: int
-    top_tags: list[str] = []
+    top_tags: list[str] = Field(default_factory=list)
     rmp_url: str = ""
 
 

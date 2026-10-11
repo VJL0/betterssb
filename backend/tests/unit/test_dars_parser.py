@@ -27,7 +27,12 @@ class TestAuditHeader:
         assert audit.complete is False
 
     def test_requirements_in_page_order(self, audit):
-        assert [r.code for r in audit.requirements] == ["WARNING", "GENED-GW", "CISS.TBS", "CAS-ULS"]
+        assert [r.code for r in audit.requirements] == [
+            "WARNING",
+            "GENED-GW",
+            "CISS.TBS",
+            "CAS-ULS",
+        ]
 
 
 class TestRequirements:
@@ -35,11 +40,20 @@ class TestRequirements:
         warning = _req(audit, "WARNING")
         assert warning.status == "none"
         assert warning.title == ""
-        assert warning.notes == ["W A R N I N G", "THE DARS ANALYSIS IS NOT DEFINITIVE."]
+        assert warning.notes == [
+            "W A R N I N G",
+            "THE DARS ANALYSIS IS NOT DEFINITIVE.",
+        ]
 
     def test_title_drops_code_prefix(self, audit):
-        assert _req(audit, "GENED-GW").title == "GENED REQUIREMENT FOR ANALYTIC READ AND WRITING"
-        assert _req(audit, "CISS.TBS").title == "COMPUTER SCIENCE MAJOR REQUIREMENTS - B.S."
+        assert (
+            _req(audit, "GENED-GW").title
+            == "GENED REQUIREMENT FOR ANALYTIC READ AND WRITING"
+        )
+        assert (
+            _req(audit, "CISS.TBS").title
+            == "COMPUTER SCIENCE MAJOR REQUIREMENTS - B.S."
+        )
 
     def test_status_and_category(self, audit):
         gw = _req(audit, "GENED-GW")

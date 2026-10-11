@@ -37,7 +37,9 @@ def _sections_on_day(sections: list[Section], day: str) -> list[Section]:
     )
 
 
-def _score_schedule(sections: list[Section], prefs: SchedulePreferences) -> tuple[float, list[str]]:
+def _score_schedule(
+    sections: list[Section], prefs: SchedulePreferences
+) -> tuple[float, list[str]]:
     """Score a schedule from 0-100 based on how well it matches preferences."""
     score = 100.0
     warnings: list[str] = []

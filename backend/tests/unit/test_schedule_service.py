@@ -30,7 +30,14 @@ class TestParseTime:
 class TestTimesOverlap:
     @staticmethod
     def _sec(days: str, start: str, end: str) -> Section:
-        return Section(crn="X", course_id="X", instructor="X", days=days, start_time=start, end_time=end)
+        return Section(
+            crn="X",
+            course_id="X",
+            instructor="X",
+            days=days,
+            start_time=start,
+            end_time=end,
+        )
 
     def test_no_overlap_different_days(self):
         a = self._sec("MWF", "09:00", "09:50")
@@ -56,7 +63,14 @@ class TestTimesOverlap:
 class TestHasConflict:
     @staticmethod
     def _sec(days: str, start: str, end: str) -> Section:
-        return Section(crn="X", course_id="X", instructor="X", days=days, start_time=start, end_time=end)
+        return Section(
+            crn="X",
+            course_id="X",
+            instructor="X",
+            days=days,
+            start_time=start,
+            end_time=end,
+        )
 
     def test_no_conflict(self):
         combo = (
@@ -79,7 +93,14 @@ class TestHasConflict:
 class TestScoreSchedule:
     @staticmethod
     def _sec(crn: str, days: str, start: str, end: str) -> Section:
-        return Section(crn=crn, course_id="X", instructor="X", days=days, start_time=start, end_time=end)
+        return Section(
+            crn=crn,
+            course_id="X",
+            instructor="X",
+            days=days,
+            start_time=start,
+            end_time=end,
+        )
 
     def test_perfect_score(self):
         prefs = SchedulePreferences(earliest_time="09:00", latest_time="17:00")
@@ -172,7 +193,12 @@ class TestScheduleService:
     def test_single_course_single_section(self, default_prefs):
         svc = ScheduleService()
         sec = Section(
-            crn="99", course_id="CIS9999", instructor="Solo", days="MWF", start_time="12:00", end_time="12:50"
+            crn="99",
+            course_id="CIS9999",
+            instructor="Solo",
+            days="MWF",
+            start_time="12:00",
+            end_time="12:50",
         )
         results = svc.generate_schedules([sec], default_prefs)
         assert len(results) == 1

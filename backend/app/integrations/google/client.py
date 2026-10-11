@@ -8,7 +8,6 @@ from joserfc.errors import JoseError
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 # Google issues both; its discovery document lists only the first.
 GOOGLE_ISSUERS = ["https://accounts.google.com", "accounts.google.com"]
 # Time allowed to finish signing in at Google.
@@ -26,31 +25,38 @@ class GoogleAuthError(Exception):
 class GoogleOAuthClient:
     """Google sign-in through Authlib, using PKCE, state, and nonce.
 
-    State, nonce, and the PKCE verifier are kept in `cache`. The session cookie only holds
-    a marker that ties the callback to the browser that started sign-in.
+    State, nonce, and the PKCE verifier are kept in `cache`. The session cookie
+    only holds a marker that ties the callback to the browser that started sign-in.
     """
 
     def __init__(self, client_id: str, client_secret: str, cache: Any) -> None:
-        oauth = OAuth(cache=cache)
-        self._app = oauth.register(
+        self._app = OAuth(cache=cache).register(
             "google",
             client_id=client_id,
             client_secret=client_secret,
-            server_metadata_url=GOOGLE_DISCOVERY_URL,
-            client_kwargs={"scope": "openid email profile", "code_challenge_method": "S256"},
+            server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+            client_kwargs={
+                "scope": "openid email profile",
+                "code_challenge_method": "S256",
+            },
         )
-        # Expire cached state with the handshake cookie instead of after Authlib's default hour.
+        # Expire cached state with the handshake cookie, not Authlib's default hour.
         self._app.framework.expires_in = HANDSHAKE_TTL_SECONDS
 
-    async def authorize_redirect(self, request: Request, redirect_uri: str) -> RedirectResponse:
+    async def authorize_redirect(
+        self, request: Request, redirect_uri: str
+    ) -> RedirectResponse:
         """Redirect to Google, letting the user pick which account to sign in with."""
-        return await self._app.authorize_redirect(request, redirect_uri, prompt="select_account")
+        return await self._app.authorize_redirect(
+            request, redirect_uri, prompt="select_account"
+        )
 
     async def authorize(self, request: Request) -> dict[str, Any]:
         """Exchange the callback's code and return the verified ID token claims.
 
         Raises:
-            GoogleAuthError: The user declined, the state didn't match, or the ID token is invalid.
+            GoogleAuthError: The user declined, the state didn't match, or the ID
+                token is invalid.
         """
         try:
             token = await self._app.authorize_access_token(

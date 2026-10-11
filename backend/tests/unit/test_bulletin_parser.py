@@ -94,10 +94,16 @@ class TestCSRequirementItems:
                 assert len(item.options) >= 1
 
     def test_select_one_items_have_multiple_options(self, parsed_cs):
-        select_ones = [i for i in _all_items(parsed_cs) if i.selection_type == SelectionType.SELECT_ONE]
+        select_ones = [
+            i
+            for i in _all_items(parsed_cs)
+            if i.selection_type == SelectionType.SELECT_ONE
+        ]
         assert len(select_ones) > 0, "Expected at least one SELECT_ONE item"
         for item in select_ones:
-            assert len(item.options) >= 2, f"SELECT_ONE '{item.description}' should have >= 2 options"
+            assert len(item.options) >= 2, (
+                f"SELECT_ONE '{item.description}' should have >= 2 options"
+            )
 
     def test_options_have_courses(self, parsed_cs):
         for item in _all_items(parsed_cs):
@@ -213,10 +219,16 @@ class TestCybrRequirementItems:
                 assert len(item.options) >= 1
 
     def test_select_one_items_have_multiple_options(self, parsed_cybr):
-        select_ones = [i for i in _all_items(parsed_cybr) if i.selection_type == SelectionType.SELECT_ONE]
+        select_ones = [
+            i
+            for i in _all_items(parsed_cybr)
+            if i.selection_type == SelectionType.SELECT_ONE
+        ]
         assert len(select_ones) > 0, "Expected at least one SELECT_ONE item"
         for item in select_ones:
-            assert len(item.options) >= 2, f"SELECT_ONE '{item.description}' should have >= 2 options"
+            assert len(item.options) >= 2, (
+                f"SELECT_ONE '{item.description}' should have >= 2 options"
+            )
 
     def test_options_have_courses(self, parsed_cybr):
         for item in _all_items(parsed_cybr):
@@ -287,7 +299,9 @@ class TestCrossProgram:
         cs_depts = {s.department for s in parsed_cs.lab_science_sequences}
         cybr_depts = {s.department for s in parsed_cybr.lab_science_sequences}
         shared = cs_depts & cybr_depts
-        assert len(shared) >= 1, "Programs should share at least one lab science department"
+        assert len(shared) >= 1, (
+            "Programs should share at least one lab science department"
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -297,7 +311,9 @@ class TestCrossProgram:
 
 class TestEdgeCases:
     def test_empty_html(self, parser):
-        result = parser.parse("<html><head><title>Empty</title></head><body></body></html>")
+        result = parser.parse(
+            "<html><head><title>Empty</title></head><body></body></html>"
+        )
         assert result.name == "Empty"
         assert result.categories == []
 
@@ -306,7 +322,9 @@ class TestEdgeCases:
         assert result.name == ""
 
     def test_missing_requirements_container(self, parser):
-        html = "<html><head><title>Test</title></head><body><p>No reqs</p></body></html>"
+        html = (
+            "<html><head><title>Test</title></head><body><p>No reqs</p></body></html>"
+        )
         result = parser.parse(html)
         assert result.categories == []
         assert result.suggested_plan is None
