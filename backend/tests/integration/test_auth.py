@@ -8,6 +8,7 @@ from __future__ import annotations
 import base64
 import json
 import time
+from collections.abc import AsyncIterator
 from datetime import UTC, datetime, timedelta
 from urllib.parse import parse_qs, urlparse
 
@@ -19,13 +20,13 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.api.deps import get_db, get_settings
 from app.core.database import Base
 from app.core.security import hash_token
-from app.domains.auth.dependencies import get_google_client
 from app.domains.auth.models import User, UserSession
 from app.integrations.google.client import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
 from app.main import app
+
+settings = app.state.settings
 
 SESSION_COOKIE = "__Host-sid"
 STATE_COOKIE = "__Host-oauth_state"
@@ -75,7 +76,7 @@ class FakeGoogle:
         now = int(time.time())
         claims = {
             "iss": "https://accounts.google.com",
-            "aud": get_settings().GOOGLE_CLIENT_ID,
+            "aud": settings.GOOGLE_CLIENT_ID,
             "sub": "google-sub-123",
             "email": "student@temple.edu",
             "email_verified": True,
@@ -90,19 +91,13 @@ class FakeGoogle:
 
 
 @pytest.fixture()
-async def db():
+async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[async_sessionmaker]:
     engine = create_async_engine("sqlite+aiosqlite://", poolclass=StaticPool)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     factory = async_sessionmaker(engine, expire_on_commit=False)
-
-    async def override_get_db():
-        async with factory() as session:
-            yield session
-
-    app.dependency_overrides[get_db] = override_get_db
+    monkeypatch.setattr(app.state, "session_factory", factory, raising=False)
     yield factory
-    app.dependency_overrides.pop(get_db)
     await engine.dispose()
 
 
@@ -112,12 +107,10 @@ def cache() -> FakeCache:
 
 
 @pytest.fixture()
-def google(cache: FakeCache) -> FakeGoogle:
-    settings = get_settings()
+def google(cache: FakeCache, monkeypatch: pytest.MonkeyPatch) -> FakeGoogle:
     client = GoogleOAuthClient(settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET, cache=cache)
-    app.dependency_overrides[get_google_client] = lambda: client
-    yield FakeGoogle(client)
-    app.dependency_overrides.pop(get_google_client)
+    monkeypatch.setattr(app.state, "google", client, raising=False)
+    return FakeGoogle(client)
 
 
 async def start_login(client: AsyncClient, google: FakeGoogle) -> dict[str, str]:
@@ -146,8 +139,8 @@ class TestLogin:
         url = urlparse(resp.headers["location"])
         assert (url.scheme, url.netloc) == ("https", "accounts.google.com")
         params = {k: v[0] for k, v in parse_qs(url.query).items()}
-        assert params["client_id"] == get_settings().GOOGLE_CLIENT_ID
-        assert params["redirect_uri"] == get_settings().GOOGLE_REDIRECT_URI
+        assert params["client_id"] == settings.GOOGLE_CLIENT_ID
+        assert params["redirect_uri"] == settings.GOOGLE_REDIRECT_URI
         assert params["response_type"] == "code"
         assert params["scope"] == "openid email profile"
         assert params["code_challenge_method"] == "S256"
@@ -177,7 +170,7 @@ class TestCallback:
         resp = await sign_in(client, google)
 
         assert resp.status_code == 303
-        assert resp.headers["location"] == get_settings().FRONTEND_URL
+        assert resp.headers["location"] == settings.FRONTEND_URL
 
         cookie = set_cookie_header(resp, SESSION_COOKIE).lower()
         for attr in ("httponly", "secure", "samesite=lax", "path=/"):
@@ -188,7 +181,7 @@ class TestCallback:
         [token_request] = google.token_requests
         assert token_request["code"] == "auth-code"
         assert token_request["code_verifier"]
-        assert token_request["redirect_uri"] == get_settings().GOOGLE_REDIRECT_URI
+        assert token_request["redirect_uri"] == settings.GOOGLE_REDIRECT_URI
 
         # One-time handshake data is gone.
         assert cache.data == {}
@@ -196,8 +189,9 @@ class TestCallback:
         me = await client.get("/api/v1/auth/me")
         assert me.status_code == 200
         assert me.headers["cache-control"] == "no-store"
-        assert me.json() == {
-            "id": me.json()["id"],
+        user = me.json()
+        del user["id"]
+        assert user == {
             "email": "student@temple.edu",
             "name": "Test Student",
             "pictureUrl": "https://example.com/p.png",
@@ -226,7 +220,7 @@ class TestCallback:
     async def test_accepts_issuer_without_scheme(self, client: AsyncClient, db, google):
         google.id_token_overrides = {"iss": "accounts.google.com"}
         resp = await sign_in(client, google)
-        assert resp.headers["location"] == get_settings().FRONTEND_URL
+        assert resp.headers["location"] == settings.FRONTEND_URL
 
     @pytest.mark.parametrize(
         "overrides",
@@ -316,7 +310,7 @@ class TestSession:
 
     async def test_idle_timeout(self, client: AsyncClient, db, google):
         await sign_in(client, google)
-        idle = timedelta(days=get_settings().SESSION_IDLE_TIMEOUT_DAYS)
+        idle = timedelta(days=settings.SESSION_IDLE_TIMEOUT_DAYS)
         async with db() as session:
             await session.execute(
                 update(UserSession).values(last_seen_at=datetime.now(UTC) - idle - timedelta(minutes=1))

@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from functools import lru_cache
-
 from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_redis, get_settings
+from app.api.deps import get_db, get_settings
 from app.core.config import Settings
 from app.core.security import SESSION_COOKIE, cookie_name
 from app.domains.auth.models import User
@@ -17,11 +15,8 @@ def get_auth_service(settings: Settings = Depends(get_settings)) -> AuthService:
     return AuthService(settings)
 
 
-@lru_cache
-def get_google_client() -> GoogleOAuthClient:
-    """Return the shared Google client, which caches Google's discovery document and keys."""
-    settings = get_settings()
-    return GoogleOAuthClient(settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET, cache=get_redis())
+def get_google_client(request: Request) -> GoogleOAuthClient:
+    return request.app.state.google
 
 
 def get_session_token(request: Request, settings: Settings = Depends(get_settings)) -> str | None:

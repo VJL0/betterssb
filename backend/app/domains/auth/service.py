@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,8 +8,6 @@ from app.core.config import Settings
 from app.core.security import generate_session_token, hash_token
 from app.domains.auth import repository as auth_repo
 from app.domains.auth.models import User
-
-logger = logging.getLogger(__name__)
 
 # Refresh `last_seen_at` at most this often, so most requests don't write.
 SESSION_TOUCH_INTERVAL = timedelta(minutes=5)
@@ -32,8 +29,8 @@ class AuthService:
         previous_token: str | None = None,
         user_agent: str = "",
         ip_address: str = "",
-    ) -> tuple[str, User]:
-        """Upsert the user, start a session, and return (raw_token, user).
+    ) -> str:
+        """Upsert the user, start a session, and return its raw token.
 
         Deletes the browser's previous session, so each sign-in gets a new token.
 
@@ -58,7 +55,7 @@ class AuthService:
             user_agent=user_agent,
             ip_address=ip_address,
         )
-        return raw_token, user
+        return raw_token
 
     async def get_session_user(self, db: AsyncSession, raw_token: str) -> User | None:
         """Return the session's user, or None if the session is invalid or timed out."""

@@ -37,8 +37,16 @@ def _frontend_redirect(settings: Settings, error: str | None = None) -> Redirect
     return RedirectResponse(url, status_code=status.HTTP_303_SEE_OTHER)
 
 
-def _cookie_options(settings: Settings) -> dict:
-    return {"path": "/", "secure": settings.SESSION_COOKIE_SECURE, "httponly": True, "samesite": "lax"}
+def _session_cookie(settings: Settings) -> dict:
+    """Return the session cookie's attributes, shared by set and delete so they always match."""
+    secure = settings.SESSION_COOKIE_SECURE
+    return {
+        "key": cookie_name(SESSION_COOKIE, secure),
+        "path": "/",
+        "secure": secure,
+        "httponly": True,
+        "samesite": "lax",
+    }
 
 
 @router.get("/google/login")
@@ -69,7 +77,7 @@ async def google_callback(
         return _frontend_redirect(settings, error="access_denied" if exc.error == "access_denied" else "failed")
 
     try:
-        raw_token, _user = await service.start_session(
+        raw_token = await service.start_session(
             db,
             claims,
             previous_token=session_token,
@@ -81,10 +89,9 @@ async def google_callback(
 
     response = _frontend_redirect(settings)
     response.set_cookie(
-        cookie_name(SESSION_COOKIE, settings.SESSION_COOKIE_SECURE),
-        raw_token,
+        value=raw_token,
         max_age=settings.SESSION_ABSOLUTE_TIMEOUT_DAYS * 24 * 60 * 60,
-        **_cookie_options(settings),
+        **_session_cookie(settings),
     )
     return response
 
@@ -100,7 +107,7 @@ async def logout(
     if session_token:
         await service.end_session(db, session_token)
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
-    response.delete_cookie(cookie_name(SESSION_COOKIE, settings.SESSION_COOKIE_SECURE), **_cookie_options(settings))
+    response.delete_cookie(**_session_cookie(settings))
     return response
 
 

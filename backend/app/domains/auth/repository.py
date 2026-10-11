@@ -9,10 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domains.auth.models import User, UserSession
 
 
-async def get_user_by_id(db: AsyncSession, user_id: uuid.UUID) -> User | None:
-    return await db.get(User, user_id)
-
-
 async def get_user_by_google_sub(db: AsyncSession, google_sub: str) -> User | None:
     stmt = select(User).where(User.google_sub == google_sub)
     result = await db.execute(stmt)
