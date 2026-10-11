@@ -66,9 +66,10 @@ export function resolveTermCodeToValid(
   termCode: string,
   terms: SSBTerm[],
 ): string {
-  if (terms.length === 0) return termCode;
+  const first = terms[0];
+  if (!first) return termCode;
   if (termCode && getTermByCode(terms, termCode)) return termCode;
-  return terms[0].code;
+  return first.code;
 }
 
 /** Empty string if no plans; otherwise a valid id from `plansForTerm`. */
@@ -76,12 +77,13 @@ export function resolvePlanIdToValid(
   planIdStr: string,
   plansForTerm: SSBRegPlanHeader[],
 ): string {
-  if (plansForTerm.length === 0) return "";
+  const first = plansForTerm[0];
+  if (!first) return "";
   const n = parseInt(planIdStr, 10);
   if (!Number.isNaN(n) && plansForTerm.some((p) => p.id === n)) {
     return planIdStr;
   }
-  return String(plansForTerm[0].id);
+  return String(first.id);
 }
 
 export function parseAutoRegBatchResultJson(

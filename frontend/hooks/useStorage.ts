@@ -19,17 +19,17 @@ export function useStorage<T>(
     });
 
     const listener = (
-      changes: Record<string, chrome.storage.StorageChange>,
+      changes: Record<string, Browser.storage.StorageChange>,
     ) => {
       if (key in changes) {
-        setValueState((changes[key].newValue as T) ?? defaultValue);
+        setValueState((changes[key]?.newValue as T) ?? defaultValue);
       }
     };
 
-    chrome.storage.local.onChanged.addListener(listener);
+    browser.storage.local.onChanged.addListener(listener);
     return () => {
       cancelled = true;
-      chrome.storage.local.onChanged.removeListener(listener);
+      browser.storage.local.onChanged.removeListener(listener);
     };
   }, [key, defaultValue]);
 

@@ -38,10 +38,9 @@ export function SemesterPlanner() {
           payload: {},
         });
         if (res.success && Array.isArray(res.data)) {
-          setTerms(res.data as SSBTerm[]);
-          if ((res.data as SSBTerm[]).length > 0) {
-            setSelectedTerm((res.data as SSBTerm[])[0].code);
-          }
+          const terms = res.data as SSBTerm[];
+          setTerms(terms);
+          if (terms[0]) setSelectedTerm(terms[0].code);
         }
       } catch {
         const fallback = await sendMessage({
@@ -49,10 +48,9 @@ export function SemesterPlanner() {
           payload: {},
         });
         if (fallback.success && Array.isArray(fallback.data)) {
-          setTerms(fallback.data as SSBTerm[]);
-          if ((fallback.data as SSBTerm[]).length > 0) {
-            setSelectedTerm((fallback.data as SSBTerm[])[0].code);
-          }
+          const terms = fallback.data as SSBTerm[];
+          setTerms(terms);
+          if (terms[0]) setSelectedTerm(terms[0].code);
         }
       }
     })();

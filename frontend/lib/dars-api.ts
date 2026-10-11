@@ -32,7 +32,7 @@ async function darsFetch(path: string, init?: RequestInit): Promise<Response> {
 }
 
 function runIds(listHtml: string): string[] {
-  return [...listHtml.matchAll(RUN_ID_RE)].map((m) => m[1]);
+  return [...listHtml.matchAll(RUN_ID_RE)].map((m) => m[1]!);
 }
 
 /**

@@ -33,10 +33,9 @@ export function ScheduleBuilder() {
       try {
         const res = await sendMessage({ type: "SSB_GET_TERMS", payload: {} });
         if (res.success && Array.isArray(res.data)) {
-          setTerms(res.data as SSBTerm[]);
-          if ((res.data as SSBTerm[]).length > 0) {
-            setSelectedTerm((res.data as SSBTerm[])[0].code);
-          }
+          const terms = res.data as SSBTerm[];
+          setTerms(terms);
+          if (terms[0]) setSelectedTerm(terms[0].code);
         }
       } catch {
         // Terms will stay empty — user can still manually search

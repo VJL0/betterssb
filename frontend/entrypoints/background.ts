@@ -35,7 +35,7 @@ const AUTO_REG_FIRE_ALARM = "betterssb-auto-reg-fire";
 
 /** Fires once at `when` — batch runs only from this alarm (single attempt). */
 async function syncAutoRegFireAlarm(): Promise<void> {
-  await chrome.alarms.clear(AUTO_REG_FIRE_ALARM);
+  await browser.alarms.clear(AUTO_REG_FIRE_ALARM);
   const { armed } = await getAutoRegRunState();
   const { scheduledRunAt } = await getAutoRegScheduleConfig();
   if (!armed || !scheduledRunAt?.trim()) return;
@@ -43,11 +43,11 @@ async function syncAutoRegFireAlarm(): Promise<void> {
   const when = new Date(scheduledRunAt).getTime();
   if (!Number.isFinite(when) || when <= Date.now()) return;
 
-  await chrome.alarms.create(AUTO_REG_FIRE_ALARM, { when });
+  await browser.alarms.create(AUTO_REG_FIRE_ALARM, { when });
 }
 
 async function findSSBTab(): Promise<number | null> {
-  const tabs = await chrome.tabs.query({ url: SSB_URL_PATTERN });
+  const tabs = await browser.tabs.query({ url: SSB_URL_PATTERN });
   return tabs[0]?.id ?? null;
 }
 
@@ -69,7 +69,7 @@ function isSSBMessage(type: string): boolean {
 }
 
 /** A DARS tab is usable once it's on a `/selfservice/` page (i.e. past SSO login). */
-function isDarsReady(tab: chrome.tabs.Tab): boolean {
+function isDarsReady(tab: Browser.tabs.Tab): boolean {
   return !!tab.url?.includes("/selfservice/");
 }
 
@@ -78,19 +78,19 @@ function isDarsReady(tab: chrome.tabs.Tab): boolean {
  * signing in (SSO + Duo) before resolving with its id.
  */
 async function getOrOpenDarsTab(): Promise<number> {
-  const tabs = await chrome.tabs.query({ url: DARS_URL_PATTERN });
+  const tabs = await browser.tabs.query({ url: DARS_URL_PATTERN });
   const ready = tabs.find(isDarsReady);
   if (ready?.id != null) return ready.id;
 
   const tab =
     tabs[0] ??
-    (await chrome.tabs.create({ url: DARS_START_URL, active: true }));
+    (await browser.tabs.create({ url: DARS_START_URL, active: true }));
   const tabId = tab.id;
   if (tabId == null) throw new Error("Could not open a DARS tab.");
 
   const deadline = Date.now() + DARS_TAB_READY_TIMEOUT_MS;
   for (;;) {
-    const current = await chrome.tabs.get(tabId).catch(() => null);
+    const current = await browser.tabs.get(tabId).catch(() => null);
     if (!current)
       throw new Error("The DARS tab was closed before sign-in finished.");
     if (isDarsReady(current)) return tabId;
@@ -219,7 +219,7 @@ export default defineBackground(() => {
 
   void syncAutoRegFireAlarm();
 
-  chrome.storage.onChanged.addListener((changes, area) => {
+  browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
     if (
       AUTO_REG_RUN_STATE_KEY in changes ||
@@ -229,9 +229,9 @@ export default defineBackground(() => {
     }
   });
 
-  chrome.alarms.create(REG_CHECK_ALARM, { periodInMinutes: 1 });
+  browser.alarms.create(REG_CHECK_ALARM, { periodInMinutes: 1 });
 
-  chrome.alarms.onAlarm.addListener(async (alarm) => {
+  browser.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === REG_CHECK_ALARM) {
       const { armed, reminderForScheduledRunAt } = await getAutoRegRunState();
       if (!armed) return;
@@ -246,7 +246,7 @@ export default defineBackground(() => {
       if (diffMinutes > 0 && diffMinutes <= 5) {
         if (reminderForScheduledRunAt === targetTime) return;
         await patchAutoRegRunState({ reminderForScheduledRunAt: targetTime });
-        chrome.notifications.create("betterssb-reg-reminder", {
+        browser.notifications.create("betterssb-reg-reminder", {
           type: "basic",
           iconUrl: "icon/128.png",
           title: "Registration Opening Soon!",
@@ -307,8 +307,8 @@ export default defineBackground(() => {
         lastBatchResultJson: JSON.stringify(record),
         armed: false,
       });
-      await chrome.alarms.clear(AUTO_REG_FIRE_ALARM);
-      chrome.notifications.create("betterssb-reg-done", {
+      await browser.alarms.clear(AUTO_REG_FIRE_ALARM);
+      browser.notifications.create("betterssb-reg-done", {
         type: "basic",
         iconUrl: "icon/128.png",
         title: record.ok ? "Auto-register complete" : "Auto-register — errors",
@@ -335,8 +335,8 @@ export default defineBackground(() => {
         lastBatchResultJson: JSON.stringify(record),
         armed: false,
       });
-      await chrome.alarms.clear(AUTO_REG_FIRE_ALARM);
-      chrome.notifications.create("betterssb-reg-fail", {
+      await browser.alarms.clear(AUTO_REG_FIRE_ALARM);
+      browser.notifications.create("betterssb-reg-fail", {
         type: "basic",
         iconUrl: "icon/128.png",
         title: "Auto-register failed",
