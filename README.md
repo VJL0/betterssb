@@ -64,7 +64,8 @@ betterssb/
 | UI | React 19, TypeScript 5.9 |
 | State | `chrome.storage` via custom `useStorage` hook |
 | Backend | FastAPI, Python 3.14 |
-| Database | PostgreSQL 17 (Docker), SQLAlchemy 2 |
+| Database | PostgreSQL 18 (Docker), SQLAlchemy 2 |
+| Cache | Redis 8 (Docker), short-lived data only |
 | Auth | Google Sign-In, JWT + refresh token rotation |
 | AI / LLM | OpenAI API |
 | RMP Data | Rate My Professor GraphQL API |
@@ -75,14 +76,17 @@ betterssb/
 
 - **Node.js** ≥ 22 and **pnpm** ≥ 9
 - **Python** ≥ 3.14 and **uv** (Python package manager)
-- **Docker** and **Docker Compose** (for PostgreSQL)
+- **Docker** and **Docker Compose** (for PostgreSQL and Redis)
 - A Chromium-based browser
 
-### Database
+### Database & Cache
 
 ```bash
-docker compose up -d   # starts PostgreSQL on port 5432
+cd backend
+docker compose up -d   # starts PostgreSQL on 5432 and Redis on 6379
 ```
+
+Redis holds short-lived data only (caches, rate limits, OAuth state). It runs with persistence off, so its data is gone after a restart — set a TTL on every key and keep anything durable in Postgres.
 
 ### Frontend (Chrome Extension)
 
@@ -118,7 +122,7 @@ uv run fastapi dev    # starts the dev server at http://localhost:8000
 Copy `backend/.env.example` to `backend/.env` and fill in:
 
 ```env
-DATABASE_URL=postgresql+asyncpg://betterssb:betterssb_dev@localhost:5432/betterssb
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
 GOOGLE_CLIENT_ID=...           # Google Cloud Console → OAuth 2.0 Client ID
 GOOGLE_CLIENT_SECRET=...       # Matching secret
 JWT_SECRET=...                 # Random 64+ char string

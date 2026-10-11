@@ -1,0 +1,21 @@
+name: betterssb
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres   # user and db default to "postgres"
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql   # Postgres 18+ layout
+
+  # Short-lived data only; no snapshots, so it's empty after a restart.
+  redis:
+    image: redis:8.10-alpine
+    command: ["redis-server", "--save", ""]
+    ports:
+      - "127.0.0.1:6379:6379"
+
+volumes:
+  postgres_data:

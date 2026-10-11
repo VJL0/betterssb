@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     """Application-wide configuration loaded from environment / .env file."""
 
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://betterssb:betterssb_dev@localhost:5432/betterssb"
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
 
     # Auth
     GOOGLE_CLIENT_ID: str = ""
