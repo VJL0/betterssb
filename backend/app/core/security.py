@@ -8,8 +8,13 @@ OAUTH_STATE_COOKIE = "oauth_state"
 
 
 def cookie_name(name: str, secure: bool) -> str:
-    """Prefix secure cookies with `__Host-` so other subdomains can't overwrite them."""
-    return f"__Host-{name}" if secure else name
+    """Prefix secure cookies with `__Host-Http-` so only this host's server can set them.
+
+    Browsers then require `Secure`, `HttpOnly`, `Path=/`, and no `Domain`, and refuse the
+    cookie from other subdomains or JavaScript. Browsers that predate `__Host-Http-` still
+    enforce the `__Host-` rules.
+    """
+    return f"__Host-Http-{name}" if secure else name
 
 
 def generate_session_token() -> tuple[str, str]:

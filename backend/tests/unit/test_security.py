@@ -20,8 +20,8 @@ class TestSessionToken:
 
 class TestCookieName:
     def test_secure_cookies_get_host_prefix(self):
-        assert cookie_name("sid", secure=True) == "__Host-sid"
+        assert cookie_name("sid", secure=True) == "__Host-Http-sid"
 
     def test_insecure_cookies_have_no_prefix(self):
-        # Browsers reject a __Host- cookie that isn't Secure.
+        # Browsers reject a prefixed cookie that isn't Secure.
         assert cookie_name("sid", secure=False) == "sid"

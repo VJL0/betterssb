@@ -29,8 +29,8 @@ from app.main import app
 
 settings = app.state.settings
 
-SESSION_COOKIE = "__Host-sid"
-STATE_COOKIE = "__Host-oauth_state"
+SESSION_COOKIE = "__Host-Http-sid"
+STATE_COOKIE = "__Host-Http-oauth_state"
 
 
 class FakeCache:
