@@ -33,7 +33,7 @@ betterssb/
 ├── backend/           # API server (FastAPI + Python 3.14)
 │   └── app/
 │       ├── api/                   # App router & shared route dependencies
-│       ├── domains/               # Per-feature routers, services, Pydantic schemas
+│       ├── modules/               # Per-feature routers, services, Pydantic schemas
 │       ├── integrations/          # External clients (OpenAI, Google, RMP)
 │       ├── core/                  # Config, database, security
 │       └── shared/                # Cross-cutting schemas & helpers

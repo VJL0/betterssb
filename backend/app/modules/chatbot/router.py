@@ -3,8 +3,8 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from app.api.deps import SettingsDep
-from app.domains.chatbot.schemas import ChatRequest, ChatResponse
-from app.domains.chatbot.service import ChatbotService
+from app.modules.chatbot.schemas import ChatRequest, ChatResponse
+from app.modules.chatbot.service import ChatbotService
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 

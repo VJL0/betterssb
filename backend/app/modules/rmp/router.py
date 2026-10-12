@@ -5,8 +5,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.deps import SettingsDep
-from app.domains.rmp.schemas import RMPRating, RMPSchool
-from app.domains.rmp.service import RMPService
+from app.modules.rmp.schemas import RMPRating, RMPSchool
+from app.modules.rmp.service import RMPService
 
 router = APIRouter(prefix="/rmp", tags=["rmp"])
 

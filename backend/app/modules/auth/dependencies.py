@@ -5,9 +5,9 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, Request, status
 
 from app.api.deps import DbDep
-from app.domains.auth.models import User
-from app.domains.auth.service import AuthService
 from app.integrations.google.client import GoogleOAuthClient
+from app.modules.auth.models import User
+from app.modules.auth.service import AuthService
 
 # `__Host-Http-` makes the browser require Secure, HttpOnly, Path=/, and no Domain,
 # and refuse the cookie from other subdomains or JavaScript. Chrome treats

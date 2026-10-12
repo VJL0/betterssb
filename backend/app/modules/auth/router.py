@@ -8,7 +8,8 @@ from fastapi.responses import RedirectResponse
 
 from app.api.deps import DbDep, SettingsDep
 from app.core.config import Settings
-from app.domains.auth.dependencies import (
+from app.integrations.google.client import GoogleAuthError
+from app.modules.auth.dependencies import (
     SESSION_COOKIE,
     SESSION_COOKIE_ATTRS,
     AuthServiceDep,
@@ -16,9 +17,8 @@ from app.domains.auth.dependencies import (
     GoogleClientDep,
     SessionTokenDep,
 )
-from app.domains.auth.schemas import UserResponse
-from app.domains.auth.service import SESSION_ABSOLUTE_TIMEOUT, InactiveUserError
-from app.integrations.google.client import GoogleAuthError
+from app.modules.auth.schemas import UserResponse
+from app.modules.auth.service import SESSION_ABSOLUTE_TIMEOUT, InactiveUserError
 
 logger = logging.getLogger(__name__)
 

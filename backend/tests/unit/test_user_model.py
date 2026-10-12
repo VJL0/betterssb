@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from app.core.database import Base
-from app.domains.auth.models import User, UserSession
+from app.modules.auth.models import User, UserSession
 
 
 class TestUserTable:

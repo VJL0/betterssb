@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from app.domains.dars.parser import parse_audit
-from app.domains.dars.schemas import Audit
+from app.modules.dars.parser import parse_audit
+from app.modules.dars.schemas import Audit
 
 
 class DarsService:

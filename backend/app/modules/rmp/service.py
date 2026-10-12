@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from app.domains.rmp.schemas import RMPRating, RMPSchool
 from app.integrations.rmp.client import RMPClient
+from app.modules.rmp.schemas import RMPRating, RMPSchool
 
 
 def _build_rmp_rating(node: dict) -> RMPRating:

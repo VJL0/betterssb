@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from app.domains.schedule.schemas import SchedulePreferences, Section
-from app.domains.schedule.service import (
+from app.modules.schedule.schemas import SchedulePreferences, Section
+from app.modules.schedule.service import (
     ScheduleService,
     _has_conflict,
     _parse_time,

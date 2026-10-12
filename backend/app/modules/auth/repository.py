@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.auth.models import User, UserSession
+from app.modules.auth.models import User, UserSession
 
 
 async def get_user_by_google_sub(db: AsyncSession, google_sub: str) -> User | None:

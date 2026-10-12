@@ -6,8 +6,8 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import hash_token
-from app.domains.auth import repository as auth_repo
-from app.domains.auth.models import User
+from app.modules.auth import repository as auth_repo
+from app.modules.auth.models import User
 
 SESSION_IDLE_TIMEOUT = timedelta(days=7)
 SESSION_ABSOLUTE_TIMEOUT = timedelta(days=30)

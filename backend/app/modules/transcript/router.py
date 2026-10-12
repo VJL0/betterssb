@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Body
 
-from app.domains.transcript.schemas import PrereqCheckRequest, TranscriptData
-from app.domains.transcript.service import TranscriptService
+from app.modules.transcript.schemas import PrereqCheckRequest, TranscriptData
+from app.modules.transcript.service import TranscriptService
 
 router = APIRouter(prefix="/transcript", tags=["transcript"])
 

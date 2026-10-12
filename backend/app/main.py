@@ -41,7 +41,7 @@ app = FastAPI(title="BetterSSB API", version="0.1.0", lifespan=lifespan)
 app.state.settings = settings
 
 # Signed cookie for the OAuth handshake only. Signed-in sessions are server-side;
-# see app/domains/auth.
+# see app/modules/auth.
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.SESSION_SECRET,

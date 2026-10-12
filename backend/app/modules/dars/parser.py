@@ -6,7 +6,7 @@ import re
 
 from bs4 import BeautifulSoup, Tag
 
-from app.domains.dars.schemas import (
+from app.modules.dars.schemas import (
     Audit,
     AuditCourse,
     AuditStatus,

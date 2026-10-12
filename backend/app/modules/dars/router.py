@@ -4,8 +4,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 
-from app.domains.dars.schemas import Audit
-from app.domains.dars.service import DarsService
+from app.modules.dars.schemas import Audit
+from app.modules.dars.service import DarsService
 
 router = APIRouter(prefix="/dars", tags=["dars"])
 

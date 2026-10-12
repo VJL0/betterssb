@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from app.domains.transcript.schemas import TranscriptCourse, TranscriptData
+from app.modules.transcript.schemas import TranscriptCourse, TranscriptData
 
 COURSE_PATTERN = re.compile(
     r"(?P<subject>[A-Z]{2,5})\s+"
