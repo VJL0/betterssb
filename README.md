@@ -35,7 +35,7 @@ betterssb/
 │       ├── api/                   # App router & shared route dependencies
 │       ├── modules/               # Per-feature routers, services, schemas, external clients
 │       ├── core/                  # Config, database, security
-│       └── shared/                # Cross-cutting schemas & helpers
+│       └── shared/                # Cross-cutting schemas
 ```
 
 ### How It Works
