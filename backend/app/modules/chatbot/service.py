@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.integrations.openai.client import OpenAIClient
+from app.modules.chatbot.client import OpenAIClient
 
 SYSTEM_PROMPT = (
     "You are BetterSSB Advisor, a friendly and knowledgeable university course advisor. "

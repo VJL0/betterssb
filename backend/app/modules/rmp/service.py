@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.integrations.rmp.client import RMPClient
+from app.modules.rmp.client import RMPClient
 from app.modules.rmp.schemas import RMPRating, RMPSchool
 
 

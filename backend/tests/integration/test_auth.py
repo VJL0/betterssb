@@ -23,9 +23,9 @@ from sqlalchemy.pool import StaticPool
 
 from app.core.database import Base
 from app.core.security import hash_token
-from app.integrations.google.client import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
 from app.main import app
 from app.modules.auth.models import User, UserSession
+from app.modules.auth.providers.google import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
 from app.modules.auth.service import SESSION_IDLE_TIMEOUT
 
 settings = app.state.settings

@@ -11,7 +11,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.router import api_router
 from app.core.config import Settings
-from app.integrations.google.client import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
+from app.modules.auth.providers.google import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
 
 logger = logging.getLogger(__name__)
 
