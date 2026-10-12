@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.shared.schemas.base import BaseSchema
+from app.shared.schemas import BaseSchema
 
 
 class UserResponse(BaseSchema):

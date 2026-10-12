@@ -5,7 +5,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from app.shared.schemas.base import BaseSchema
+from app.shared.schemas import BaseSchema
 
 
 class SelectionType(StrEnum):

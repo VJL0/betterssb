@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import Field
 
-from app.shared.schemas.base import BaseSchema
+from app.shared.schemas import BaseSchema
 
 
 class Course(BaseSchema):
