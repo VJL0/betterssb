@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from app.domains.transcript.schemas import TranscriptCourse
-from app.domains.transcript.service import TranscriptService
+from app.modules.transcript.schemas import TranscriptCourse
+from app.modules.transcript.service import TranscriptService
 
 
 @pytest.fixture()

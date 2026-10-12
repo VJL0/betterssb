@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from app.domains.dars.parser import parse_audit
-from app.domains.dars.schemas import Audit, Progress
+from app.modules.dars.parser import parse_audit
+from app.modules.dars.schemas import Audit, Progress
 
 
 @pytest.fixture()

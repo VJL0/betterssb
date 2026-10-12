@@ -15,8 +15,8 @@ os.environ.setdefault("GOOGLE_CLIENT_SECRET", "test-client-secret")
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.domains.schedule.schemas import SchedulePreferences, Section
 from app.main import app
+from app.modules.schedule.schemas import SchedulePreferences, Section
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 

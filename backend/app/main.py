@@ -11,7 +11,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.router import api_router
 from app.core.config import Settings
-from app.integrations.google.client import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
+from app.modules.auth.providers.google import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ app = FastAPI(title="BetterSSB API", version="0.1.0", lifespan=lifespan)
 app.state.settings = settings
 
 # Signed cookie for the OAuth handshake only. Signed-in sessions are server-side;
-# see app/domains/auth.
+# see app/modules/auth.
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.SESSION_SECRET,

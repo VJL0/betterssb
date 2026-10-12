@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 from app.core.config import DatabaseSettings
 from app.core.database import Base
-from app.domains.auth.models import User, UserSession  # noqa: F401 — register models
+from app.modules.auth.models import User, UserSession  # noqa: F401 — register models
 
 config = context.config
 
