@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 /** Host permission for the backend, so the popup and background can call it without CORS. */
 function apiHostPermission(): string {
   const url = new URL(
-    import.meta.env.WXT_API_URL || "http://localhost:8000/api/v1",
+    import.meta.env.WXT_API_URL || "http://localhost:8000/api",
   );
   // Match patterns can't carry a port; this covers any port on the host.
   return `${url.protocol}//${url.hostname}/*`;

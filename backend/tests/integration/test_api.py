@@ -17,7 +17,7 @@ class TestScheduleRoutes:
             "preferences": {},
             "max_results": 3,
         }
-        resp = await client.post("/api/v1/schedule/generate", json=body)
+        resp = await client.post("/api/schedule/generate", json=body)
         assert resp.status_code == 200
         data = resp.json()
         assert isinstance(data, list)
@@ -28,19 +28,19 @@ class TestScheduleRoutes:
 
     async def test_generate_empty_input(self, client: AsyncClient):
         body = {"sections": [], "preferences": {}}
-        resp = await client.post("/api/v1/schedule/generate", json=body)
+        resp = await client.post("/api/schedule/generate", json=body)
         assert resp.status_code == 200
         assert resp.json() == []
 
     async def test_generate_invalid_body(self, client: AsyncClient):
-        resp = await client.post("/api/v1/schedule/generate", json={"bad": "data"})
+        resp = await client.post("/api/schedule/generate", json={"bad": "data"})
         assert resp.status_code == 422
 
 
 class TestTranscriptRoutes:
     async def test_parse_transcript(self, client: AsyncClient, transcript_text):
         resp = await client.post(
-            "/api/v1/transcript/parse",
+            "/api/transcript/parse",
             content=transcript_text,
             headers={"Content-Type": "text/plain"},
         )
@@ -51,7 +51,7 @@ class TestTranscriptRoutes:
 
     async def test_parse_empty_transcript(self, client: AsyncClient):
         resp = await client.post(
-            "/api/v1/transcript/parse",
+            "/api/transcript/parse",
             content="nothing here",
             headers={"Content-Type": "text/plain"},
         )
@@ -72,7 +72,7 @@ class TestTranscriptRoutes:
             ],
             "required": ["CIS 1068", "CIS 2168"],
         }
-        resp = await client.post("/api/v1/transcript/check-prereqs", json=body)
+        resp = await client.post("/api/transcript/check-prereqs", json=body)
         assert resp.status_code == 200
         result = resp.json()
         assert result["CIS 1068"] is True
@@ -82,7 +82,7 @@ class TestTranscriptRoutes:
 class TestDegreeRoutes:
     async def test_parse_cs_bulletin(self, client: AsyncClient, bulletin_html):
         resp = await client.post(
-            "/api/v1/degree/parse-bulletin",
+            "/api/degree/parse-bulletin",
             content=bulletin_html,
             headers={"Content-Type": "text/plain"},
         )
@@ -94,7 +94,7 @@ class TestDegreeRoutes:
 
     async def test_parse_cybr_bulletin(self, client: AsyncClient, bulletin_cybr_html):
         resp = await client.post(
-            "/api/v1/degree/parse-bulletin",
+            "/api/degree/parse-bulletin",
             content=bulletin_cybr_html,
             headers={"Content-Type": "text/plain"},
         )
@@ -108,7 +108,7 @@ class TestDegreeRoutes:
     async def test_parse_bulletin_empty(self, client: AsyncClient):
         html = "<html><head><title>Empty</title></head><body></body></html>"
         resp = await client.post(
-            "/api/v1/degree/parse-bulletin",
+            "/api/degree/parse-bulletin",
             content=html,
             headers={"Content-Type": "text/plain"},
         )
@@ -120,7 +120,7 @@ class TestDegreeRoutes:
 class TestDarsRoutes:
     async def test_parse_uploaded_audit(self, client: AsyncClient, dars_audit_html):
         resp = await client.post(
-            "/api/v1/dars/audits/parse",
+            "/api/dars/audits/parse",
             content=dars_audit_html,
             headers={"Content-Type": "text/html"},
         )
@@ -136,7 +136,7 @@ class TestDarsRoutes:
 
     async def test_parse_rejects_non_audit_html(self, client: AsyncClient):
         resp = await client.post(
-            "/api/v1/dars/audits/parse",
+            "/api/dars/audits/parse",
             content="<html><body>not an audit</body></html>",
             headers={"Content-Type": "text/html"},
         )

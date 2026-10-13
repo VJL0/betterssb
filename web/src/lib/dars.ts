@@ -62,7 +62,7 @@ export async function parseAuditHtml(
   html: string,
   signal?: AbortSignal,
 ): Promise<Audit> {
-  const res = await fetch("/api/v1/dars/audits/parse", {
+  const res = await fetch("/api/dars/audits/parse", {
     method: "POST",
     headers: { "Content-Type": "text/html" },
     body: html,
