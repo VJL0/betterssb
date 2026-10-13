@@ -1,9 +1,17 @@
 import { useAuth } from "@/hooks/useAuth";
-import { GoogleSignIn } from "@/components/auth/GoogleSignIn";
 import { UserProfile } from "@/components/auth/UserProfile";
+import { Button, Spinner } from "@/components/ui";
 
 export function LoginPage() {
   const { user, isAuthenticated, loading, error, login, logout } = useAuth();
+
+  if (loading && !user) {
+    return (
+      <div className="flex justify-center pt-6">
+        <Spinner />
+      </div>
+    );
+  }
 
   if (isAuthenticated && user) {
     return (
@@ -13,6 +21,9 @@ export function LoginPage() {
           tools, and synced preferences.
         </p>
         <UserProfile user={user} onLogout={logout} />
+        {error && (
+          <div className="text-center text-xs text-red-600">{error}</div>
+        )}
       </div>
     );
   }
@@ -24,7 +35,10 @@ export function LoginPage() {
         prerequisite checks. Rate My Professor and registration helpers work
         without signing in.
       </p>
-      <GoogleSignIn onCredential={login} loading={loading} />
+      <Button onClick={login}>Sign in with Google</Button>
+      <p className="text-center text-xs text-gray-500">
+        Sign-in opens in a new tab. Reopen BetterSSB when you&apos;re done.
+      </p>
       {error && <div className="text-center text-xs text-red-600">{error}</div>}
     </div>
   );

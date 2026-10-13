@@ -5,6 +5,3 @@
 export const API_URL: string = (
   import.meta.env.WXT_API_URL || "http://localhost:8000/api"
 ).replace(/\/+$/, "");
-
-export const GOOGLE_CLIENT_ID: string =
-  import.meta.env.WXT_GOOGLE_CLIENT_ID || "";

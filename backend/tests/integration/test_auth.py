@@ -13,8 +13,11 @@ from collections.abc import AsyncIterator
 from datetime import UTC, datetime, timedelta
 from urllib.parse import parse_qs, urlparse
 
+import httpx2
 import pytest
+from authlib.integrations.starlette_client import StarletteOAuth2App
 from httpx import AsyncClient, Response
+from itsdangerous import TimestampSigner
 from joserfc import jwt
 from joserfc.jwk import KeySet, RSAKey
 from sqlalchemy import select, update
@@ -25,7 +28,10 @@ from app.core.database import Base
 from app.core.security import hash_token
 from app.main import app
 from app.modules.auth.models import User, UserSession
-from app.modules.auth.providers.google import HANDSHAKE_TTL_SECONDS, GoogleOAuthClient
+from app.modules.auth.providers.google import (
+    HANDSHAKE_TTL_SECONDS,
+    create_google_client,
+)
 from app.modules.auth.service import SESSION_IDLE_TIMEOUT
 
 settings = app.state.settings
@@ -55,14 +61,14 @@ class FakeCache:
 class FakeGoogle:
     """Fake Google endpoints that issue ID tokens signed with a test key."""
 
-    def __init__(self, google: GoogleOAuthClient) -> None:
+    def __init__(self, google: StarletteOAuth2App) -> None:
         self.key = RSAKey.generate_key(2048, parameters={"kid": "test-key"})
         self.nonce: str | None = None
         self.id_token_overrides: dict = {}
         self.token_requests: list[dict] = []
         # Replace Authlib's network calls.
-        google._app.load_server_metadata = self._load_server_metadata
-        google._app.fetch_access_token = self._fetch_access_token
+        google.load_server_metadata = self._load_server_metadata
+        google.fetch_access_token = self._fetch_access_token
 
     async def _load_server_metadata(self) -> dict:
         return {
@@ -115,7 +121,7 @@ def cache() -> FakeCache:
 
 @pytest.fixture()
 def google(cache: FakeCache, monkeypatch: pytest.MonkeyPatch) -> FakeGoogle:
-    client = GoogleOAuthClient(
+    client = create_google_client(
         settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET, cache=cache
     )
     monkeypatch.setattr(app.state, "google", client, raising=False)
@@ -175,7 +181,8 @@ class TestLogin:
         data = json.loads(stored)["data"]
         assert data["nonce"] == params["nonce"]
         assert data["code_verifier"]
-        assert list(cache.ttls.values()) == [HANDSHAKE_TTL_SECONDS]
+        # Redis holds short-lived data only; every key needs a TTL.
+        assert all(ttl for ttl in cache.ttls.values())
 
         # ...while the signed cookie only carries a marker for this state.
         payload = client.cookies[STATE_COOKIE].split(".")[0]
@@ -183,6 +190,18 @@ class TestLogin:
         assert params["state"] in decoded
         assert params["nonce"] not in decoded
         assert data["code_verifier"] not in decoded
+
+
+class TestLoginErrors:
+    async def test_google_unreachable_at_login(self, client: AsyncClient, google):
+        async def unreachable():
+            raise httpx2.ConnectError("connection refused")
+
+        app.state.google.load_server_metadata = unreachable
+        resp = await client.get("/api/auth/google/login")
+
+        assert resp.status_code == 303
+        assert resp.headers["location"].endswith("?auth_error=failed")
 
 
 class TestCallback:
@@ -287,6 +306,37 @@ class TestCallback:
         assert resp.headers["location"].endswith("?auth_error=failed")
         assert google.token_requests == []
 
+    async def test_rejects_callback_after_handshake_expires(
+        self, client: AsyncClient, db, google, monkeypatch: pytest.MonkeyPatch
+    ):
+        params = await start_login(client, google)
+        later = int(time.time()) + HANDSHAKE_TTL_SECONDS + 1
+        monkeypatch.setattr(TimestampSigner, "get_timestamp", lambda self: later)
+        resp = await client.get(
+            "/api/auth/google/callback",
+            params={"code": "c", "state": params["state"]},
+        )
+
+        assert resp.headers["location"].endswith("?auth_error=failed")
+        assert google.token_requests == []
+
+    async def test_google_unreachable_at_callback(
+        self, client: AsyncClient, db, google
+    ):
+        params = await start_login(client, google)
+
+        async def unreachable(**params):
+            raise httpx2.ConnectError("connection refused")
+
+        app.state.google.fetch_access_token = unreachable
+        resp = await client.get(
+            "/api/auth/google/callback",
+            params={"code": "c", "state": params["state"]},
+        )
+
+        assert resp.status_code == 303
+        assert resp.headers["location"].endswith("?auth_error=failed")
+
     async def test_user_cancelled(self, client: AsyncClient, db, google):
         params = await start_login(client, google)
         resp = await client.get(
@@ -302,9 +352,28 @@ class TestCallback:
             await session.commit()
         client.cookies.clear()
 
+        google.id_token_overrides = {"name": "Renamed"}
         resp = await sign_in(client, google)
         assert resp.headers["location"].endswith("?auth_error=account_disabled")
         assert SESSION_COOKIE not in client.cookies
+
+        # The failed sign-in rolled back its profile update.
+        async with db() as session:
+            [user] = (await session.execute(select(User))).scalars().all()
+        assert user.name == "Test Student"
+
+    async def test_logged_failure_cant_forge_log_lines(
+        self, client: AsyncClient, db, google, caplog: pytest.LogCaptureFixture
+    ):
+        params = await start_login(client, google)
+        await client.get(
+            "/api/auth/google/callback",
+            params={"error": "x\nauthn_login_success:admin", "state": params["state"]},
+        )
+
+        [record] = [r for r in caplog.records if "authn_login_fail" in r.getMessage()]
+        assert record.levelname == "WARNING"
+        assert "\n" not in record.getMessage()
 
     async def test_sign_in_rotates_the_session(self, client: AsyncClient, db, google):
         await sign_in(client, google)
@@ -324,6 +393,15 @@ class TestSession:
     async def test_me_requires_a_session(self, client: AsyncClient, db):
         resp = await client.get("/api/auth/me")
         assert resp.status_code == 401
+        # RFC 9110 requires a challenge on every 401.
+        assert resp.headers["www-authenticate"] == "APIKey"
+        assert resp.headers["content-type"] == "application/problem+json"
+        assert resp.json() == {
+            "type": "about:blank",
+            "title": "Unauthorized",
+            "status": 401,
+            "detail": "Not authenticated",
+        }
 
     async def test_unknown_token_is_rejected(self, client: AsyncClient, db):
         client.cookies.set(SESSION_COOKIE, "not-a-real-session")

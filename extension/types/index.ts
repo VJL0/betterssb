@@ -9,11 +9,6 @@ export interface AuthUser {
   pictureUrl: string;
 }
 
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
 // ---------------------------------------------------------------------------
 // Courses & Sections
 // ---------------------------------------------------------------------------

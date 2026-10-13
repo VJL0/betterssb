@@ -1,6 +1,26 @@
 from __future__ import annotations
 
+import pytest
 from httpx import AsyncClient
+
+from app.core.security import SECURITY_HEADERS
+
+
+class TestSecurityHeaders:
+    @pytest.mark.parametrize(
+        ("method", "path"),
+        [
+            ("GET", "/health"),
+            ("POST", "/api/schedule/generate"),  # 422
+            ("GET", "/api/does-not-exist"),  # 404
+        ],
+    )
+    async def test_every_response_has_security_headers(
+        self, client: AsyncClient, method: str, path: str
+    ):
+        resp = await client.request(method, path)
+        for name, value in SECURITY_HEADERS.items():
+            assert resp.headers[name] == value
 
 
 class TestHealthCheck:
