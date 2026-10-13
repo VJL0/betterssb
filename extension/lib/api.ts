@@ -12,14 +12,9 @@ import type {
 
 class BetterSSBApi {
   private baseUrl: string;
-  private accessToken: string | null = null;
 
   constructor(baseUrl = API_URL) {
     this.baseUrl = baseUrl.replace(/\/+$/, "");
-  }
-
-  setAccessToken(token: string | null) {
-    this.accessToken = token;
   }
 
   private async request<T>(
@@ -31,13 +26,11 @@ class BetterSSBApi {
       ...(options.headers as Record<string, string>),
     };
 
-    if (this.accessToken) {
-      headers["Authorization"] = `Bearer ${this.accessToken}`;
-    }
-
+    // Sends the backend session cookie (see lib/auth.ts).
     const res = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
       headers,
+      credentials: "include",
     });
 
     if (!res.ok) {
@@ -81,13 +74,9 @@ class BetterSSBApi {
   async parseTranscript(text: string): Promise<TranscriptData> {
     const res = await fetch(`${this.baseUrl}/transcript/parse`, {
       method: "POST",
-      headers: {
-        "Content-Type": "text/plain",
-        ...(this.accessToken
-          ? { Authorization: `Bearer ${this.accessToken}` }
-          : {}),
-      },
+      headers: { "Content-Type": "text/plain" },
       body: text,
+      credentials: "include",
     });
 
     if (!res.ok) {

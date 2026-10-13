@@ -40,7 +40,7 @@ betterssb/
 
 ### How It Works
 
-1. **Popup** — Primary UI: Google sign-in, school selection, schedule builder, semester planner, AI chat, and transcript upload. Talks to the background worker and (for Banner data) to the content script via message passing.
+1. **Popup** — Primary UI: sign-in (via the backend), school selection, schedule builder, semester planner, AI chat, and transcript upload. Talks to the background worker and (for Banner data) to the content script via message passing.
 2. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). Handles anything that must execute in the page: calling Ellucian’s in-page APIs for the popup, injecting Rate My Professor badges on listings, and filling/submitting registration forms for auto-registration.
 3. **Background Service Worker** — Relays non-SSB work to the backend (schedules, chat, transcript parsing, RMP search), forwards `SSB_*` messages to an open Banner tab, registration alarms, and `chrome.storage`.
 4. **Backend API** — Rate My Professor lookups, schedule optimization, transcript parsing, chatbot inference, and prerequisite validation.
@@ -161,11 +161,15 @@ Cookies are always `Secure`. In development, use Chrome on `http://localhost`, w
 
 The API has no CORS. The web app calls it same-origin at `/api` (Vite proxies it in dev; in production serve both from one domain with `/api` routed to the backend). The extension gets the API host in its `host_permissions`, which lets it call the API without CORS.
 
+Both clients sign in through the backend; neither talks to Google or holds a token:
+
+- **Web** — "Sign in with Google" links to `/api/auth/google/login`. The page reads the user from `/api/auth/me` and shows `?auth_error=` messages after a failed sign-in.
+- **Extension** — the popup's Login tab opens `${WXT_API_URL}/auth/google/login` in a new tab. Its requests use `credentials: "include"`, and its host permission for the API lets the session cookie through, so it shares the web app's session. After sign-in the tab lands on `FRONTEND_URL`; reopen the popup to see the account.
+
 The extension reads its config at build time. Copy `extension/.env.example` to `extension/.env` (or `.env.production` for release builds):
 
 ```env
 WXT_API_URL=http://localhost:8000/api   # Backend API base URL
-WXT_GOOGLE_CLIENT_ID=...                   # Same OAuth client ID as the backend
 ```
 
 ## Contributing

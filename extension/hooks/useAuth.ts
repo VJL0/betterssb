@@ -1,105 +1,58 @@
-import { useCallback, useState } from "react";
-import type { AuthUser, AuthTokens } from "@/types";
-import { useStorage } from "./useStorage";
-import { API_URL as apiUrl } from "@/lib/config";
-
-const STORAGE_KEY_TOKENS = "betterssb:auth:tokens";
-const STORAGE_KEY_USER = "betterssb:auth:user";
+import { useCallback, useEffect, useState } from "react";
+import type { AuthUser } from "@/types";
+import { fetchCurrentUser, logout as endSession, startLogin } from "@/lib/auth";
 
 export function useAuth() {
-  const [tokens, setTokens] = useStorage<AuthTokens | null>(
-    STORAGE_KEY_TOKENS,
-    null,
-  );
-  const [user, setUser] = useStorage<AuthUser | null>(STORAGE_KEY_USER, null);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const isAuthenticated = !!tokens?.accessToken && !!user;
-
-  const login = useCallback(
-    async (googleCredential: string) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const resp = await fetch(`${apiUrl}/auth/google`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ credential: googleCredential }),
-        });
-        if (!resp.ok) {
-          const body = await resp.json().catch(() => ({}));
-          throw new Error(body.detail || `Login failed (${resp.status})`);
+  useEffect(() => {
+    let cancelled = false;
+    fetchCurrentUser()
+      .then((u) => {
+        if (!cancelled) setUser(u);
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Couldn't reach the server",
+          );
         }
-        const data = await resp.json();
-        setTokens({
-          accessToken: data.accessToken,
-          refreshToken: data.refreshToken,
-        });
-        setUser({
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.name,
-          pictureUrl: data.user.pictureUrl,
-        });
-      } catch (err: any) {
-        setError(err.message ?? "Login failed");
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [setTokens, setUser],
-  );
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const login = useCallback(async () => {
+    setError(null);
+    // Opening the tab closes the popup; the session is picked up next time it opens.
+    await startLogin();
+  }, []);
 
   const logout = useCallback(async () => {
-    if (tokens?.refreshToken) {
-      await fetch(`${apiUrl}/auth/logout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken: tokens.refreshToken }),
-      }).catch(() => {});
-    }
-    setTokens(null);
-    setUser(null);
-  }, [tokens, setTokens, setUser]);
-
-  const refresh = useCallback(async () => {
-    if (!tokens?.refreshToken) return;
+    setError(null);
+    setLoading(true);
     try {
-      const resp = await fetch(`${apiUrl}/auth/refresh`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken: tokens.refreshToken }),
-      });
-      if (!resp.ok) {
-        await logout();
-        return;
-      }
-      const data = await resp.json();
-      setTokens({
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-      });
-      setUser({
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.name,
-        pictureUrl: data.user.pictureUrl,
-      });
-    } catch {
-      await logout();
+      await endSession();
+      setUser(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Sign-out failed");
+    } finally {
+      setLoading(false);
     }
-  }, [tokens, setTokens, setUser, logout]);
+  }, []);
 
   return {
     user,
-    tokens,
-    isAuthenticated,
+    isAuthenticated: !!user,
     loading,
     error,
     login,
     logout,
-    refresh,
   };
 }
