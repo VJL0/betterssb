@@ -124,7 +124,7 @@ def google(cache: FakeCache, monkeypatch: pytest.MonkeyPatch) -> FakeGoogle:
 
 async def start_login(client: AsyncClient, google: FakeGoogle) -> dict[str, str]:
     """Start sign-in and return the query params of Google's authorization URL."""
-    resp = await client.get("/api/v1/auth/google/login")
+    resp = await client.get("/api/auth/google/login")
     assert resp.status_code == 302
     params = {
         k: v[0] for k, v in parse_qs(urlparse(resp.headers["location"]).query).items()
@@ -136,7 +136,7 @@ async def start_login(client: AsyncClient, google: FakeGoogle) -> dict[str, str]
 async def sign_in(client: AsyncClient, google: FakeGoogle) -> Response:
     params = await start_login(client, google)
     return await client.get(
-        "/api/v1/auth/google/callback",
+        "/api/auth/google/callback",
         params={"code": "auth-code", "state": params["state"]},
     )
 
@@ -151,7 +151,7 @@ class TestLogin:
     async def test_redirects_to_google_with_pkce_state_and_nonce(
         self, client: AsyncClient, google, cache
     ):
-        resp = await client.get("/api/v1/auth/google/login")
+        resp = await client.get("/api/auth/google/login")
 
         assert resp.status_code == 302
         url = urlparse(resp.headers["location"])
@@ -208,7 +208,7 @@ class TestCallback:
         # One-time handshake data is gone.
         assert cache.data == {}
 
-        me = await client.get("/api/v1/auth/me")
+        me = await client.get("/api/auth/me")
         assert me.status_code == 200
         assert me.headers["cache-control"] == "no-store"
         user = me.json()
@@ -267,7 +267,7 @@ class TestCallback:
     async def test_rejects_unknown_state(self, client: AsyncClient, db, google):
         await start_login(client, google)
         resp = await client.get(
-            "/api/v1/auth/google/callback", params={"code": "c", "state": "forged"}
+            "/api/auth/google/callback", params={"code": "c", "state": "forged"}
         )
 
         assert resp.headers["location"].endswith("?auth_error=failed")
@@ -280,7 +280,7 @@ class TestCallback:
         params = await start_login(client, google)
         client.cookies.clear()
         resp = await client.get(
-            "/api/v1/auth/google/callback",
+            "/api/auth/google/callback",
             params={"code": "c", "state": params["state"]},
         )
 
@@ -290,7 +290,7 @@ class TestCallback:
     async def test_user_cancelled(self, client: AsyncClient, db, google):
         params = await start_login(client, google)
         resp = await client.get(
-            "/api/v1/auth/google/callback",
+            "/api/auth/google/callback",
             params={"error": "access_denied", "state": params["state"]},
         )
         assert resp.headers["location"].endswith("?auth_error=access_denied")
@@ -322,12 +322,12 @@ class TestCallback:
 
 class TestSession:
     async def test_me_requires_a_session(self, client: AsyncClient, db):
-        resp = await client.get("/api/v1/auth/me")
+        resp = await client.get("/api/auth/me")
         assert resp.status_code == 401
 
     async def test_unknown_token_is_rejected(self, client: AsyncClient, db):
         client.cookies.set(SESSION_COOKIE, "not-a-real-session")
-        resp = await client.get("/api/v1/auth/me")
+        resp = await client.get("/api/auth/me")
         assert resp.status_code == 401
 
     async def test_logout_ends_the_session_server_side(
@@ -336,13 +336,13 @@ class TestSession:
         await sign_in(client, google)
         token = client.cookies[SESSION_COOKIE]
 
-        resp = await client.post("/api/v1/auth/logout")
+        resp = await client.post("/api/auth/logout")
         assert resp.status_code == 204
         assert "max-age=0" in set_cookie_header(resp, SESSION_COOKIE).lower()
 
         # Replaying the old cookie no longer works.
         client.cookies.set(SESSION_COOKIE, token)
-        assert (await client.get("/api/v1/auth/me")).status_code == 401
+        assert (await client.get("/api/auth/me")).status_code == 401
 
     async def test_idle_timeout(self, client: AsyncClient, db, google):
         await sign_in(client, google)
@@ -356,7 +356,7 @@ class TestSession:
             )
             await session.commit()
 
-        assert (await client.get("/api/v1/auth/me")).status_code == 401
+        assert (await client.get("/api/auth/me")).status_code == 401
 
     async def test_absolute_timeout(self, client: AsyncClient, db, google):
         await sign_in(client, google)
@@ -368,7 +368,7 @@ class TestSession:
             )
             await session.commit()
 
-        assert (await client.get("/api/v1/auth/me")).status_code == 401
+        assert (await client.get("/api/auth/me")).status_code == 401
 
     async def test_activity_extends_the_idle_window(
         self, client: AsyncClient, db, google
@@ -379,7 +379,7 @@ class TestSession:
             await session.execute(update(UserSession).values(last_seen_at=an_hour_ago))
             await session.commit()
 
-        assert (await client.get("/api/v1/auth/me")).status_code == 200
+        assert (await client.get("/api/auth/me")).status_code == 200
 
         async with db() as session:
             last_seen = (

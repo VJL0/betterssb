@@ -21,7 +21,7 @@ class Settings(DatabaseSettings):
     GOOGLE_CLIENT_ID: str = Field(min_length=1)
     GOOGLE_CLIENT_SECRET: str = Field(min_length=1)
     # Must exactly match an authorized redirect URI on the Google OAuth client.
-    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/google/callback"
+    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/auth/google/callback"
     # Where the browser goes after sign-in.
     FRONTEND_URL: str = "http://localhost:5173"
 

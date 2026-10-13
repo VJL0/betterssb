@@ -3,7 +3,7 @@
  * Use `.env.development` / `.env.production` for per-mode values.
  */
 export const API_URL: string = (
-  import.meta.env.WXT_API_URL || "http://localhost:8000/api/v1"
+  import.meta.env.WXT_API_URL || "http://localhost:8000/api"
 ).replace(/\/+$/, "");
 
 export const GOOGLE_CLIENT_ID: string =
