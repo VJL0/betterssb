@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import uuid
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,17 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.auth.models import User, UserSession
 
 
-async def get_user_by_google_sub(db: AsyncSession, google_sub: str) -> User | None:
-    stmt = select(User).where(User.google_sub == google_sub)
-    result = await db.execute(stmt)
-    return result.scalar_one_or_none()
-
-
-async def upsert_user(db: AsyncSession, claims: dict) -> User:
+async def upsert_user(db: AsyncSession, claims: dict, *, now: datetime) -> User:
     google_sub = claims["sub"]
-    user = await get_user_by_google_sub(db, google_sub)
+    user = await db.scalar(select(User).where(User.google_sub == google_sub))
 
-    now = datetime.now(UTC)
     if user is None:
         user = User(
             email=claims.get("email", ""),
@@ -35,32 +27,8 @@ async def upsert_user(db: AsyncSession, claims: dict) -> User:
         user.email = claims.get("email", user.email)
         user.last_login_at = now
 
-    await db.commit()
-    await db.refresh(user)
+    await db.flush()
     return user
-
-
-async def create_session(
-    db: AsyncSession,
-    *,
-    user_id: uuid.UUID,
-    token_hash: str,
-    last_seen_at: datetime,
-    expires_at: datetime,
-    user_agent: str = "",
-    ip_address: str = "",
-) -> UserSession:
-    session = UserSession(
-        user_id=user_id,
-        token_hash=token_hash,
-        last_seen_at=last_seen_at,
-        expires_at=expires_at,
-        user_agent=user_agent,
-        ip_address=ip_address,
-    )
-    db.add(session)
-    await db.commit()
-    return session
 
 
 async def get_session_user(
@@ -98,10 +66,8 @@ async def get_session_user(
             .where(UserSession.id == session_id)
             .values(last_seen_at=now)
         )
-        await db.commit()
     return user
 
 
 async def delete_session(db: AsyncSession, token_hash: str) -> None:
     await db.execute(delete(UserSession).where(UserSession.token_hash == token_hash))
-    await db.commit()

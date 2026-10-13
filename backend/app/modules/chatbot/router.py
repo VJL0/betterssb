@@ -13,7 +13,10 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 async def chat(body: ChatRequest, settings: SettingsDep) -> ChatResponse:
     """Send a conversation to the academic advising chatbot."""
     if not settings.OPENAI_API_KEY:
-        raise HTTPException(status_code=503, detail="OpenAI API key not configured")
+        # Don't reveal configuration details (RFC 9457 §5).
+        raise HTTPException(
+            status_code=503, detail="The chat assistant is unavailable."
+        )
 
     service = ChatbotService(api_key=settings.OPENAI_API_KEY)
     reply = await service.chat(messages=body.messages, context=body.context)
