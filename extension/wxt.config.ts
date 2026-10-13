@@ -17,14 +17,7 @@ export default defineConfig({
     name: "BetterSSB",
     description:
       "Supercharge your university's Self-Service Banner registration",
-    permissions: [
-      "storage",
-      "alarms",
-      "notifications",
-      "identity",
-      "tabs",
-      "activeTab",
-    ],
+    permissions: ["storage", "alarms", "notifications", "tabs", "activeTab"],
     host_permissions: [
       "*://*.edu/StudentRegistrationSsb/*",
       "*://*.edu/ssb/*",

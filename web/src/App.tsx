@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type DragEvent } from "react";
+import { AccountBar } from "./components/AccountBar";
 import { AuditReport } from "./components/AuditReport";
 import { StatusIcon } from "./components/StatusBadge";
 import { formatCredits, isNoteOnly, runFromFile, type Audit } from "./lib/dars";
@@ -43,6 +44,8 @@ function App() {
   return (
     <div className="min-h-dvh bg-slate-50 text-slate-900 lg:grid lg:h-dvh lg:grid-cols-2">
       <aside className="flex flex-col gap-6 border-slate-200 p-4 sm:p-6 lg:overflow-y-auto lg:border-r lg:p-10">
+        <AccountBar />
+
         <header>
           <p className="text-sm font-semibold tracking-wide text-rose-700 uppercase">
             BetterSSB

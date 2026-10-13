@@ -8,17 +8,18 @@ from fastapi.responses import RedirectResponse
 
 from app.api.deps import DbDep, SettingsDep
 from app.core.config import Settings
+from app.modules.auth import service
 from app.modules.auth.dependencies import (
     SESSION_COOKIE,
     SESSION_COOKIE_ATTRS,
-    AuthServiceDep,
     CurrentUserDep,
     GoogleClientDep,
     SessionTokenDep,
 )
-from app.modules.auth.providers.google import GoogleAuthError
+from app.modules.auth.errors import SignInError, SignInFailure
+from app.modules.auth.providers import google as google_oauth
 from app.modules.auth.schemas import UserResponse
-from app.modules.auth.service import SESSION_ABSOLUTE_TIMEOUT, InactiveUserError
+from app.modules.auth.service import SESSION_ABSOLUTE_TIMEOUT
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 def _frontend_redirect(
-    settings: Settings, error: str | None = None
+    settings: Settings, error: SignInFailure | None = None
 ) -> RedirectResponse:
     url = settings.FRONTEND_URL
     if error:
@@ -34,12 +35,23 @@ def _frontend_redirect(
     return RedirectResponse(url, status_code=status.HTTP_303_SEE_OTHER)
 
 
+async def handle_sign_in_error(request: Request, exc: SignInError) -> Response:
+    """Sign-in runs in the browser's address bar, so failures redirect to the
+    frontend instead of returning a problem response.
+    """
+    # OWASP Logging Vocabulary event; %r escapes values from the callback URL.
+    logger.warning("authn_login_fail: %r", str(exc))
+    return _frontend_redirect(request.app.state.settings, error=exc.reason)
+
+
 @router.get("/google/login")
 async def google_login(
     request: Request, google: GoogleClientDep, settings: SettingsDep
 ) -> RedirectResponse:
     """Redirect to Google to sign in."""
-    return await google.authorize_redirect(request, settings.GOOGLE_REDIRECT_URI)
+    return await google_oauth.authorize_redirect(
+        google, request, settings.GOOGLE_REDIRECT_URI
+    )
 
 
 @router.get("/google/callback")
@@ -47,32 +59,18 @@ async def google_callback(
     request: Request,
     session_token: SessionTokenDep,
     db: DbDep,
-    service: AuthServiceDep,
     google: GoogleClientDep,
     settings: SettingsDep,
 ) -> RedirectResponse:
     """Finish Google sign-in, start a session, and redirect to the frontend."""
-    try:
-        claims = await google.authorize(request)
-    except GoogleAuthError as exc:
-        logger.info("Google sign-in failed: %s", exc.error)
-        # Don't reflect Google's error code; the frontend only needs to know
-        # whether the user cancelled.
-        return _frontend_redirect(
-            settings,
-            error="access_denied" if exc.error == "access_denied" else "failed",
-        )
-
-    try:
-        raw_token = await service.start_session(
-            db,
-            claims,
-            previous_token=session_token,
-            user_agent=request.headers.get("user-agent", ""),
-            ip_address=request.client.host if request.client else "",
-        )
-    except InactiveUserError:
-        return _frontend_redirect(settings, error="account_disabled")
+    claims = await google_oauth.authorize(google, request)
+    raw_token = await service.start_session(
+        db,
+        claims,
+        previous_token=session_token,
+        user_agent=request.headers.get("user-agent", ""),
+        ip_address=request.client.host if request.client else "",
+    )
 
     response = _frontend_redirect(settings)
     response.set_cookie(
@@ -85,9 +83,7 @@ async def google_callback(
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-async def logout(
-    session_token: SessionTokenDep, db: DbDep, service: AuthServiceDep
-) -> Response:
+async def logout(session_token: SessionTokenDep, db: DbDep) -> Response:
     """Delete the session and clear its cookie."""
     if session_token:
         await service.end_session(db, session_token)
@@ -97,9 +93,6 @@ async def logout(
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(response: Response, user: CurrentUserDep) -> UserResponse:
+async def get_me(user: CurrentUserDep) -> UserResponse:
     """Return the signed-in user."""
-    response.headers["Cache-Control"] = "no-store"
-    return UserResponse(
-        id=str(user.id), email=user.email, name=user.name, picture_url=user.picture_url
-    )
+    return UserResponse.model_validate(user, from_attributes=True)

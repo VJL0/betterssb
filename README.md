@@ -40,7 +40,7 @@ betterssb/
 
 ### How It Works
 
-1. **Popup** — Primary UI: Google sign-in, school selection, schedule builder, semester planner, AI chat, and transcript upload. Talks to the background worker and (for Banner data) to the content script via message passing.
+1. **Popup** — Primary UI: sign-in (via the backend), school selection, schedule builder, semester planner, AI chat, and transcript upload. Talks to the background worker and (for Banner data) to the content script via message passing.
 2. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). Handles anything that must execute in the page: calling Ellucian’s in-page APIs for the popup, injecting Rate My Professor badges on listings, and filling/submitting registration forms for auto-registration.
 3. **Background Service Worker** — Relays non-SSB work to the backend (schedules, chat, transcript parsing, RMP search), forwards `SSB_*` messages to an open Banner tab, registration alarms, and `chrome.storage`.
 4. **Backend API** — Rate My Professor lookups, schedule optimization, transcript parsing, chatbot inference, and prerequisite validation.
@@ -109,10 +109,12 @@ In production, run migrations, then start Uvicorn without `--reload`:
 
 ```bash
 uv run alembic upgrade head
-uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --no-server-header
 ```
 
 Behind a load balancer or reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy's address so client IPs are read from `X-Forwarded-For`. `WEB_CONCURRENCY` can replace `--workers`.
+
+The API adds `Cache-Control: no-store`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and `Content-Security-Policy: frame-ancestors 'none'` to every response ([OWASP REST Security](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html#security-headers)). Set `Strict-Transport-Security` at the HTTPS proxy, where it also covers the web app's pages. `--no-server-header` drops Uvicorn's `Server` header.
 
 The app never creates tables itself. After changing a model, generate a migration with `uv run alembic revision --autogenerate -m "..."`, review it, and commit it. Run `alembic upgrade head` as a deploy step before starting the new version.
 
@@ -126,6 +128,7 @@ The app never creates tables itself. After changing a model, generate a migratio
 
 - **Hot reload** — `pnpm dev` in `extension/` watches for changes and reloads the extension automatically.
 - **API docs** — Visit `http://localhost:8000/docs` for the interactive Swagger UI.
+- **Errors** — API errors are [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) problem details (`application/problem+json`) with `type`, `title`, `status`, and an optional user-safe `detail`; validation errors add an `errors` list. Raise `HTTPException` in endpoints; `app/core/errors.py` formats it. Sign-in failures redirect to the frontend with `?auth_error=` instead.
 - **Type safety** — Shared types in `extension/types/` keep content scripts, popup, and API calls in sync.
 
 ## Environment Variables
@@ -150,7 +153,7 @@ The API won't start without `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a va
 
 Sign-in is Google only, using the OAuth 2.0 authorization code flow with OpenID Connect, via [Authlib](https://docs.authlib.org/).
 
-1. `GET /api/auth/google/login` redirects to Google with `state`, `nonce`, and a PKCE challenge. Those values are kept in Redis for 10 minutes. A short-lived signed cookie ties them to the browser that started the flow.
+1. `GET /api/auth/google/login` redirects to Google with `state`, `nonce`, and a PKCE challenge. Those values are kept in Redis. A signed cookie that expires after 10 minutes ties them to the browser that started the flow, so sign-in must finish within that time.
 2. `GET /api/auth/google/callback` checks `state`, exchanges the code, and validates the ID token locally against Google's keys (signature, `iss`, `aud`, `exp`, `nonce`). It then upserts the user by Google's `sub` (never by email), opens a session, and redirects to `FRONTEND_URL`. If sign-in fails, it appends `?auth_error=access_denied|failed|account_disabled`.
 3. Sessions are server-side, in the Postgres `sessions` table. The `__Host-Http-sid` cookie (`Secure`, `HttpOnly`, `SameSite=Lax`, host-only) holds a random 256-bit token, and only its SHA-256 hash is stored. Sessions expire after 7 days of inactivity or 30 days total. Each sign-in issues a new ID.
 4. `POST /api/auth/logout` deletes the session row and clears the cookie. `GET /api/auth/me` returns the current user, or `401`.
@@ -161,11 +164,15 @@ Cookies are always `Secure`. In development, use Chrome on `http://localhost`, w
 
 The API has no CORS. The web app calls it same-origin at `/api` (Vite proxies it in dev; in production serve both from one domain with `/api` routed to the backend). The extension gets the API host in its `host_permissions`, which lets it call the API without CORS.
 
+Both clients sign in through the backend; neither talks to Google or holds a token:
+
+- **Web** — "Sign in with Google" links to `/api/auth/google/login`. The page reads the user from `/api/auth/me` and shows `?auth_error=` messages after a failed sign-in.
+- **Extension** — the popup's Login tab opens `${WXT_API_URL}/auth/google/login` in a new tab. Its requests use `credentials: "include"`, and its host permission for the API lets the session cookie through, so it shares the web app's session. After sign-in the tab lands on `FRONTEND_URL`; reopen the popup to see the account.
+
 The extension reads its config at build time. Copy `extension/.env.example` to `extension/.env` (or `.env.production` for release builds):
 
 ```env
 WXT_API_URL=http://localhost:8000/api   # Backend API base URL
-WXT_GOOGLE_CLIENT_ID=...                   # Same OAuth client ID as the backend
 ```
 
 ## Contributing
