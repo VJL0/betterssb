@@ -10,7 +10,7 @@ from app.modules.rmp.router import router as rmp_router
 from app.modules.schedule.router import router as schedule_router
 from app.modules.transcript.router import router as transcript_router
 
-api_router = APIRouter(prefix="/api/v1")
+api_router = APIRouter(prefix="/api")
 
 api_router.include_router(auth_router)
 api_router.include_router(chatbot_router)
