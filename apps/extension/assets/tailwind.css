@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "@workspace/ui/globals.css";
 
 @layer base {
   html,
@@ -14,11 +14,5 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
   }
 }
