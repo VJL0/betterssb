@@ -17,7 +17,7 @@ import {
 import { getPlans, getTerms } from "@/lib/ssb-reg-messages";
 import type { SSBGetPlansResponse, SSBTerm } from "@/types/ssb";
 import { Button, Card, Input, Spinner } from "@/components/ui";
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 
 function FieldSelect({
   label,

@@ -1,5 +1,5 @@
 import type { Section } from "@/types";
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 
 interface ScheduleGridProps {
   sections: Section[];

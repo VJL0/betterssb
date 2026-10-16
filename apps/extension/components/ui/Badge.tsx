@@ -1,4 +1,4 @@
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 
 type BadgeColor = "green" | "yellow" | "red" | "blue" | "gray";
 

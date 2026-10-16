@@ -9,7 +9,7 @@ import { sendMessage } from "@/lib/messaging";
 import { ssbSectionToInternal } from "@/lib/ssb-api";
 import { Button, Input, Card } from "@/components/ui";
 import { ScheduleCard } from "@/components/schedule/ScheduleCard";
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 
 export function ScheduleBuilder() {
   const [terms, setTerms] = useState<SSBTerm[]>([]);

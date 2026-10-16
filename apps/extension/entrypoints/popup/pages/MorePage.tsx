@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 import { ScheduleBuilder } from "./ScheduleBuilder";
 import { SemesterPlanner } from "./SemesterPlanner";
 import { ChatPage } from "./ChatPage";

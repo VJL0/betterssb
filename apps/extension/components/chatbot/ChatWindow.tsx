@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import type { ChatMessage } from "@/types";
 import { sendMessage } from "@/lib/messaging";
 import { Button } from "@/components/ui";
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 
 function bubbleClass(role: "user" | "assistant"): string {
   return cn(
