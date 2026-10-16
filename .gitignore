@@ -28,7 +28,7 @@ data/
 *.sw?
 
 # WXT
-extension/.wxt/
+.wxt/
 web-ext.config.ts
 stats.html
 stats-*.json
@@ -53,3 +53,9 @@ htmlcov/
 
 # OS
 Thumbs.db
+
+# Turborepo / TypeScript
+.turbo/
+*.tsbuildinfo
+dist-ssr/
+*.local
