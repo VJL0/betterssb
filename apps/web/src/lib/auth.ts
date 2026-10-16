@@ -4,7 +4,7 @@
  * and redirects back here (with `?auth_error=` if it failed).
  */
 
-/** Mirrors backend/app/modules/auth/schemas.py (camelCase over the wire). */
+/** Mirrors apps/api/app/modules/auth/schemas.py (camelCase over the wire). */
 export interface User {
   id: string;
   email: string;

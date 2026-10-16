@@ -10,4 +10,4 @@ pnpm dev          # dev build + hot reload → load .output/chrome-mv3-dev unpac
 pnpm build        # production bundle → .output/chrome-mv3
 ```
 
-See the [repository root README](../README.md) for architecture, prerequisites, backend setup, and environment variables.
+See the [repository root README](../../README.md) for architecture, prerequisites, backend setup, and environment variables.

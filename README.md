@@ -31,7 +31,7 @@ betterssb/
 │   │   ├── hooks/                     # Custom React hooks
 │   │   └── types/                     # Shared TypeScript types
 │   │
-│   ├── backend/       # API server (FastAPI + Python 3.14)
+│   ├── api/           # API server (FastAPI + Python 3.14)
 │   │   └── app/
 │   │       ├── api/                   # App router & shared route dependencies
 │   │       ├── modules/               # Per-feature routers, services, schemas, external clients
@@ -88,7 +88,7 @@ betterssb/
 ### Database & Cache
 
 ```bash
-cd apps/backend
+cd apps/api
 docker compose up -d   # starts PostgreSQL on 5432 and Redis on 6379
 ```
 
@@ -105,7 +105,7 @@ pnpm dev            # dev build with hot reload → apps/extension/.output/chrom
 ### Backend (API Server)
 
 ```bash
-cd apps/backend
+cd apps/api
 cp .env.example .env  # then fill in your secrets
 uv sync
 uv run alembic upgrade head              # create/update the database schema
@@ -140,7 +140,7 @@ The app never creates tables itself. After changing a model, generate a migratio
 
 ## Environment Variables
 
-Copy `apps/backend/.env.example` to `apps/backend/.env` and fill in:
+Copy `apps/api/.env.example` to `apps/api/.env` and fill in:
 
 ```env
 DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/postgres

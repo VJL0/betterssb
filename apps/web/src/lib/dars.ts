@@ -1,4 +1,4 @@
-/** Types mirror backend/app/modules/dars/schemas.py (camelCase over the wire). */
+/** Types mirror apps/api/app/modules/dars/schemas.py (camelCase over the wire). */
 
 export type AuditStatus = "complete" | "incomplete" | "in_progress" | "none";
 

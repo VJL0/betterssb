@@ -1,5 +1,5 @@
 [project]
-name = "betterssb-backend"
+name = "betterssb-api"
 version = "0.1.0"
 description = "BetterSSB API server — schedule optimization, RMP proxy, chatbot, and transcript analysis"
 requires-python = ">=3.14"
