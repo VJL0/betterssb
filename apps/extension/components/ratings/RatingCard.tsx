@@ -1,6 +1,6 @@
 import type { RMPRating } from "@/types";
 import { Card, Badge } from "@/components/ui";
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 
 interface RatingCardProps {
   rating: RMPRating;

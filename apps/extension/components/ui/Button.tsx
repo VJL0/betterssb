@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 import { Spinner } from "./Spinner";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";

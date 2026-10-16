@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 import { RateMyProfessorPage } from "./pages/RateMyProfessorPage";
 import { AutoRegisterPage } from "./pages/AutoRegisterPage";
 import { LoginPage } from "./pages/LoginPage";

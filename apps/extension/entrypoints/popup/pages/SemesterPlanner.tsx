@@ -6,7 +6,7 @@ import type {
 } from "@/types/ssb";
 import { sendMessage } from "@/lib/messaging";
 import { Card, Button, Input } from "@/components/ui";
-import { cn } from "@/lib/cn";
+import { cn } from "@workspace/ui/lib/utils";
 
 interface PlannedItem {
   crn: string;
