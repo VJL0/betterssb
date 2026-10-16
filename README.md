@@ -85,32 +85,31 @@ betterssb/
 - **Docker** and **Docker Compose** (for PostgreSQL and Redis)
 - A Chromium-based browser
 
-### Database & Cache
+### Setup
 
 ```bash
+pnpm install                          # JS dependencies for every workspace package
 cd apps/api
-docker compose up -d   # starts PostgreSQL on 5432 and Redis on 6379
+cp .env.example .env                  # then fill in your secrets
+uv sync                               # Python dependencies (pnpm doesn't install these)
+docker compose up -d                  # PostgreSQL on 5432, Redis on 6379
+uv run alembic upgrade head           # create/update the database schema
 ```
 
 Redis holds short-lived data only (caches, rate limits, OAuth state). It runs with persistence off, so its data is gone after a restart — set a TTL on every key and keep anything durable in Postgres.
 
-### Frontend (Chrome Extension)
+### Running
+
+From the repo root, with Docker running:
 
 ```bash
-pnpm install        # from the repo root; installs every workspace package
-cd apps/extension
-pnpm dev            # dev build with hot reload → apps/extension/.output/chrome-mv3-dev
+pnpm dev     # Postgres + Redis, API on :8000, web on :5173, extension → apps/extension/.output/chrome-mv3-dev
+pnpm lint    # ESLint + Ruff
+pnpm test    # pytest
+pnpm format  # Prettier + Ruff
 ```
 
-### Backend (API Server)
-
-```bash
-cd apps/api
-cp .env.example .env  # then fill in your secrets
-uv sync
-uv run alembic upgrade head              # create/update the database schema
-uv run uvicorn app.main:app --reload     # dev server at http://localhost:8000
-```
+Run a subset with `pnpm turbo dev --filter=api --filter=web`. Migrations aren't part of `dev`; run `uv run alembic upgrade head` in `apps/api` after pulling new ones.
 
 In production, run migrations, then start Uvicorn without `--reload`:
 
