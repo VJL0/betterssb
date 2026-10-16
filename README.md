@@ -18,24 +18,31 @@ A Chrome extension that supercharges Ellucian Self-Service Banner (SSB) — the 
 
 ```
 betterssb/
-├── extension/         # Chrome extension (WXT + React + TypeScript)
-│   ├── entrypoints/
-│   │   ├── background.ts          # Service worker: API relay, auth, alarms
-│   │   ├── content/               # Injected into Banner pages
-│   │   │   ├── index.tsx          # Content script entry
-│   │   │   └── modules/           # DOM / page-context features
-│   │   └── popup/                 # Extension popup (main UI)
-│   ├── components/                # Shared React components
-│   ├── lib/                       # API client, storage, messaging helpers
-│   ├── hooks/                     # Custom React hooks
-│   └── types/                     # Shared TypeScript types
+├── apps/
+│   ├── extension/     # Chrome extension (WXT + React + TypeScript)
+│   │   ├── entrypoints/
+│   │   │   ├── background.ts          # Service worker: API relay, auth, alarms
+│   │   │   ├── content/               # Injected into Banner pages
+│   │   │   │   ├── index.tsx          # Content script entry
+│   │   │   │   └── modules/           # DOM / page-context features
+│   │   │   └── popup/                 # Extension popup (main UI)
+│   │   ├── components/                # Shared React components
+│   │   ├── lib/                       # API client, storage, messaging helpers
+│   │   ├── hooks/                     # Custom React hooks
+│   │   └── types/                     # Shared TypeScript types
+│   │
+│   ├── api/           # API server (FastAPI + Python 3.14)
+│   │   └── app/
+│   │       ├── api/                   # App router & shared route dependencies
+│   │       ├── modules/               # Per-feature routers, services, schemas, external clients
+│   │       ├── core/                  # Config, database, security
+│   │       └── shared/                # Cross-cutting schemas
+│   │
+│   ├── web/           # Web app (Vite + React + shadcn/ui)
+│   └── ellucian-api/  # Mock Ellucian SSB API (FastAPI)
 │
-├── backend/           # API server (FastAPI + Python 3.14)
-│   └── app/
-│       ├── api/                   # App router & shared route dependencies
-│       ├── modules/               # Per-feature routers, services, schemas, external clients
-│       ├── core/                  # Config, database, security
-│       └── shared/                # Cross-cutting schemas
+└── packages/
+    └── ui/            # Shared shadcn/ui components and Tailwind theme
 ```
 
 ### How It Works
@@ -78,32 +85,31 @@ betterssb/
 - **Docker** and **Docker Compose** (for PostgreSQL and Redis)
 - A Chromium-based browser
 
-### Database & Cache
+### Setup
 
 ```bash
-cd backend
-docker compose up -d   # starts PostgreSQL on 5432 and Redis on 6379
+pnpm install                          # JS dependencies for every workspace package
+cd apps/api
+cp .env.example .env                  # then fill in your secrets
+uv sync                               # Python dependencies (pnpm doesn't install these)
+docker compose up -d                  # PostgreSQL on 5432, Redis on 6379
+uv run alembic upgrade head           # create/update the database schema
 ```
 
 Redis holds short-lived data only (caches, rate limits, OAuth state). It runs with persistence off, so its data is gone after a restart — set a TTL on every key and keep anything durable in Postgres.
 
-### Frontend (Chrome Extension)
+### Running
+
+From the repo root, with Docker running:
 
 ```bash
-cd extension
-pnpm install
-pnpm dev            # dev build with hot reload → extension/.output/chrome-mv3-dev
+pnpm dev     # Postgres + Redis, API on :8000, web on :5173, extension → apps/extension/.output/chrome-mv3-dev
+pnpm lint    # ESLint + Ruff
+pnpm test    # pytest
+pnpm format  # Prettier + Ruff
 ```
 
-### Backend (API Server)
-
-```bash
-cd backend
-cp .env.example .env  # then fill in your secrets
-uv sync
-uv run alembic upgrade head              # create/update the database schema
-uv run uvicorn app.main:app --reload     # dev server at http://localhost:8000
-```
+Run a subset with `pnpm turbo dev --filter=api --filter=web`. Migrations aren't part of `dev`; run `uv run alembic upgrade head` in `apps/api` after pulling new ones.
 
 In production, run migrations, then start Uvicorn without `--reload`:
 
@@ -120,20 +126,20 @@ The app never creates tables itself. After changing a model, generate a migratio
 
 ### Loading the Extension Manually
 
-1. Run `pnpm dev` (or `pnpm build` for a production bundle) in `extension/`.
+1. Run `pnpm dev` (or `pnpm build` for a production bundle) in `apps/extension/`.
 2. Open `chrome://extensions`, enable **Developer mode**.
-3. Click **Load unpacked** and select `extension/.output/chrome-mv3-dev` (or `extension/.output/chrome-mv3` for `pnpm build`).
+3. Click **Load unpacked** and select `apps/extension/.output/chrome-mv3-dev` (or `apps/extension/.output/chrome-mv3` for `pnpm build`).
 
 ## Development
 
-- **Hot reload** — `pnpm dev` in `extension/` watches for changes and reloads the extension automatically.
+- **Hot reload** — `pnpm dev` in `apps/extension/` watches for changes and reloads the extension automatically.
 - **API docs** — Visit `http://localhost:8000/docs` for the interactive Swagger UI.
 - **Errors** — API errors are [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) problem details (`application/problem+json`) with `type`, `title`, `status`, and an optional user-safe `detail`; validation errors add an `errors` list. Raise `HTTPException` in endpoints; `app/core/errors.py` formats it. Sign-in failures redirect to the frontend with `?auth_error=` instead.
-- **Type safety** — Shared types in `extension/types/` keep content scripts, popup, and API calls in sync.
+- **Type safety** — Shared types in `apps/extension/types/` keep content scripts, popup, and API calls in sync.
 
 ## Environment Variables
 
-Copy `backend/.env.example` to `backend/.env` and fill in:
+Copy `apps/api/.env.example` to `apps/api/.env` and fill in:
 
 ```env
 DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
@@ -169,7 +175,7 @@ Both clients sign in through the backend; neither talks to Google or holds a tok
 - **Web** — "Sign in with Google" links to `/api/auth/google/login`. The page reads the user from `/api/auth/me` and shows `?auth_error=` messages after a failed sign-in.
 - **Extension** — the popup's Login tab opens `${WXT_API_URL}/auth/google/login` in a new tab. Its requests use `credentials: "include"`, and its host permission for the API lets the session cookie through, so it shares the web app's session. After sign-in the tab lands on `FRONTEND_URL`; reopen the popup to see the account.
 
-The extension reads its config at build time. Copy `extension/.env.example` to `extension/.env` (or `.env.production` for release builds):
+The extension reads its config at build time. Copy `apps/extension/.env.example` to `apps/extension/.env` (or `.env.production` for release builds):
 
 ```env
 WXT_API_URL=http://localhost:8000/api   # Backend API base URL
