@@ -10,7 +10,7 @@ Captures live under `data/` (gitignored), grouped by system: `data/ssb/` for reg
 HAR files are large JSON blobs; never `cat` or `Read` them whole. Use the helper script, which lists entries compactly and redacts cookies, auth, and `X-Synchronizer-Token` values.
 
 ```bash
-S=.claude/skills/har-inspect/scripts/har.py   # run from repo root
+S=.agents/skills/har-inspect/scripts/har.py   # run from repo root
 
 python3 $S list "data/ssb/<capture>.har"                    # index of non-static requests
 python3 $S list "data/ssb/<capture>.har" --filter classRegistration

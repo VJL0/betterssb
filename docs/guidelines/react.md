@@ -1,9 +1,3 @@
----
-description: React best practices and patterns for modern web applications
-globs: **/*.tsx
-alwaysApply: true
----
-
 # React Best Practices
 
 ## Component Structure
