@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Local configuration and tracker state
+.env
+.ntfy-topic
+.ssb-seat-tracker-state.json
+.ssb-seat-tracker-state.json.tmp
+
+# Local tooling and build output
+.aws-sam/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# One-off Lambda invocation output
+response.json
