@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { RMPRating } from "@workspace/shared/types";
 import { RmpBadge } from "@workspace/ui/components/rmp-badge";
 import { axeViolations } from "../test/axe";
+import type { RmpRating } from "@workspace/api-client";
 
-function rating(overrides: Partial<RMPRating> = {}): RMPRating {
+function rating(overrides: Partial<RmpRating> = {}): RmpRating {
   return {
     professorName: "Dana Whitlock",
     department: "Computer Science",

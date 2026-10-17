@@ -1,8 +1,8 @@
-import type { GeneratedSchedule } from "@workspace/shared/types";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { ScheduleGrid } from "./ScheduleGrid";
+import type { GeneratedSchedule } from "@workspace/api-client";
 
 interface ScheduleCardProps {
   schedule: GeneratedSchedule;

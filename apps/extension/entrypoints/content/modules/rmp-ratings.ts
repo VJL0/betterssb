@@ -1,7 +1,7 @@
-import type { RMPRating, RMPSchool } from "@workspace/shared/types";
 import { sendMessage } from "@/lib/messaging";
 import { getCachedRatings, cacheRating } from "@/lib/storage";
 import { getStorageItem } from "@/lib/storage";
+import type { RmpRating, RmpSchool } from "@workspace/api-client";
 
 const PROCESSED_ATTR = "data-betterssb-rated";
 
@@ -20,7 +20,7 @@ function ratingColorClasses(rating: number): string {
   return "bg-red-600 hover:bg-red-700";
 }
 
-function createBadge(rating: RMPRating): HTMLSpanElement {
+function createBadge(rating: RmpRating): HTMLSpanElement {
   const badge = document.createElement("span");
   badge.className = `group relative ml-1.5 inline-flex cursor-pointer items-center justify-center rounded-full px-2 py-0.5 align-middle text-xs font-semibold text-white shadow-sm transition hover:scale-105 hover:shadow-md ${ratingColorClasses(rating.overallRating)}`;
   badge.textContent = rating.overallRating.toFixed(1);
@@ -110,7 +110,7 @@ async function processElement(el: Element, schoolName: string): Promise<void> {
     });
 
     if (response.success && response.data) {
-      const rating = response.data as RMPRating;
+      const rating = response.data as RmpRating;
       await cacheRating(name, rating);
       el.appendChild(createBadge(rating));
     }
@@ -121,7 +121,7 @@ async function processElement(el: Element, schoolName: string): Promise<void> {
 
 export function initRMPRatings(_observer?: MutationObserver): void {
   (async () => {
-    const school = await getStorageItem<RMPSchool>("betterssb:school");
+    const school = await getStorageItem<RmpSchool>("betterssb:school");
     const schoolName = school?.name ?? "";
     if (!schoolName) return;
 

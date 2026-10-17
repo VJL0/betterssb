@@ -1,10 +1,10 @@
-import type { RMPRating } from "@workspace/shared/types";
 import { Badge } from "@workspace/ui/components/badge";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { cn } from "@workspace/ui/lib/utils";
+import type { RmpRating } from "@workspace/api-client";
 
 interface RatingCardProps {
-  rating: RMPRating;
+  rating: RmpRating;
 }
 
 function scoreBoxClass(value: number): string {

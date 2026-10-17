@@ -8,8 +8,8 @@ import {
   meetingTimeToDays,
   primaryInstructorName,
 } from "@workspace/shared/lib/sections";
-import type { ClassSection } from "@workspace/shared/types/classes";
 import type { RatingLookup } from "@/hooks/use-ratings";
+import type { ClassSection } from "@workspace/api-client";
 
 export const MIN_RATING_OPTIONS = [0, 3.5, 4] as const;
 export type MinRating = (typeof MIN_RATING_OPTIONS)[number];

@@ -6,8 +6,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "cn";
-import type { AuditStatus } from "@workspace/shared/types/dars";
+import type { Requirement } from "@workspace/api-client";
 
+/** DARS status of a requirement or sub-requirement. */
+type AuditStatus = Requirement["status"];
 type MarkedStatus = Exclude<AuditStatus, "none">;
 
 /** Audit status words, icons and tones from the design (handoff §3). */

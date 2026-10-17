@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { setUpApiClient } from "@/lib/api-client";
 import { onMessage, sendTabMessage } from "@/lib/messaging";
 import type { ExtensionMessage, ExtensionResponse } from "@/lib/messaging";
 import {
@@ -16,13 +16,19 @@ import {
   getAutoRegRunState,
   patchAutoRegRunState,
 } from "@/lib/auto-reg-run-state";
-import type {
-  Section,
-  SchedulePreferences,
-  ChatMessage,
-  TranscriptCourse,
-} from "@workspace/shared/types";
 import type { BannerConnection } from "@workspace/shared/types/store";
+import {
+  chat,
+  checkPrerequisites,
+  generateSchedules,
+  parseTranscript,
+  searchProfessors,
+  searchSchools,
+  type ChatMessage,
+  type SchedulePreferences,
+  type SectionOutput as Section,
+  type TranscriptCourse,
+} from "@workspace/api-client";
 
 const SSB_URL_PATTERN = "*://*.edu/StudentRegistrationSsb/*";
 const DARS_URL_PATTERN = "*://prd-dars.temple.edu/selfservice/*";
@@ -157,6 +163,8 @@ function buildBatchDedupeKey(
 }
 
 export default defineBackground(() => {
+  setUpApiClient();
+
   onMessage(async (msg, sendResponse) => {
     try {
       if (isSSBMessage(msg.type)) {
@@ -179,7 +187,7 @@ export default defineBackground(() => {
       switch (msg.type) {
         case "SEARCH_SCHOOLS": {
           const { query } = msg.payload as { query: string };
-          const schools = await api.searchSchools(query);
+          const { data: schools } = await searchSchools({ query: { query } });
           sendResponse({ success: true, data: schools });
           break;
         }
@@ -189,8 +197,10 @@ export default defineBackground(() => {
             name: string;
             school: string;
           };
-          const ratings = await api.searchProfessor(name, school);
-          const rating = ratings.length > 0 ? ratings[0] : null;
+          const { data: ratings } = await searchProfessors({
+            query: { name, school },
+          });
+          const rating = ratings[0] ?? null;
           sendResponse({ success: true, data: rating });
           break;
         }
@@ -200,7 +210,9 @@ export default defineBackground(() => {
             sections: Section[];
             preferences: SchedulePreferences;
           };
-          const schedules = await api.generateSchedules(sections, preferences);
+          const { data: schedules } = await generateSchedules({
+            body: { sections, preferences },
+          });
           sendResponse({ success: true, data: schedules });
           break;
         }
@@ -210,14 +222,17 @@ export default defineBackground(() => {
             messages: ChatMessage[];
             context?: string;
           };
-          const reply = await api.chat(messages, context);
+          const { data } = await chat({
+            body: { messages, context: context ?? "" },
+          });
+          const reply = data.response;
           sendResponse({ success: true, data: reply });
           break;
         }
 
         case "PARSE_TRANSCRIPT": {
           const { text } = msg.payload as { text: string };
-          const transcript = await api.parseTranscript(text);
+          const { data: transcript } = await parseTranscript({ body: text });
           sendResponse({ success: true, data: transcript });
           break;
         }
@@ -227,7 +242,9 @@ export default defineBackground(() => {
             completed: TranscriptCourse[];
             required: string[];
           };
-          const result = await api.checkPrerequisites(completed, required);
+          const { data: result } = await checkPrerequisites({
+            body: { completed, required },
+          });
           sendResponse({ success: true, data: result });
           break;
         }
