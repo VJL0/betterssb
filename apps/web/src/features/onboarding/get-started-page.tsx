@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import type { RMPSchool } from "@workspace/shared/types";
 import type {
   BannerConnection,
   SchoolChoice,
@@ -41,7 +40,7 @@ import { Logo } from "@/components/logo";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import { useSettings } from "@/hooks/use-settings";
 import { useTerms, type Term } from "@/hooks/use-terms";
-import { searchSchools } from "@/lib/api/rmp";
+import { findSchools } from "@/lib/schools";
 import { BANNER_REGISTRATION_URL, EXTENSION_INSTALL_URL } from "@/lib/config";
 
 const STEPS = [
@@ -54,10 +53,6 @@ type StepId = (typeof STEPS)[number]["id"];
 
 function isStepId(value: string | null): value is StepId {
   return STEPS.some((s) => s.id === value);
-}
-
-function findSchools(query: string): Promise<RMPSchool[]> {
-  return searchSchools(query);
 }
 
 interface Draft {

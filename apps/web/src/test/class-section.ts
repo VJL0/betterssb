@@ -1,7 +1,4 @@
-import type {
-  ClassMeetingTime,
-  ClassSection,
-} from "@workspace/shared/types/classes";
+import type { ClassSection, MeetingTime } from "@workspace/api-client";
 
 const DAY_FLAGS = {
   M: "monday",
@@ -18,8 +15,8 @@ export function meetingTime(
   days: string,
   begin: string | null,
   end: string | null,
-  overrides: Partial<ClassMeetingTime> = {},
-): ClassMeetingTime {
+  overrides: Partial<MeetingTime> = {},
+): MeetingTime {
   const flags = Object.fromEntries(
     Object.entries(DAY_FLAGS).map(([letter, name]) => [
       name,
@@ -45,7 +42,7 @@ export function meetingTime(
 
 /** A Banner class-search section for tests, CIS 2168 001 on TR by default. */
 export function classSection(
-  overrides: Partial<ClassSection> & { meetings?: ClassMeetingTime[] } = {},
+  overrides: Partial<ClassSection> & { meetings?: MeetingTime[] } = {},
 ): ClassSection {
   const { meetings, ...rest } = overrides;
   const subject = rest.subject ?? "CIS";

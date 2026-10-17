@@ -7,12 +7,11 @@ import {
   SlidersHorizontalIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { courseCode, plannedSectionFrom } from "@workspace/shared/lib/plan";
 import { planCredits } from "@workspace/shared/lib/plan";
 import { primaryInstructorName } from "@workspace/shared/lib/sections";
-import type { ClassSection } from "@workspace/shared/types/classes";
-import type { SSBCodeDescription } from "@workspace/shared/types/ssb";
 import type { PlannedSection } from "@workspace/shared/types/store";
 import {
   Alert,
@@ -54,7 +53,6 @@ import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { usePlan } from "@/hooks/use-plan";
 import { useRatings } from "@/hooks/use-ratings";
 import { useSettings } from "@/hooks/use-settings";
-import { fetchAttributes } from "@/lib/api/classes";
 import { formatClockTime, formatUpdated } from "@/lib/relative-time";
 import { undoToast } from "@/lib/undo-toast";
 import { CourseCard } from "./course-card";
@@ -70,9 +68,14 @@ import {
   type FilterName,
   type SearchFilters,
 } from "./search-filters";
+import type { ClassSection, CodeDescription } from "@workspace/api-client";
+import { listAttributesOptions } from "@workspace/api-client/query";
 
 const EXAMPLES = ["CIS 2168", "MATH", "data science"];
 const CLOCK_TICK_MS = 30_000;
+/** Attributes change between terms, not within one. */
+const ATTRIBUTES_STALE_MS = 24 * 60 * 60 * 1000;
+const NO_ATTRIBUTES: CodeDescription[] = [];
 
 const FILTER_LABEL: Record<FilterName, string> = {
   days: "meeting days",
@@ -366,23 +369,13 @@ function movePlanButtonFocus(step: 1 | -1) {
   buttons[next]?.focus();
 }
 
-function useAttributes(term: string): SSBCodeDescription[] {
-  const [attributes, setAttributes] = useState<{
-    term: string;
-    list: SSBCodeDescription[];
-  } | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    fetchAttributes(term).then(
-      (list) => !cancelled && setAttributes({ term, list }),
-      // Attributes are optional; search works without them.
-      () => !cancelled && setAttributes({ term, list: [] }),
-    );
-    return () => {
-      cancelled = true;
-    };
-  }, [term]);
-  return attributes?.term === term ? attributes.list : [];
+/** Section attributes for the filter. Optional: search works without them. */
+function useAttributes(term: string): CodeDescription[] {
+  const { data } = useQuery({
+    ...listAttributesOptions({ query: { term } }),
+    staleTime: ATTRIBUTES_STALE_MS,
+  });
+  return data ?? NO_ATTRIBUTES;
 }
 
 interface ResultsProps {

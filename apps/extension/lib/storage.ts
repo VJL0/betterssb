@@ -1,4 +1,4 @@
-import type { SchedulePreferences, RMPRating } from "@workspace/shared/types";
+import type { RmpRating, SchedulePreferences } from "@workspace/api-client";
 
 const KEYS = {
   SCHEDULE_PREFS: "betterssb:schedulePreferences",
@@ -28,15 +28,15 @@ export async function saveSchedulePreferences(
   await setStorageItem(KEYS.SCHEDULE_PREFS, prefs);
 }
 
-export async function getCachedRatings(): Promise<Record<string, RMPRating>> {
+export async function getCachedRatings(): Promise<Record<string, RmpRating>> {
   return (
-    (await getStorageItem<Record<string, RMPRating>>(KEYS.CACHED_RATINGS)) ?? {}
+    (await getStorageItem<Record<string, RmpRating>>(KEYS.CACHED_RATINGS)) ?? {}
   );
 }
 
 export async function cacheRating(
   professorName: string,
-  rating: RMPRating,
+  rating: RmpRating,
 ): Promise<void> {
   const cached = await getCachedRatings();
   cached[professorName.toLowerCase()] = rating;

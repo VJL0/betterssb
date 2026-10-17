@@ -1,24 +1,25 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   addSection,
   emptyPlan,
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
-import type { Audit } from "@workspace/shared/types/dars";
 import { axeViolations } from "@workspace/ui/test/axe";
 import { classSection } from "@/test/class-section";
+import { mockApi } from "@/test/api";
 import { renderPage } from "@/test/render";
 import { PlanPage } from "./plan-page";
+import type { Audit } from "@workspace/api-client";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
-vi.mock("@/lib/api/classes", () => ({
-  fetchTerms: vi.fn(async () => [
-    { code: "202703", description: "2027 Spring" },
-  ]),
-}));
+beforeEach(() => {
+  mockApi({
+    "GET /api/classes/terms": [{ code: "202703", description: "2027 Spring" }],
+  });
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();

@@ -12,10 +12,10 @@ import {
   FieldLabel,
 } from "@workspace/ui/components/field";
 import { Switch } from "@workspace/ui/components/switch";
-import type { RMPSchool } from "@workspace/shared/types";
+import type { RmpSchool } from "@workspace/api-client";
 
 export function RateMyProfessorPage() {
-  const [school, setSchool] = useStorage<RMPSchool | null>(
+  const [school, setSchool] = useStorage<RmpSchool | null>(
     "betterssb:school",
     null,
   );
