@@ -31,6 +31,7 @@ function plan(crns: string[], updatedAt: string): TermPlan {
       meetings: [],
       addedAt: `2026-10-0${i + 1}`,
     })),
+    courses: [],
     colorOrder: {},
     updatedAt,
   };

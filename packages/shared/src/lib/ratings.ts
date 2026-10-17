@@ -1,3 +1,5 @@
+import type { RMPRating } from "../types/index";
+
 export const HIGH_RATING_MIN = 4;
 export const MID_RATING_MIN = 3;
 
@@ -13,4 +15,12 @@ export function ratingBand(rating: number | null | undefined): RatingBand {
 
 export function formatRating(rating: number): string {
   return rating.toFixed(1);
+}
+
+/**
+ * A profile nobody has rated reports 0.0, which would read as a terrible
+ * score. It carries no information, so it's treated like no profile.
+ */
+export function usableRating(rating: RMPRating | null): RMPRating | null {
+  return rating && rating.numRatings > 0 ? rating : null;
 }

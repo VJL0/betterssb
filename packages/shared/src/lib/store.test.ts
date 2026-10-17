@@ -37,6 +37,7 @@ function plan(
     term: "202703",
     termDescription: "2027 Spring",
     sections,
+    courses: [],
     colorOrder,
     updatedAt,
   };
