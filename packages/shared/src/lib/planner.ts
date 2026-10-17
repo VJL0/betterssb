@@ -5,6 +5,7 @@
 import type { TermPlan } from "../types/store";
 import { courseKey, replaceSections } from "./plan";
 import type { Audit } from "@workspace/api-client";
+import type { CreditTotals } from "./dars";
 
 /** Full-time is 12 credits; over 18 needs approval at Temple. */
 export const PART_TIME_BELOW = 12;
@@ -113,4 +114,31 @@ export function removeEntry(
   );
   const sections = plan.sections.filter((s) => s.courseId !== key);
   return replaceSections({ ...plan, courses }, sections, now);
+}
+
+export interface ProjectedFinish {
+  /** Credits counted: earned, in progress, and planned beyond the audit. */
+  counted: number;
+  onTrack: boolean;
+  /** Credits still to place in a term when not on track. */
+  shortBy: number;
+  /** The last term with anything planned. */
+  lastTerm: string | null;
+}
+
+/** Whether the plan covers the degree's credits, and when it would finish. */
+export function projectedFinish(
+  totals: CreditTotals,
+  plans: readonly TermPlan[],
+  counted: ReadonlySet<string>,
+): ProjectedFinish {
+  const total =
+    totals.earned + totals.inProgress + plannedCredits(plans, counted);
+  const last = [...plans].reverse().find((p) => termEntries(p).length > 0);
+  return {
+    counted: total,
+    onTrack: total >= totals.total,
+    shortBy: Math.max(totals.total - total, 0),
+    lastTerm: last?.termDescription ?? null,
+  };
 }
