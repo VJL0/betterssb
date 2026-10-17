@@ -1,23 +1,23 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
+import { mockApi } from "@/test/api";
 import { renderPage } from "@/test/render";
 import { GetStartedPage } from "./get-started-page";
 
-vi.mock("@/lib/api/rmp", () => ({
-  searchSchools: vi.fn(async () => [
-    { id: "U2Nob29sLTk5OQ==", legacyId: 999, name: "Temple University" },
-  ]),
-}));
-
-vi.mock("@/lib/api/classes", () => ({
-  fetchTerms: vi.fn(async () => [
-    { code: "202703", description: "2027 Spring" },
-    { code: "202636", description: "2026 Fall" },
-    { code: "202536", description: "2025 Fall (View Only)" },
-  ]),
-}));
+beforeEach(() => {
+  mockApi({
+    "GET /api/rmp/schools": [
+      { id: "U2Nob29sLTk5OQ==", legacyId: 999, name: "Temple University" },
+    ],
+    "GET /api/classes/terms": [
+      { code: "202703", description: "2027 Spring" },
+      { code: "202636", description: "2026 Fall" },
+      { code: "202536", description: "2025 Fall (View Only)" },
+    ],
+  });
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();

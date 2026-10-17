@@ -3,15 +3,18 @@
  * login endpoint, the backend finishes OAuth, sets an HttpOnly session cookie,
  * and redirects back here (with `?auth_error=` if it failed).
  */
+import {
+  ApiError,
+  getMe,
+  logout as endSession,
+  type UserResponse,
+} from "@workspace/api-client";
 
-/** Mirrors apps/api/app/modules/auth/schemas.py (camelCase over the wire). */
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  pictureUrl: string;
-}
+const UNAUTHORIZED = 401;
 
+export type User = UserResponse;
+
+/** A navigation, not a fetch call, so it isn't in the generated client. */
 export const LOGIN_URL = "/api/auth/google/login";
 
 const AUTH_ERRORS: Record<string, string> = {
@@ -22,15 +25,19 @@ const AUTH_ERRORS: Record<string, string> = {
 
 /** The signed-in user, or null if there's no valid session. */
 export async function fetchCurrentUser(): Promise<User | null> {
-  const res = await fetch("/api/auth/me");
-  if (res.status === 401) return null;
-  if (!res.ok) throw new Error(`Couldn't check sign-in (HTTP ${res.status}).`);
-  return (await res.json()) as User;
+  try {
+    const { data } = await getMe({
+      meta: { errorMessage: "Couldn't check sign-in." },
+    });
+    return data;
+  } catch (err) {
+    if (err instanceof ApiError && err.status === UNAUTHORIZED) return null;
+    throw err;
+  }
 }
 
 export async function logout(): Promise<void> {
-  const res = await fetch("/api/auth/logout", { method: "POST" });
-  if (!res.ok) throw new Error(`Sign-out failed (HTTP ${res.status}).`);
+  await endSession({ meta: { errorMessage: "Sign-out failed." } });
 }
 
 /**

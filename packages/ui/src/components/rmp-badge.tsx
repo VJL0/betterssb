@@ -4,7 +4,6 @@ import {
   ratingBand,
   type RatingBand,
 } from "@workspace/shared/lib/ratings";
-import type { RMPRating } from "@workspace/shared/types";
 
 import { Badge, badgeVariants } from "@workspace/ui/components/badge";
 import {
@@ -12,6 +11,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@workspace/ui/components/hover-card";
+import type { RmpRating } from "@workspace/api-client";
 
 const BAND_VARIANT = {
   high: "default",
@@ -22,13 +22,13 @@ const BAND_VARIANT = {
 
 interface RmpBadgeProps {
   /** Null when the instructor has no Rate My Professors profile. */
-  rating: RMPRating | null;
+  rating: RmpRating | null;
   /** Adds "· 88%" (would take again) to the badge. */
   showWouldTakeAgain?: boolean;
   className?: string;
 }
 
-function badgeText(rating: RMPRating, showWouldTakeAgain: boolean): string {
+function badgeText(rating: RmpRating, showWouldTakeAgain: boolean): string {
   const parts = [
     formatRating(rating.overallRating),
     `diff ${formatRating(rating.difficulty)}`,
@@ -104,7 +104,7 @@ function RmpBadge({
   );
 }
 
-function RmpDetails({ rating }: { rating: RMPRating }) {
+function RmpDetails({ rating }: { rating: RmpRating }) {
   return (
     <>
       <div className="flex items-center gap-2.5">

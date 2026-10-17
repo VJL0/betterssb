@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { RMPRating } from "@workspace/shared/types";
 import { classSection, meetingTime } from "@/test/class-section";
 import type { RatingLookup } from "@/hooks/use-ratings";
 import {
@@ -10,16 +9,18 @@ import {
   resetFilter,
   sectionPasses,
 } from "./search-filters";
+import type { RmpRating } from "@workspace/api-client";
 
 const NO_RATINGS = new Map<string, RatingLookup>();
 
-function rating(overallRating: number): RMPRating {
+function rating(overallRating: number): RmpRating {
   return {
     professorName: "Dana Whitlock",
     department: "Computer Science",
     overallRating,
     difficulty: 3,
     numRatings: 20,
+    wouldTakeAgainPct: null,
     topTags: [],
     rmpUrl: "",
   };

@@ -1,4 +1,3 @@
-import type { ClassSection } from "../types/classes";
 import type {
   PlannedCourse,
   PlannedMeeting,
@@ -12,6 +11,7 @@ import {
 } from "./course-colors";
 import { parseClockTime, parseDays } from "./meeting-times";
 import { meetingTimeToDays, primaryInstructorName } from "./sections";
+import type { ClassSection } from "@workspace/api-client";
 
 export function emptyPlan(term: string, termDescription: string): TermPlan {
   return {

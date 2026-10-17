@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 /** Host permission for the backend, so the popup and background can call it without CORS. */
 function apiHostPermission(): string {
   const url = new URL(
-    import.meta.env.WXT_API_URL || "http://localhost:8000/api",
+    import.meta.env.WXT_API_ORIGIN || "http://localhost:8000",
   );
   // Match patterns can't carry a port; this covers any port on the host.
   return `${url.protocol}//${url.hostname}/*`;
@@ -12,7 +12,7 @@ function apiHostPermission(): string {
 
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
-  // A function so .env files are loaded before WXT_API_URL is read.
+  // A function so .env files are loaded before WXT_API_ORIGIN is read.
   manifest: () => ({
     name: "BetterSSB",
     description:
