@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@workspace/shared": "workspace:*",
     "@workspace/ui": "workspace:*",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"

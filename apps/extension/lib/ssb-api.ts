@@ -28,7 +28,7 @@ import type {
   SSBAddRegistrationItemResponse,
   SSBTuitionFeeResponse,
   SSBSubmitRegistrationBatchPayload,
-} from "@/types/ssb";
+} from "@workspace/shared/types/ssb";
 
 const SSB_BASE = "/StudentRegistrationSsb/ssb";
 
@@ -621,52 +621,4 @@ export async function getContactCard(
     bannerId,
     termCode,
   });
-}
-
-// ── Helpers for converting SSB data to our internal types ───────────────────
-
-function meetingTimeToDays(mt: SSBMeetingFaculty["meetingTime"]): string {
-  let days = "";
-  if (mt.monday) days += "M";
-  if (mt.tuesday) days += "T";
-  if (mt.wednesday) days += "W";
-  if (mt.thursday) days += "R";
-  if (mt.friday) days += "F";
-  if (mt.saturday) days += "S";
-  if (mt.sunday) days += "U";
-  return days;
-}
-
-function formatTime(raw: string): string {
-  if (raw.length === 4) return `${raw.slice(0, 2)}:${raw.slice(2)}`;
-  return raw;
-}
-
-/**
- * Convert an SSB section into our internal Section type used by
- * the schedule builder.  Creates one entry per meeting time block
- * so that lectures and labs are treated as separate slots for
- * conflict detection.
- */
-export function ssbSectionToInternal(
-  ssb: import("@/types/ssb").SSBSection,
-): import("@/types").Section[] {
-  const primaryInstructor =
-    ssb.faculty.find((f) => f.primaryIndicator)?.displayName ??
-    ssb.faculty[0]?.displayName ??
-    "TBA";
-
-  return ssb.meetingsFaculty.map((mf, idx) => ({
-    crn: ssb.courseReferenceNumber,
-    courseId: ssb.subjectCourse,
-    instructor: primaryInstructor,
-    days: meetingTimeToDays(mf.meetingTime),
-    startTime: formatTime(mf.meetingTime.beginTime),
-    endTime: formatTime(mf.meetingTime.endTime),
-    location:
-      `${mf.meetingTime.buildingDescription} ${mf.meetingTime.room}`.trim(),
-    seatsAvailable: ssb.seatsAvailable,
-    maxSeats: ssb.maximumEnrollment,
-    term: ssb.termDesc,
-  }));
 }

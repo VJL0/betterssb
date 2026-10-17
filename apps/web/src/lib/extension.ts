@@ -5,7 +5,8 @@
  * DARS session they're already signed into — no credential ever reaches this
  * site or the server. We just ask for the finished audit HTML and parse it.
  */
-import { parseAuditHtml, type Audit } from "./dars";
+import type { Audit } from "@workspace/shared/types/dars";
+import { parseAuditHtml } from "./dars";
 
 const BRIDGE = "betterssb-bridge";
 const AUDIT_TIMEOUT_MS = 170_000;

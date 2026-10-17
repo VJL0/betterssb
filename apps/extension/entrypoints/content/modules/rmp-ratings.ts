@@ -1,4 +1,4 @@
-import type { RMPRating, RMPSchool } from "@/types";
+import type { RMPRating, RMPSchool } from "@workspace/shared/types";
 import { sendMessage } from "@/lib/messaging";
 import { getCachedRatings, cacheRating } from "@/lib/storage";
 import { getStorageItem } from "@/lib/storage";

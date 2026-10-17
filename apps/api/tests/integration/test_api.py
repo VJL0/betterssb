@@ -56,6 +56,14 @@ class TestScheduleRoutes:
         resp = await client.post("/api/schedule/generate", json={"bad": "data"})
         assert resp.status_code == 422
 
+    @pytest.mark.parametrize("max_results", [0, 51])
+    async def test_generate_rejects_out_of_range_max_results(
+        self, client: AsyncClient, max_results: int
+    ):
+        body = {"sections": [], "preferences": {}, "max_results": max_results}
+        resp = await client.post("/api/schedule/generate", json=body)
+        assert resp.status_code == 422
+
 
 class TestTranscriptRoutes:
     async def test_parse_transcript(self, client: AsyncClient, transcript_text):

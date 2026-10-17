@@ -1,14 +1,13 @@
 import { useState } from "react";
-import {
-  formatCredits,
-  isNoteOnly,
-  type Audit,
-  type AuditCourse,
-  type AuditStatus,
-  type Progress,
-  type Requirement,
-  type SubRequirement,
-} from "../lib/dars";
+import { formatCredits, isNoteOnly } from "@workspace/shared/lib/dars";
+import type {
+  Audit,
+  AuditCourse,
+  AuditStatus,
+  Progress,
+  Requirement,
+  SubRequirement,
+} from "@workspace/shared/types/dars";
 import { StatusIcon, StatusPill } from "./StatusBadge";
 
 type Filter = "all" | "todo" | "in_progress" | "complete";

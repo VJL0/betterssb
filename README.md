@@ -28,8 +28,7 @@ betterssb/
 │   │   │   └── popup/                 # Extension popup (main UI)
 │   │   ├── components/                # Shared React components
 │   │   ├── lib/                       # API client, storage, messaging helpers
-│   │   ├── hooks/                     # Custom React hooks
-│   │   └── types/                     # Shared TypeScript types
+│   │   └── hooks/                     # Custom React hooks
 │   │
 │   ├── api/           # API server (FastAPI + Python 3.14)
 │   │   └── app/
@@ -42,6 +41,7 @@ betterssb/
 │   └── ellucian-api/  # Mock Ellucian SSB API (FastAPI)
 │
 └── packages/
+    ├── shared/        # Shared types (SSB, DARS, API) and pure domain logic, with Vitest tests
     └── ui/            # Shared shadcn/ui components and Tailwind theme
 ```
 
@@ -105,7 +105,7 @@ From the repo root, with Docker running:
 ```bash
 pnpm dev     # Postgres + Redis, API on :8000, web on :5173, extension → apps/extension/.output/chrome-mv3-dev
 pnpm lint    # ESLint + Ruff
-pnpm test    # pytest
+pnpm test    # pytest + Vitest
 pnpm format  # Prettier + Ruff
 ```
 
@@ -135,7 +135,7 @@ The app never creates tables itself. After changing a model, generate a migratio
 - **Hot reload** — `pnpm dev` in `apps/extension/` watches for changes and reloads the extension automatically.
 - **API docs** — Visit `http://localhost:8000/docs` for the interactive Swagger UI.
 - **Errors** — API errors are [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) problem details (`application/problem+json`) with `type`, `title`, `status`, and an optional user-safe `detail`; validation errors add an `errors` list. Raise `HTTPException` in endpoints; `app/core/errors.py` formats it. Sign-in failures redirect to the frontend with `?auth_error=` instead.
-- **Type safety** — Shared types in `apps/extension/types/` keep content scripts, popup, and API calls in sync.
+- **Type safety** — Shared types in `packages/shared` (`@workspace/shared`) keep the web app, content scripts, popup, and API calls in sync.
 
 ## Environment Variables
 
