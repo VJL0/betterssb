@@ -34,10 +34,10 @@ function FieldSelect({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+      <label className="text-sm font-medium text-foreground">{label}</label>
       <select
         className={cn(
-          "rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none",
+          "rounded-lg border border-input bg-card px-3 py-2 text-sm outline-none",
           disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
         )}
         value={value}
@@ -218,25 +218,25 @@ export function AutoRegisterPage() {
 
   return (
     <div className="flex flex-col gap-3 pb-1">
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-muted-foreground">
         Pick a term and plan to load section CRNs automatically, or enter CRNs
         yourself. Set when the auto-register helper should run, then activate.
       </p>
 
       <Card title="Term &amp; plan">
         {dataLoading || !storageReady ? (
-          <div className="flex items-center gap-2 py-3 text-sm text-gray-600">
+          <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
             <Spinner />
             <span>Loading terms and plans…</span>
           </div>
         ) : loadError ? (
-          <p className="text-sm text-amber-800">
+          <p className="text-sm text-warning">
             {loadError} Open{" "}
             <span className="font-medium">Register for Classes</span> on your
             school&apos;s site in a tab, then try again.
           </p>
         ) : terms.length === 0 ? (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             No terms returned. Open registration in a browser tab and refresh
             this panel.
           </p>
@@ -272,10 +272,10 @@ export function AutoRegisterPage() {
             </FieldSelect>
 
             {!manualMode && !armed && (
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-muted-foreground">
                 CRNs update from the courses in this plan.
                 {!planModeOk && selectedPlan && (
-                  <span className="mt-1 block text-amber-800">
+                  <span className="mt-1 block text-warning">
                     This plan has no sections yet—pick another plan or enter
                     CRNs manually.
                   </span>
@@ -321,7 +321,7 @@ export function AutoRegisterPage() {
             )}
 
             {armed && (
-              <p className="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-700">
+              <p className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-foreground">
                 <span className="font-medium">Armed: </span>
                 {manualMode
                   ? `Manual CRNs (${parseManualCrns(crnsCsv).length} sections)`
@@ -344,7 +344,7 @@ export function AutoRegisterPage() {
           }
           disabled={formDisabled}
         />
-        <p className="mt-1.5 text-xs text-gray-500">
+        <p className="mt-1.5 text-xs text-muted-foreground">
           Reminders fire up to 5 minutes before. The batch POST runs once, on a
           one-shot alarm at this time (same endpoint as Banner&apos;s submit).
         </p>
@@ -353,19 +353,19 @@ export function AutoRegisterPage() {
       {lastBatchResult && (
         <Card title="Last batch result">
           <div className="mb-2 flex items-baseline gap-2">
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {new Date(lastBatchResult.at).toLocaleString()}
             </span>
             {lastBatchResult.ok ? (
-              <span className="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800">
+              <span className="rounded bg-success/10 px-1.5 py-0.5 text-xs font-medium text-success">
                 All registered
               </span>
             ) : lastBatchResult.error ? (
-              <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-800">
+              <span className="rounded bg-destructive/10 px-1.5 py-0.5 text-xs font-medium text-destructive">
                 Error
               </span>
             ) : (
-              <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">
+              <span className="rounded bg-warning/10 px-1.5 py-0.5 text-xs font-medium text-warning">
                 {lastBatchResult.registeredCount} registered,{" "}
                 {lastBatchResult.failedCount} failed
               </span>
@@ -373,11 +373,13 @@ export function AutoRegisterPage() {
           </div>
 
           {lastBatchResult.error && (
-            <p className="mb-2 text-xs text-red-700">{lastBatchResult.error}</p>
+            <p className="mb-2 text-xs text-destructive">
+              {lastBatchResult.error}
+            </p>
           )}
 
           {lastBatchResult.registeredHours && (
-            <p className="mb-2 text-xs text-gray-600">
+            <p className="mb-2 text-xs text-muted-foreground">
               {lastBatchResult.registeredHours} credit hrs registered
               {lastBatchResult.billingHours
                 ? ` · ${lastBatchResult.billingHours} billing hrs`
@@ -393,8 +395,8 @@ export function AutoRegisterPage() {
                   className={cn(
                     "rounded-md border px-2.5 py-1.5 text-xs",
                     r.ok
-                      ? "border-green-200 bg-green-50 text-green-900"
-                      : "border-red-200 bg-red-50 text-red-900",
+                      ? "border-success/30 bg-success/10 text-success"
+                      : "border-destructive/30 bg-destructive/10 text-destructive",
                   )}
                 >
                   <span className="font-medium">
@@ -439,7 +441,7 @@ export function AutoRegisterPage() {
           storageReady &&
           !dataLoading &&
           !loadError && (
-            <p className="text-center text-xs text-gray-500">
+            <p className="text-center text-xs text-muted-foreground">
               {!scheduledRunAtOk &&
                 !sectionsOk &&
                 "Set a run time and valid sections (plan or CRNs)."}

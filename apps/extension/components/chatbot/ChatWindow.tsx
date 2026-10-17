@@ -8,8 +8,8 @@ function bubbleClass(role: "user" | "assistant"): string {
   return cn(
     "w-4/5 rounded-xl px-3 py-2 text-sm break-words",
     role === "user"
-      ? "self-end bg-indigo-600 text-white"
-      : "self-start bg-gray-100 text-gray-800",
+      ? "self-end bg-primary text-primary-foreground"
+      : "self-start bg-muted text-foreground",
   );
 }
 
@@ -77,7 +77,7 @@ export function ChatWindow() {
         className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-3"
       >
         {messages.length === 0 && (
-          <div className="mt-10 text-center text-sm text-gray-400">
+          <div className="mt-10 text-center text-sm text-muted-foreground">
             Ask anything about courses, schedules, or registration.
           </div>
         )}
@@ -98,9 +98,9 @@ export function ChatWindow() {
         )}
       </div>
 
-      <div className="flex gap-2 border-t border-gray-200 p-3">
+      <div className="flex gap-2 border-t border-border p-3">
         <input
-          className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+          className="min-w-0 flex-1 rounded-lg border border-input px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}

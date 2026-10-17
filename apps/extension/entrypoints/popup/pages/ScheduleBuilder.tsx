@@ -154,7 +154,7 @@ export function ScheduleBuilder() {
             <select
               value={selectedTerm}
               onChange={(e) => setSelectedTerm(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+              className="w-full rounded-md border border-input px-2 py-1.5 text-sm"
             >
               {terms.length === 0 && <option value="">Loading terms...</option>}
               {terms.map((t) => (
@@ -186,7 +186,7 @@ export function ScheduleBuilder() {
         </div>
 
         {searchError && (
-          <div className="mt-2 text-xs text-amber-800">{searchError}</div>
+          <div className="mt-2 text-xs text-warning">{searchError}</div>
         )}
       </Card>
 
@@ -205,7 +205,7 @@ export function ScheduleBuilder() {
               return (
                 <div
                   key={sec.courseReferenceNumber}
-                  className="border-b border-gray-100 py-2 text-xs last:border-0"
+                  className="border-b border-border py-2 text-xs last:border-0"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -214,14 +214,16 @@ export function ScheduleBuilder() {
                       </strong>{" "}
                       (CRN: {sec.courseReferenceNumber})
                       <br />
-                      <span className="text-gray-500">{sec.courseTitle}</span>
+                      <span className="text-muted-foreground">
+                        {sec.courseTitle}
+                      </span>
                       <br />
-                      <span className="text-gray-500">
+                      <span className="text-muted-foreground">
                         {primaryInstructor} ·{" "}
                         {sec.instructionalMethodDescription}
                       </span>
                       <br />
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-muted-foreground">
                         {formatMeetingDays(sec)}
                       </span>
                       <br />
@@ -229,8 +231,8 @@ export function ScheduleBuilder() {
                         className={cn(
                           "text-xs font-semibold",
                           sec.seatsAvailable > 0
-                            ? "text-green-600"
-                            : "text-red-600",
+                            ? "text-success"
+                            : "text-destructive",
                         )}
                       >
                         {sec.seatsAvailable}/{sec.maximumEnrollment} seats
@@ -258,7 +260,7 @@ export function ScheduleBuilder() {
           {selectedSections.map((s) => (
             <div
               key={`${s.crn}-${s.days}-${s.startTime}`}
-              className="flex items-center justify-between border-b border-gray-100 py-1.5 text-sm last:border-0"
+              className="flex items-center justify-between border-b border-border py-1.5 text-sm last:border-0"
             >
               <span>
                 <strong>{s.courseId}</strong> — CRN {s.crn} — {s.days}{" "}
@@ -267,7 +269,7 @@ export function ScheduleBuilder() {
               <button
                 type="button"
                 onClick={() => removeSection(s.crn)}
-                className="cursor-pointer border-0 bg-transparent text-sm text-red-600"
+                className="cursor-pointer border-0 bg-transparent text-sm text-destructive"
               >
                 Remove
               </button>
@@ -309,7 +311,7 @@ export function ScheduleBuilder() {
       </Button>
 
       {genError && (
-        <div className="rounded-lg bg-red-100 px-3 py-2 text-sm text-red-700">
+        <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {genError}
         </div>
       )}

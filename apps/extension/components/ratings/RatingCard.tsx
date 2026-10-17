@@ -7,9 +7,9 @@ interface RatingCardProps {
 }
 
 function scoreBoxClass(value: number): string {
-  if (value >= 4) return "bg-green-600";
-  if (value >= 3) return "bg-amber-500";
-  return "bg-red-600";
+  if (value >= 4) return "bg-success";
+  if (value >= 3) return "bg-warning";
+  return "bg-destructive";
 }
 
 function tagBadgeColor(tag: string): "blue" | "gray" {
@@ -29,7 +29,7 @@ export function RatingCard({ rating }: RatingCardProps) {
       <div className="flex items-start gap-4">
         <div
           className={cn(
-            "flex size-14 shrink-0 items-center justify-center rounded-xl text-2xl font-bold text-white",
+            "flex size-14 shrink-0 items-center justify-center rounded-xl text-2xl font-bold text-primary-foreground",
             scoreBoxClass(rating.overallRating),
           )}
         >
@@ -37,30 +37,30 @@ export function RatingCard({ rating }: RatingCardProps) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="text-base font-semibold text-gray-800">
+          <div className="text-base font-semibold text-foreground">
             {rating.professorName}
           </div>
-          <div className="mt-0.5 text-sm text-gray-500">
+          <div className="mt-0.5 text-sm text-muted-foreground">
             {rating.department}
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
             <div>
-              <span className="text-gray-500">Difficulty</span>
+              <span className="text-muted-foreground">Difficulty</span>
               <div className="font-semibold">
                 {rating.difficulty.toFixed(1)}/5
               </div>
             </div>
             {rating.wouldTakeAgainPct != null && (
               <div>
-                <span className="text-gray-500">Would Take Again</span>
+                <span className="text-muted-foreground">Would Take Again</span>
                 <div className="font-semibold">
                   {Math.round(rating.wouldTakeAgainPct)}%
                 </div>
               </div>
             )}
             <div>
-              <span className="text-gray-500">Ratings</span>
+              <span className="text-muted-foreground">Ratings</span>
               <div className="font-semibold">{rating.numRatings}</div>
             </div>
           </div>
@@ -77,7 +77,7 @@ export function RatingCard({ rating }: RatingCardProps) {
             href={rating.rmpUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2.5 inline-block text-sm text-indigo-600 hover:underline"
+            className="mt-2.5 inline-block text-sm text-primary hover:underline"
           >
             View on RateMyProfessors &rarr;
           </a>
