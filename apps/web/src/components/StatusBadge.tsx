@@ -1,4 +1,4 @@
-import type { AuditStatus } from "../lib/dars";
+import type { AuditStatus } from "@workspace/shared/types/dars";
 
 const STYLES: Record<
   AuditStatus,

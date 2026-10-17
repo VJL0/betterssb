@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { AuthUser } from "@/types";
+import type { AuthUser } from "@workspace/shared/types";
 import { fetchCurrentUser, logout as endSession, startLogin } from "@/lib/auth";
 
 export function useAuth() {

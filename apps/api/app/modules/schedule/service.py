@@ -30,6 +30,29 @@ def _has_conflict(combo: tuple[Section, ...]) -> bool:
     return False
 
 
+def _group_choices(sections: list[Section]) -> list[list[list[Section]]]:
+    """Group meeting blocks into the choices a schedule makes.
+
+    Each course component (course + schedule type, so a lab is separate from
+    its lecture) is one group, and each CRN in it is one choice holding all of
+    that section's meeting blocks.
+    """
+    components: dict[tuple[str, str], dict[str, list[Section]]] = {}
+    for sec in sections:
+        by_crn = components.setdefault((sec.course_id, sec.schedule_type), {})
+        by_crn.setdefault(sec.crn, []).append(sec)
+    return [list(by_crn.values()) for by_crn in components.values()]
+
+
+def _choices_conflict(choices: tuple[list[Section], ...]) -> bool:
+    """True if meetings of two different chosen sections overlap."""
+    for i, a in enumerate(choices):
+        for b in choices[i + 1 :]:
+            if any(_times_overlap(x, y) for x in a for y in b):
+                return True
+    return False
+
+
 def _sections_on_day(sections: list[Section], day: str) -> list[Section]:
     return sorted(
         [s for s in sections if day.upper() in s.days.upper()],
@@ -79,6 +102,9 @@ def _score_schedule(
     for day in all_days:
         day_sections = _sections_on_day(sections, day)
         for i in range(len(day_sections) - 1):
+            # Gaps inside one section (lecture then its lab block) aren't the student's choice.
+            if day_sections[i].crn == day_sections[i + 1].crn:
+                continue
             end_curr = _parse_time(day_sections[i].end_time)
             start_next = _parse_time(day_sections[i + 1].start_time)
             gap_min = (start_next - end_curr).total_seconds() / 60
@@ -94,7 +120,8 @@ def _score_schedule(
                     f"Large {int(gap_min)} min gap between {day_sections[i].crn} and {day_sections[i + 1].crn}"
                 )
 
-    return max(score, 0.0), warnings
+    # A section with several meeting blocks can trip the same warning more than once.
+    return max(score, 0.0), list(dict.fromkeys(warnings))
 
 
 class ScheduleService:
@@ -108,27 +135,24 @@ class ScheduleService:
     ) -> list[GeneratedSchedule]:
         """Generate non-conflicting schedules ranked by preference score.
 
-        Groups sections by course_id and tries every combination that picks
-        exactly one section per course, discarding those with time conflicts.
+        Tries every combination that picks exactly one section per course
+        component (see `_group_choices`), discarding those with time conflicts.
         """
-        by_course: dict[str, list[Section]] = {}
-        for sec in sections:
-            by_course.setdefault(sec.course_id, []).append(sec)
-
-        course_groups = list(by_course.values())
-        if not course_groups:
+        groups = _group_choices(sections)
+        if not groups:
             return []
 
         results: list[GeneratedSchedule] = []
 
-        for combo in itertools.product(*course_groups):
-            if _has_conflict(combo):
+        for combo in itertools.product(*groups):
+            if _choices_conflict(combo):
                 continue
 
-            score, warnings = _score_schedule(list(combo), preferences)
+            meetings = [meeting for choice in combo for meeting in choice]
+            score, warnings = _score_schedule(meetings, preferences)
             results.append(
                 GeneratedSchedule(
-                    sections=list(combo),
+                    sections=meetings,
                     score=round(score, 2),
                     warnings=warnings,
                 )

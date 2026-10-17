@@ -1,4 +1,4 @@
-import type { RMPRating } from "@/types";
+import type { RMPRating } from "@workspace/shared/types";
 import { Card, Badge } from "@/components/ui";
 import { cn } from "@workspace/ui/lib/utils";
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { RMPRating } from "@/types";
+import type { RMPRating } from "@workspace/shared/types";
 import { getCachedRatings, cacheRating } from "@/lib/storage";
 import { sendMessage } from "@/lib/messaging";
 
