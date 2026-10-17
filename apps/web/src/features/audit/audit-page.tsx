@@ -3,6 +3,7 @@ import { AuditReport } from "./audit-report";
 import { AuditStatusIcon } from "@workspace/ui/components/route-map";
 import { formatCredits, isNoteOnly } from "@workspace/shared/lib/dars";
 import type { Audit } from "@workspace/shared/types/dars";
+import { useStoreDocument } from "@/lib/store/store-context";
 import { runFromFile } from "@/lib/api/dars";
 import { runViaExtension, waitForExtension } from "@/lib/extension";
 
@@ -20,6 +21,7 @@ export function AuditPage() {
   const [method, setMethod] = useState<Method>("upload");
   const [extVersion, setExtVersion] = useState<string | null>(null);
   const [run, setRun] = useState<RunState>({ kind: "idle" });
+  const storedAudit = useStoreDocument("audit");
 
   useEffect(() => {
     void waitForExtension().then((v) => {
@@ -31,7 +33,13 @@ export function AuditPage() {
   async function execute(label: string, task: () => Promise<Audit>) {
     setRun({ kind: "running", startedAt: Date.now(), label });
     try {
-      setRun({ kind: "done", audit: await task() });
+      const audit = await task();
+      setRun({ kind: "done", audit });
+      // Kept on this device for the semester planner. The report shows
+      // either way, so a failed save isn't an error here.
+      void storedAudit
+        .save({ audit, storedAt: new Date().toISOString() })
+        .catch(() => undefined);
     } catch (err) {
       setRun({
         kind: "error",
