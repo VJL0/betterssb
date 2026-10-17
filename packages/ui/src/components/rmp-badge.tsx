@@ -1,4 +1,3 @@
-import type * as React from "react";
 import { cn } from "cn";
 import {
   formatRating,
@@ -71,6 +70,19 @@ function RmpBadge({
   }
 
   const text = badgeText(rating, showWouldTakeAgain);
+  const variant = BAND_VARIANT[ratingBand(rating.overallRating)];
+  // Without a profile link (sample data, say) there's nothing to open.
+  if (!rating.rmpUrl) {
+    return (
+      <Badge
+        data-slot="rmp-badge"
+        variant={variant}
+        className={cn("tabular-nums", className)}
+      >
+        {text}
+      </Badge>
+    );
+  }
   return (
     <HoverCard>
       <HoverCardTrigger
@@ -78,13 +90,7 @@ function RmpBadge({
         href={rating.rmpUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className={cn(
-          badgeVariants({
-            variant: BAND_VARIANT[ratingBand(rating.overallRating)],
-          }),
-          "tabular-nums",
-          className,
-        )}
+        className={cn(badgeVariants({ variant }), "tabular-nums", className)}
       >
         {text}{" "}
         <span className="sr-only">

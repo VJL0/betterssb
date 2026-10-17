@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState, type DragEvent } from "react";
-import { AccountBar } from "./components/AccountBar";
-import { AuditReport } from "./components/AuditReport";
+import { AuditReport } from "./audit-report";
 import { AuditStatusIcon } from "@workspace/ui/components/route-map";
 import { formatCredits, isNoteOnly } from "@workspace/shared/lib/dars";
 import type { Audit } from "@workspace/shared/types/dars";
-import { runFromFile } from "./lib/api/dars";
-import { runViaExtension, waitForExtension } from "./lib/extension";
+import { runFromFile } from "@/lib/api/dars";
+import { runViaExtension, waitForExtension } from "@/lib/extension";
 
 const DARS_URL = "https://prd-dars.temple.edu/selfservice/";
 
@@ -17,7 +16,7 @@ type RunState =
   | { kind: "error"; message: string }
   | { kind: "done"; audit: Audit };
 
-function App() {
+export function AuditPage() {
   const [method, setMethod] = useState<Method>("upload");
   const [extVersion, setExtVersion] = useState<string | null>(null);
   const [run, setRun] = useState<RunState>({ kind: "idle" });
@@ -44,17 +43,11 @@ function App() {
   const running = run.kind === "running";
 
   return (
-    <div className="min-h-dvh bg-muted/50 text-foreground lg:grid lg:h-dvh lg:grid-cols-2">
+    <div className="text-foreground lg:grid lg:h-[calc(100dvh-4rem)] lg:grid-cols-2">
+      <title>Degree audit · BetterSSB</title>
       <aside className="flex flex-col gap-6 border-border p-4 sm:p-6 lg:overflow-y-auto lg:border-r lg:p-10">
-        <AccountBar />
-
         <header>
-          <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-            BetterSSB
-          </p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight">
-            Degree audit
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Degree audit</h1>
           <p className="mt-2 max-w-prose text-muted-foreground">
             See your DARS audit, requirement by requirement — what's done,
             what's in progress, and exactly which courses can fill what's left.
@@ -412,5 +405,3 @@ function Spinner() {
     />
   );
 }
-
-export default App;
