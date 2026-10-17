@@ -32,7 +32,7 @@ export function AuditReport({ audit }: { audit: Audit }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="sticky top-0 z-10 -mx-4 flex flex-wrap gap-2 border-b border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+      <div className="sticky top-0 z-10 -mx-4 flex flex-wrap gap-2 border-b border-border bg-background/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
         {FILTERS.map((f) => {
           const count = audit.requirements.filter((r) =>
             matches(r, f.id),
@@ -46,8 +46,8 @@ export function AuditReport({ audit }: { audit: Audit }) {
               aria-pressed={active}
               className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-slate-900 text-white"
-                  : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card text-foreground ring-1 ring-border hover:bg-muted"
               }`}
             >
               {f.label} <span className="opacity-60">{count}</span>
@@ -57,7 +57,7 @@ export function AuditReport({ audit }: { audit: Audit }) {
       </div>
 
       {visible.length === 0 ? (
-        <p className="py-12 text-center text-sm text-slate-500">
+        <p className="py-12 text-center text-sm text-muted-foreground">
           Nothing here.
         </p>
       ) : (
@@ -87,17 +87,17 @@ function RequirementCard({
   return (
     <details
       open={defaultOpen}
-      className="group rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="group rounded-xl border border-border bg-card shadow-sm"
     >
       <summary className="flex cursor-pointer list-none items-start gap-3 p-4 [&::-webkit-details-marker]:hidden">
         <StatusIcon status={req.status} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2">
-            <h3 className="font-semibold text-slate-900">
+            <h3 className="font-semibold text-foreground">
               {req.title || req.code}
             </h3>
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             <span className="font-mono">{req.code}</span>
             {req.category && <span>· {req.category.replace(/_/g, " ")}</span>}
             <TotalsLine
@@ -107,12 +107,12 @@ function RequirementCard({
             />
           </div>
         </div>
-        <span className="mt-1 text-slate-400 transition-transform group-open:rotate-90">
+        <span className="mt-1 text-muted-foreground transition-transform group-open:rotate-90">
           ›
         </span>
       </summary>
 
-      <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-3">
+      <div className="flex flex-col gap-3 border-t border-border px-4 py-3">
         {req.notes.length > 0 && <Notes lines={req.notes} />}
         {req.subrequirements.map((sub, i) => (
           <SubRequirementRow key={`${sub.number}-${i}`} sub={sub} />
@@ -131,9 +131,9 @@ function SubRequirementRow({ sub }: { sub: SubRequirement }) {
       </div>
       <div className="min-w-0 flex-1">
         {(sub.title || sub.number) && (
-          <p className="text-sm font-medium text-slate-800">
+          <p className="text-sm font-medium text-foreground">
             {sub.number && (
-              <span className="mr-1.5 text-slate-400">
+              <span className="mr-1.5 text-muted-foreground">
                 {isAlternative ? "or" : `${sub.number}.`}
               </span>
             )}
@@ -144,7 +144,7 @@ function SubRequirementRow({ sub }: { sub: SubRequirement }) {
           earned={sub.earned}
           inProgress={sub.inProgress}
           needs={sub.needs}
-          className="mt-0.5 text-xs text-slate-500"
+          className="mt-0.5 text-xs text-muted-foreground"
         />
         {sub.courses.length > 0 && <CourseTable courses={sub.courses} />}
         {sub.selectFrom.length > 0 && (
@@ -159,25 +159,27 @@ function CourseTable({ courses }: { courses: AuditCourse[] }) {
   return (
     <div className="mt-2 overflow-x-auto">
       <table className="w-full text-left text-sm">
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-border">
           {courses.map((c, i) => (
             <tr
               key={`${c.term}-${c.course}-${i}`}
-              className={c.inProgress ? "bg-amber-50/60" : undefined}
+              className={c.inProgress ? "bg-info/10" : undefined}
             >
-              <td className="py-1 pr-3 font-mono text-xs whitespace-nowrap text-slate-500">
+              <td className="py-1 pr-3 font-mono text-xs whitespace-nowrap text-muted-foreground">
                 {c.term}
               </td>
-              <td className="py-1 pr-3 font-medium whitespace-nowrap text-slate-900">
+              <td className="py-1 pr-3 font-medium whitespace-nowrap text-foreground">
                 {c.course}
               </td>
-              <td className="w-full py-1 pr-3 text-slate-600">{c.title}</td>
-              <td className="py-1 pr-3 text-right whitespace-nowrap text-slate-500 tabular-nums">
+              <td className="w-full py-1 pr-3 text-muted-foreground">
+                {c.title}
+              </td>
+              <td className="py-1 pr-3 text-right whitespace-nowrap text-muted-foreground tabular-nums">
                 {formatCredits(c.credits)} cr
               </td>
               <td className="py-1 text-right font-mono text-xs whitespace-nowrap">
                 {c.inProgress ? (
-                  <span className="rounded bg-amber-100 px-1.5 py-0.5 text-amber-800">
+                  <span className="rounded bg-info/10 px-1.5 py-0.5 text-info">
                     taking
                   </span>
                 ) : (
@@ -206,14 +208,14 @@ function SelectFrom({
   const hidden = options.length - shown.length;
   return (
     <div className="mt-2">
-      <p className="mb-1 text-xs font-medium tracking-wide text-slate-500 uppercase">
+      <p className="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
         {status === "complete" ? "Could also count" : "Choose from"}
       </p>
       <div className="flex flex-wrap gap-1.5">
         {shown.map((o) => (
           <span
             key={o}
-            className="rounded-md bg-sky-50 px-2 py-0.5 font-mono text-xs text-sky-900 ring-1 ring-sky-200 ring-inset"
+            className="rounded-md bg-info/10 px-2 py-0.5 font-mono text-xs text-info ring-1 ring-info/20 ring-inset"
           >
             {o}
           </span>
@@ -222,7 +224,7 @@ function SelectFrom({
           <button
             type="button"
             onClick={() => setExpanded(true)}
-            className="rounded-md px-2 py-0.5 text-xs font-medium text-sky-700 hover:bg-sky-50"
+            className="rounded-md px-2 py-0.5 text-xs font-medium text-info hover:bg-info/10"
           >
             +{hidden} more
           </button>
@@ -264,8 +266,8 @@ function describe(label: string, p: Progress | null): string | null {
 
 function Notes({ lines }: { lines: string[] }) {
   return (
-    <details className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-      <summary className="cursor-pointer font-medium text-slate-700">
+    <details className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-foreground">
+      <summary className="cursor-pointer font-medium text-foreground">
         Notes from DARS
       </summary>
       <div className="mt-2 space-y-0.5 font-mono leading-relaxed">
@@ -279,8 +281,8 @@ function Notes({ lines }: { lines: string[] }) {
 
 function NoteBlock({ req }: { req: Requirement }) {
   return (
-    <details className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-4 py-3 text-xs text-slate-600">
-      <summary className="flex cursor-pointer items-center gap-2 font-medium text-slate-700">
+    <details className="rounded-xl border border-dashed border-input bg-card/60 px-4 py-3 text-xs text-muted-foreground">
+      <summary className="flex cursor-pointer items-center gap-2 font-medium text-foreground">
         <StatusPill status="none" />
         <span className="truncate">{req.notes[0] ?? req.code}</span>
       </summary>

@@ -9,11 +9,11 @@ interface BadgeProps {
 }
 
 const colorClass: Record<BadgeColor, string> = {
-  green: "bg-green-100 text-green-800",
-  yellow: "bg-yellow-100 text-yellow-900",
-  red: "bg-red-100 text-red-900",
-  blue: "bg-blue-100 text-blue-900",
-  gray: "bg-gray-100 text-gray-700",
+  green: "bg-success/10 text-success",
+  yellow: "bg-warning/10 text-warning",
+  red: "bg-destructive/10 text-destructive",
+  blue: "bg-info/10 text-info",
+  gray: "bg-muted text-foreground",
 };
 
 export function Badge({ text, color = "gray", className }: BadgeProps) {

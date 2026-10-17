@@ -53,15 +53,15 @@ export function AccountBar() {
                 src={auth.user.pictureUrl}
                 alt=""
                 referrerPolicy="no-referrer"
-                className="size-8 shrink-0 rounded-full border border-slate-200 object-cover"
+                className="size-8 shrink-0 rounded-full border border-border object-cover"
               />
             )}
             <div className="min-w-0 text-right text-sm">
-              <p className="truncate font-medium text-slate-800">
+              <p className="truncate font-medium text-foreground">
                 {auth.user.name || auth.user.email}
               </p>
               {auth.user.name && (
-                <p className="truncate text-xs text-slate-500">
+                <p className="truncate text-xs text-muted-foreground">
                   {auth.user.email}
                 </p>
               )}
@@ -69,7 +69,7 @@ export function AccountBar() {
             <button
               type="button"
               onClick={onSignOut}
-              className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+              className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               Sign out
             </button>
@@ -78,7 +78,7 @@ export function AccountBar() {
         {auth.kind === "signed-out" && (
           <a
             href={LOGIN_URL}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-400 hover:text-slate-900"
+            className="rounded-lg border border-input bg-card px-3 py-1.5 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-border hover:text-foreground"
           >
             Sign in with Google
           </a>
@@ -87,7 +87,7 @@ export function AccountBar() {
       {error && (
         <p
           role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-900"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
         >
           {error}
         </p>
