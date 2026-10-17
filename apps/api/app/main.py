@@ -12,6 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.api.router import api_router
 from app.core.config import Settings
 from app.core.errors import add_error_handlers
+from app.core.openapi import build_openapi, operation_id
 from app.core.security import SecurityHeadersMiddleware
 from app.modules.auth.errors import SignInError
 from app.modules.auth.providers.google import (
@@ -43,7 +44,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
 settings = Settings()  # Fail fast on missing or invalid config.
 
-app = FastAPI(title="BetterSSB API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(
+    title="BetterSSB API",
+    version="0.1.0",
+    lifespan=lifespan,
+    generate_unique_id_function=operation_id,
+)
+app.openapi = lambda: build_openapi(app)  # type: ignore[method-assign]
 app.state.settings = settings
 
 # Signed cookie for the OAuth handshake only. Signed-in sessions are server-side;
@@ -65,6 +72,6 @@ app.add_exception_handler(SignInError, handle_sign_in_error)
 app.include_router(api_router)
 
 
-@app.get("/health")
+@app.get("/health", include_in_schema=False)
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
