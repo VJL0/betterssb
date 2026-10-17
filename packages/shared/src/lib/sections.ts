@@ -27,6 +27,15 @@ export type SectionSource = Pick<
   | "faculty"
 > & { meetingsFaculty: { meetingTime: ClassMeetingTime }[] };
 
+// A combined "Lecture and Lab" section is the main meeting, so only a type
+// that starts with one of these counts as a support component.
+const SUPPORT_SCHEDULE_TYPE = /^(lab|laboratory|recitation|discussion)\b/i;
+
+/** Labs, recitations and discussions: the parts that go with a lecture. */
+export function isSupportScheduleType(scheduleType: string): boolean {
+  return SUPPORT_SCHEDULE_TYPE.test(scheduleType);
+}
+
 /** Banner meeting days as one letter each, in week order (R = Thursday, U = Sunday). */
 export function meetingTimeToDays(mt: DayFlags): string {
   let days = "";

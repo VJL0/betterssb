@@ -1,0 +1,234 @@
+import type { ClassSection } from "../types/classes";
+import type {
+  PlannedCourse,
+  PlannedMeeting,
+  PlannedSection,
+  TermPlan,
+} from "../types/store";
+import {
+  assignCourseColorOrder,
+  courseColor,
+  type CourseColor,
+} from "./course-colors";
+import { parseClockTime, parseDays } from "./meeting-times";
+import { meetingTimeToDays, primaryInstructorName } from "./sections";
+
+export function emptyPlan(term: string, termDescription: string): TermPlan {
+  return {
+    term,
+    termDescription,
+    sections: [],
+    courses: [],
+    colorOrder: {},
+    updatedAt: new Date(0).toISOString(),
+  };
+}
+
+/**
+ * The key a course's color is stored under: Banner's subjectCourse form
+ * ("CIS2168"), so a planned course "CIS 2168" and its sections share a color.
+ */
+export function courseKey(code: string): string {
+  return code.replace(/\s+/g, "").toUpperCase();
+}
+
+/** "CIS" + "2168" → "CIS 2168". */
+export function courseCode(subject: string, courseNumber: string): string {
+  return `${subject} ${courseNumber}`;
+}
+
+/** "CIS 2168" → { subject: "CIS", courseNumber: "2168" }; null if it isn't a course code. */
+export function splitCourseCode(
+  code: string,
+): { subject: string; courseNumber: string } | null {
+  const match = /^([A-Z&]{2,6})\s*(\d{3,4}[A-Z]?)$/i.exec(code.trim());
+  if (!match) return null;
+  return {
+    subject: match[1]!.toUpperCase(),
+    courseNumber: match[2]!.toUpperCase(),
+  };
+}
+
+function toMinutes(time: string | null): number | null {
+  if (!time) return null;
+  const minutes = parseClockTime(time);
+  return Number.isNaN(minutes) ? null : minutes;
+}
+
+function location(building: string | null, room: string | null): string {
+  return [building, room].filter(Boolean).join(" ").trim();
+}
+
+/** What the plan keeps about a Banner section. */
+export function plannedSectionFrom(
+  section: ClassSection,
+  addedAt: string,
+): PlannedSection {
+  const meetings: PlannedMeeting[] = section.meetingsFaculty.map(
+    ({ meetingTime: mt }) => ({
+      days: meetingTimeToDays(mt),
+      start: toMinutes(mt.beginTime),
+      end: toMinutes(mt.endTime),
+      location: location(mt.buildingDescription, mt.room),
+      startDate: mt.startDate,
+      endDate: mt.endDate,
+    }),
+  );
+  return {
+    crn: section.courseReferenceNumber,
+    courseId: section.subjectCourse,
+    courseCode: courseCode(section.subject, section.courseNumber),
+    section: section.sequenceNumber,
+    title: section.courseTitle,
+    credits: section.creditHourLow ?? section.creditHours,
+    scheduleType: section.scheduleTypeDescription,
+    instructor: primaryInstructorName(section),
+    meetings,
+    addedAt,
+  };
+}
+
+function touch(
+  plan: TermPlan,
+  changes: Partial<TermPlan>,
+  now: string,
+): TermPlan {
+  const next = { ...plan, ...changes, updatedAt: now };
+  const courseIds = [
+    ...new Set([
+      ...next.sections.map((s) => s.courseId),
+      ...next.courses.map((c) => (c.code ? courseKey(c.code) : c.id)),
+    ]),
+  ];
+  return {
+    ...next,
+    colorOrder: assignCourseColorOrder(courseIds, plan.colorOrder),
+  };
+}
+
+export function addSection(
+  plan: TermPlan,
+  section: PlannedSection,
+  now: string,
+): TermPlan {
+  if (plan.sections.some((s) => s.crn === section.crn)) return plan;
+  return touch(plan, { sections: [...plan.sections, section] }, now);
+}
+
+export function removeSection(
+  plan: TermPlan,
+  crn: string,
+  now: string,
+): TermPlan {
+  return touch(
+    plan,
+    { sections: plan.sections.filter((s) => s.crn !== crn) },
+    now,
+  );
+}
+
+/** Replaces every section, e.g. with a generated schedule. Course entries stay. */
+export function replaceSections(
+  plan: TermPlan,
+  sections: PlannedSection[],
+  now: string,
+): TermPlan {
+  return touch(plan, { sections }, now);
+}
+
+export function addCourse(
+  plan: TermPlan,
+  course: PlannedCourse,
+  now: string,
+): TermPlan {
+  return touch(plan, { courses: [...plan.courses, course] }, now);
+}
+
+export function removeCourse(
+  plan: TermPlan,
+  id: string,
+  now: string,
+): TermPlan {
+  return touch(plan, { courses: plan.courses.filter((c) => c.id !== id) }, now);
+}
+
+/** The color a course has in this plan, or null if it isn't in the plan. */
+export function planCourseColor(
+  plan: TermPlan,
+  courseId: string,
+): CourseColor | null {
+  const order = plan.colorOrder[courseId];
+  return order === undefined ? null : courseColor(order);
+}
+
+/**
+ * Credits planned for the term. A course counts once even with several
+ * sections (a lecture and its lab), using its highest-credit section, and a
+ * planned course that already has a section isn't counted again.
+ */
+export function planCredits(plan: TermPlan): number {
+  const byCourse = new Map<string, number>();
+  for (const s of plan.sections) {
+    byCourse.set(
+      s.courseId,
+      Math.max(byCourse.get(s.courseId) ?? 0, s.credits ?? 0),
+    );
+  }
+  const sectionCredits = [...byCourse.values()].reduce((a, b) => a + b, 0);
+  const courseCredits = plan.courses
+    .filter((c) => !c.code || !byCourse.has(courseKey(c.code)))
+    .reduce((a, c) => a + (c.credits ?? 0), 0);
+  return sectionCredits + courseCredits;
+}
+
+export interface PlanConflict {
+  a: PlannedSection;
+  b: PlannedSection;
+  day: string;
+  start: number;
+  end: number;
+}
+
+/** Pairs of planned sections whose meetings overlap. */
+export function planConflicts(
+  sections: readonly PlannedSection[],
+): PlanConflict[] {
+  const conflicts: PlanConflict[] = [];
+  for (let i = 0; i < sections.length; i++) {
+    for (let j = i + 1; j < sections.length; j++) {
+      const a = sections[i]!;
+      const b = sections[j]!;
+      const clash = firstOverlap(a, b);
+      if (clash) conflicts.push({ a, b, ...clash });
+    }
+  }
+  return conflicts;
+}
+
+function firstOverlap(
+  a: PlannedSection,
+  b: PlannedSection,
+): { day: string; start: number; end: number } | null {
+  for (const ma of a.meetings) {
+    for (const mb of b.meetings) {
+      if (
+        ma.start === null ||
+        ma.end === null ||
+        mb.start === null ||
+        mb.end === null
+      )
+        continue;
+      const shared = parseDays(ma.days).find((d) =>
+        parseDays(mb.days).includes(d),
+      );
+      if (shared && ma.start < mb.end && mb.start < ma.end) {
+        return {
+          day: shared,
+          start: Math.max(ma.start, mb.start),
+          end: Math.min(ma.end, mb.end),
+        };
+      }
+    }
+  }
+  return null;
+}

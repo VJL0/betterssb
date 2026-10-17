@@ -3,6 +3,7 @@ import {
   describeDays,
   formatClock,
   formatDuration,
+  formatTimeOfDay,
   formatTimeRange,
   parseClockTime,
   parseDays,
@@ -63,5 +64,15 @@ describe("formatDuration", () => {
     [70, "1h 10m"],
   ])("formats %i minutes as %s", (minutes, text) => {
     expect(formatDuration(minutes)).toBe(text);
+  });
+});
+
+describe("formatTimeOfDay", () => {
+  it.each([
+    [570, "9:30 AM"],
+    [720, "12:00 PM"],
+    [1050, "5:30 PM"],
+  ])("%i → %j", (minutes, text) => {
+    expect(formatTimeOfDay(minutes)).toBe(text);
   });
 });
