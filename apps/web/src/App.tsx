@@ -4,7 +4,7 @@ import { AuditReport } from "./components/AuditReport";
 import { AuditStatusIcon } from "@workspace/ui/components/route-map";
 import { formatCredits, isNoteOnly } from "@workspace/shared/lib/dars";
 import type { Audit } from "@workspace/shared/types/dars";
-import { runFromFile } from "./lib/dars";
+import { runFromFile } from "./lib/api/dars";
 import { runViaExtension, waitForExtension } from "./lib/extension";
 
 const DARS_URL = "https://prd-dars.temple.edu/selfservice/";

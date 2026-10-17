@@ -22,6 +22,7 @@ import type {
   ChatMessage,
   TranscriptCourse,
 } from "@workspace/shared/types";
+import type { BannerConnection } from "@workspace/shared/types/store";
 
 const SSB_URL_PATTERN = "*://*.edu/StudentRegistrationSsb/*";
 const DARS_URL_PATTERN = "*://prd-dars.temple.edu/selfservice/*";
@@ -30,6 +31,10 @@ const DARS_START_URL =
 const DARS_TAB_READY_TIMEOUT_MS = 150_000;
 
 const REG_CHECK_ALARM = "betterssb-reg-check";
+/** Set when a Banner call fails the way an expired session does; cleared on the next success. */
+const BANNER_SIGNED_OUT_KEY = "betterssb:bannerSignedOut";
+// A signed-out Banner answers XHRs with 401/403 or its HTML login page instead of JSON.
+const SIGNED_OUT_ERROR = /\b(401|403)\b|not valid JSON|Unexpected token '<'/i;
 const AUTO_REG_FIRE_ALARM = "betterssb-auto-reg-fire";
 
 /** Fires once at `when` — batch runs only from this alarm (single attempt). */
@@ -50,6 +55,17 @@ async function findSSBTab(): Promise<number | null> {
   return tabs[0]?.id ?? null;
 }
 
+async function recordBannerSession(result: ExtensionResponse): Promise<void> {
+  const signedOut =
+    !result.success && SIGNED_OUT_ERROR.test(result.error ?? "");
+  if (signedOut || result.success) {
+    const stored = await browser.storage.local.get(BANNER_SIGNED_OUT_KEY);
+    if (stored[BANNER_SIGNED_OUT_KEY] !== signedOut) {
+      await browser.storage.local.set({ [BANNER_SIGNED_OUT_KEY]: signedOut });
+    }
+  }
+}
+
 async function relayToSSBTab(
   msg: ExtensionMessage,
 ): Promise<ExtensionResponse> {
@@ -60,7 +76,19 @@ async function relayToSSBTab(
       error: "No SSB tab found. Please open your registration page first.",
     };
   }
-  return sendTabMessage(tabId, msg);
+  const result = await sendTabMessage(tabId, msg);
+  await recordBannerSession(result);
+  return result;
+}
+
+/**
+ * Whether Banner is usable: an open Banner tab whose last relayed call didn't
+ * fail like an expired session. "not-connected" also covers never opening Banner.
+ */
+async function bannerConnection(): Promise<BannerConnection> {
+  if (!(await findSSBTab())) return "not-connected";
+  const stored = await browser.storage.local.get(BANNER_SIGNED_OUT_KEY);
+  return stored[BANNER_SIGNED_OUT_KEY] === true ? "signed-out" : "connected";
 }
 
 function isSSBMessage(type: string): boolean {
@@ -134,6 +162,11 @@ export default defineBackground(() => {
       if (isSSBMessage(msg.type)) {
         const result = await relayToSSBTab(msg);
         sendResponse(result);
+        return;
+      }
+
+      if (msg.type === "BANNER_STATUS") {
+        sendResponse({ success: true, data: await bannerConnection() });
         return;
       }
 
