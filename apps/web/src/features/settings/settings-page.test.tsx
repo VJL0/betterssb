@@ -95,4 +95,17 @@ describe("exportStore", () => {
     expect(data.documents).toEqual({ advisorThreads: [THREAD] });
     unmount();
   });
+
+  it("turns single-key shortcuts off", async () => {
+    const user = userEvent.setup();
+    const { store } = renderPage(<SettingsPage />);
+    const toggle = await screen.findByRole("switch", {
+      name: "Single-key shortcuts",
+    });
+    expect(toggle.getAttribute("aria-checked")).toBe("true");
+    await user.click(toggle);
+    await waitFor(async () =>
+      expect((await store.get("settings"))?.keyboardShortcuts).toBe(false),
+    );
+  });
 });

@@ -45,9 +45,14 @@ function mergePlans(a: TermPlan, b: TermPlan): TermPlan {
     x.addedAt.localeCompare(y.addedAt),
   );
   const courseIds = [...new Set(sections.map((s) => s.courseId))];
+  const coursesById = new Map(a.courses.map((c) => [c.id, c]));
+  for (const course of b.courses) {
+    if (!coursesById.has(course.id)) coursesById.set(course.id, course);
+  }
   return {
     ...newerOf(a, b, (p) => p.updatedAt),
     sections,
+    courses: [...coursesById.values()],
     colorOrder: assignCourseColorOrder(courseIds, {
       ...b.colorOrder,
       ...a.colorOrder,

@@ -1,3 +1,4 @@
+import { downloadFile } from "@/lib/download";
 import type { LocalStore, StoreKey } from "@workspace/shared/types/store";
 
 export interface StoreExport {
@@ -18,13 +19,9 @@ export async function exportStore(store: LocalStore): Promise<StoreExport> {
 /** Saves the store as `betterssb-data-YYYY-MM-DD.json`. */
 export async function downloadStoreExport(store: LocalStore): Promise<void> {
   const data = await exportStore(store);
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: "application/json",
-  });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `betterssb-data-${data.exportedAt.slice(0, 10)}.json`;
-  link.click();
-  URL.revokeObjectURL(url);
+  downloadFile(
+    JSON.stringify(data, null, 2),
+    `betterssb-data-${data.exportedAt.slice(0, 10)}.json`,
+    "application/json",
+  );
 }

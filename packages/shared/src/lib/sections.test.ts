@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { SSBMeetingTime, SSBSection } from "../types/ssb";
 import {
   formatBannerTime,
+  isSupportScheduleType,
   meetingTimeToDays,
   primaryInstructorName,
   ssbSectionToInternal,
@@ -138,5 +139,17 @@ describe("ssbSectionToInternal", () => {
   it("joins building and room into one location", () => {
     const [entry] = ssbSectionToInternal(section([meeting({ monday: true })]));
     expect(entry?.location).toBe("Science Education and Research Center 116");
+  });
+});
+
+describe("isSupportScheduleType", () => {
+  it.each([
+    ["Laboratory", true],
+    ["Lab", true],
+    ["Recitation", true],
+    ["Lecture", false],
+    ["Lecture and Lab", false],
+  ])("%j → %j", (type, support) => {
+    expect(isSupportScheduleType(type)).toBe(support);
   });
 });
