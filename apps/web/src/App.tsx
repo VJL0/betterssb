@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import { AccountBar } from "./components/AccountBar";
 import { AuditReport } from "./components/AuditReport";
-import { StatusIcon } from "./components/StatusBadge";
+import { AuditStatusIcon } from "@workspace/ui/components/route-map";
 import { formatCredits, isNoteOnly } from "@workspace/shared/lib/dars";
 import type { Audit } from "@workspace/shared/types/dars";
 import { runFromFile } from "./lib/dars";
@@ -309,7 +309,7 @@ function AuditSummary({ audit }: { audit: Audit }) {
   return (
     <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
       <div className="flex items-start gap-3">
-        <StatusIcon status={audit.complete ? "complete" : "incomplete"} />
+        <AuditStatusIcon status={audit.complete ? "complete" : "incomplete"} />
         <div>
           <h2 className="font-semibold">{audit.programTitle}</h2>
           <p className="text-sm text-muted-foreground">
