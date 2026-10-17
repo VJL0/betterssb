@@ -1,0 +1,2945 @@
+{
+  "components": {
+    "schemas": {
+      "Audit": {
+        "properties": {
+          "catalogYear": {
+            "default": "",
+            "title": "Catalogyear",
+            "type": "string"
+          },
+          "complete": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Complete"
+          },
+          "preparedOn": {
+            "default": "",
+            "title": "Preparedon",
+            "type": "string"
+          },
+          "programCode": {
+            "default": "",
+            "title": "Programcode",
+            "type": "string"
+          },
+          "programTitle": {
+            "default": "",
+            "title": "Programtitle",
+            "type": "string"
+          },
+          "requirements": {
+            "items": {
+              "$ref": "#/components/schemas/Requirement"
+            },
+            "title": "Requirements",
+            "type": "array"
+          },
+          "studentName": {
+            "default": "",
+            "title": "Studentname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "studentName",
+          "programTitle",
+          "programCode",
+          "catalogYear",
+          "preparedOn",
+          "complete",
+          "requirements"
+        ],
+        "title": "Audit",
+        "type": "object"
+      },
+      "AuditCourse": {
+        "properties": {
+          "course": {
+            "title": "Course",
+            "type": "string"
+          },
+          "credits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credits"
+          },
+          "grade": {
+            "default": "",
+            "title": "Grade",
+            "type": "string"
+          },
+          "inProgress": {
+            "default": false,
+            "title": "Inprogress",
+            "type": "boolean"
+          },
+          "term": {
+            "title": "Term",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "term",
+          "course",
+          "title",
+          "credits",
+          "grade",
+          "inProgress"
+        ],
+        "title": "AuditCourse",
+        "type": "object"
+      },
+      "ChatMessage": {
+        "properties": {
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "ChatMessage",
+        "type": "object"
+      },
+      "ChatReply": {
+        "properties": {
+          "response": {
+            "title": "Response",
+            "type": "string"
+          }
+        },
+        "required": [
+          "response"
+        ],
+        "title": "ChatReply",
+        "type": "object"
+      },
+      "ChatRequest": {
+        "properties": {
+          "context": {
+            "default": "",
+            "title": "Context",
+            "type": "string"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            },
+            "title": "Messages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "messages"
+        ],
+        "title": "ChatRequest",
+        "type": "object"
+      },
+      "ClassSearchResult": {
+        "properties": {
+          "fetchedAt": {
+            "description": "When Banner returned this data. Seats change.",
+            "format": "date-time",
+            "title": "Fetchedat",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/ClassSection"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "totalCount": {
+            "title": "Totalcount",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "totalCount",
+          "sections",
+          "fetchedAt"
+        ],
+        "title": "ClassSearchResult",
+        "type": "object"
+      },
+      "ClassSection": {
+        "properties": {
+          "campusDescription": {
+            "default": "",
+            "title": "Campusdescription",
+            "type": "string"
+          },
+          "courseNumber": {
+            "title": "Coursenumber",
+            "type": "string"
+          },
+          "courseReferenceNumber": {
+            "title": "Coursereferencenumber",
+            "type": "string"
+          },
+          "courseTitle": {
+            "title": "Coursetitle",
+            "type": "string"
+          },
+          "creditHourHigh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credithourhigh"
+          },
+          "creditHourLow": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credithourlow"
+          },
+          "creditHours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credithours"
+          },
+          "enrollment": {
+            "default": 0,
+            "title": "Enrollment",
+            "type": "integer"
+          },
+          "faculty": {
+            "items": {
+              "$ref": "#/components/schemas/Faculty"
+            },
+            "title": "Faculty",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "instructionalMethod": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instructionalmethod"
+          },
+          "instructionalMethodDescription": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instructionalmethoddescription"
+          },
+          "isSectionLinked": {
+            "default": false,
+            "title": "Issectionlinked",
+            "type": "boolean"
+          },
+          "linkIdentifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linkidentifier"
+          },
+          "maximumEnrollment": {
+            "default": 0,
+            "title": "Maximumenrollment",
+            "type": "integer"
+          },
+          "meetingsFaculty": {
+            "items": {
+              "$ref": "#/components/schemas/MeetingFaculty"
+            },
+            "title": "Meetingsfaculty",
+            "type": "array"
+          },
+          "openSection": {
+            "default": false,
+            "title": "Opensection",
+            "type": "boolean"
+          },
+          "partOfTerm": {
+            "default": "",
+            "title": "Partofterm",
+            "type": "string"
+          },
+          "scheduleTypeDescription": {
+            "default": "",
+            "title": "Scheduletypedescription",
+            "type": "string"
+          },
+          "seatsAvailable": {
+            "default": 0,
+            "title": "Seatsavailable",
+            "type": "integer"
+          },
+          "sectionAttributes": {
+            "items": {
+              "$ref": "#/components/schemas/CodeDescription"
+            },
+            "title": "Sectionattributes",
+            "type": "array"
+          },
+          "sequenceNumber": {
+            "default": "",
+            "title": "Sequencenumber",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "subjectCourse": {
+            "title": "Subjectcourse",
+            "type": "string"
+          },
+          "subjectDescription": {
+            "default": "",
+            "title": "Subjectdescription",
+            "type": "string"
+          },
+          "term": {
+            "title": "Term",
+            "type": "string"
+          },
+          "termDesc": {
+            "title": "Termdesc",
+            "type": "string"
+          },
+          "waitAvailable": {
+            "default": 0,
+            "title": "Waitavailable",
+            "type": "integer"
+          },
+          "waitCapacity": {
+            "default": 0,
+            "title": "Waitcapacity",
+            "type": "integer"
+          },
+          "waitCount": {
+            "default": 0,
+            "title": "Waitcount",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "term",
+          "termDesc",
+          "courseReferenceNumber",
+          "partOfTerm",
+          "courseNumber",
+          "subject",
+          "subjectDescription",
+          "sequenceNumber",
+          "campusDescription",
+          "scheduleTypeDescription",
+          "courseTitle",
+          "creditHours",
+          "creditHourLow",
+          "creditHourHigh",
+          "maximumEnrollment",
+          "enrollment",
+          "seatsAvailable",
+          "waitCapacity",
+          "waitCount",
+          "waitAvailable",
+          "openSection",
+          "subjectCourse",
+          "instructionalMethod",
+          "instructionalMethodDescription",
+          "isSectionLinked",
+          "linkIdentifier",
+          "faculty",
+          "meetingsFaculty",
+          "sectionAttributes"
+        ],
+        "title": "ClassSection",
+        "type": "object"
+      },
+      "CodeDescription": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "description"
+        ],
+        "title": "CodeDescription",
+        "type": "object"
+      },
+      "CourseOption": {
+        "description": "One choosable option within a requirement item.\n\nA single option can contain multiple corequisite courses that must\nbe taken together (e.g. CHEM 1031 & CHEM 1033).",
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/CourseRef"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "isHonorsVariant": {
+            "default": false,
+            "title": "Ishonorsvariant",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "courses",
+          "isHonorsVariant"
+        ],
+        "title": "CourseOption",
+        "type": "object"
+      },
+      "CourseRef": {
+        "description": "A reference to a single course in the bulletin.",
+        "properties": {
+          "bulletinUrl": {
+            "default": "",
+            "title": "Bulletinurl",
+            "type": "string"
+          },
+          "credits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credits"
+          },
+          "number": {
+            "title": "Number",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "writingIntensive": {
+            "default": false,
+            "title": "Writingintensive",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "subject",
+          "number",
+          "title",
+          "credits",
+          "writingIntensive",
+          "bulletinUrl"
+        ],
+        "title": "CourseRef",
+        "type": "object"
+      },
+      "DegreeProgram": {
+        "description": "Complete degree requirements scraped from a Temple Bulletin page.\n\nThis is the top-level structure returned by the parser.",
+        "properties": {
+          "bulletinUrl": {
+            "default": "",
+            "title": "Bulletinurl",
+            "type": "string"
+          },
+          "bulletinYear": {
+            "default": "",
+            "title": "Bulletinyear",
+            "type": "string"
+          },
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/RequirementCategory"
+            },
+            "title": "Categories",
+            "type": "array"
+          },
+          "college": {
+            "default": "",
+            "title": "College",
+            "type": "string"
+          },
+          "degreeType": {
+            "default": "",
+            "title": "Degreetype",
+            "type": "string"
+          },
+          "distinctionCriteria": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Distinctioncriteria",
+            "type": "array"
+          },
+          "footnotes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Footnotes",
+            "type": "array"
+          },
+          "labScienceSequences": {
+            "items": {
+              "$ref": "#/components/schemas/LabScienceSequence"
+            },
+            "title": "Labsciencesequences",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "programCode": {
+            "default": "",
+            "title": "Programcode",
+            "type": "string"
+          },
+          "suggestedPlan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SuggestedPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "totalCredits": {
+            "default": "",
+            "title": "Totalcredits",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "degreeType",
+          "programCode",
+          "college",
+          "bulletinUrl",
+          "bulletinYear",
+          "totalCredits",
+          "categories",
+          "labScienceSequences",
+          "suggestedPlan",
+          "distinctionCriteria",
+          "footnotes"
+        ],
+        "title": "DegreeProgram",
+        "type": "object"
+      },
+      "Faculty": {
+        "properties": {
+          "bannerId": {
+            "default": "",
+            "title": "Bannerid",
+            "type": "string"
+          },
+          "displayName": {
+            "default": "",
+            "title": "Displayname",
+            "type": "string"
+          },
+          "emailAddress": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Emailaddress"
+          },
+          "primaryIndicator": {
+            "default": false,
+            "title": "Primaryindicator",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "bannerId",
+          "displayName",
+          "emailAddress",
+          "primaryIndicator"
+        ],
+        "title": "Faculty",
+        "type": "object"
+      },
+      "GenerateRequest": {
+        "properties": {
+          "maxResults": {
+            "default": 5,
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Maxresults",
+            "type": "integer"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/SchedulePreferences",
+            "default": {
+              "earliestTime": "08:00",
+              "latestTime": "22:00",
+              "maxGapMinutes": 120,
+              "minGapMinutes": 10
+            }
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/Section-Input"
+            },
+            "title": "Sections",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sections"
+        ],
+        "title": "GenerateRequest",
+        "type": "object"
+      },
+      "GeneratedSchedule": {
+        "properties": {
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/Section-Output"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sections",
+          "score",
+          "warnings"
+        ],
+        "title": "GeneratedSchedule",
+        "type": "object"
+      },
+      "LabScienceSequence": {
+        "description": "A lab-science department sequence (e.g. Biology, Chemistry, Physics).\n\nThe student picks one sequence, then selects one course from A\nand one from B within that sequence.",
+        "properties": {
+          "department": {
+            "title": "Department",
+            "type": "string"
+          },
+          "footnotes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Footnotes",
+            "type": "array"
+          },
+          "scienceALabel": {
+            "default": "Lab Science A",
+            "title": "Sciencealabel",
+            "type": "string"
+          },
+          "scienceAOptions": {
+            "items": {
+              "$ref": "#/components/schemas/CourseOption"
+            },
+            "title": "Scienceaoptions",
+            "type": "array"
+          },
+          "scienceBLabel": {
+            "default": "Lab Science B",
+            "title": "Scienceblabel",
+            "type": "string"
+          },
+          "scienceBOptions": {
+            "items": {
+              "$ref": "#/components/schemas/CourseOption"
+            },
+            "title": "Scienceboptions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "department",
+          "scienceALabel",
+          "scienceBLabel",
+          "scienceAOptions",
+          "scienceBOptions",
+          "footnotes"
+        ],
+        "title": "LabScienceSequence",
+        "type": "object"
+      },
+      "MeetingFaculty": {
+        "properties": {
+          "meetingTime": {
+            "$ref": "#/components/schemas/MeetingTime"
+          }
+        },
+        "required": [
+          "meetingTime"
+        ],
+        "title": "MeetingFaculty",
+        "type": "object"
+      },
+      "MeetingTime": {
+        "properties": {
+          "beginTime": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Begintime"
+          },
+          "building": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Building"
+          },
+          "buildingDescription": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Buildingdescription"
+          },
+          "campus": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Campus"
+          },
+          "campusDescription": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Campusdescription"
+          },
+          "endDate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enddate"
+          },
+          "endTime": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endtime"
+          },
+          "friday": {
+            "default": false,
+            "title": "Friday",
+            "type": "boolean"
+          },
+          "meetingType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingtype"
+          },
+          "meetingTypeDescription": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meetingtypedescription"
+          },
+          "monday": {
+            "default": false,
+            "title": "Monday",
+            "type": "boolean"
+          },
+          "room": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Room"
+          },
+          "saturday": {
+            "default": false,
+            "title": "Saturday",
+            "type": "boolean"
+          },
+          "startDate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Startdate"
+          },
+          "sunday": {
+            "default": false,
+            "title": "Sunday",
+            "type": "boolean"
+          },
+          "thursday": {
+            "default": false,
+            "title": "Thursday",
+            "type": "boolean"
+          },
+          "tuesday": {
+            "default": false,
+            "title": "Tuesday",
+            "type": "boolean"
+          },
+          "wednesday": {
+            "default": false,
+            "title": "Wednesday",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "beginTime",
+          "endTime",
+          "building",
+          "buildingDescription",
+          "campus",
+          "campusDescription",
+          "room",
+          "meetingType",
+          "meetingTypeDescription",
+          "startDate",
+          "endDate",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ],
+        "title": "MeetingTime",
+        "type": "object"
+      },
+      "PlanCourse": {
+        "description": "A single slot in the suggested academic plan grid.",
+        "properties": {
+          "course": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CourseOption"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "credits": {
+            "default": "",
+            "title": "Credits",
+            "type": "string"
+          },
+          "placeholder": {
+            "default": "",
+            "title": "Placeholder",
+            "type": "string"
+          }
+        },
+        "required": [
+          "course",
+          "placeholder",
+          "credits"
+        ],
+        "title": "PlanCourse",
+        "type": "object"
+      },
+      "PlanSemester": {
+        "description": "One semester in the suggested plan.",
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/PlanCourse"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "term": {
+            "enum": [
+              "Fall",
+              "Spring",
+              "Summer"
+            ],
+            "title": "Term",
+            "type": "string"
+          },
+          "totalCredits": {
+            "default": "",
+            "title": "Totalcredits",
+            "type": "string"
+          }
+        },
+        "required": [
+          "term",
+          "courses",
+          "totalCredits"
+        ],
+        "title": "PlanSemester",
+        "type": "object"
+      },
+      "PlanYear": {
+        "properties": {
+          "semesters": {
+            "items": {
+              "$ref": "#/components/schemas/PlanSemester"
+            },
+            "title": "Semesters",
+            "type": "array"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "year",
+          "semesters"
+        ],
+        "title": "PlanYear",
+        "type": "object"
+      },
+      "PrereqCheckRequest": {
+        "properties": {
+          "completed": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptCourse"
+            },
+            "title": "Completed",
+            "type": "array"
+          },
+          "required": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Required",
+            "type": "array"
+          }
+        },
+        "required": [
+          "completed",
+          "required"
+        ],
+        "title": "PrereqCheckRequest",
+        "type": "object"
+      },
+      "Problem": {
+        "description": "RFC 9457 problem details. `detail`, when present, is safe to show users.",
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "errors": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProblemError"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Validation errors (422 only).",
+            "title": "Errors"
+          },
+          "status": {
+            "title": "Status",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "default": "about:blank",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "errors"
+        ],
+        "title": "Problem",
+        "type": "object"
+      },
+      "ProblemError": {
+        "description": "One validation error: a JSON Pointer into the body, or a parameter.",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "in": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Parameter location: query, path, header or cookie.",
+            "title": "In"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Parameter name.",
+            "title": "Name"
+          },
+          "pointer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "JSON Pointer into the body.",
+            "title": "Pointer"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "ProblemError",
+        "type": "object"
+      },
+      "Progress": {
+        "properties": {
+          "courses": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Courses"
+          },
+          "credits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credits"
+          },
+          "gpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpa"
+          }
+        },
+        "required": [
+          "credits",
+          "courses",
+          "gpa"
+        ],
+        "title": "Progress",
+        "type": "object"
+      },
+      "RMPRating": {
+        "properties": {
+          "department": {
+            "default": "",
+            "title": "Department",
+            "type": "string"
+          },
+          "difficulty": {
+            "title": "Difficulty",
+            "type": "number"
+          },
+          "numRatings": {
+            "title": "Numratings",
+            "type": "integer"
+          },
+          "overallRating": {
+            "title": "Overallrating",
+            "type": "number"
+          },
+          "professorName": {
+            "title": "Professorname",
+            "type": "string"
+          },
+          "rmpUrl": {
+            "default": "",
+            "title": "Rmpurl",
+            "type": "string"
+          },
+          "topTags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Toptags",
+            "type": "array"
+          },
+          "wouldTakeAgainPct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wouldtakeagainpct"
+          }
+        },
+        "required": [
+          "professorName",
+          "department",
+          "overallRating",
+          "wouldTakeAgainPct",
+          "difficulty",
+          "numRatings",
+          "topTags",
+          "rmpUrl"
+        ],
+        "title": "RMPRating",
+        "type": "object"
+      },
+      "RMPSchool": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "legacyId": {
+            "title": "Legacyid",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "legacyId",
+          "name"
+        ],
+        "title": "RMPSchool",
+        "type": "object"
+      },
+      "Requirement": {
+        "properties": {
+          "category": {
+            "default": "",
+            "title": "Category",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "earned": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Progress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "inProgress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Progress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "needs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Progress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "incomplete",
+              "in_progress",
+              "none"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "subrequirements": {
+            "items": {
+              "$ref": "#/components/schemas/SubRequirement"
+            },
+            "title": "Subrequirements",
+            "type": "array"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "category",
+          "title",
+          "status",
+          "notes",
+          "earned",
+          "inProgress",
+          "needs",
+          "subrequirements"
+        ],
+        "title": "Requirement",
+        "type": "object"
+      },
+      "RequirementCategory": {
+        "description": "A top-level requirement section.\n\nMaps to the numbered <ol> items on the bulletin:\n  1. University Requirements\n  2. College Requirements\n  3. Major Requirements for Bachelor of Science",
+        "properties": {
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/RequirementGroup"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "totalCredits": {
+            "default": "",
+            "title": "Totalcredits",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "totalCredits",
+          "description",
+          "groups",
+          "notes"
+        ],
+        "title": "RequirementCategory",
+        "type": "object"
+      },
+      "RequirementGroup": {
+        "description": "A named cluster of requirement items within a category.\n\nExamples: \"Computer & Information Science courses\",\n\"Computer Science Electives\", \"Mathematics\", \"Laboratory Science courses\".",
+        "properties": {
+          "constraints": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Constraints",
+            "type": "array"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RequirementItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "items",
+          "constraints"
+        ],
+        "title": "RequirementGroup",
+        "type": "object"
+      },
+      "RequirementItem": {
+        "description": "A single line-item in a requirement group.\n\nCovers three patterns found on the bulletin:\n  - REQUIRED:   take this exact course (options has 1 entry with 1 course)\n  - SELECT_ONE: pick one option from the list (e.g. CIS 1051 or CIS 1951)\n  - SELECT_N:   pick N credits worth from the options pool",
+        "properties": {
+          "credits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credits"
+          },
+          "creditsRange": {
+            "default": "",
+            "title": "Creditsrange",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "footnotes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Footnotes",
+            "type": "array"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/CourseOption"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "selectionType": {
+            "$ref": "#/components/schemas/SelectionType"
+          }
+        },
+        "required": [
+          "selectionType",
+          "description",
+          "credits",
+          "creditsRange",
+          "options",
+          "footnotes"
+        ],
+        "title": "RequirementItem",
+        "type": "object"
+      },
+      "SchedulePreferences": {
+        "properties": {
+          "earliestTime": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "08:00",
+            "title": "Earliesttime"
+          },
+          "latestTime": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "22:00",
+            "title": "Latesttime"
+          },
+          "maxGapMinutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 120,
+            "title": "Maxgapminutes"
+          },
+          "minGapMinutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 10,
+            "title": "Mingapminutes"
+          },
+          "preferredDays": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferreddays"
+          }
+        },
+        "title": "SchedulePreferences",
+        "type": "object"
+      },
+      "Section-Input": {
+        "description": "One meeting block of a section. A CRN with several blocks sends one entry per block.",
+        "properties": {
+          "courseId": {
+            "title": "Courseid",
+            "type": "string"
+          },
+          "crn": {
+            "title": "Crn",
+            "type": "string"
+          },
+          "days": {
+            "title": "Days",
+            "type": "string"
+          },
+          "endTime": {
+            "title": "Endtime",
+            "type": "string"
+          },
+          "instructor": {
+            "title": "Instructor",
+            "type": "string"
+          },
+          "location": {
+            "default": "",
+            "title": "Location",
+            "type": "string"
+          },
+          "maxSeats": {
+            "default": 0,
+            "title": "Maxseats",
+            "type": "integer"
+          },
+          "scheduleType": {
+            "default": "",
+            "description": "Banner schedule type (Lecture, Laboratory…). Each type is scheduled separately.",
+            "title": "Scheduletype",
+            "type": "string"
+          },
+          "seatsAvailable": {
+            "default": 0,
+            "title": "Seatsavailable",
+            "type": "integer"
+          },
+          "startTime": {
+            "title": "Starttime",
+            "type": "string"
+          },
+          "term": {
+            "default": "",
+            "title": "Term",
+            "type": "string"
+          }
+        },
+        "required": [
+          "crn",
+          "courseId",
+          "instructor",
+          "days",
+          "startTime",
+          "endTime"
+        ],
+        "title": "Section",
+        "type": "object"
+      },
+      "Section-Output": {
+        "description": "One meeting block of a section. A CRN with several blocks sends one entry per block.",
+        "properties": {
+          "courseId": {
+            "title": "Courseid",
+            "type": "string"
+          },
+          "crn": {
+            "title": "Crn",
+            "type": "string"
+          },
+          "days": {
+            "title": "Days",
+            "type": "string"
+          },
+          "endTime": {
+            "title": "Endtime",
+            "type": "string"
+          },
+          "instructor": {
+            "title": "Instructor",
+            "type": "string"
+          },
+          "location": {
+            "default": "",
+            "title": "Location",
+            "type": "string"
+          },
+          "maxSeats": {
+            "default": 0,
+            "title": "Maxseats",
+            "type": "integer"
+          },
+          "scheduleType": {
+            "default": "",
+            "description": "Banner schedule type (Lecture, Laboratory…). Each type is scheduled separately.",
+            "title": "Scheduletype",
+            "type": "string"
+          },
+          "seatsAvailable": {
+            "default": 0,
+            "title": "Seatsavailable",
+            "type": "integer"
+          },
+          "startTime": {
+            "title": "Starttime",
+            "type": "string"
+          },
+          "term": {
+            "default": "",
+            "title": "Term",
+            "type": "string"
+          }
+        },
+        "required": [
+          "crn",
+          "courseId",
+          "instructor",
+          "days",
+          "startTime",
+          "endTime",
+          "location",
+          "seatsAvailable",
+          "maxSeats",
+          "term",
+          "scheduleType"
+        ],
+        "title": "Section",
+        "type": "object"
+      },
+      "SelectionType": {
+        "description": "How the student fulfills a requirement item.",
+        "enum": [
+          "required",
+          "select_one",
+          "select_n"
+        ],
+        "title": "SelectionType",
+        "type": "string"
+      },
+      "SubRequirement": {
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/AuditCourse"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "earned": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Progress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "inProgress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Progress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "needs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Progress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "number": {
+            "default": "",
+            "title": "Number",
+            "type": "string"
+          },
+          "selectFrom": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Selectfrom",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "incomplete",
+              "in_progress",
+              "none"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "number",
+          "title",
+          "status",
+          "earned",
+          "inProgress",
+          "needs",
+          "courses",
+          "selectFrom"
+        ],
+        "title": "SubRequirement",
+        "type": "object"
+      },
+      "SuggestedPlan": {
+        "description": "The 4-year suggested academic plan grid from the bulletin.",
+        "properties": {
+          "footnotes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Footnotes",
+            "type": "array"
+          },
+          "totalCredits": {
+            "default": "",
+            "title": "Totalcredits",
+            "type": "string"
+          },
+          "years": {
+            "items": {
+              "$ref": "#/components/schemas/PlanYear"
+            },
+            "title": "Years",
+            "type": "array"
+          }
+        },
+        "required": [
+          "years",
+          "totalCredits",
+          "footnotes"
+        ],
+        "title": "SuggestedPlan",
+        "type": "object"
+      },
+      "TranscriptCourse": {
+        "properties": {
+          "courseNumber": {
+            "title": "Coursenumber",
+            "type": "string"
+          },
+          "credits": {
+            "title": "Credits",
+            "type": "number"
+          },
+          "grade": {
+            "title": "Grade",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "term": {
+            "title": "Term",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject",
+          "courseNumber",
+          "title",
+          "grade",
+          "credits",
+          "term"
+        ],
+        "title": "TranscriptCourse",
+        "type": "object"
+      },
+      "TranscriptData": {
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptCourse"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "gpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpa"
+          }
+        },
+        "required": [
+          "courses",
+          "gpa"
+        ],
+        "title": "TranscriptData",
+        "type": "object"
+      },
+      "UserResponse": {
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "pictureUrl": {
+            "title": "Pictureurl",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "pictureUrl"
+        ],
+        "title": "UserResponse",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "APIKeyCookie": {
+        "in": "cookie",
+        "name": "__Host-Http-sid",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "title": "BetterSSB API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/auth/google/callback": {
+      "get": {
+        "description": "Finish Google sign-in, start a session, and redirect to the frontend.",
+        "operationId": "google_callback",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "Google Callback",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/google/login": {
+      "get": {
+        "description": "Redirect to Google to sign in.",
+        "operationId": "google_login",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Google Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "description": "Delete the session and clear its cookie.",
+        "operationId": "logout",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "description": "Return the signed-in user.",
+        "operationId": "get_me",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "Get Me",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/chat/": {
+      "post": {
+        "description": "Send a conversation to the academic advising chatbot.",
+        "operationId": "chat",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatReply"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Chat",
+        "tags": [
+          "chat"
+        ]
+      }
+    },
+    "/api/classes/attributes": {
+      "get": {
+        "description": "Section attributes for a term, such as GenEd areas and Writing Intensive.",
+        "operationId": "list_attributes",
+        "parameters": [
+          {
+            "description": "Banner term code",
+            "in": "query",
+            "name": "term",
+            "required": true,
+            "schema": {
+              "description": "Banner term code",
+              "pattern": "^\\d{6}$",
+              "title": "Term",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CodeDescription"
+                  },
+                  "title": "Response List Attributes",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Attributes",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/classes/search": {
+      "get": {
+        "description": "Sections in a term from Banner's public class search, with live seats.\n\nNeeds a subject, keyword or attribute; a whole-term listing is too large to serve.",
+        "operationId": "search_sections",
+        "parameters": [
+          {
+            "description": "Banner term code",
+            "in": "query",
+            "name": "term",
+            "required": true,
+            "schema": {
+              "description": "Banner term code",
+              "pattern": "^\\d{6}$",
+              "title": "Term",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "subject",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z]{2,5}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Subject"
+            }
+          },
+          {
+            "in": "query",
+            "name": "courseNumber",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9A-Za-z]{1,6}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Coursenumber"
+            }
+          },
+          {
+            "in": "query",
+            "name": "keyword",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "minLength": 2,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Keyword"
+            }
+          },
+          {
+            "in": "query",
+            "name": "attribute",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Za-z0-9]{1,6}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Attribute"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassSearchResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Search Sections",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/classes/subjects": {
+      "get": {
+        "description": "Subjects offered in a term, optionally filtered by code or name.",
+        "operationId": "list_subjects",
+        "parameters": [
+          {
+            "description": "Banner term code",
+            "in": "query",
+            "name": "term",
+            "required": true,
+            "schema": {
+              "description": "Banner term code",
+              "pattern": "^\\d{6}$",
+              "title": "Term",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "maxLength": 40,
+              "title": "Q",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CodeDescription"
+                  },
+                  "title": "Response List Subjects",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Subjects",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/classes/terms": {
+      "get": {
+        "description": "Terms with a published class schedule, newest first.",
+        "operationId": "list_terms",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CodeDescription"
+                  },
+                  "title": "Response List Terms",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Terms",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/dars/audits/parse": {
+      "post": {
+        "description": "Parse a DARS audit page that was already fetched — by the browser extension or saved by the\nstudent (the printer-friendly `read.html`). No credential is involved; this only reads HTML.",
+        "operationId": "parse_audit",
+        "requestBody": {
+          "content": {
+            "text/html": {
+              "schema": {
+                "title": "Html",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Audit"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Parse Audit",
+        "tags": [
+          "dars"
+        ]
+      }
+    },
+    "/api/degree/parse-bulletin": {
+      "post": {
+        "description": "Parse a Temple University Bulletin HTML page into structured degree requirements.",
+        "operationId": "parse_bulletin",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Url",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "title": "Html",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DegreeProgram"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Parse Bulletin",
+        "tags": [
+          "degree"
+        ]
+      }
+    },
+    "/api/rmp/schools": {
+      "get": {
+        "description": "Search RateMyProfessors for schools by name.",
+        "operationId": "search_schools",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "required": true,
+            "schema": {
+              "title": "Query",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RMPSchool"
+                  },
+                  "title": "Response Search Schools",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Search Schools",
+        "tags": [
+          "rmp"
+        ]
+      }
+    },
+    "/api/rmp/search": {
+      "get": {
+        "description": "Search RateMyProfessors for a professor by name.",
+        "operationId": "search_professors",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "school",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "School",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "school_id",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "School Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RMPRating"
+                  },
+                  "title": "Response Search Professors",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Search Professors",
+        "tags": [
+          "rmp"
+        ]
+      }
+    },
+    "/api/rmp/{rmp_id}": {
+      "get": {
+        "description": "Get a single professor's ratings by their RMP ID.",
+        "operationId": "get_professor",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rmp_id",
+            "required": true,
+            "schema": {
+              "title": "Rmp Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RMPRating"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Get Professor",
+        "tags": [
+          "rmp"
+        ]
+      }
+    },
+    "/api/schedule/generate": {
+      "post": {
+        "description": "Generate non-conflicting schedules ranked by preference fit.",
+        "operationId": "generate_schedules",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GeneratedSchedule"
+                  },
+                  "title": "Response Generate Schedules",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Generate Schedules",
+        "tags": [
+          "schedule"
+        ]
+      }
+    },
+    "/api/transcript/check-prereqs": {
+      "post": {
+        "description": "Check which prerequisite courses have been completed.",
+        "operationId": "check_prerequisites",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrereqCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "title": "Response Check Prerequisites",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Check Prerequisites",
+        "tags": [
+          "transcript"
+        ]
+      }
+    },
+    "/api/transcript/parse": {
+      "post": {
+        "description": "Parse a pasted transcript into structured course data.",
+        "operationId": "parse_transcript",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "title": "Text",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscriptData"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Parse Transcript",
+        "tags": [
+          "transcript"
+        ]
+      }
+    }
+  }
+}
