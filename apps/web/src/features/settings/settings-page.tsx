@@ -1,5 +1,5 @@
 import { DownloadIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
-import { useId, useState, type ReactNode } from "react";
+import { Fragment, useId, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import type { StoreKey } from "@workspace/shared/types/store";
 import type { RMPSchool } from "@workspace/shared/types";
@@ -18,11 +18,14 @@ import { Button } from "@workspace/ui/components/button";
 import { ButtonLink } from "@/components/button-link";
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldLabel,
   FieldTitle,
 } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
+import { Kbd } from "@workspace/ui/components/kbd";
+import { Switch } from "@workspace/ui/components/switch";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { SearchCombobox } from "@workspace/ui/components/search-combobox";
 import { BannerBadge } from "@/components/banner-status";
@@ -38,6 +41,7 @@ const SECTIONS = [
   { id: "account", label: "Account" },
   { id: "school", label: "School and term" },
   { id: "banner", label: "Banner" },
+  { id: "keyboard", label: "Keyboard" },
   { id: "data", label: "Data and privacy" },
 ] as const;
 
@@ -102,6 +106,7 @@ export function SettingsPage() {
           <AccountSection />
           <SchoolSection />
           <BannerSection />
+          <KeyboardSection />
           <DataSection />
         </div>
       </div>
@@ -188,6 +193,51 @@ function SchoolSection() {
           />
         </Field>
       </div>
+    </SettingsSection>
+  );
+}
+
+/** Only the shortcuts that exist; the rest of the DS6 keyboard map comes later. */
+const SHORTCUTS = [
+  { keys: ["/"], action: "Focus course search" },
+  { keys: ["J", "K"], action: "Next or previous section in search results" },
+  { keys: ["A"], action: "Add or remove the focused section" },
+  { keys: ["[", "]"], action: "Previous or next generated schedule" },
+] as const;
+
+function KeyboardSection() {
+  const { settings, update } = useSettings();
+  const switchId = useId();
+  return (
+    <SettingsSection id="keyboard" title="Keyboard">
+      <Field orientation="horizontal">
+        <FieldContent>
+          <FieldLabel htmlFor={switchId}>Single-key shortcuts</FieldLabel>
+          <FieldDescription>
+            They never fire while you type in a field. Turn them off if they get
+            in the way of a screen reader or voice control.
+          </FieldDescription>
+        </FieldContent>
+        <Switch
+          id={switchId}
+          checked={settings.keyboardShortcuts}
+          onCheckedChange={(keyboardShortcuts) =>
+            void update({ keyboardShortcuts })
+          }
+        />
+      </Field>
+      <dl className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2">
+        {SHORTCUTS.map((shortcut) => (
+          <Fragment key={shortcut.action}>
+            <dt className="flex gap-1">
+              {shortcut.keys.map((key) => (
+                <Kbd key={key}>{key}</Kbd>
+              ))}
+            </dt>
+            <dd className="text-muted-foreground">{shortcut.action}</dd>
+          </Fragment>
+        ))}
+      </dl>
     </SettingsSection>
   );
 }
