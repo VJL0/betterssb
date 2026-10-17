@@ -6,6 +6,7 @@ import {
   entryCredits,
   placedRequirements,
   plannedCredits,
+  projectedFinish,
   removeEntry,
   termEntries,
 } from "./planner";
@@ -165,5 +166,33 @@ describe("removeEntry", () => {
       NOW,
     );
     expect(removeEntry(plan, "x", NOW).courses).toEqual([]);
+  });
+});
+
+describe("projectedFinish", () => {
+  const totals = { earned: 52, inProgress: 15, needed: 57, total: 124 };
+
+  it("is short by what no term covers yet", () => {
+    let fall = emptyPlan("202736", "Fall 2027");
+    fall = addCourse(fall, course("x", null, { credits: 3 }), NOW);
+    expect(projectedFinish(totals, [fall], new Set())).toEqual({
+      counted: 70,
+      onTrack: false,
+      shortBy: 54,
+      lastTerm: "Fall 2027",
+    });
+  });
+
+  it("is on track once the plan covers the rest", () => {
+    const plan = addCourse(
+      emptyPlan("202803", "Spring 2028"),
+      course("x", null, { credits: 57 }),
+      NOW,
+    );
+    expect(projectedFinish(totals, [plan], new Set())).toMatchObject({
+      onTrack: true,
+      shortBy: 0,
+      lastTerm: "Spring 2028",
+    });
   });
 });

@@ -71,7 +71,7 @@ export const PRIMARY_PAGES: readonly AppPage[] = [
     path: "/advisor",
     icon: BrainCircuitIcon,
     inTabBar: false,
-    ready: false,
+    ready: true,
   },
 ];
 
@@ -83,7 +83,7 @@ export const SECONDARY_PAGES: readonly AppPage[] = [
     path: "/transcript",
     icon: ListChecksIcon,
     inTabBar: false,
-    ready: false,
+    ready: true,
   },
 ];
 
