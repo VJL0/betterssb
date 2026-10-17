@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { UserProfile } from "@/components/auth/UserProfile";
-import { Button, Spinner } from "@/components/ui";
+import { Button } from "@workspace/ui/components/button";
+import { Spinner } from "@workspace/ui/components/spinner";
 
 export function LoginPage() {
   const { user, isAuthenticated, loading, error, login, logout } = useAuth();
