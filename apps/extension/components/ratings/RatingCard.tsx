@@ -1,5 +1,6 @@
 import type { RMPRating } from "@workspace/shared/types";
-import { Card, Badge } from "@/components/ui";
+import { Badge } from "@workspace/ui/components/badge";
+import { Card, CardContent } from "@workspace/ui/components/card";
 import { cn } from "@workspace/ui/lib/utils";
 
 interface RatingCardProps {
@@ -12,7 +13,7 @@ function scoreBoxClass(value: number): string {
   return "bg-destructive";
 }
 
-function tagBadgeColor(tag: string): "blue" | "gray" {
+function tagBadgeVariant(tag: string): "info" | "secondary" {
   const positive = [
     "amazing",
     "caring",
@@ -20,13 +21,15 @@ function tagBadgeColor(tag: string): "blue" | "gray" {
     "inspirational",
     "hilarious",
   ];
-  return positive.some((p) => tag.toLowerCase().includes(p)) ? "blue" : "gray";
+  return positive.some((p) => tag.toLowerCase().includes(p))
+    ? "info"
+    : "secondary";
 }
 
 export function RatingCard({ rating }: RatingCardProps) {
   return (
     <Card>
-      <div className="flex items-start gap-4">
+      <CardContent className="flex items-start gap-4">
         <div
           className={cn(
             "flex size-14 shrink-0 items-center justify-center rounded-xl text-2xl font-bold text-primary-foreground",
@@ -68,7 +71,9 @@ export function RatingCard({ rating }: RatingCardProps) {
           {rating.topTags.length > 0 && (
             <div className="mt-2.5 flex flex-wrap gap-1">
               {rating.topTags.map((tag) => (
-                <Badge key={tag} text={tag} color={tagBadgeColor(tag)} />
+                <Badge key={tag} variant={tagBadgeVariant(tag)}>
+                  {tag}
+                </Badge>
               ))}
             </div>
           )}
@@ -82,7 +87,7 @@ export function RatingCard({ rating }: RatingCardProps) {
             View on RateMyProfessors &rarr;
           </a>
         </div>
-      </div>
+      </CardContent>
     </Card>
   );
 }
