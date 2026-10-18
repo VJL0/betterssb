@@ -4,7 +4,8 @@
  * The extension's web-bridge content script answers `window.postMessage`
  * requests on this origin (see @workspace/shared/lib/bridge). Through it the
  * site runs DARS audits in the student's own session, reads the Banner
- * connection, and shares the extension's local store. No credential ever
+ * connection, shares the extension's local store, and sets up and arms
+ * auto-register (the extension runs it, in the student's Banner tab). No credential ever
  * reaches this site or the server.
  */
 import {
@@ -13,6 +14,12 @@ import {
   isBridgeResponse,
   type BridgeRequest,
 } from "@workspace/shared/lib/bridge";
+import type {
+  AutoRegQueue,
+  AutoRegSnapshot,
+  CrnCheck,
+} from "@workspace/shared/types/auto-reg";
+import type { SSBGetPlansResponse, SSBTerm } from "@workspace/shared/types/ssb";
 import type { BannerConnection, StoreKey } from "@workspace/shared/types/store";
 import { parseAudit, type Audit } from "@workspace/api-client";
 
@@ -90,8 +97,13 @@ export function onExtensionStoreChange(
   listener: (key: StoreKey) => void,
 ): () => void {
   function onMessage(event: MessageEvent) {
-    if (event.source === window && isBridgeEvent(event.data)) {
-      listener(event.data.key);
+    const data: unknown = event.data;
+    if (
+      event.source === window &&
+      isBridgeEvent(data) &&
+      data.type === "STORE_CHANGED"
+    ) {
+      listener(data.key);
     }
   }
   window.addEventListener("message", onMessage);
@@ -116,4 +128,62 @@ export async function runViaExtension(): Promise<Audit> {
     meta: { errorMessage: "Couldn't read the audit." },
   });
   return data;
+}
+
+/** Auto-register's queue, armed flag and last result, as the extension has them. */
+export function getAutoRegister(): Promise<AutoRegSnapshot> {
+  return bridgeRequest<AutoRegSnapshot>({ type: "AUTOREG_GET" });
+}
+
+/** Replaces the queue. The extension refuses while armed. */
+export async function saveAutoRegisterQueue(
+  queue: AutoRegQueue,
+): Promise<void> {
+  await bridgeRequest({ type: "AUTOREG_SAVE_QUEUE", queue });
+}
+
+/** Arms the one-shot run; the extension checks the queue and time first. */
+export async function armAutoRegister(): Promise<void> {
+  await bridgeRequest({ type: "AUTOREG_ARM" });
+}
+
+export async function disarmAutoRegister(): Promise<void> {
+  await bridgeRequest({ type: "AUTOREG_DISARM" });
+}
+
+/** Banner's CRN lookups take a moment each; give the whole queue time. */
+const CRN_CHECK_TIMEOUT_MS = 30_000;
+
+/** Asks the student's Banner tab whether each CRN exists in the term. */
+export function checkCrns(term: string, crns: string[]): Promise<CrnCheck[]> {
+  return bridgeRequest<CrnCheck[]>(
+    { type: "AUTOREG_CHECK_CRNS", term, crns },
+    CRN_CHECK_TIMEOUT_MS,
+  );
+}
+
+/** Terms open for registration, from the student's Banner tab. */
+export function getBannerRegistrationTerms(): Promise<SSBTerm[]> {
+  return bridgeRequest<SSBTerm[]>({ type: "BANNER_REG_TERMS" });
+}
+
+/** The student's saved Banner plans. */
+export function getBannerPlans(): Promise<SSBGetPlansResponse> {
+  return bridgeRequest<SSBGetPlansResponse>({ type: "BANNER_REG_PLANS" });
+}
+
+/** Calls `listener` when auto-register changes in the extension (armed, ran, edited). */
+export function onAutoRegisterChange(listener: () => void): () => void {
+  function onMessage(event: MessageEvent) {
+    const data: unknown = event.data;
+    if (
+      event.source === window &&
+      isBridgeEvent(data) &&
+      data.type === "AUTOREG_CHANGED"
+    ) {
+      listener();
+    }
+  }
+  window.addEventListener("message", onMessage);
+  return () => window.removeEventListener("message", onMessage);
 }

@@ -1,3 +1,5 @@
+import { AUTO_REG_RUN_STATE_KEY } from "@/lib/auto-reg-run-state";
+import { AUTO_REG_SCHEDULE_CONFIG_KEY } from "@/lib/auto-reg-schedule-config";
 import { sendMessage } from "@/lib/messaging";
 import { extensionStore } from "@/lib/local-store";
 import {
@@ -13,10 +15,12 @@ import type { StoreDocuments, StoreKey } from "@workspace/shared/types/store";
  * Bridge between the BetterSSB website and the extension.
  *
  * Injected only on the web app's own origin. The site can run a DARS audit,
- * read the Banner connection status, and read and write the shared local
- * store, so guest plans are the same in the website and the extension. Only
- * the requests `parseBridgeRequest` allows cross; no Banner registration call
- * does. Communication uses `window.postMessage` on this origin.
+ * read the Banner connection status, read and write the shared local store
+ * (so guest plans are the same in the website and the extension), read
+ * Banner's registration terms and plans, and set up, arm and disarm
+ * auto-register. Only the requests `parseBridgeRequest` allows cross; no
+ * Banner registration call does, and the extension checks a queue before it
+ * can be armed. Communication uses `window.postMessage` on this origin.
  */
 
 type Reply = Omit<BridgeResponse, "source" | "dir" | "id">;
@@ -40,6 +44,25 @@ async function handle(request: BridgeRequest): Promise<Reply> {
         request.value as StoreDocuments[StoreKey],
       );
       return { success: true };
+    case "AUTOREG_GET":
+    case "AUTOREG_ARM":
+    case "AUTOREG_DISARM":
+      return sendMessage({ type: request.type, payload: {} });
+    case "AUTOREG_SAVE_QUEUE":
+      return sendMessage({
+        type: "AUTOREG_SAVE_QUEUE",
+        payload: { queue: request.queue },
+      });
+    case "AUTOREG_CHECK_CRNS":
+      return sendMessage({
+        type: "AUTOREG_CHECK_CRNS",
+        payload: { term: request.term, crns: request.crns },
+      });
+    // Read-only Banner lookups; nothing that registers crosses the bridge.
+    case "BANNER_REG_TERMS":
+      return sendMessage({ type: "SSB_REG_GET_TERMS", payload: {} });
+    case "BANNER_REG_PLANS":
+      return sendMessage({ type: "SSB_REG_GET_PLANS", payload: {} });
   }
 }
 
@@ -73,6 +96,22 @@ export default defineContentScript({
         key,
       };
       window.postMessage(event, origin);
+    });
+
+    // The website refreshes auto-register when it's armed, run or edited elsewhere.
+    browser.storage.onChanged.addListener((changes, area) => {
+      if (area !== "local") return;
+      if (
+        AUTO_REG_RUN_STATE_KEY in changes ||
+        AUTO_REG_SCHEDULE_CONFIG_KEY in changes
+      ) {
+        const event: BridgeEvent = {
+          source: BRIDGE_SOURCE,
+          dir: "event",
+          type: "AUTOREG_CHANGED",
+        };
+        window.postMessage(event, origin);
+      }
     });
 
     window.addEventListener("message", async (event: MessageEvent) => {

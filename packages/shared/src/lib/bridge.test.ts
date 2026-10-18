@@ -30,8 +30,50 @@ describe("parseBridgeRequest", () => {
     });
   });
 
+  it("accepts a well-formed auto-register queue", () => {
+    const queue = {
+      term: "202703",
+      crns: ["41207", "41311"],
+      scheduledRunAt: "2026-11-14T07:00",
+    };
+    expect(
+      parseBridgeRequest(request("AUTOREG_SAVE_QUEUE", { queue }))?.request,
+    ).toEqual({ type: "AUTOREG_SAVE_QUEUE", queue });
+    expect(
+      parseBridgeRequest(
+        request("AUTOREG_CHECK_CRNS", { term: "202703", crns: ["41207"] }),
+      )?.request,
+    ).toEqual({ type: "AUTOREG_CHECK_CRNS", term: "202703", crns: ["41207"] });
+  });
+
   it.each([
     ["an unknown type", request("SSB_REG_SUBMIT_BATCH")],
+    [
+      "a queue with a bad CRN",
+      request("AUTOREG_SAVE_QUEUE", {
+        queue: { term: "202703", crns: ["4120"], scheduledRunAt: "" },
+      }),
+    ],
+    [
+      "a queue with a repeated CRN",
+      request("AUTOREG_SAVE_QUEUE", {
+        queue: {
+          term: "202703",
+          crns: ["41207", "41207"],
+          scheduledRunAt: "",
+        },
+      }),
+    ],
+    [
+      "a queue with a bad time",
+      request("AUTOREG_SAVE_QUEUE", {
+        queue: { term: "202703", crns: ["41207"], scheduledRunAt: "soon" },
+      }),
+    ],
+    [
+      "a CRN check without a term",
+      request("AUTOREG_CHECK_CRNS", { crns: ["41207"] }),
+    ],
     [
       "an unknown key",
       request("STORE_GET", { key: "betterssb:autoRegRunState" }),
@@ -69,5 +111,6 @@ describe("isBridgeEvent", () => {
     };
     expect(isBridgeEvent({ ...event, key: "audit" })).toBe(true);
     expect(isBridgeEvent({ ...event, key: "nope" })).toBe(false);
+    expect(isBridgeEvent({ ...event, type: "AUTOREG_CHANGED" })).toBe(true);
   });
 });
