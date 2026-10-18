@@ -97,7 +97,7 @@ betterssb/
 
 ### Prerequisites
 
-- **Node.js** ≥ 22 and **pnpm** ≥ 9
+- **Node.js** ≥ 24 and **pnpm** ≥ 9
 - **Python** ≥ 3.14 and **uv** (Python package manager)
 - **Docker** and **Docker Compose** (for PostgreSQL and Redis)
 - A Chromium-based browser
