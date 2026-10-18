@@ -16,13 +16,13 @@ export function LoginPage() {
   if (isAuthenticated && user) {
     return (
       <div className="flex flex-col gap-4 pt-1">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           You&apos;re signed in. Your account is used for chat, transcript
           tools, and synced preferences.
         </p>
         <UserProfile user={user} onLogout={logout} />
         {error && (
-          <div className="text-center text-xs text-red-600">{error}</div>
+          <div className="text-center text-xs text-destructive">{error}</div>
         )}
       </div>
     );
@@ -30,16 +30,18 @@ export function LoginPage() {
 
   return (
     <div className="flex flex-col gap-4 pt-1">
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-muted-foreground">
         Sign in with Google to use the AI advisor, transcript parsing, and
         prerequisite checks. Rate My Professor and registration helpers work
         without signing in.
       </p>
       <Button onClick={login}>Sign in with Google</Button>
-      <p className="text-center text-xs text-gray-500">
+      <p className="text-center text-xs text-muted-foreground">
         Sign-in opens in a new tab. Reopen BetterSSB when you&apos;re done.
       </p>
-      {error && <div className="text-center text-xs text-red-600">{error}</div>}
+      {error && (
+        <div className="text-center text-xs text-destructive">{error}</div>
+      )}
     </div>
   );
 }

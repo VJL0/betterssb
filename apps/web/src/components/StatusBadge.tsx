@@ -7,22 +7,22 @@ const STYLES: Record<
   complete: {
     label: "Complete",
     icon: "✓",
-    className: "bg-emerald-100 text-emerald-800 ring-emerald-600/20",
+    className: "bg-success/10 text-success ring-success/20",
   },
   in_progress: {
     label: "In progress",
     icon: "◐",
-    className: "bg-amber-100 text-amber-800 ring-amber-600/20",
+    className: "bg-info/10 text-info ring-info/20",
   },
   incomplete: {
     label: "Not met",
     icon: "✕",
-    className: "bg-rose-100 text-rose-800 ring-rose-600/20",
+    className: "bg-destructive/10 text-destructive ring-destructive/20",
   },
   none: {
     label: "Info",
     icon: "i",
-    className: "bg-slate-100 text-slate-600 ring-slate-500/20",
+    className: "bg-muted text-foreground ring-border",
   },
 };
 

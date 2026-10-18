@@ -18,12 +18,12 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabId>("rmp");
 
   return (
-    <div className="flex h-full min-h-96 flex-col bg-gray-50">
+    <div className="flex h-full min-h-96 flex-col bg-muted/50">
       <div className="shrink-0 px-3 pt-2.5">
-        <h1 className="text-base font-bold text-gray-800">BetterSSB</h1>
+        <h1 className="text-base font-bold text-foreground">BetterSSB</h1>
       </div>
 
-      <nav className="mt-2 flex shrink-0 gap-0.5 overflow-x-auto border-b border-gray-200 px-2 pb-px">
+      <nav className="mt-2 flex shrink-0 gap-0.5 overflow-x-auto border-b border-border px-2 pb-px">
         {TABS.map(({ id, label }) => (
           <button
             key={id}
@@ -31,8 +31,8 @@ function App() {
             className={cn(
               "shrink-0 cursor-pointer border-b-2 px-2 py-2 text-left text-xs font-medium transition-colors sm:text-sm",
               activeTab === id
-                ? "border-indigo-600 text-indigo-600"
-                : "border-transparent text-gray-500 hover:text-indigo-600",
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-primary",
             )}
             onClick={() => setActiveTab(id)}
           >

@@ -17,15 +17,16 @@ const START_HOUR = 8;
 const END_HOUR = 22;
 const TOTAL_MINUTES = (END_HOUR - START_HOUR) * 60;
 
+// Course identity colors from the design system, in the order courses appear.
 const BG_CLASSES = [
-  "bg-indigo-400",
-  "bg-emerald-400",
-  "bg-pink-400",
-  "bg-amber-400",
-  "bg-blue-400",
-  "bg-violet-400",
-  "bg-orange-400",
-  "bg-teal-400",
+  "bg-course-1",
+  "bg-course-2",
+  "bg-course-3",
+  "bg-course-4",
+  "bg-course-5",
+  "bg-course-6",
+  "bg-course-7",
+  "bg-course-8",
 ];
 
 function timeToMinutes(time: string): number {
@@ -62,17 +63,17 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
 
   return (
     <div
-      className="relative grid overflow-hidden rounded-lg border border-gray-200 text-xs"
+      className="relative grid overflow-hidden rounded-lg border border-border text-xs"
       style={{
         gridTemplateColumns: "48px repeat(5, minmax(0, 1fr))",
         gridTemplateRows: `32px repeat(${hours.length}, 48px)`,
       }}
     >
-      <div className="border-b border-gray-200 bg-gray-50" />
+      <div className="border-b border-border bg-muted/50" />
       {DAYS.map((d) => (
         <div
           key={d}
-          className="flex items-center justify-center border-b border-l border-gray-200 bg-gray-50 font-semibold text-gray-700"
+          className="flex items-center justify-center border-b border-l border-border bg-muted/50 font-semibold text-foreground"
         >
           {DAY_LABELS[d]}
         </div>
@@ -81,7 +82,7 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
       {hours.map((h, row) => (
         <div
           key={h}
-          className="flex items-start justify-center border-b border-gray-100 pt-0.5 text-xs text-gray-400"
+          className="flex items-start justify-center border-b border-border pt-0.5 text-xs text-muted-foreground"
           style={{ gridColumn: 1, gridRow: row + 2 }}
         >
           {minutesToLabel(h * 60)}
@@ -92,7 +93,7 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
         hours.map((_, ri) => (
           <div
             key={`cell-${di}-${ri}`}
-            className="border-b border-l border-gray-200"
+            className="border-b border-l border-border"
             style={{ gridColumn: di + 2, gridRow: ri + 2 }}
           />
         )),
@@ -121,7 +122,7 @@ export function ScheduleGrid({ sections }: ScheduleGridProps) {
             >
               <div
                 className={cn(
-                  "absolute right-0.5 left-0.5 flex flex-col overflow-hidden rounded px-1 py-0.5 text-xs font-medium text-white",
+                  "absolute right-0.5 left-0.5 flex flex-col overflow-hidden rounded px-1 py-0.5 text-xs font-medium text-primary-foreground",
                   bgClass,
                 )}
                 style={{

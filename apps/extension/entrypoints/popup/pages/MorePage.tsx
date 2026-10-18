@@ -13,7 +13,7 @@ export function MorePage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2">
-      <nav className="flex shrink-0 flex-wrap gap-1 border-b border-gray-200 pb-2">
+      <nav className="flex shrink-0 flex-wrap gap-1 border-b border-border pb-2">
         {SUB_TABS.map((tab) => (
           <button
             key={tab}
@@ -21,8 +21,8 @@ export function MorePage() {
             className={cn(
               "cursor-pointer rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
               sub === tab
-                ? "bg-indigo-50 text-indigo-700"
-                : "text-gray-500 hover:bg-gray-100 hover:text-indigo-600",
+                ? "bg-accent text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-primary",
             )}
             onClick={() => setSub(tab)}
           >

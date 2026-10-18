@@ -168,7 +168,7 @@ export function SemesterPlanner() {
             <select
               value={selectedTerm}
               onChange={(e) => setSelectedTerm(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+              className="w-full rounded-md border border-input px-2 py-1.5 text-sm"
             >
               {terms.length === 0 && <option value="">Loading terms...</option>}
               {terms.map((t) => (
@@ -200,7 +200,7 @@ export function SemesterPlanner() {
         </div>
 
         {searchError && (
-          <div className="mt-2 text-xs text-amber-800">{searchError}</div>
+          <div className="mt-2 text-xs text-warning">{searchError}</div>
         )}
       </Card>
 
@@ -218,7 +218,7 @@ export function SemesterPlanner() {
               return (
                 <div
                   key={sec.courseReferenceNumber}
-                  className="border-b border-gray-100 py-2 text-xs last:border-0"
+                  className="border-b border-border py-2 text-xs last:border-0"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -227,9 +227,11 @@ export function SemesterPlanner() {
                       </strong>{" "}
                       (CRN: {sec.courseReferenceNumber})
                       <br />
-                      <span className="text-gray-500">{sec.courseTitle}</span>
+                      <span className="text-muted-foreground">
+                        {sec.courseTitle}
+                      </span>
                       <br />
-                      <span className="text-gray-500">
+                      <span className="text-muted-foreground">
                         {primaryInstructor} ·{" "}
                         {sec.instructionalMethodDescription}
                       </span>
@@ -238,8 +240,8 @@ export function SemesterPlanner() {
                         className={cn(
                           "text-xs font-semibold",
                           sec.seatsAvailable > 0
-                            ? "text-green-600"
-                            : "text-red-600",
+                            ? "text-success"
+                            : "text-destructive",
                         )}
                       >
                         {sec.seatsAvailable}/{sec.maximumEnrollment} seats
@@ -264,22 +266,25 @@ export function SemesterPlanner() {
 
       <Card title={`My Plan — ${totalCredits} Credits`}>
         {planned.length === 0 ? (
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-muted-foreground">
             Search for courses above and add them to your plan.
           </div>
         ) : (
           planned.map((p) => (
             <div
               key={p.crn}
-              className="flex items-center justify-between border-b border-gray-100 py-2 text-sm last:border-0"
+              className="flex items-center justify-between border-b border-border py-2 text-sm last:border-0"
             >
               <div>
                 <strong>
                   {p.subject} {p.courseNumber}
                 </strong>
-                <span className="text-gray-500"> — {p.courseTitle}</span>
+                <span className="text-muted-foreground">
+                  {" "}
+                  — {p.courseTitle}
+                </span>
                 <br />
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted-foreground">
                   CRN {p.crn} · {p.instructor} · {p.meetingSummary} ·{" "}
                   {p.creditHours} cr
                 </span>
@@ -287,7 +292,7 @@ export function SemesterPlanner() {
               <button
                 type="button"
                 onClick={() => removeFromPlan(p.crn)}
-                className="cursor-pointer border-0 bg-transparent text-sm text-red-600"
+                className="cursor-pointer border-0 bg-transparent text-sm text-destructive"
               >
                 Remove
               </button>

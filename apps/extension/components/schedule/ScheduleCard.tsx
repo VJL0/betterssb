@@ -13,7 +13,7 @@ export function ScheduleCard({ schedule, index, onSelect }: ScheduleCardProps) {
     <Card>
       <div className="mb-3 flex items-center justify-between">
         <div>
-          <span className="text-base font-semibold text-gray-800">
+          <span className="text-base font-semibold text-foreground">
             Option {index + 1}
           </span>
           <Badge
@@ -38,7 +38,7 @@ export function ScheduleCard({ schedule, index, onSelect }: ScheduleCardProps) {
           {schedule.warnings.map((w, i) => (
             <div
               key={i}
-              className="rounded-md bg-amber-100 px-2 py-1 text-xs text-amber-900"
+              className="rounded-md bg-warning/10 px-2 py-1 text-xs text-warning"
             >
               {w}
             </div>

@@ -25,7 +25,7 @@ export function SearchCombobox<T>({
   minQueryLength = 2,
   debounceMs = 300,
   className = "",
-  inputClassName = "w-full rounded-full border border-gray-300 bg-white py-2.5 pr-9 pl-4 text-sm text-gray-800 outline-none transition-colors focus:border-indigo-500",
+  inputClassName = "w-full rounded-full border border-input bg-card py-2.5 pr-9 pl-4 text-sm text-foreground outline-none transition-colors focus:border-ring",
 }: SearchComboboxProps<T>) {
   const [query, setQuery] = useState(initialValue);
   const [selectedLabel, setSelectedLabel] = useState(initialValue);
@@ -113,10 +113,10 @@ export function SearchCombobox<T>({
           className={inputClassName}
         />
         {loading ? (
-          <span className="absolute right-3 size-4 animate-spin rounded-full border-2 border-gray-200 border-t-gray-500" />
+          <span className="absolute right-3 size-4 animate-spin rounded-full border-2 border-border border-t-muted-foreground" />
         ) : (
           <svg
-            className="pointer-events-none absolute right-3 size-5 text-gray-400"
+            className="pointer-events-none absolute right-3 size-5 text-muted-foreground"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -130,11 +130,11 @@ export function SearchCombobox<T>({
       </div>
 
       {open && results.length > 0 && (
-        <ul className="absolute top-full right-0 left-0 z-50 m-0 mt-1 max-h-52 list-none overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg">
+        <ul className="absolute top-full right-0 left-0 z-50 m-0 mt-1 max-h-52 list-none overflow-y-auto rounded-xl border border-border bg-card p-1 shadow-lg">
           {results.map((item) => (
             <li
               key={getOptionKey(item)}
-              className="cursor-pointer rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="cursor-pointer rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted"
               onMouseDown={() => handleSelect(item)}
             >
               {getOptionLabel(item)}
