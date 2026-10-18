@@ -1,4 +1,5 @@
 @import "@workspace/ui/globals.css";
+@import "@workspace/ui/inter.css";
 
 /* Keep focused elements clear of the sticky top bar and the phone tab bar (WCAG 2.4.11). */
 html {

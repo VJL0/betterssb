@@ -70,6 +70,8 @@ export interface UserSettings {
   term: string | null;
   major: string;
   keyboardShortcuts: boolean;
+  /** Ratings, seats, plan tags and the plan dock on Banner's own pages. */
+  bannerOverlay: boolean;
   updatedAt: string;
 }
 

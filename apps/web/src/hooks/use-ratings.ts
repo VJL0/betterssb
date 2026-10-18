@@ -2,7 +2,10 @@ import { useCallback, useMemo } from "react";
 import { useQueries, type UseQueryResult } from "@tanstack/react-query";
 import type { RmpRating } from "@workspace/api-client";
 import { searchProfessorsOptions } from "@workspace/api-client/query";
-import { instructorSearchName } from "@workspace/shared/lib/instructors";
+import {
+  instructorSearchName,
+  matchingProfile,
+} from "@workspace/shared/lib/instructors";
 import { usableRating } from "@workspace/shared/lib/ratings";
 
 /** Rate My Professors is a shared service; don't fire a whole page of lookups at once. */
@@ -27,10 +30,6 @@ async function withSlot<T>(task: () => Promise<T>): Promise<T> {
   }
 }
 
-function bestMatch(matches: RmpRating[]): RmpRating | null {
-  return usableRating(matches[0] ?? null);
-}
-
 function ratingQuery(name: string, schoolId: string) {
   const options = searchProfessorsOptions({
     query: { name: instructorSearchName(name), school_id: schoolId },
@@ -39,7 +38,8 @@ function ratingQuery(name: string, schoolId: string) {
     ...options,
     queryFn: (context: Parameters<NonNullable<typeof options.queryFn>>[0]) =>
       withSlot(async () => options.queryFn!(context)),
-    select: bestMatch,
+    select: (matches: RmpRating[]) =>
+      usableRating(matchingProfile(name, matches)),
     // One lookup per instructor per school for the life of the page.
     staleTime: Infinity,
     // A failed lookup shows as "no profile" now and is retried on reload.

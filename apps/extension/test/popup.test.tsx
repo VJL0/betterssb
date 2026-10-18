@@ -178,6 +178,28 @@ describe("popup", () => {
     expect(screen.getByText("Computer Science BS")).toBeTruthy();
   });
 
+  it("turns the Banner page overlay off from a Banner tab", async () => {
+    const user = userEvent.setup();
+    api();
+    background();
+    await signedUp();
+    const bannerWindow = await fakeBrowser.windows.create({ focused: true });
+    await fakeBrowser.tabs.create({
+      windowId: bannerWindow!.id,
+      url: "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/classSearch/classSearch",
+      active: true,
+    });
+    renderPopup();
+    const toggle = await screen.findByRole("switch", {
+      name: "Ratings and seats on Banner pages",
+    });
+    expect(toggle.getAttribute("aria-checked")).toBe("true");
+    await user.click(toggle);
+    await waitFor(async () =>
+      expect((await extensionStore.get("settings"))?.bannerOverlay).toBe(false),
+    );
+  });
+
   it("has no accessibility violations on Today", async () => {
     api();
     background();
