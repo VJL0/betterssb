@@ -40,6 +40,7 @@ import {
   primaryInstructorName,
 } from "@workspace/shared/lib/sections";
 import { planKey } from "@workspace/shared/lib/store";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { CourseBadge } from "@workspace/ui/components/course-badge";
 import {
@@ -179,22 +180,23 @@ export function SearchTab({
           <Skeleton className="h-24 rounded-2xl" />
         </div>
       ) : search.isError ? (
-        <p className="rounded-2xl bg-card p-3 text-destructive ring-1 ring-foreground/5">
+        <Card className="gap-0 rounded-2xl p-3 text-destructive" render={<p />}>
           {queryError(search.error)?.message}
-        </p>
+        </Card>
       ) : sections.length === 0 ? (
-        <div className="flex flex-col items-start gap-2 rounded-2xl bg-card p-4 ring-1 ring-foreground/5">
+        <Card className="items-start gap-2 rounded-2xl p-4">
           <p className="font-medium">Nothing matches “{settled.trim()}”</p>
           <p className="text-muted-foreground">
             Try a course code like CIS 2168, or open full search.
           </p>
-        </div>
+        </Card>
       ) : (
         <ul className="flex flex-col gap-2" aria-label="Results">
           {[...groups].map(([courseId, list]) => (
-            <li
+            <Card
               key={courseId}
-              className="rounded-2xl bg-card p-3 shadow-sm ring-1 ring-foreground/5"
+              className="gap-0 rounded-2xl p-3"
+              render={<li />}
             >
               <h2 className="mb-1 flex items-center gap-2">
                 <CourseBadge
@@ -251,7 +253,7 @@ export function SearchTab({
                   );
                 })}
               </ul>
-            </li>
+            </Card>
           ))}
         </ul>
       )}

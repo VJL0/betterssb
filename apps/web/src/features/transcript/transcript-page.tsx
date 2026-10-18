@@ -20,6 +20,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert";
+import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -115,9 +116,10 @@ export function TranscriptPage() {
           <Terms terms={terms} audit={audit} />
           <aside className="flex flex-col gap-4">
             {transcript!.gpa !== null && (
-              <section
+              <Card
                 aria-labelledby="gpa-heading"
-                className="flex flex-col gap-1 rounded-3xl bg-card p-4 shadow-sm ring-1 ring-foreground/5"
+                className="gap-1 p-4"
+                render={<section />}
               >
                 <h2 id="gpa-heading" className="font-medium">
                   GPA
@@ -128,7 +130,7 @@ export function TranscriptPage() {
                   </span>
                   <span className="text-muted-foreground">overall</span>
                 </p>
-              </section>
+              </Card>
             )}
             {!audit && isPageReady("audit") && (
               <p className="rounded-2xl bg-muted/50 p-3">
@@ -169,8 +171,9 @@ function PasteForm({
   const [text, setText] = useState("");
   const id = useId();
   return (
-    <form
-      className="flex max-w-3xl flex-col gap-4 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-foreground/5"
+    <Card
+      className="max-w-3xl gap-4 p-5"
+      render={<form />}
       onSubmit={(e) => {
         e.preventDefault();
         if (text.trim()) onRead(text);
@@ -213,7 +216,7 @@ function PasteForm({
           {pending ? "Reading…" : "Read transcript"}
         </Button>
       </div>
-    </form>
+    </Card>
   );
 }
 
@@ -264,9 +267,10 @@ function TermCard({
     };
   });
   return (
-    <article
+    <Card
       aria-label={term.term}
-      className="flex flex-col gap-2 rounded-3xl bg-card pt-4 pb-1 shadow-sm ring-1 ring-foreground/5"
+      className="gap-2 pt-4 pb-1"
+      render={<article />}
     >
       <header className="flex items-baseline justify-between gap-2 px-5">
         <h2 className="text-base font-medium">{term.term}</h2>
@@ -324,6 +328,6 @@ function TermCard({
           </TableBody>
         </Table>
       </div>
-    </article>
+    </Card>
   );
 }

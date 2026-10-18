@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { ButtonLink } from "@/components/button-link";
 import {
@@ -59,10 +60,11 @@ function SettingsSection({
 }) {
   const headingId = `${id}-heading`;
   return (
-    <section
+    <Card
       id={id}
       aria-labelledby={headingId}
-      className="flex flex-col gap-4 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-foreground/5"
+      className="gap-4 p-5"
+      render={<section />}
     >
       <div className="flex flex-col gap-0.5">
         <h2 id={headingId} className="text-base font-medium">
@@ -71,7 +73,7 @@ function SettingsSection({
         {description && <p className="text-muted-foreground">{description}</p>}
       </div>
       {children}
-    </section>
+    </Card>
   );
 }
 

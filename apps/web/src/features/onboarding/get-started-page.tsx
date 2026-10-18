@@ -15,6 +15,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { ButtonLink } from "@/components/button-link";
 import {
@@ -131,7 +132,7 @@ export function GetStartedPage() {
             ))}
           </ol>
 
-          <section className="flex flex-col gap-5 rounded-3xl bg-card p-6 shadow-sm ring-1 ring-foreground/5">
+          <Card className="gap-5 p-6" render={<section />}>
             {step === "school" && (
               <SchoolStep
                 school={current.school}
@@ -158,7 +159,7 @@ export function GetStartedPage() {
                 onFinish={() => void saveAndGo("done")}
               />
             )}
-          </section>
+          </Card>
         </div>
 
         <SetupSummary
@@ -526,7 +527,7 @@ function SetupSummary({
       aria-labelledby="setup-heading"
       className="flex min-w-0 flex-[1_1_17.5rem] flex-col gap-4 pt-5"
     >
-      <section className="flex flex-col gap-1 rounded-3xl bg-card px-2 pt-4 pb-2 shadow-sm ring-1 ring-foreground/5">
+      <Card className="gap-1 px-2 pt-4 pb-2" render={<section />}>
         <h2 id="setup-heading" className="px-3 pb-1.5 font-medium">
           Your setup
         </h2>
@@ -548,7 +549,7 @@ function SetupSummary({
             </div>
           ))}
         </dl>
-      </section>
+      </Card>
       <div className="flex gap-2.5 rounded-3xl px-4 py-3.5 ring-1 ring-border ring-inset">
         <HardDriveIcon
           aria-hidden

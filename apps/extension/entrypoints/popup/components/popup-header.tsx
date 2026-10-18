@@ -9,7 +9,7 @@ export function PopupHeader({ termName }: { termName: string | null }) {
     <header className="flex h-13 shrink-0 items-center gap-2 border-b px-3">
       <Logo className="text-sm" />
       {termName && (
-        <span className="ml-1 truncate rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+        <span className="ml-1 truncate rounded-full bg-muted px-2 py-0.5 text-xs text-foreground/70">
           {termName}
         </span>
       )}

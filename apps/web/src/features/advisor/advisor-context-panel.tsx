@@ -5,6 +5,7 @@ import {
   FieldDescription,
   FieldLabel,
 } from "@workspace/ui/components/field";
+import { Card } from "@workspace/ui/components/card";
 import { Switch } from "@workspace/ui/components/switch";
 
 export type SourceId = "audit" | "transcript" | "plan";
@@ -28,9 +29,10 @@ export function AdvisorContextPanel({
 }) {
   const ids = useId();
   return (
-    <aside
+    <Card
       aria-labelledby={`${ids}-heading`}
-      className="flex flex-col gap-4 rounded-3xl bg-card p-4 shadow-sm ring-1 ring-foreground/5"
+      className="gap-4 p-4"
+      render={<aside />}
     >
       <div className="flex flex-col gap-0.5">
         <h2 id={`${ids}-heading`} className="text-base font-medium">
@@ -61,6 +63,6 @@ export function AdvisorContextPanel({
         BetterSSB isn't your official advisor. Check degree decisions with your
         college's advising office.
       </p>
-    </aside>
+    </Card>
   );
 }

@@ -31,6 +31,7 @@ import {
   FieldDescription,
   FieldLabel,
 } from "@workspace/ui/components/field";
+import { Card } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
 import {
   Select,
@@ -395,9 +396,10 @@ function RunSettings({
   const ids = useId();
   const items = termOptions.map((t) => ({ value: t.code, label: t.name }));
   return (
-    <aside
+    <Card
       aria-labelledby={`${ids}-heading`}
-      className="flex flex-col gap-4 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-foreground/5"
+      className="gap-4 p-5"
+      render={<aside />}
     >
       <h2 id={`${ids}-heading`} className="text-base font-medium">
         Run settings
@@ -437,10 +439,10 @@ function RunSettings({
           status in Banner, in this computer's time zone.
         </FieldDescription>
       </Field>
-      <p className="rounded-2xl bg-muted/50 p-3 text-xs text-muted-foreground">
+      <p className="rounded-2xl bg-muted/50 p-3 text-xs text-foreground/70">
         The queue and the armed state live in the extension in this browser. It
         runs once, in your Banner tab, and doesn't retry or swap in backups.
       </p>
-    </aside>
+    </Card>
   );
 }

@@ -23,6 +23,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import {
   Empty,
@@ -552,7 +553,7 @@ function Generating({
   }, []);
 
   return (
-    <div className="flex items-center gap-3 rounded-3xl bg-card p-4 shadow-sm ring-1 ring-foreground/5">
+    <Card className="flex-row items-center gap-3 p-4">
       <Spinner aria-hidden />
       <span role="status" className="flex-1">
         Trying {combinations.toLocaleString()}{" "}
@@ -564,7 +565,7 @@ function Generating({
       <Button variant="outline" size="sm" onClick={onCancel}>
         Cancel
       </Button>
-    </div>
+    </Card>
   );
 }
 
