@@ -50,6 +50,14 @@ export const router = createBrowserRouter([
           })),
       },
       {
+        path: "/register",
+        errorElement: <RouteError />,
+        lazy: () =>
+          import("@/features/register/register-page").then((m) => ({
+            Component: m.RegisterPage,
+          })),
+      },
+      {
         path: "/audit",
         errorElement: <RouteError />,
         lazy: () =>
