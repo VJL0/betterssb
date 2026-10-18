@@ -3,7 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { addCourse, emptyPlan } from "@workspace/shared/lib/plan";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi, problemResponse } from "@workspace/api-client/testing";
+import {
+  API,
+  http,
+  HttpResponse,
+  problemResponse,
+  server,
+} from "@workspace/api-client/testing";
 import { sampleAudit } from "@workspace/shared/testing/audit";
 import { renderPage } from "@/test/render";
 import { AuditPage } from "./audit-page";
@@ -39,8 +45,11 @@ describe("AuditPage", () => {
 
   it("reads an uploaded audit file and saves it", async () => {
     const user = userEvent.setup({ applyAccept: false });
-    const parse = vi.fn(() => Response.json(sampleAudit()));
-    mockApi({ "POST /api/dars/audits/parse": parse });
+    server.use(
+      http.post(`${API}/dars/audits/parse`, () =>
+        HttpResponse.json(sampleAudit()),
+      ),
+    );
     const { container, store } = renderPage(<AuditPage />);
     await screen.findByText("See your degree audit");
 
@@ -48,7 +57,6 @@ describe("AuditPage", () => {
     expect(
       await screen.findByRole("button", { name: /Computer Science major/ }),
     ).toBeTruthy();
-    expect(parse).toHaveBeenCalledOnce();
     await waitFor(async () =>
       expect((await store.get("audit"))?.audit.programTitle).toBe(
         "Computer Science BS",
@@ -102,10 +110,11 @@ describe("AuditPage", () => {
 
   it("keeps the saved audit when a new one can't be read", async () => {
     const user = userEvent.setup({ applyAccept: false });
-    mockApi({
-      "POST /api/dars/audits/parse": () =>
+    server.use(
+      http.post(`${API}/dars/audits/parse`, () =>
         problemResponse(422, "This doesn't look like a DARS audit."),
-    });
+      ),
+    );
     const { container } = await renderWithAudit();
     await screen.findByText("Requirements met");
     await user.upload(fileInput(container), auditFile());

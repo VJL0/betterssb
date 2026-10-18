@@ -9,7 +9,15 @@ import {
 } from "@workspace/shared/lib/plan";
 import { ssbSectionToInternal } from "@workspace/shared/lib/sections";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi, problemResponse } from "@workspace/api-client/testing";
+import type { GenerateRequest } from "@workspace/api-client";
+import {
+  API,
+  FETCHED_AT,
+  http,
+  HttpResponse,
+  problemResponse,
+  server,
+} from "@workspace/api-client/testing";
 import {
   classSection,
   meetingTime,
@@ -45,45 +53,48 @@ const GENERATED = [
     warnings: [],
   },
 ];
-const GENERATE = "POST /api/schedule/generate";
+/** Every section of the planned courses: what the page must send to generate. */
+const ALL_CRNS = new Set(ALL.map((s) => s.courseReferenceNumber));
 
-let api: ReturnType<typeof mockApi>;
 let generationFails = false;
 
+function sendsEveryPlannedSection(body: GenerateRequest): boolean {
+  const sent = new Set(body.sections.map((m) => m.crn));
+  return (
+    sent.size === ALL_CRNS.size && [...sent].every((crn) => ALL_CRNS.has(crn))
+  );
+}
+
+// Schedules come back only when the page sends every section of the planned
+// courses, so "Schedule 1 of 2" on screen shows the request was right.
 beforeEach(() => {
   vi.spyOn(toast, "success");
   generationFails = false;
-  api = mockApi({
-    "GET /api/classes/terms": [{ code: "202703", description: "2027 Spring" }],
-    "GET /api/classes/search": (request: Request) => {
+  server.use(
+    http.get(`${API}/classes/search`, ({ request }) => {
       const courseNumber = new URL(request.url).searchParams.get(
         "courseNumber",
       );
-      return Response.json({
+      return HttpResponse.json({
         totalCount: 0,
-        fetchedAt: "2026-10-17T12:00:00.000Z",
+        fetchedAt: FETCHED_AT,
         sections: ALL.filter((s) => s.courseNumber === courseNumber),
       });
-    },
-    [GENERATE]: () =>
-      generationFails
-        ? problemResponse(503, "The schedule service timed out.")
-        : Response.json(GENERATED),
-  });
-});
-
-/** The meeting blocks sent in the first generate request. */
-async function firstGenerationSent(): Promise<{ crn: string }[]> {
-  const call = api.mock.calls.find(
-    ([input]) =>
-      (input as Request).method === "POST" &&
-      new URL((input as Request).url).pathname === "/api/schedule/generate",
+    }),
+    http.post<never, GenerateRequest>(
+      `${API}/schedule/generate`,
+      async ({ request }) => {
+        if (generationFails) {
+          return problemResponse(503, "The schedule service timed out.");
+        }
+        const body = await request.json();
+        return HttpResponse.json(
+          sendsEveryPlannedSection(body) ? GENERATED : [],
+        );
+      },
+    ),
   );
-  const body = (await (call![0] as Request).clone().json()) as {
-    sections: { crn: string }[];
-  };
-  return body.sections;
-}
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -115,10 +126,6 @@ describe("SchedulePage", () => {
   it("builds schedules from every section of the planned courses", async () => {
     await renderWithPlan();
     expect(await screen.findByText("Schedule 1 of 2")).toBeTruthy();
-    const sent = await firstGenerationSent();
-    expect(new Set(sent.map((m) => m.crn))).toEqual(
-      new Set(["41207", "41208", "41311"]),
-    );
     expect(
       screen.getByText(
         "2 courses from your Spring 2027 plan · 2 schedules fit your rules",
