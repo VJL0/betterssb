@@ -33,6 +33,8 @@ export interface Section {
   seatsAvailable: number;
   maxSeats: number;
   term: string;
+  /** Banner schedule type (Lecture, Laboratory…); each type is scheduled separately. */
+  scheduleType: string;
 }
 
 export interface Professor {

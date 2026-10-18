@@ -15,6 +15,8 @@ class Course(BaseSchema):
 
 
 class Section(BaseSchema):
+    """One meeting block of a section. A CRN with several blocks sends one entry per block."""
+
     crn: str
     course_id: str
     instructor: str
@@ -25,6 +27,10 @@ class Section(BaseSchema):
     seats_available: int = 0
     max_seats: int = 0
     term: str = ""
+    schedule_type: str = Field(
+        default="",
+        description="Banner schedule type (Lecture, Laboratory…). Each type is scheduled separately.",
+    )
 
 
 class Professor(BaseSchema):
@@ -47,7 +53,10 @@ class GeneratedSchedule(BaseSchema):
     warnings: list[str] = Field(default_factory=list)
 
 
+MAX_RESULTS_LIMIT = 50
+
+
 class GenerateRequest(BaseSchema):
     sections: list[Section]
     preferences: SchedulePreferences = SchedulePreferences()
-    max_results: int = 5
+    max_results: int = Field(default=5, ge=1, le=MAX_RESULTS_LIMIT)

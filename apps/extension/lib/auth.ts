@@ -1,5 +1,5 @@
 import { API_URL } from "@/lib/config";
-import type { AuthUser } from "@/types";
+import type { AuthUser } from "@workspace/shared/types";
 
 /**
  * Sign-in runs entirely on the backend (Google OAuth code flow). The backend

@@ -7,7 +7,7 @@ import type {
   SSBSectionSearchParams,
   SSBPlanBatchPayload,
   SSBSubmitRegistrationBatchPayload,
-} from "@/types/ssb";
+} from "@workspace/shared/types/ssb";
 
 type Page = "planAhead" | "registration" | "results" | "plan" | "unknown";
 

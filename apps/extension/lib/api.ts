@@ -8,7 +8,7 @@ import type {
   ChatMessage,
   TranscriptData,
   TranscriptCourse,
-} from "@/types";
+} from "@workspace/shared/types";
 
 class BetterSSBApi {
   private baseUrl: string;

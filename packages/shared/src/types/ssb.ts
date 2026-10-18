@@ -63,8 +63,9 @@ export interface SSBFaculty {
 }
 
 export interface SSBMeetingTime {
-  beginTime: string;
-  endTime: string;
+  /** "HHMM", or null for online and TBA sections. */
+  beginTime: string | null;
+  endTime: string | null;
   building: string;
   buildingDescription: string;
   campus: string;

@@ -1,4 +1,4 @@
-import type { GeneratedSchedule } from "@/types";
+import type { GeneratedSchedule } from "@workspace/shared/types";
 import { Card, Button, Badge } from "@/components/ui";
 import { ScheduleGrid } from "./ScheduleGrid";
 

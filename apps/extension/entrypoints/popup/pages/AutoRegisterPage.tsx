@@ -13,9 +13,9 @@ import {
   parseManualCrns,
   resolvePlanIdToValid,
   resolveTermCodeToValid,
-} from "@/lib/auto-reg-helpers";
+} from "@workspace/shared/lib/auto-reg-helpers";
 import { getPlans, getTerms } from "@/lib/ssb-reg-messages";
-import type { SSBGetPlansResponse, SSBTerm } from "@/types/ssb";
+import type { SSBGetPlansResponse, SSBTerm } from "@workspace/shared/types/ssb";
 import { Button, Card, Input, Spinner } from "@/components/ui";
 import { cn } from "@workspace/ui/lib/utils";
 

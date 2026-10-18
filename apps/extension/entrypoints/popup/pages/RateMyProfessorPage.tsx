@@ -2,7 +2,7 @@ import { useStorage } from "@/hooks/useStorage";
 import { cn } from "@workspace/ui/lib/utils";
 import { SchoolCombobox } from "@/components/SchoolCombobox";
 import { Card } from "@/components/ui";
-import type { RMPSchool } from "@/types";
+import type { RMPSchool } from "@workspace/shared/types";
 
 function Toggle({
   label,
