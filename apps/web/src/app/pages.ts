@@ -31,7 +31,7 @@ export const PRIMARY_PAGES: readonly AppPage[] = [
     path: "/search",
     icon: SearchIcon,
     inTabBar: true,
-    ready: false,
+    ready: true,
   },
   {
     id: "schedule",
@@ -39,7 +39,7 @@ export const PRIMARY_PAGES: readonly AppPage[] = [
     path: "/schedule",
     icon: CalendarDaysIcon,
     inTabBar: true,
-    ready: false,
+    ready: true,
   },
   {
     id: "plan",
@@ -47,7 +47,7 @@ export const PRIMARY_PAGES: readonly AppPage[] = [
     path: "/plan",
     icon: NotebookTextIcon,
     inTabBar: false,
-    ready: false,
+    ready: true,
   },
   {
     id: "register",
@@ -86,6 +86,13 @@ export const SECONDARY_PAGES: readonly AppPage[] = [
     ready: false,
   },
 ];
+
+/** Whether a page is built, for links to it from other pages. */
+export function isPageReady(id: string): boolean {
+  return [...PRIMARY_PAGES, ...SECONDARY_PAGES].some(
+    (p) => p.id === id && p.ready,
+  );
+}
 
 export function readyPages(pages: readonly AppPage[]): AppPage[] {
   return pages.filter((p) => p.ready);

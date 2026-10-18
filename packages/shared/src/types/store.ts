@@ -13,6 +13,9 @@ export interface PlannedMeeting {
   start: number | null;
   end: number | null;
   location: string;
+  /** First and last day of class, as Banner sends them ("01/11/2027"). */
+  startDate: string | null;
+  endDate: string | null;
 }
 
 export interface PlannedSection {
@@ -31,10 +34,26 @@ export interface PlannedSection {
   addedAt: string;
 }
 
+/**
+ * A course planned for a term without a section yet: a future term whose
+ * schedule isn't posted, or a requirement placeholder like "CIS elective".
+ */
+export interface PlannedCourse {
+  id: string;
+  /** "CIS 3715", or null for a placeholder. */
+  code: string | null;
+  title: string;
+  credits: number | null;
+  /** The audit requirement it fills, if any. */
+  requirement: string | null;
+  addedAt: string;
+}
+
 export interface TermPlan {
   term: string;
   termDescription: string;
   sections: PlannedSection[];
+  courses: PlannedCourse[];
   /** Course color order, saved so colors never shuffle (see assignCourseColorOrder). */
   colorOrder: Record<string, number>;
   updatedAt: string;

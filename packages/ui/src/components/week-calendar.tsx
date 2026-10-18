@@ -20,10 +20,9 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
 import {
-  COURSE_HATCH_CLASS,
-  courseBackgroundClass,
-  courseColorVar,
-} from "@workspace/ui/lib/course-color-classes";
+  blockAppearance,
+  blockStyle,
+} from "@workspace/ui/lib/course-block-style";
 import {
   hourRange,
   layoutDay,
@@ -40,6 +39,8 @@ const MIN_DAYS_FOR_FIXED_WIDTH = 3;
 const BLOCK_INSET_PX = 4;
 const BLOCK_GAP_PX = 2;
 const NOON_HOUR = 12;
+const AXIS_PX = 52;
+const COMPACT_AXIS_PX = 30;
 
 export interface WeekCalendarBlock {
   id: string;
@@ -82,6 +83,8 @@ interface WeekCalendarProps extends React.ComponentProps<"div"> {
   days?: readonly WeekDay[];
   pixelsPerHour?: number;
   showGaps?: boolean;
+  /** For narrow panels: no minimum width, a slim hour axis, one-letter days. */
+  compact?: boolean;
 }
 
 function spokenRange(start: number, end: number): string {
@@ -130,6 +133,7 @@ function WeekCalendar({
   days,
   pixelsPerHour = DEFAULT_PIXELS_PER_HOUR,
   showGaps = true,
+  compact = false,
   className,
   ...props
 }: WeekCalendarProps) {
@@ -154,10 +158,12 @@ function WeekCalendar({
         <div
           className={cn(
             "grid gap-x-1.5",
-            shownDays.length >= MIN_DAYS_FOR_FIXED_WIDTH && "min-w-[640px]",
+            !compact &&
+              shownDays.length >= MIN_DAYS_FOR_FIXED_WIDTH &&
+              "min-w-[640px]",
           )}
           style={{
-            gridTemplateColumns: `52px repeat(${shownDays.length}, minmax(0, 1fr))`,
+            gridTemplateColumns: `${compact ? COMPACT_AXIS_PX : AXIS_PX}px repeat(${shownDays.length}, minmax(0, 1fr))`,
           }}
         >
           <span />
@@ -167,7 +173,7 @@ function WeekCalendar({
               aria-hidden
               className="pb-2 text-center text-sm font-medium"
             >
-              {DAY_NAMES[day].slice(0, 3)}
+              {compact ? day : DAY_NAMES[day].slice(0, 3)}
             </span>
           ))}
 
@@ -179,10 +185,13 @@ function WeekCalendar({
             {hours.map((hour, i) => (
               <span
                 key={hour}
-                className="absolute right-2 -translate-y-2"
+                className={cn(
+                  "absolute -translate-y-2",
+                  compact ? "right-1 text-[10px]" : "right-2",
+                )}
                 style={{ top: i * pixelsPerHour }}
               >
-                {hourLabel(hour)}
+                {hourLabel(hour, compact)}
               </span>
             ))}
           </div>
@@ -206,8 +215,10 @@ function WeekCalendar({
   );
 }
 
-function hourLabel(hour: number): string {
-  return `${hour % NOON_HOUR || NOON_HOUR} ${hour >= NOON_HOUR ? "PM" : "AM"}`;
+function hourLabel(hour: number, compact: boolean): string {
+  const twelve = hour % NOON_HOUR || NOON_HOUR;
+  if (compact) return `${twelve}${hour >= NOON_HOUR ? "p" : "a"}`;
+  return `${twelve} ${hour >= NOON_HOUR ? "PM" : "AM"}`;
 }
 
 type DayItem =
@@ -405,37 +416,6 @@ function BlockItem({
       )}
     </li>
   );
-}
-
-function blockAppearance(block: WeekCalendarBlock): string {
-  const base =
-    "flex flex-col overflow-hidden rounded-xl px-2.5 py-1.5 text-xs leading-4";
-  if (block.ghost) {
-    return cn(base, "border-2 border-dashed border-ring bg-background");
-  }
-  if (!block.color) {
-    return cn(base, "bg-muted text-foreground ring-1 ring-border ring-inset");
-  }
-  if (block.appearance === "tint") {
-    return cn(base, "text-foreground ring-2 ring-inset");
-  }
-  return cn(
-    base,
-    "text-white",
-    courseBackgroundClass(block.color),
-    block.color.hatched && COURSE_HATCH_CLASS,
-  );
-}
-
-/** Tints are computed from the course color, so they're set inline. */
-function blockStyle(block: WeekCalendarBlock): React.CSSProperties | undefined {
-  if (block.ghost || !block.color || block.appearance !== "tint")
-    return undefined;
-  const color = courseColorVar(block.color);
-  return {
-    backgroundColor: `oklch(from ${color} 0.93 calc(c * 0.4) h)`,
-    ["--tw-ring-color" as string]: color,
-  };
 }
 
 /**
