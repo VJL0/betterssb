@@ -31,6 +31,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     engine = create_async_engine(settings.DATABASE_URL, pool_pre_ping=True)
     async with Redis.from_url(settings.REDIS_URL) as redis:
         app.state.session_factory = async_sessionmaker(engine, expire_on_commit=False)
+        app.state.redis = redis
         app.state.google = create_google_client(
             settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET, cache=redis
         )

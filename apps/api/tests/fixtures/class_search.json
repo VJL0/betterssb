@@ -1,0 +1,107 @@
+{
+  "success": true,
+  "totalCount": 2,
+  "data": [
+    {
+      "id": 1,
+      "term": "202703",
+      "termDesc": "2027 Spring",
+      "courseReferenceNumber": "10001",
+      "partOfTerm": "1",
+      "courseNumber": "2168",
+      "subject": "CIS",
+      "subjectDescription": "Computer &amp; Information Science",
+      "sequenceNumber": "001",
+      "campusDescription": "Main",
+      "scheduleTypeDescription": "Lecture",
+      "courseTitle": "Data Structures",
+      "creditHours": null,
+      "creditHourLow": 4,
+      "creditHourHigh": null,
+      "maximumEnrollment": 30,
+      "enrollment": 18,
+      "seatsAvailable": 12,
+      "waitCapacity": 10,
+      "waitCount": 0,
+      "waitAvailable": 10,
+      "openSection": true,
+      "subjectCourse": "CIS2168",
+      "instructionalMethod": "CLAS",
+      "instructionalMethodDescription": "In Person",
+      "isSectionLinked": false,
+      "linkIdentifier": null,
+      "feeAmount": null,
+      "faculty": [
+        {
+          "bannerId": "900000001",
+          "courseReferenceNumber": "10001",
+          "displayName": "Example, Pat",
+          "emailAddress": "pat@example.edu",
+          "primaryIndicator": true,
+          "term": "202703"
+        }
+      ],
+      "meetingsFaculty": [
+        {
+          "category": "01",
+          "courseReferenceNumber": "10001",
+          "term": "202703",
+          "meetingTime": {
+            "beginTime": "0900",
+            "endTime": "1050",
+            "building": "SERC",
+            "buildingDescription": "Science Education &amp; Research",
+            "campus": "MN",
+            "campusDescription": "Main",
+            "room": "116",
+            "meetingType": "CLAS",
+            "meetingTypeDescription": "Class",
+            "startDate": "01/11/2027",
+            "endDate": "05/03/2027",
+            "monday": true,
+            "tuesday": false,
+            "wednesday": true,
+            "thursday": false,
+            "friday": false,
+            "saturday": false,
+            "sunday": false
+          }
+        }
+      ],
+      "sectionAttributes": [
+        { "code": "WI", "description": "Writing Intensive" }
+      ]
+    },
+    {
+      "id": 2,
+      "term": "202703",
+      "termDesc": "2027 Spring",
+      "courseReferenceNumber": "10002",
+      "courseNumber": "2168",
+      "subject": "CIS",
+      "subjectDescription": "Computer &amp; Information Science",
+      "sequenceNumber": "701",
+      "scheduleTypeDescription": "Lecture",
+      "courseTitle": "Data Structures",
+      "maximumEnrollment": 30,
+      "enrollment": 30,
+      "seatsAvailable": 0,
+      "waitCapacity": 5,
+      "waitCount": 5,
+      "waitAvailable": 0,
+      "openSection": false,
+      "subjectCourse": "CIS2168",
+      "faculty": [],
+      "meetingsFaculty": [
+        {
+          "meetingTime": {
+            "beginTime": null,
+            "endTime": null,
+            "meetingTypeDescription": "Online"
+          }
+        }
+      ],
+      "sectionAttributes": []
+    }
+  ]
+}

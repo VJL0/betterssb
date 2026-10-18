@@ -1,8 +1,34 @@
+import type { ClassMeetingTime, ClassSection } from "../types/classes";
 import type { Section } from "../types/index";
-import type { SSBMeetingTime, SSBSection } from "../types/ssb";
+
+type DayFlags = Pick<
+  ClassMeetingTime,
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday"
+  | "sunday"
+>;
+
+/**
+ * The section fields these helpers read. Both a full Banner `SSBSection`
+ * (from the extension) and the API's `ClassSection` fit.
+ */
+export type SectionSource = Pick<
+  ClassSection,
+  | "courseReferenceNumber"
+  | "subjectCourse"
+  | "termDesc"
+  | "scheduleTypeDescription"
+  | "seatsAvailable"
+  | "maximumEnrollment"
+  | "faculty"
+> & { meetingsFaculty: { meetingTime: ClassMeetingTime }[] };
 
 /** Banner meeting days as one letter each, in week order (R = Thursday, U = Sunday). */
-export function meetingTimeToDays(mt: SSBMeetingTime): string {
+export function meetingTimeToDays(mt: DayFlags): string {
   let days = "";
   if (mt.monday) days += "M";
   if (mt.tuesday) days += "T";
@@ -20,7 +46,9 @@ export function formatBannerTime(raw: string): string {
   return raw;
 }
 
-export function primaryInstructorName(ssb: SSBSection): string {
+export function primaryInstructorName(
+  ssb: Pick<SectionSource, "faculty">,
+): string {
   return (
     ssb.faculty.find((f) => f.primaryIndicator)?.displayName ??
     ssb.faculty[0]?.displayName ??
@@ -34,7 +62,7 @@ export function primaryInstructorName(ssb: SSBSection): string {
  * `scheduleType` keeps a lab separate from its lecture. Blocks with no days or
  * times (online, TBA) are left out because they can't be placed on a week.
  */
-export function ssbSectionToInternal(ssb: SSBSection): Section[] {
+export function ssbSectionToInternal(ssb: SectionSource): Section[] {
   const instructor = primaryInstructorName(ssb);
 
   return ssb.meetingsFaculty.flatMap(({ meetingTime: mt }) => {

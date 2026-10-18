@@ -127,6 +127,8 @@ export interface SSBSection {
   crossListCapacity: number | null;
   crossListCount: number | null;
   isSectionLinked: boolean;
+  /** Groups linked sections (a lecture and its required lab); null when unlinked. */
+  linkIdentifier: string | null;
   sectionAttributes: { code: string; description: string }[];
 }
 

@@ -4,6 +4,7 @@ from fastapi import APIRouter
 
 from app.modules.auth.router import router as auth_router
 from app.modules.chatbot.router import router as chatbot_router
+from app.modules.classes.router import router as classes_router
 from app.modules.dars.router import router as dars_router
 from app.modules.degree.router import router as degree_router
 from app.modules.rmp.router import router as rmp_router
@@ -14,6 +15,7 @@ api_router = APIRouter(prefix="/api")
 
 api_router.include_router(auth_router)
 api_router.include_router(chatbot_router)
+api_router.include_router(classes_router)
 api_router.include_router(dars_router)
 api_router.include_router(degree_router)
 api_router.include_router(rmp_router)

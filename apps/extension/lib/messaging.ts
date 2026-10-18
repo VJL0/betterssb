@@ -32,7 +32,8 @@ export type MessageType =
   | "SSB_REG_SUBMIT_BATCH"
   | "SSB_REG_TUITION"
   | "SSB_AUTO_REGISTER_RUN"
-  | "DARS_RUN_AUDIT";
+  | "DARS_RUN_AUDIT"
+  | "BANNER_STATUS";
 
 export interface ExtensionMessage {
   type: MessageType;
