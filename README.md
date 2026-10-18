@@ -6,17 +6,17 @@ Everything is saved on your device. There's no account yet; sign-in for sync is 
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| **Search** | Every section of a term from Banner's public class search, with Rate My Professors ratings, live seats and filters. Add sections to your plan, with an undo. |
+| Feature              | Description                                                                                                                                                                      |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Search**           | Every section of a term from Banner's public class search, with Rate My Professors ratings, live seats and filters. Add sections to your plan, with an undo.                     |
 | **Schedule builder** | Generates conflict-free schedules from the courses in your plan, by your days, hours and ranking. Save one to the plan, queue its CRNs for auto-register or export it as `.ics`. |
-| **Semester planner** | Your terms side by side, the credits planned, what your audit still needs and a projected finish. |
-| **Degree audit** | Runs your DARS audit through the extension (or reads an uploaded audit) and shows each requirement's progress. |
-| **Transcript** | Paste your unofficial transcript to see your courses by term, GPA and what each counts toward. |
-| **AI advisor** | Ask about your plan, audit and transcript. You choose which of them the advisor can see. |
-| **Auto-register** | Queue CRNs, pick a time, arm it; the extension submits them in your Banner tab when registration opens. |
-| **On Banner pages** | Ratings before instructors, seat meters, "In your plan" and conflict tags, and a plan dock on Banner's class search. One setting turns it all off. |
-| **Popup** | Today (countdown, this tab, your plan with live seats), Search, Register and Audit at a glance. |
+| **Semester planner** | Your terms side by side, the credits planned, what your audit still needs and a projected finish.                                                                                |
+| **Degree audit**     | Runs your DARS audit through the extension (or reads an uploaded audit) and shows each requirement's progress.                                                                   |
+| **Transcript**       | Paste your unofficial transcript to see your courses by term, GPA and what each counts toward.                                                                                   |
+| **AI advisor**       | Ask about your plan, audit and transcript. You choose which of them the advisor can see.                                                                                         |
+| **Auto-register**    | Queue CRNs, pick a time, arm it; the extension submits them in your Banner tab when registration opens.                                                                          |
+| **On Banner pages**  | Ratings before instructors, seat meters, "In your plan" and conflict tags, and a plan dock on Banner's class search. One setting turns it all off.                               |
+| **Popup**            | Today (countdown, this tab, your plan with live seats), Search, Register and Audit at a glance.                                                                                  |
 
 ## Architecture
 
@@ -71,27 +71,27 @@ betterssb/
 
 **Where each feature lives**
 
-| Feature | Website | Popup | Content (Banner) |
-| --- | --- | --- | --- |
-| School and term | Yes | First run | |
-| Search, schedule builder, planner | Yes | Search, plan | |
-| Degree audit, transcript, advisor | Yes | Audit summary | DARS run |
-| Auto-register | Set up and arm | Status, disarm | Submits the batch |
-| Ratings, seats and plan tags on Banner pages | On/off setting | On/off switch | Yes |
+| Feature                                      | Website        | Popup          | Content (Banner)  |
+| -------------------------------------------- | -------------- | -------------- | ----------------- |
+| School and term                              | Yes            | First run      |                   |
+| Search, schedule builder, planner            | Yes            | Search, plan   |                   |
+| Degree audit, transcript, advisor            | Yes            | Audit summary  | DARS run          |
+| Auto-register                                | Set up and arm | Status, disarm | Submits the batch |
+| Ratings, seats and plan tags on Banner pages | On/off setting | On/off switch  | Yes               |
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Extension Framework | [WXT](https://wxt.dev) v0.21 |
-| UI | React 19, TypeScript, Tailwind CSS 4, shadcn/ui on Base UI |
-| State | Local-first store: IndexedDB on the website, `chrome.storage.local` in the extension, shared through the web bridge; TanStack Query for API data |
-| Backend | FastAPI, Python 3.14 |
-| Database | PostgreSQL 18 (Docker), SQLAlchemy 2 |
-| Cache | Redis 8 (Docker), short-lived data only |
-| Auth | Google OAuth 2.0 / OpenID Connect (Authlib), server-side sessions |
-| AI / LLM | OpenAI API |
-| RMP Data | Rate My Professor GraphQL API |
+| Layer               | Technology                                                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Extension Framework | [WXT](https://wxt.dev) v0.21                                                                                                                     |
+| UI                  | React 19, TypeScript, Tailwind CSS 4, shadcn/ui on Base UI                                                                                       |
+| State               | Local-first store: IndexedDB on the website, `chrome.storage.local` in the extension, shared through the web bridge; TanStack Query for API data |
+| Backend             | FastAPI, Python 3.14                                                                                                                             |
+| Database            | PostgreSQL 18 (Docker), SQLAlchemy 2                                                                                                             |
+| Cache               | Redis 8 (Docker), short-lived data only                                                                                                          |
+| Auth                | Google OAuth 2.0 / OpenID Connect (Authlib), server-side sessions                                                                                |
+| AI / LLM            | OpenAI API                                                                                                                                       |
+| RMP Data            | Rate My Professor GraphQL API                                                                                                                    |
 
 ## Getting Started
 
