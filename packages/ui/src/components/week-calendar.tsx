@@ -376,7 +376,7 @@ function BlockItem({
     <div
       aria-hidden
       className={cn(
-        "size-full",
+        "@container size-full",
         blockAppearance(block),
         lines <= 1 && "justify-center",
       )}
@@ -465,7 +465,10 @@ function BlockContent({
           </span>
         )}
         {lines > 1 && !block.pinned && !flagLowRating && block.kind && (
-          <span className="shrink-0 truncate opacity-85">{block.kind}</span>
+          // Only when the block is wide enough; the course heading matters more.
+          <span className="hidden shrink-0 opacity-85 @[9.5rem]:inline">
+            {block.kind}
+          </span>
         )}
       </span>
       {lines >= 3 && (

@@ -15,10 +15,17 @@ interface DebouncedSearchResult<T> {
   hasError: boolean;
 }
 
+interface Settled<T> {
+  query: string;
+  results: T[];
+  hasError: boolean;
+}
+
 /**
  * Runs `fetchResults` for `query` once typing pauses. A response that arrives
  * after a newer query started is dropped, so results always match the input.
- * `fetchResults` should be stable (wrap it in useCallback).
+ * While a newer search runs, the previous results stay visible.
+ * `fetchResults` should be stable (module-level or memoized).
  */
 export function useDebouncedSearch<T>(
   query: string,
@@ -28,42 +35,36 @@ export function useDebouncedSearch<T>(
     debounceMs = DEFAULT_DEBOUNCE_MS,
   }: DebouncedSearchOptions = {},
 ): DebouncedSearchResult<T> {
-  const [results, setResults] = useState<T[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const text = query.trim();
+  const tooShort = text.length < minQueryLength;
+  const [settled, setSettled] = useState<Settled<T>>({
+    query: "",
+    results: [],
+    hasError: false,
+  });
 
   useEffect(() => {
-    const text = query.trim();
+    if (tooShort) return;
     let isStale = false;
-
-    if (text.length < minQueryLength) {
-      setResults([]);
-      setIsLoading(false);
-      setHasError(false);
-      return;
-    }
-
-    setIsLoading(true);
     const timer = setTimeout(async () => {
       try {
-        const found = await fetchResults(text);
-        if (isStale) return;
-        setResults(found);
-        setHasError(false);
+        const results = await fetchResults(text);
+        if (!isStale) setSettled({ query: text, results, hasError: false });
       } catch {
-        if (isStale) return;
-        setResults([]);
-        setHasError(true);
-      } finally {
-        if (!isStale) setIsLoading(false);
+        if (!isStale) setSettled({ query: text, results: [], hasError: true });
       }
     }, debounceMs);
-
     return () => {
       isStale = true;
       clearTimeout(timer);
     };
-  }, [query, fetchResults, minQueryLength, debounceMs]);
+  }, [text, tooShort, fetchResults, debounceMs]);
 
-  return { results, isLoading, hasError };
+  if (tooShort) return { results: [], isLoading: false, hasError: false };
+  const isLoading = settled.query !== text;
+  return {
+    results: settled.results,
+    isLoading,
+    hasError: !isLoading && settled.hasError,
+  };
 }

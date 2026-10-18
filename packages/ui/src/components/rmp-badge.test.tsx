@@ -54,6 +54,14 @@ describe("RmpBadge", () => {
     expect(screen.getByRole("link").className).toContain(cls);
   });
 
+  it("is plain text when there's no profile link to open", () => {
+    render(<RmpBadge rating={rating({ rmpUrl: "" })} />);
+    expect(screen.queryByRole("link")).toBeNull();
+    expect(screen.getByText("4.6 · diff 3.2").className).toContain(
+      "bg-primary",
+    );
+  });
+
   it("shows a dashed, non-interactive badge without a profile", () => {
     render(<RmpBadge rating={null} />);
     expect(screen.queryByRole("link")).toBeNull();
