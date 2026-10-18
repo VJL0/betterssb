@@ -2,7 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { mockApi } from "@workspace/api-client/testing";
+import { API, http, HttpResponse, server } from "@workspace/api-client/testing";
 import {
   addSection,
   emptyPlan,
@@ -42,17 +42,18 @@ async function signedUp() {
 }
 
 function api() {
-  return mockApi({
-    "GET /api/classes/terms": [SPRING],
-    "GET /api/classes/subjects": [{ code: "CIS", description: "CIS" }],
-    "GET /api/classes/search": {
-      totalCount: 1,
-      fetchedAt: NOW,
-      sections: [classSection()],
-    },
-    "GET /api/rmp/search": [],
-    "GET /api/rmp/schools": [{ ...TEMPLE, legacyId: 999 }],
-  });
+  server.use(
+    http.get(`${API}/classes/search`, () =>
+      HttpResponse.json({
+        totalCount: 1,
+        fetchedAt: NOW,
+        sections: [classSection()],
+      }),
+    ),
+    http.get(`${API}/rmp/schools`, () =>
+      HttpResponse.json([{ ...TEMPLE, legacyId: 999 }]),
+    ),
+  );
 }
 
 function background(snapshot: Partial<AutoRegSnapshot> = {}) {

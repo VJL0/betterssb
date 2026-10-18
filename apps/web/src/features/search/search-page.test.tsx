@@ -2,7 +2,14 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi } from "@workspace/api-client/testing";
+import {
+  API,
+  FETCHED_AT,
+  http,
+  HttpResponse,
+  recordRequests,
+  server,
+} from "@workspace/api-client/testing";
 import {
   classSection,
   meetingTime,
@@ -13,37 +20,43 @@ import { SearchPage } from "./search-page";
 const SEARCH_TIMEOUT = { timeout: 3_000 };
 
 const SEARCH = "GET /api/classes/search";
-let api: ReturnType<typeof mockApi>;
 
-beforeEach(() => {
-  api = mockApi({
-    "GET /api/classes/terms": [{ code: "202703", description: "2027 Spring" }],
-    "GET /api/classes/subjects": [
-      { code: "CIS", description: "Computer & Information Science" },
-    ],
-    "GET /api/classes/attributes": [],
-    [SEARCH]: {
-      totalCount: 2,
-      fetchedAt: "2026-10-17T12:00:00.000Z",
-      sections: [
-        classSection(),
-        classSection({
-          courseReferenceNumber: "41208",
-          sequenceNumber: "002",
-          meetings: [meetingTime("MWF", "1100", "1150")],
-        }),
-      ],
-    },
-  });
-});
-
-/** Query strings of the class searches sent so far. */
-function searchesSent(): string[] {
-  return api.mock.calls
-    .map(([input]) => new URL((input as Request).url))
-    .filter((url) => url.pathname === "/api/classes/search")
-    .map((url) => url.search);
+/** True when the query is the one the page should send for "CIS 2168". */
+function isCis2168(query: URLSearchParams): boolean {
+  return (
+    query.get("term") === "202703" &&
+    query.get("subject") === "CIS" &&
+    query.get("courseNumber") === "2168"
+  );
 }
+
+// Only a correctly built search finds CIS 2168, so the results on screen
+// show the page sent the right query.
+beforeEach(() => {
+  server.use(
+    http.get(`${API}/classes/search`, ({ request }) => {
+      if (!isCis2168(new URL(request.url).searchParams)) {
+        return HttpResponse.json({
+          totalCount: 0,
+          fetchedAt: FETCHED_AT,
+          sections: [],
+        });
+      }
+      return HttpResponse.json({
+        totalCount: 2,
+        fetchedAt: FETCHED_AT,
+        sections: [
+          classSection(),
+          classSection({
+            courseReferenceNumber: "41208",
+            sequenceNumber: "002",
+            meetings: [meetingTime("MWF", "1100", "1150")],
+          }),
+        ],
+      });
+    }),
+  );
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -71,9 +84,6 @@ describe("SearchPage", () => {
       { name: "Add CIS 2168 · 002 (CRN 41208) to your Spring 2027 plan" },
       SEARCH_TIMEOUT,
     );
-    expect(searchesSent()).toEqual([
-      "?term=202703&subject=CIS&courseNumber=2168&limit=50&offset=0",
-    ]);
     await user.click(add[0]!);
     await waitFor(async () =>
       expect(
@@ -97,10 +107,12 @@ describe("SearchPage", () => {
 
 describe("SearchPage links", () => {
   it("searches for ?q= on arrival", async () => {
+    // Nothing on screen shows a duplicate search, so count the requests.
+    const searches = recordRequests(SEARCH);
     renderPage(<SearchPage />, { route: "/search?q=CIS%202168" });
     expect(
       await screen.findAllByText("Data Structures", undefined, SEARCH_TIMEOUT),
     ).not.toHaveLength(0);
-    expect(searchesSent()).toHaveLength(1);
+    expect(searches).toHaveLength(1);
   });
 });

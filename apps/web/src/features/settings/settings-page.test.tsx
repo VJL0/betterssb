@@ -1,18 +1,10 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi } from "@workspace/api-client/testing";
 import { renderPage } from "@/test/render";
 import { exportStore } from "./export-data";
 import { SettingsPage } from "./settings-page";
-
-beforeEach(() => {
-  mockApi({
-    "GET /api/classes/terms": [{ code: "202703", description: "2027 Spring" }],
-    "GET /api/rmp/schools": [],
-  });
-});
 
 afterEach(() => {
   vi.unstubAllGlobals();
