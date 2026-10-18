@@ -1,0 +1,6 @@
+/*
+ * The overlay's styles, loaded as a string into each shadow root on Banner
+ * pages (see shadow-host.ts). `:host` in globals.css gives every root the
+ * design tokens; nothing here reaches Banner's own elements.
+ */
+@import "@workspace/ui/globals.css";

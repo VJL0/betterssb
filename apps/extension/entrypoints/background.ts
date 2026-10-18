@@ -1,5 +1,6 @@
 import { setUpApiClient } from "@/lib/api-client";
 import { onMessage, sendTabMessage } from "@/lib/messaging";
+import { matchingProfile } from "@workspace/shared/lib/instructors";
 import type { ExtensionMessage, ExtensionResponse } from "@/lib/messaging";
 import {
   buildResultRecord,
@@ -245,6 +246,8 @@ function buildBatchDedupeKey(
   return `${scheduledRunAt}|${termCode}|${crnList.join(",")}`;
 }
 
+const LEGACY_RATINGS_CACHE_KEY = "betterssb:cachedRatings";
+
 export default defineBackground(() => {
   setUpApiClient();
 
@@ -281,7 +284,10 @@ export default defineBackground(() => {
           const { data: ratings } = await searchProfessors({
             query: { name, school_id: schoolId },
           });
-          sendResponse({ success: true, data: ratings[0] ?? null });
+          sendResponse({
+            success: true,
+            data: matchingProfile(name, ratings),
+          });
           break;
         }
 
@@ -300,6 +306,11 @@ export default defineBackground(() => {
   });
 
   void syncAutoRegFireAlarm();
+
+  browser.runtime.onInstalled.addListener(() => {
+    // Ratings the old Banner badges cached; nothing reads them any more.
+    void browser.storage.local.remove(LEGACY_RATINGS_CACHE_KEY);
+  });
 
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;

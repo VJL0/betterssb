@@ -23,12 +23,11 @@ betterssb/
 │   │   ├── entrypoints/
 │   │   │   ├── background.ts          # Service worker: API relay, auth, alarms
 │   │   │   ├── content/               # Injected into Banner pages
-│   │   │   │   ├── index.tsx          # Content script entry
-│   │   │   │   └── modules/           # DOM / page-context features
+│   │   │   │   ├── index.tsx          # Content script entry (Banner API calls)
+│   │   │   │   └── overlay/           # Ratings, seats, plan tags and dock (shadow roots)
 │   │   │   └── popup/                 # Extension popup (main UI)
-│   │   ├── components/                # Shared React components
-│   │   ├── lib/                       # Banner client, storage, messaging helpers
-│   │   └── hooks/                     # Custom React hooks
+│   │   ├── lib/                       # Banner client, results reader, storage, messaging
+│   │   └── hooks/                     # React hooks shared by the popup and overlay
 │   │
 │   ├── api/           # API server (FastAPI + Python 3.14)
 │   │   └── app/
@@ -49,7 +48,7 @@ betterssb/
 ### How It Works
 
 1. **Popup** — Quick access while on Banner: first run (pick a school), then Today (armed countdown, this tab, the term's plan with live seats), Search (sections with ratings and seats, add to plan), Register (the queue and last run; arming happens on the website) and Audit (summary, what's still needed, re-run in DARS). Deeper tasks open the website.
-2. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). Handles anything that must execute in the page: calling Ellucian’s in-page APIs for the popup, injecting Rate My Professor badges on listings, and filling/submitting registration forms for auto-registration.
+2. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). Handles anything that must execute in the page: calling Ellucian’s in-page APIs for the popup and auto-register, and the Banner overlay. The overlay reads Banner's class search results grid (Browse Classes, Plan Ahead, Find Classes) and adds a Rate My Professors score before each instructor, a seat meter under Banner's seat text, "In your plan" and "Conflicts with your plan" tags under titles, and a collapsible plan dock. Each piece renders in its own shadow root, so Banner's styles and ours never mix; one setting ("On Banner pages" on the website, or the switch on the popup's Today tab) turns all of it off.
 3. **Background Service Worker** — Rating lookups for the Banner overlay, `SSB_*` messages forwarded to an open Banner tab, DARS runs, auto-register (queue, arming checks, the one-shot alarm) and `chrome.storage`.
 4. **Backend API** — Rate My Professor lookups, schedule optimization, transcript parsing, chatbot inference, and prerequisite validation.
 
@@ -61,7 +60,7 @@ betterssb/
 | Search, schedule builder, planner | Yes | Search, plan | |
 | Degree audit, transcript, advisor | Yes | Audit summary | DARS run |
 | Auto-register | Set up and arm | Status, disarm | Submits the batch |
-| Rate My Professors on Banner pages | | | Yes |
+| Ratings, seats and plan tags on Banner pages | On/off setting | On/off switch | Yes |
 
 ## Tech Stack
 

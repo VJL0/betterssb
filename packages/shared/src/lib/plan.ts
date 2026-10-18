@@ -9,7 +9,12 @@ import {
   courseColor,
   type CourseColor,
 } from "./course-colors";
-import { parseClockTime, parseDays } from "./meeting-times";
+import {
+  formatTimeRange,
+  parseClockTime,
+  parseDays,
+  type WeekDay,
+} from "./meeting-times";
 import { meetingTimeToDays, primaryInstructorName } from "./sections";
 import type { ClassSection } from "@workspace/api-client";
 
@@ -189,6 +194,15 @@ export interface PlanConflict {
   end: number;
 }
 
+/** Where two sections' meetings overlap: the shared days and the overlapping minutes. */
+export interface MeetingOverlap {
+  days: WeekDay[];
+  start: number;
+  end: number;
+}
+
+type HasMeetings = Pick<PlannedSection, "meetings">;
+
 /** Pairs of planned sections whose meetings overlap. */
 export function planConflicts(
   sections: readonly PlannedSection[],
@@ -198,17 +212,57 @@ export function planConflicts(
     for (let j = i + 1; j < sections.length; j++) {
       const a = sections[i]!;
       const b = sections[j]!;
-      const clash = firstOverlap(a, b);
-      if (clash) conflicts.push({ a, b, ...clash });
+      const clash = sectionOverlap(a, b);
+      if (clash) {
+        conflicts.push({
+          a,
+          b,
+          day: clash.days[0]!,
+          start: clash.start,
+          end: clash.end,
+        });
+      }
     }
   }
   return conflicts;
 }
 
-function firstOverlap(
-  a: PlannedSection,
-  b: PlannedSection,
-): { day: string; start: number; end: number } | null {
+/** A section from outside the plan, such as a row on a Banner page. */
+export interface OutsideSection extends Pick<
+  PlannedSection,
+  "crn" | "meetings"
+> {
+  /** Null when the page doesn't say which course the section is. */
+  courseCode: string | null;
+}
+
+export interface PlanClash {
+  planned: PlannedSection;
+  overlap: MeetingOverlap;
+}
+
+/**
+ * The planned sections a section would clash with if it were added. A
+ * section already in the plan clashes with nothing new, and other sections
+ * of its own course are alternatives to it, not clashes.
+ */
+export function clashesWithPlan(
+  section: OutsideSection,
+  planned: readonly PlannedSection[],
+): PlanClash[] {
+  if (planned.some((p) => p.crn === section.crn)) return [];
+  return planned.flatMap((p) => {
+    if (section.courseCode && p.courseCode === section.courseCode) return [];
+    const overlap = sectionOverlap(section, p);
+    return overlap ? [{ planned: p, overlap }] : [];
+  });
+}
+
+/** The first pair of meetings, one from each section, that overlap. */
+export function sectionOverlap(
+  a: HasMeetings,
+  b: HasMeetings,
+): MeetingOverlap | null {
   for (const ma of a.meetings) {
     for (const mb of b.meetings) {
       if (
@@ -218,12 +272,11 @@ function firstOverlap(
         mb.end === null
       )
         continue;
-      const shared = parseDays(ma.days).find((d) =>
-        parseDays(mb.days).includes(d),
-      );
-      if (shared && ma.start < mb.end && mb.start < ma.end) {
+      const otherDays = parseDays(mb.days);
+      const days = parseDays(ma.days).filter((d) => otherDays.includes(d));
+      if (days.length > 0 && ma.start < mb.end && mb.start < ma.end) {
         return {
-          day: shared,
+          days,
           start: Math.max(ma.start, mb.start),
           end: Math.min(ma.end, mb.end),
         };
@@ -231,4 +284,15 @@ function firstOverlap(
     }
   }
   return null;
+}
+
+/** "TR 9:30–10:50 AM · W 1:00–2:50 PM", or "No set time" for online or TBA sections. */
+export function describeMeetings(section: HasMeetings): string {
+  const timed = section.meetings.filter(
+    (m) => m.start !== null && m.end !== null && m.days,
+  );
+  if (timed.length === 0) return "No set time";
+  return timed
+    .map((m) => `${m.days} ${formatTimeRange(m.start!, m.end!)}`)
+    .join(" · ");
 }

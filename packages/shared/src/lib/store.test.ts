@@ -6,8 +6,16 @@ import type {
   StoreDocuments,
   StoreKey,
   TermPlan,
+  UserSettings,
 } from "../types/store";
-import { isStoreKey, mergeDocuments, mergeStoreInto, planKey } from "./store";
+import {
+  DEFAULT_SETTINGS,
+  isStoreKey,
+  mergeDocuments,
+  mergeStoreInto,
+  planKey,
+  withSettingDefaults,
+} from "./store";
 
 function section(
   crn: string,
@@ -42,6 +50,38 @@ function plan(
     updatedAt,
   };
 }
+
+describe("withSettingDefaults", () => {
+  it("fills fields saved before they existed", () => {
+    const older: Partial<UserSettings> = {
+      ...DEFAULT_SETTINGS,
+      term: "202703",
+      updatedAt: "2026-10-01T00:00:00.000Z",
+    };
+    delete older.bannerOverlay;
+    expect(withSettingDefaults(older as never)).toMatchObject({
+      term: "202703",
+      bannerOverlay: true,
+    });
+  });
+
+  it("keeps a saved choice", () => {
+    expect(
+      withSettingDefaults({
+        ...DEFAULT_SETTINGS,
+        bannerOverlay: false,
+        updatedAt: "",
+      }).bannerOverlay,
+    ).toBe(false);
+  });
+
+  it("uses the defaults before anything is saved", () => {
+    expect(withSettingDefaults(null)).toEqual({
+      ...DEFAULT_SETTINGS,
+      updatedAt: "",
+    });
+  });
+});
 
 describe("isStoreKey", () => {
   it.each(["settings", "audit", "transcript", "advisorThreads", "plan:202703"])(

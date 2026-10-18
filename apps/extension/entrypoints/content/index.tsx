@@ -1,5 +1,5 @@
-import "./style.css";
 import { onContentMessage } from "@/lib/messaging";
+import { overlayStatus } from "@/lib/overlay-status";
 import type { ExtensionMessage, ExtensionResponse } from "@/lib/messaging";
 import * as ssb from "@/lib/ssb-api";
 import type {
@@ -8,8 +8,6 @@ import type {
   SSBPlanBatchPayload,
   SSBSubmitRegistrationBatchPayload,
 } from "@workspace/shared/types/ssb";
-
-type Page = "planAhead" | "registration" | "results" | "plan" | "unknown";
 
 async function handleSSBMessage(
   msg: ExtensionMessage,
@@ -162,14 +160,15 @@ async function handleSSBMessage(
 
 export default defineContentScript({
   matches: ["*://*.edu/StudentRegistrationSsb/*", "*://*.edu/ssb/*"],
-  cssInjectionMode: "ui",
 
   async main() {
-    const { initRMPRatings } = await import("./modules/rmp-ratings");
-    const { initUIEnhancer } = await import("./modules/ui-enhancer");
-    const { initAutoRegister } = await import("./modules/auto-register");
+    const { startOverlay } = await import("./overlay");
 
     onContentMessage(async (msg, sendResponse) => {
+      if (msg.type === "OVERLAY_STATUS") {
+        sendResponse({ success: true, data: overlayStatus() });
+        return;
+      }
       if (msg.type.startsWith("SSB_")) {
         try {
           const result = await handleSSBMessage(msg);
@@ -183,43 +182,6 @@ export default defineContentScript({
       }
     });
 
-    function detectPage(): Page {
-      const currentUrl = window.location.href.toLowerCase();
-      const ssbPathSegments = currentUrl.split("/ssb/");
-      const path = ssbPathSegments[1] ?? "";
-
-      if (path.includes("plan/plan")) return "planAhead";
-      // if (path.includes("classsearch") || path.includes("searchresults"))
-      //   return "search";
-      // if (path.includes("registration") || path.includes("adddrop"))
-      //   return "registration";
-      // if (path.includes("results")) return "results";
-      return "unknown";
-    }
-
-    function activateModules() {
-      const page = detectPage();
-
-      // initUIEnhancer();
-      if (page === "planAhead") {
-        initRMPRatings(observer);
-      }
-    }
-
-    const observer = new MutationObserver((mutations) => {
-      const hasNewNodes = mutations.some(
-        (m) => m.addedNodes.length > 0 || m.type === "childList",
-      );
-      if (hasNewNodes) {
-        activateModules();
-      }
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    activateModules();
+    startOverlay();
   },
 });
