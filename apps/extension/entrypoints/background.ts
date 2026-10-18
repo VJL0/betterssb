@@ -5,8 +5,8 @@ import {
   buildResultRecord,
   type AutoRegBatchResultRecord,
   type StagingFailure,
-} from "@/lib/auto-reg-batch-result";
-import { parseManualCrns } from "@/lib/auto-reg-helpers";
+} from "@workspace/shared/lib/auto-reg-batch-result";
+import { parseManualCrns } from "@workspace/shared/lib/auto-reg-helpers";
 import {
   AUTO_REG_SCHEDULE_CONFIG_KEY,
   getAutoRegScheduleConfig,
@@ -21,7 +21,7 @@ import type {
   SchedulePreferences,
   ChatMessage,
   TranscriptCourse,
-} from "@/types";
+} from "@workspace/shared/types";
 
 const SSB_URL_PATTERN = "*://*.edu/StudentRegistrationSsb/*";
 const DARS_URL_PATTERN = "*://prd-dars.temple.edu/selfservice/*";

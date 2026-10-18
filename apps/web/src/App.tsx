@@ -2,7 +2,9 @@ import { useEffect, useRef, useState, type DragEvent } from "react";
 import { AccountBar } from "./components/AccountBar";
 import { AuditReport } from "./components/AuditReport";
 import { StatusIcon } from "./components/StatusBadge";
-import { formatCredits, isNoteOnly, runFromFile, type Audit } from "./lib/dars";
+import { formatCredits, isNoteOnly } from "@workspace/shared/lib/dars";
+import type { Audit } from "@workspace/shared/types/dars";
+import { runFromFile } from "./lib/dars";
 import { runViaExtension, waitForExtension } from "./lib/extension";
 
 const DARS_URL = "https://prd-dars.temple.edu/selfservice/";

@@ -1,4 +1,4 @@
-import type { SchedulePreferences, RMPRating } from "@/types";
+import type { SchedulePreferences, RMPRating } from "@workspace/shared/types";
 
 const KEYS = {
   SCHEDULE_PREFS: "betterssb:schedulePreferences",

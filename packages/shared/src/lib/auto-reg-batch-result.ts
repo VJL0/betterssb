@@ -93,8 +93,6 @@ export function buildResultRecord(
   const crnResults: CrnResultLine[] = [];
   let registeredCount = 0;
   let failedCount = 0;
-  let registeredHours: string | null = null;
-  let billingHours: string | null = null;
 
   for (const sf of stagingFailures) {
     failedCount++;
@@ -143,8 +141,8 @@ export function buildResultRecord(
     }
   }
 
-  registeredHours = resp?.registeredHours ?? null;
-  billingHours = resp?.billingHours ?? null;
+  const registeredHours = resp?.registeredHours ?? null;
+  const billingHours = resp?.billingHours ?? null;
 
   const allOk = failedCount === 0 && registeredCount > 0;
   const summary = allOk

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { TranscriptData } from "@/types";
+import type { TranscriptData } from "@workspace/shared/types";
 import { sendMessage } from "@/lib/messaging";
 import { Button, Card, Badge } from "@/components/ui";
 

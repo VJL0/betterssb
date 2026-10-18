@@ -3,7 +3,7 @@ import type {
   SSBTerm,
   SSBSection,
   SSBSectionSearchResponse,
-} from "@/types/ssb";
+} from "@workspace/shared/types/ssb";
 import { sendMessage } from "@/lib/messaging";
 import { Card, Button, Input } from "@/components/ui";
 import { cn } from "@workspace/ui/lib/utils";

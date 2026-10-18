@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { sendMessage } from "@/lib/messaging";
-import type { RMPSchool } from "@/types";
+import type { RMPSchool } from "@workspace/shared/types";
 import {
   SearchCombobox,
   type SearchComboboxProps,

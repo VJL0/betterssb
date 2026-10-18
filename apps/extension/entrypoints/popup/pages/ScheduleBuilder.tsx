@@ -1,12 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
-import type { Section, SchedulePreferences, GeneratedSchedule } from "@/types";
+import type {
+  Section,
+  SchedulePreferences,
+  GeneratedSchedule,
+} from "@workspace/shared/types";
 import type {
   SSBTerm,
   SSBSection,
   SSBSectionSearchResponse,
-} from "@/types/ssb";
+} from "@workspace/shared/types/ssb";
 import { sendMessage } from "@/lib/messaging";
-import { ssbSectionToInternal } from "@/lib/ssb-api";
+import { ssbSectionToInternal } from "@workspace/shared/lib/sections";
 import { Button, Input, Card } from "@/components/ui";
 import { ScheduleCard } from "@/components/schedule/ScheduleCard";
 import { cn } from "@workspace/ui/lib/utils";

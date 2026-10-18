@@ -1,5 +1,5 @@
-import type { AutoRegBatchResultRecord } from "@/lib/auto-reg-batch-result";
-import type { SSBRegPlanHeader, SSBTerm } from "@/types/ssb";
+import type { AutoRegBatchResultRecord } from "./auto-reg-batch-result";
+import type { SSBRegPlanHeader, SSBTerm } from "../types/ssb";
 
 /** Merge API terms with any term codes only present on plans. */
 export function mergeTermsFromPlans(
