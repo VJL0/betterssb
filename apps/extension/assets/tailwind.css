@@ -1,4 +1,5 @@
 @import "@workspace/ui/globals.css";
+@import "@workspace/ui/inter.css";
 
 @layer base {
   html,

@@ -3,7 +3,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import { PopupHeader } from "./components/popup-header";
 import { PopupTabs, type PopupTab } from "./components/popup-tabs";
 import { useCurrentTerm } from "./hooks/use-current-term";
-import { useStoreDocument } from "./hooks/use-store-document";
+import { useStoreDocument } from "@/hooks/use-store-document";
 import { AuditTab } from "./tabs/audit-tab";
 import { FirstRun } from "./tabs/first-run";
 import { RegisterTab } from "./tabs/register-tab";

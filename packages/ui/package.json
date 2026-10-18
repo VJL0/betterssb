@@ -52,6 +52,7 @@
   },
   "exports": {
     "./globals.css": "./src/styles/globals.css",
+    "./inter.css": "./src/styles/inter.css",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",

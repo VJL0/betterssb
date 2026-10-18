@@ -1,5 +1,12 @@
+import { createRequire } from "node:module";
 import { defineConfig } from "wxt";
 import tailwindcss from "@tailwindcss/vite";
+
+const require = createRequire(import.meta.url);
+
+/** Inter's Latin file, which the Banner overlay registers on Banner pages. */
+const OVERLAY_FONT = "fonts/inter-latin-wght-normal.woff2";
+const BANNER_PAGES = ["*://*.edu/StudentRegistrationSsb/*", "*://*.edu/ssb/*"];
 
 /** Host permission for the backend, so the popup and background can call it without CORS. */
 function apiHostPermission(): string {
@@ -19,12 +26,25 @@ export default defineConfig({
       "Supercharge your university's Self-Service Banner registration",
     permissions: ["storage", "alarms", "notifications", "tabs", "activeTab"],
     host_permissions: [
-      "*://*.edu/StudentRegistrationSsb/*",
-      "*://*.edu/ssb/*",
+      ...BANNER_PAGES,
       "*://prd-dars.temple.edu/selfservice/*",
       apiHostPermission(),
     ],
+    web_accessible_resources: [
+      { resources: [OVERLAY_FONT], matches: ["*://*.edu/*"] },
+    ],
   }),
+  hooks: {
+    // Content scripts build as one file with every asset inlined, so the
+    // overlay's font is copied as a file instead of riding along as a data URL.
+    "build:publicAssets": (_wxt, files) => {
+      files.push({
+        absoluteSrc:
+          require.resolve("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2"),
+        relativeDest: OVERLAY_FONT,
+      });
+    },
+  },
   vite: () => ({
     plugins: [tailwindcss()],
   }),

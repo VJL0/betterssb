@@ -33,7 +33,8 @@ export type MessageType =
   | "AUTOREG_SAVE_QUEUE"
   | "AUTOREG_ARM"
   | "AUTOREG_DISARM"
-  | "AUTOREG_CHECK_CRNS";
+  | "AUTOREG_CHECK_CRNS"
+  | "OVERLAY_STATUS";
 
 export interface ExtensionMessage {
   type: MessageType;

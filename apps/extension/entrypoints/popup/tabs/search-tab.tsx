@@ -6,7 +6,11 @@ import {
   PlusIcon,
   SearchIcon,
 } from "lucide-react";
-import { queryError, type ClassSection } from "@workspace/api-client";
+import {
+  queryError,
+  type ClassSection,
+  type RmpRating,
+} from "@workspace/api-client";
 import {
   listSubjectsOptions,
   searchProfessorsOptions,
@@ -15,6 +19,7 @@ import {
 import { parseClassQuery } from "@workspace/shared/lib/class-query";
 import {
   instructorSearchName,
+  matchingProfile,
   shortInstructorName,
 } from "@workspace/shared/lib/instructors";
 import {
@@ -46,7 +51,7 @@ import { RmpBadge } from "@workspace/ui/components/rmp-badge";
 import { SeatMeter } from "@workspace/ui/components/seat-meter";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import type { Term } from "../hooks/use-current-term";
-import { useStoreDocument } from "../hooks/use-store-document";
+import { useStoreDocument } from "@/hooks/use-store-document";
 import { openWeb } from "../lib/open-web";
 
 /** Each search opens a Banner session, so wait for typing to pause. */
@@ -122,8 +127,8 @@ export function SearchTab({
           }),
           staleTime: Infinity,
           retry: false,
-          select: (matches: Parameters<typeof usableRating>[0][]) =>
-            usableRating(matches[0] ?? null),
+          select: (matches: RmpRating[]) =>
+            usableRating(matchingProfile(name, matches)),
         }))
       : [],
     combine: (results) => new Map(names.map((name, i) => [name, results[i]])),

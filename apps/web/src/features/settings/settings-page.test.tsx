@@ -69,6 +69,7 @@ describe("SettingsPage", () => {
       term: "202703",
       major: "",
       keyboardShortcuts: true,
+      bannerOverlay: true,
       updatedAt: "2026-10-17T00:00:00.000Z",
     });
     await user.click(
@@ -107,6 +108,19 @@ describe("exportStore", () => {
     await user.click(toggle);
     await waitFor(async () =>
       expect((await store.get("settings"))?.keyboardShortcuts).toBe(false),
+    );
+  });
+
+  it("turns the Banner page overlay off", async () => {
+    const user = userEvent.setup();
+    const { store } = renderPage(<SettingsPage />);
+    const toggle = await screen.findByRole("switch", {
+      name: "Ratings, seats and your plan",
+    });
+    expect(toggle.getAttribute("aria-checked")).toBe("true");
+    await user.click(toggle);
+    await waitFor(async () =>
+      expect((await store.get("settings"))?.bannerOverlay).toBe(false),
     );
   });
 });

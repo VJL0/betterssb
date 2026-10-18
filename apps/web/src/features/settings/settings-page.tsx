@@ -41,6 +41,7 @@ const SECTIONS = [
   { id: "account", label: "Account" },
   { id: "school", label: "School and term" },
   { id: "banner", label: "Banner" },
+  { id: "banner-pages", label: "On Banner pages" },
   { id: "keyboard", label: "Keyboard" },
   { id: "data", label: "Data and privacy" },
 ] as const;
@@ -102,6 +103,7 @@ export function SettingsPage() {
           <AccountSection />
           <SchoolSection />
           <BannerSection />
+          <BannerPagesSection />
           <KeyboardSection />
           <DataSection />
         </div>
@@ -200,6 +202,36 @@ const SHORTCUTS = [
   { keys: ["A"], action: "Add or remove the focused section" },
   { keys: ["[", "]"], action: "Previous or next generated schedule" },
 ] as const;
+
+function BannerPagesSection() {
+  const { settings, update } = useSettings();
+  const switchId = useId();
+  return (
+    <SettingsSection
+      id="banner-pages"
+      title="On Banner pages"
+      description="What the extension adds to your school's registration pages."
+    >
+      <Field orientation="horizontal">
+        <FieldContent>
+          <FieldLabel htmlFor={switchId}>
+            Ratings, seats and your plan
+          </FieldLabel>
+          <FieldDescription>
+            Rate My Professors scores, seat meters, plan and conflict tags, and
+            a plan panel on Banner's class search. Banner's own page stays as it
+            is when this is off.
+          </FieldDescription>
+        </FieldContent>
+        <Switch
+          id={switchId}
+          checked={settings.bannerOverlay}
+          onCheckedChange={(bannerOverlay) => void update({ bannerOverlay })}
+        />
+      </Field>
+    </SettingsSection>
+  );
+}
 
 function KeyboardSection() {
   const { settings, update } = useSettings();

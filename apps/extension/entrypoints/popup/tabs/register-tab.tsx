@@ -16,7 +16,7 @@ import {
   useAutoRegister,
   useBannerConnection,
 } from "../hooks/use-auto-register";
-import { useStoreDocument } from "../hooks/use-store-document";
+import { useStoreDocument } from "@/hooks/use-store-document";
 import { openUrl, openWeb } from "../lib/open-web";
 
 const BANNER_WORDS = {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import {
   CircleCheckIcon,
   CircleXIcon,
@@ -6,29 +6,29 @@ import {
   GlobeIcon,
 } from "lucide-react";
 import { countdown } from "@workspace/shared/lib/auto-reg-queue";
-import { formatTimeRange } from "@workspace/shared/lib/meeting-times";
 import {
+  describeMeetings,
   emptyPlan,
   planConflicts,
   planCourseColor,
   planCredits,
 } from "@workspace/shared/lib/plan";
-import { planKey } from "@workspace/shared/lib/store";
+import { planKey, withSettingDefaults } from "@workspace/shared/lib/store";
 import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
-import type { PlannedSection } from "@workspace/shared/types/store";
 import { Button } from "@workspace/ui/components/button";
 import { CourseDot } from "@workspace/ui/components/course-badge";
 import { SeatMeter } from "@workspace/ui/components/seat-meter";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { Switch } from "@workspace/ui/components/switch";
 import { BANNER_REGISTRATION_URL } from "@/lib/config";
-import { useOnBannerPage } from "../hooks/use-active-tab";
+import { useOnBannerPage, useOverlayStatus } from "../hooks/use-active-tab";
 import {
   useAutoRegister,
   useBannerConnection,
 } from "../hooks/use-auto-register";
 import type { Term } from "../hooks/use-current-term";
 import { usePlanSeats } from "../hooks/use-plan-seats";
-import { useStoreDocument } from "../hooks/use-store-document";
+import { useStoreDocument } from "@/hooks/use-store-document";
 import { openUrl, openWeb } from "../lib/open-web";
 
 const TICK_MS = 1_000;
@@ -42,14 +42,6 @@ function shortTime(iso: string, withDate = false): string {
     minute: "2-digit",
     ...(withDate ? { second: "2-digit" } : {}),
   });
-}
-
-function meets(section: PlannedSection): string {
-  const timed = section.meetings.filter((m) => m.start !== null && m.days);
-  if (timed.length === 0) return "No set time";
-  return timed
-    .map((m) => `${m.days} ${formatTimeRange(m.start!, m.end!)}`)
-    .join(" · ");
 }
 
 function Card({
@@ -217,12 +209,7 @@ export function TodayTab({
         </Card>
       )}
       {onBanner.data === true && (
-        <p className="rounded-2xl bg-muted/60 px-3 py-2 text-xs">
-          <span className="font-medium">On this tab:</span>{" "}
-          {banner.data === "signed-out"
-            ? "Banner, signed out"
-            : "Banner registration"}
-        </p>
+        <BannerTabCard signedOut={banner.data === "signed-out"} />
       )}
 
       {term ? (
@@ -231,6 +218,59 @@ export function TodayTab({
         <Skeleton className="h-40 rounded-2xl" />
       )}
     </div>
+  );
+}
+
+function enhancedSummary(sections: number, inPlan: number): string {
+  const enhanced = `${sections} ${sections === 1 ? "section" : "sections"} enhanced`;
+  if (inPlan === 0) return enhanced;
+  return `${enhanced} · ${inPlan} ${inPlan === 1 ? "is" : "are"} in your plan`;
+}
+
+/** The Banner tab under the popup, and the one switch for the page overlay. */
+function BannerTabCard({ signedOut }: { signedOut: boolean }) {
+  const settings = useStoreDocument("settings");
+  const status = useOverlayStatus(true);
+  const switchId = useId();
+  const current = withSettingDefaults(settings.value);
+  const sections = status.data?.sections ?? 0;
+
+  return (
+    <section className="flex flex-col gap-2 rounded-2xl bg-muted/60 px-3 py-2.5 text-xs">
+      <p>
+        <span className="font-medium">On this tab:</span>{" "}
+        {signedOut
+          ? "Banner, signed out"
+          : sections > 0
+            ? "Banner class search"
+            : "Banner registration"}
+      </p>
+      {current.bannerOverlay && sections > 0 && (
+        <p className="text-muted-foreground">
+          {enhancedSummary(sections, status.data?.inPlan ?? 0)}
+        </p>
+      )}
+      <div className="flex items-center justify-between gap-3">
+        <label htmlFor={switchId} className="font-medium">
+          Ratings and seats on Banner pages
+        </label>
+        <Switch
+          id={switchId}
+          size="sm"
+          checked={current.bannerOverlay}
+          disabled={!settings.loaded}
+          onCheckedChange={(bannerOverlay) =>
+            void settings
+              .save({
+                ...current,
+                bannerOverlay,
+                updatedAt: new Date().toISOString(),
+              })
+              .then(() => status.refetch())
+          }
+        />
+      </div>
+    </section>
   );
 }
 
@@ -280,7 +320,7 @@ function PlanCard({ term, onSearch }: { term: Term; onSearch: () => void }) {
                       {section.courseCode} · {section.section}
                     </span>
                     <span className="truncate text-xs text-muted-foreground">
-                      {meets(section)}
+                      {describeMeetings(section)}
                     </span>
                   </span>
                   <span className="w-24 shrink-0">

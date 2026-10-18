@@ -25,10 +25,19 @@ interface RmpBadgeProps {
   rating: RmpRating | null;
   /** Adds "· 88%" (would take again) to the badge. */
   showWouldTakeAgain?: boolean;
+  /** Just the score ("4.2", or "No RMP"), for Banner's narrow table cells. */
+  compact?: boolean;
+  /** Where the details card renders; inside a shadow root it must stay in that tree. */
+  popupContainer?: HTMLElement | ShadowRoot | null;
   className?: string;
 }
 
-function badgeText(rating: RmpRating, showWouldTakeAgain: boolean): string {
+function badgeText(
+  rating: RmpRating,
+  showWouldTakeAgain: boolean,
+  compact: boolean,
+): string {
+  if (compact) return formatRating(rating.overallRating);
   const parts = [
     formatRating(rating.overallRating),
     `diff ${formatRating(rating.difficulty)}`,
@@ -55,6 +64,8 @@ function initials(name: string): string {
 function RmpBadge({
   rating,
   showWouldTakeAgain = false,
+  compact = false,
+  popupContainer,
   className,
 }: RmpBadgeProps) {
   if (!rating) {
@@ -64,12 +75,13 @@ function RmpBadge({
         variant="outline"
         className={cn("border-dashed text-muted-foreground", className)}
       >
-        No RMP profile
+        {compact ? "No RMP" : "No RMP profile"}
+        {compact && <span className="sr-only"> profile</span>}
       </Badge>
     );
   }
 
-  const text = badgeText(rating, showWouldTakeAgain);
+  const text = badgeText(rating, showWouldTakeAgain, compact);
   const variant = BAND_VARIANT[ratingBand(rating.overallRating)];
   // Without a profile link (sample data, say) there's nothing to open.
   if (!rating.rmpUrl) {
@@ -97,7 +109,10 @@ function RmpBadge({
           {`rating for ${rating.professorName} on Rate My Professors, opens in a new tab`}
         </span>
       </HoverCardTrigger>
-      <HoverCardContent className="flex flex-col gap-3">
+      <HoverCardContent
+        container={popupContainer}
+        className="flex flex-col gap-3"
+      >
         <RmpDetails rating={rating} />
       </HoverCardContent>
     </HoverCard>

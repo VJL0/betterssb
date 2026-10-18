@@ -15,8 +15,8 @@ import { Button } from "@workspace/ui/components/button";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { usePlans } from "../hooks/use-plans";
-import { useStoreDocument } from "../hooks/use-store-document";
-import { askBackground } from "../lib/ask-background";
+import { useStoreDocument } from "@/hooks/use-store-document";
+import { askBackground } from "@/lib/ask-background";
 import { openWeb } from "../lib/open-web";
 
 /** The popup lists the first few; the website has the rest. */

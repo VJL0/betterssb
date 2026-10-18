@@ -29,6 +29,16 @@ describe("RmpBadge", () => {
     expect(link.getAttribute("rel")).toContain("noopener");
   });
 
+  it("shows just the score when compact", () => {
+    render(<RmpBadge rating={rating()} compact />);
+    expect(screen.getByRole("link").textContent).toMatch(/^4\.6 rating for/);
+  });
+
+  it("says No RMP when compact and there's no profile", () => {
+    render(<RmpBadge rating={null} compact />);
+    expect(screen.getByText("No RMP").textContent).toBe("No RMP profile");
+  });
+
   it("keeps the visible text at the start of the accessible name", () => {
     render(<RmpBadge rating={rating()} />);
     expect(

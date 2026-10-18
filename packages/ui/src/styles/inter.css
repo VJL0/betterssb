@@ -1,0 +1,6 @@
+/*
+ * Inter for pages that own their document (the website and the popup). The
+ * Banner overlay can't use these: @font-face doesn't apply in shadow roots,
+ * so it registers one Latin file on the page instead (content/overlay).
+ */
+@import "@fontsource-variable/inter";

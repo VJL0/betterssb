@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { listTermsOptions } from "@workspace/api-client/query";
 import { formatTermName, isViewOnlyTerm } from "@workspace/shared/lib/terms";
-import { useStoreDocument } from "./use-store-document";
+import { useStoreDocument } from "@/hooks/use-store-document";
 
 export interface Term {
   code: string;

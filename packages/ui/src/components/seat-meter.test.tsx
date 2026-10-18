@@ -19,6 +19,15 @@ describe("SeatMeter", () => {
     expect(container.textContent).toContain("28/40");
   });
 
+  it("leaves the count to Banner's text when inline", () => {
+    const { container } = render(<SeatMeter {...OPEN} size="inline" />);
+    expect(container.textContent).toContain("12 open");
+    expect(container.textContent).not.toContain("28/40");
+    expect(screen.getByRole("progressbar").getAttribute("aria-valuetext")).toBe(
+      "12 open, 28 of 40 seats taken",
+    );
+  });
+
   it("exposes the reading as a progressbar", () => {
     render(<SeatMeter {...OPEN} />);
     const bar = screen.getByRole("progressbar");

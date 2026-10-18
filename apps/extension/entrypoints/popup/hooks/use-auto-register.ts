@@ -4,7 +4,7 @@ import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
 import type { BannerConnection } from "@workspace/shared/types/store";
 import { AUTO_REG_RUN_STATE_KEY } from "@/lib/auto-reg-run-state";
 import { AUTO_REG_SCHEDULE_CONFIG_KEY } from "@/lib/auto-reg-schedule-config";
-import { askBackground } from "../lib/ask-background";
+import { askBackground } from "@/lib/ask-background";
 
 const AUTO_REGISTER = ["autoRegister"] as const;
 

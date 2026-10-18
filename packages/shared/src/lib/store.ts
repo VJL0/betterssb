@@ -26,7 +26,16 @@ export const DEFAULT_SETTINGS: Omit<UserSettings, "updatedAt"> = {
   term: null,
   major: "",
   keyboardShortcuts: true,
+  bannerOverlay: true,
 };
+
+/**
+ * Saved settings over the defaults, so settings saved before a field existed
+ * read that field's default.
+ */
+export function withSettingDefaults(saved: UserSettings | null): UserSettings {
+  return { ...DEFAULT_SETTINGS, updatedAt: "", ...saved };
+}
 
 export function planKey(term: string): `plan:${string}` {
   return `${PLAN_KEY_PREFIX}${term}`;
