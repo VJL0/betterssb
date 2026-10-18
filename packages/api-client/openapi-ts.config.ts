@@ -25,7 +25,11 @@ export default defineConfig({
   },
   plugins: [
     "@hey-api/typescript",
-    "@hey-api/sdk",
+    {
+      name: "@hey-api/sdk",
+      // Session authentication uses browser-managed HttpOnly cookies, not SDK-managed tokens.
+      auth: false,
+    },
     {
       name: "@hey-api/client-fetch",
       // Paths include /api. Each app sets its origin in configureApiClient.

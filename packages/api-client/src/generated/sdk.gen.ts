@@ -83,17 +83,7 @@ export const logout = <ThrowOnError extends boolean = true>(
   options?: Options<LogoutData, ThrowOnError>,
 ): RequestResult<LogoutResponses, LogoutErrors, ThrowOnError> =>
   (options?.client ?? client).post<LogoutResponses, LogoutErrors, ThrowOnError>(
-    {
-      security: [
-        {
-          in: "cookie",
-          name: "__Host-Http-sid",
-          type: "apiKey",
-        },
-      ],
-      url: "/api/auth/logout",
-      ...options,
-    },
+    { url: "/api/auth/logout", ...options },
   );
 
 /**
@@ -105,13 +95,6 @@ export const getMe = <ThrowOnError extends boolean = true>(
   options?: Options<GetMeData, ThrowOnError>,
 ): RequestResult<GetMeResponses, GetMeErrors, ThrowOnError> =>
   (options?.client ?? client).get<GetMeResponses, GetMeErrors, ThrowOnError>({
-    security: [
-      {
-        in: "cookie",
-        name: "__Host-Http-sid",
-        type: "apiKey",
-      },
-    ],
     url: "/api/auth/me",
     ...options,
   });

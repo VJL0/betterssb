@@ -12,13 +12,14 @@
     "api:generate": "pnpm --filter api openapi && pnpm --filter @workspace/api-client generate"
   },
   "devDependencies": {
-    "prettier": "^3.9.9",
+    "@typescript/native": "catalog:",
+    "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "turbo": "^2.11.7",
-    "typescript": "~6.0.2"
+    "turbo": "^2.11.9",
+    "typescript": "catalog:"
   },
-  "packageManager": "pnpm@11.25.0",
+  "packageManager": "pnpm@12.14.0",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24"
   }
 }

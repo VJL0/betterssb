@@ -36,6 +36,11 @@ jobs:
           pnpm install --frozen-lockfile
           uv sync --locked --directory apps/api
 
+      # The catalog fixes declared ranges, not stale lockfile entries; a
+      # leftover version can still split a package into two installs.
+      - name: Lockfile has no duplicate versions
+        run: pnpm dedupe --check
+
       # The OpenAPI schema and the client generated from it are committed.
       # Regenerate both and fail if either differs, so the API and its
       # clients can't drift apart.
