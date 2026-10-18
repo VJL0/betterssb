@@ -125,7 +125,7 @@ function RmpDetails({ rating }: { rating: RmpRating }) {
       <div className="flex items-center gap-2.5">
         <span
           aria-hidden
-          className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-xs text-muted-foreground"
+          className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-xs text-foreground/70"
         >
           {initials(rating.professorName)}
         </span>

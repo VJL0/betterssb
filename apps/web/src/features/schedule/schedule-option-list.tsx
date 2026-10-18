@@ -6,6 +6,7 @@ import {
   parseClockTime,
   parseDays,
 } from "@workspace/shared/lib/meeting-times";
+import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Kbd } from "@workspace/ui/components/kbd";
@@ -117,12 +118,12 @@ export function ScheduleOptionList({
           const selected = option.id === selectedId;
           return (
             <li key={option.id}>
-              <button
-                type="button"
+              <Card
+                render={<button type="button" />}
                 aria-pressed={selected}
                 onClick={() => onSelect(option.id)}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-2xl bg-card p-2.5 text-left shadow-sm ring-1 ring-foreground/5 transition-shadow outline-none hover:ring-foreground/20 focus-visible:ring-3 focus-visible:ring-ring/50",
+                  "w-full flex-row items-center gap-3 rounded-2xl p-2.5 text-left transition-shadow outline-none hover:ring-foreground/20 focus-visible:ring-3 focus-visible:ring-ring/50",
                   selected && "ring-2 ring-primary hover:ring-primary",
                 )}
               >
@@ -144,7 +145,7 @@ export function ScheduleOptionList({
                     </span>
                   )}
                 </span>
-              </button>
+              </Card>
             </li>
           );
         })}

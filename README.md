@@ -1,31 +1,44 @@
 # BetterSSB
 
-A Chrome extension that supercharges Ellucian Self-Service Banner (SSB) — the registration portal used by hundreds of universities. BetterSSB injects directly into your school's registration pages to add features that Banner should have shipped out of the box.
+A website and a Chrome extension that make Ellucian Self-Service Banner (SSB) registration easier. Start on the website as a guest: search sections, build a schedule, plan your terms and read your degree audit. Add the extension to bring live Banner data onto those pages, auto-register when your window opens, and see ratings, seats and your plan on Banner's own pages.
+
+Everything is saved on your device. There's no account yet; sign-in for sync is a later phase.
 
 ## Features
 
 | Feature | Description |
 |---|---|
-| **Rate My Professor Ratings** | Professor ratings and reviews appear inline on search results and class listings — no more tab-switching. |
-| **Automatic Schedule Builder** | Generate optimized schedules from your preferred courses, accounting for time conflicts, gaps, and preferences. |
-| **Auto-Registration** | Queue up your desired sections and auto-register the moment enrollment opens. |
-| **Semester Planner** | Plan future semesters visually with a drag-and-drop calendar and course cart. |
-| **Enhanced UI** | A modern, accessible interface layered on top of Banner's legacy pages. |
-| **AI Chatbot Advisor** | Ask questions about courses, prerequisites, and degree progress in natural language. |
-| **Transcript & Degree Audit** | Upload your transcript and degree requirements to see exactly which courses you're eligible for — prerequisites that aren't met are clearly disabled. |
+| **Search** | Every section of a term from Banner's public class search, with Rate My Professors ratings, live seats and filters. Add sections to your plan, with an undo. |
+| **Schedule builder** | Generates conflict-free schedules from the courses in your plan, by your days, hours and ranking. Save one to the plan, queue its CRNs for auto-register or export it as `.ics`. |
+| **Semester planner** | Your terms side by side, the credits planned, what your audit still needs and a projected finish. |
+| **Degree audit** | Runs your DARS audit through the extension (or reads an uploaded audit) and shows each requirement's progress. |
+| **Transcript** | Paste your unofficial transcript to see your courses by term, GPA and what each counts toward. |
+| **AI advisor** | Ask about your plan, audit and transcript. You choose which of them the advisor can see. |
+| **Auto-register** | Queue CRNs, pick a time, arm it; the extension submits them in your Banner tab when registration opens. |
+| **On Banner pages** | Ratings before instructors, seat meters, "In your plan" and conflict tags, and a plan dock on Banner's class search. One setting turns it all off. |
+| **Popup** | Today (countdown, this tab, your plan with live seats), Search, Register and Audit at a glance. |
 
 ## Architecture
 
 ```
 betterssb/
 ├── apps/
+│   ├── web/           # Website (Vite + React 19 + React Router + TanStack Query)
+│   │   └── src/
+│   │       ├── app/                   # Router, header, phone tab bar, error and 404 pages
+│   │       ├── features/              # One folder per route: search, schedule, plan, audit…
+│   │       ├── components/ · hooks/   # Shared across routes
+│   │       └── lib/                   # Local store, extension bridge client, config
+│   │
 │   ├── extension/     # Chrome extension (WXT + React + TypeScript)
 │   │   ├── entrypoints/
-│   │   │   ├── background.ts          # Service worker: API relay, auth, alarms
+│   │   │   ├── background.ts          # Service worker: Banner relay, DARS, auto-register alarms
 │   │   │   ├── content/               # Injected into Banner pages
 │   │   │   │   ├── index.tsx          # Content script entry (Banner API calls)
 │   │   │   │   └── overlay/           # Ratings, seats, plan tags and dock (shadow roots)
-│   │   │   └── popup/                 # Extension popup (main UI)
+│   │   │   ├── web-bridge.content.ts  # The website ↔ extension bridge
+│   │   │   ├── dars.content.ts        # Reads the DARS audit page
+│   │   │   └── popup/                 # Extension popup
 │   │   ├── lib/                       # Banner client, results reader, storage, messaging
 │   │   └── hooks/                     # React hooks shared by the popup and overlay
 │   │
@@ -33,24 +46,28 @@ betterssb/
 │   │   └── app/
 │   │       ├── api/                   # App router & shared route dependencies
 │   │       ├── modules/               # Per-feature routers, services, schemas, external clients
-│   │       ├── core/                  # Config, database, security
+│   │       ├── core/                  # Config, database, security, errors, OpenAPI
 │   │       └── shared/                # Cross-cutting schemas
 │   │
-│   ├── web/           # Web app (Vite + React + shadcn/ui)
-│   └── ellucian-api/  # Mock Ellucian SSB API (FastAPI)
+│   ├── ellucian-api/  # Mock Ellucian SSB API (FastAPI), for development
+│   └── seat-tracker/  # Standalone seat watcher (ntfy), separate from the app
 │
 └── packages/
     ├── api-client/    # TypeScript client generated from the API's OpenAPI schema (Hey API)
     ├── shared/        # Banner and local-store types and pure domain logic, with Vitest tests
-    └── ui/            # Shared shadcn/ui components and Tailwind theme
+    └── ui/            # shadcn/ui (Base UI) components, product components and the Tailwind theme
 ```
 
 ### How It Works
 
-1. **Popup** — Quick access while on Banner: first run (pick a school), then Today (armed countdown, this tab, the term's plan with live seats), Search (sections with ratings and seats, add to plan), Register (the queue and last run; arming happens on the website) and Audit (summary, what's still needed, re-run in DARS). Deeper tasks open the website.
-2. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). Handles anything that must execute in the page: calling Ellucian’s in-page APIs for the popup and auto-register, and the Banner overlay. The overlay reads Banner's class search results grid (Browse Classes, Plan Ahead, Find Classes) and adds a Rate My Professors score before each instructor, a seat meter under Banner's seat text, "In your plan" and "Conflicts with your plan" tags under titles, and a collapsible plan dock. Each piece renders in its own shadow root, so Banner's styles and ours never mix; one setting ("On Banner pages" on the website, or the switch on the popup's Today tab) turns all of it off.
-3. **Background Service Worker** — Rating lookups for the Banner overlay, `SSB_*` messages forwarded to an open Banner tab, DARS runs, auto-register (queue, arming checks, the one-shot alarm) and `chrome.storage`.
-4. **Backend API** — Rate My Professor lookups, schedule optimization, transcript parsing, chatbot inference, and prerequisite validation.
+1. **Website** — Where students do the real work: search, schedule builder, planner, audit, transcript, advisor, auto-register setup and settings. Guests use all of it; data is saved in the browser (IndexedDB), or in the extension once it's installed.
+2. **Popup** — Quick access while on Banner: first run (pick a school), then Today (armed countdown, this tab and the Banner overlay switch, the term's plan with live seats), Search (sections with ratings and seats, add to plan), Register (the queue and last run; arming happens on the website) and Audit (summary, what's still needed, re-run in DARS). Deeper tasks open the website.
+3. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). It makes the Banner calls that must run in a signed-in Banner tab (registration terms and plans, CRN checks, the auto-register submit) and hosts the Banner overlay. The overlay reads Banner's class search results grid (Browse Classes, Plan Ahead, Find Classes) and adds a Rate My Professors score before each instructor, a seat meter under Banner's seat text, "In your plan" and "Conflicts with your plan" tags under titles, and a collapsible plan dock. Each piece renders in its own shadow root, so Banner's styles and ours never mix; one setting ("On Banner pages" on the website, or the switch on the popup's Today tab) turns all of it off.
+4. **Web bridge** — A content script on the website's origin that passes a fixed list of requests between the page and the extension (`packages/shared/src/lib/bridge.ts`): the shared store, Banner status, DARS runs, the auto-register queue and arming, and Banner registration terms and plans. Anything else is dropped. Its `matches` are `localhost` only until the production origin is set.
+5. **Background Service Worker** — Rating lookups for the Banner overlay, `SSB_*` messages forwarded to an open Banner tab, DARS runs, Banner connection status, auto-register (queue, arming checks, the one-shot alarm, notifications) and `chrome.storage`.
+6. **Backend API** — A proxy for Banner's public class search (terms, subjects, sections; cached in Redis), Rate My Professors lookups, schedule generation, DARS audit and transcript parsing, and the advisor chat.
+
+**Local-first data.** Settings, plans per term, the stored audit and transcript, and advisor threads are documents in one store (`packages/shared/src/types/store.ts`). The website keeps them in IndexedDB; with the extension installed, `chrome.storage.local` is the single copy, which the website reaches through the bridge (anything saved locally first is merged in once). The popup and the overlay read the same documents.
 
 **Where each feature lives**
 
@@ -66,8 +83,8 @@ betterssb/
 
 | Layer | Technology |
 |---|---|
-| Extension Framework | [WXT](https://wxt.dev) v0.20+ |
-| UI | React 19, TypeScript 5.9 |
+| Extension Framework | [WXT](https://wxt.dev) v0.21 |
+| UI | React 19, TypeScript, Tailwind CSS 4, shadcn/ui on Base UI |
 | State | Local-first store: IndexedDB on the website, `chrome.storage.local` in the extension, shared through the web bridge; TanStack Query for API data |
 | Backend | FastAPI, Python 3.14 |
 | Database | PostgreSQL 18 (Docker), SQLAlchemy 2 |
@@ -182,16 +199,17 @@ Cookies are always `Secure`. In development, use Chrome on `http://localhost`, w
 
 The API has no CORS. The web app calls it same-origin at `/api` (Vite proxies it in dev; in production serve both from one domain with `/api` routed to the backend). The extension gets the API host in its `host_permissions`, which lets it call the API without CORS.
 
-Both clients sign in through the backend; neither talks to Google or holds a token:
-
-- **Web** — "Sign in with Google" links to `/api/auth/google/login`. The page reads the user from `/api/auth/me` and shows `?auth_error=` messages after a failed sign-in.
-- **Extension** — the popup's Login tab opens `${WXT_API_ORIGIN}/api/auth/google/login` in a new tab. Its requests use `credentials: "include"`, and its host permission for the API lets the session cookie through, so it shares the web app's session. After sign-in the tab lands on `FRONTEND_URL`; reopen the popup to see the account.
+The website and the extension run as guests today: account sync is a later phase, so neither shows a sign-in button yet. The endpoints above and `apps/web/src/lib/auth.ts` stay in place for it. When sign-in is added, both clients will go through the backend and never talk to Google or hold a token: the website links to `/api/auth/google/login` and reads `/api/auth/me`; the extension's requests use `credentials: "include"`, and its host permission for the API lets the same session cookie through.
 
 The extension reads its config at build time. Copy `apps/extension/.env.example` to `apps/extension/.env` (or `.env.production` for release builds):
 
 ```env
 WXT_API_ORIGIN=http://localhost:8000   # Backend API origin; paths start with /api
+WXT_WEB_ORIGIN=http://localhost:5173   # The website, opened from the popup and the plan dock
+WXT_BANNER_REGISTRATION_URL=...        # Optional; defaults to Temple's Banner registration page
 ```
+
+The website reads `VITE_BANNER_REGISTRATION_URL` and `VITE_EXTENSION_INSTALL_URL` the same way (see `apps/web/.env.example`).
 
 ## Contributing
 

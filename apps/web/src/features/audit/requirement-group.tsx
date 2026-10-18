@@ -7,6 +7,7 @@ import type {
 } from "@workspace/shared/lib/audit-view";
 import { courseOptions } from "@workspace/shared/lib/audit-view";
 import { courseKey } from "@workspace/shared/lib/plan";
+import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { AuditStatusIcon } from "@workspace/ui/components/route-map";
 import { cn } from "@workspace/ui/lib/utils";
@@ -48,7 +49,7 @@ export function RequirementGroup({
   const total = group.lines.length;
 
   return (
-    <article className="overflow-hidden rounded-3xl bg-card shadow-sm ring-1 ring-foreground/5">
+    <Card className="gap-0 overflow-hidden py-0" render={<article />}>
       <h2>
         <button
           type="button"
@@ -101,7 +102,7 @@ export function RequirementGroup({
           )}
         </div>
       )}
-    </article>
+    </Card>
   );
 }
 

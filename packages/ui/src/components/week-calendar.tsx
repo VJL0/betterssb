@@ -343,7 +343,7 @@ function GapItem({
   const label = `${formatDuration(gap.end - gap.start)} gap`;
   return (
     <li
-      className="absolute grid place-items-center rounded-xl bg-[repeating-linear-gradient(135deg,var(--muted)_0_6px,transparent_6px_12px)] text-xs text-muted-foreground"
+      className="absolute grid place-items-center rounded-xl bg-[repeating-linear-gradient(135deg,var(--muted)_0_6px,transparent_6px_12px)] text-xs text-foreground/70"
       style={{
         top: toPx(gap.start),
         height: toPx(gap.end) - toPx(gap.start) - BLOCK_GAP_PX,

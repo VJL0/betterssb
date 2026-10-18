@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ExternalLinkIcon } from "lucide-react";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { planKey } from "@workspace/shared/lib/store";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { StatusBadge } from "@workspace/ui/components/status-badge";
@@ -72,7 +73,7 @@ export function RegisterTab() {
 
         <TabsContent value="results" className="flex flex-col gap-2">
           {result && (
-            <section className="rounded-2xl bg-card p-3 shadow-sm ring-1 ring-foreground/5">
+            <Card className="gap-0 rounded-2xl p-3" render={<section />}>
               <h2 className="font-medium">
                 {result.registeredCount + result.failedCount > 0
                   ? `${result.registeredCount} of ${result.registeredCount + result.failedCount} registered`
@@ -113,17 +114,23 @@ export function RegisterTab() {
                 Open in Banner
                 <ExternalLinkIcon data-icon="inline-end" />
               </Button>
-            </section>
+            </Card>
           )}
         </TabsContent>
 
         <TabsContent value="queue" className="flex flex-col gap-2">
           {snapshot.crns.length === 0 ? (
-            <p className="rounded-2xl bg-card p-3 text-muted-foreground ring-1 ring-foreground/5">
+            <Card
+              className="gap-0 rounded-2xl p-3 text-muted-foreground"
+              render={<p />}
+            >
               No sections queued yet. Set up the queue in BetterSSB.
-            </p>
+            </Card>
           ) : (
-            <ol className="flex flex-col divide-y rounded-2xl bg-card px-3 shadow-sm ring-1 ring-foreground/5">
+            <Card
+              className="gap-0 divide-y rounded-2xl px-3 py-0"
+              render={<ol />}
+            >
               {snapshot.crns.map((crn, i) => (
                 <li key={crn} className="flex items-center gap-3 py-2">
                   <span className="w-4 text-muted-foreground tabular-nums">
@@ -141,7 +148,7 @@ export function RegisterTab() {
                   </span>
                 </li>
               ))}
-            </ol>
+            </Card>
           )}
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 px-1 text-xs">
             <dt className="text-muted-foreground">Submits</dt>

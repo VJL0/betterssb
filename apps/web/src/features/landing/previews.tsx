@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Card } from "@workspace/ui/components/card";
 import { CourseBadge } from "@workspace/ui/components/course-badge";
 import { DayStrip } from "@workspace/ui/components/day-strip";
 import { RmpBadge } from "@workspace/ui/components/rmp-badge";
@@ -93,9 +94,10 @@ export function PlannerPreview() {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {SAMPLE_TERMS.map((term) => (
-        <section
+        <Card
           key={term.name}
-          className="flex flex-col gap-3 rounded-2xl bg-card p-4 ring-1 ring-foreground/5"
+          className="gap-3 rounded-2xl p-4"
+          render={<section />}
         >
           <h4 className="flex justify-between font-medium">
             {term.name}
@@ -113,7 +115,7 @@ export function PlannerPreview() {
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
       ))}
     </div>
   );

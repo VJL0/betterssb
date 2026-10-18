@@ -11,6 +11,7 @@ import { formatTermName } from "@workspace/shared/lib/terms";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { Badge } from "@workspace/ui/components/badge";
 import { buttonVariants } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
 import { LogoMark } from "@workspace/ui/components/logo";
 import { courseBackgroundClass } from "@workspace/ui/lib/course-color-classes";
 import { WEB_ORIGIN } from "@/lib/config";
@@ -47,9 +48,10 @@ export function PlanDock({
   const panelId = useId();
 
   return (
-    <aside
+    <Card
+      render={<aside />}
       aria-label="BetterSSB plan"
-      className="fixed right-6 bottom-6 z-50 flex w-80 max-w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-3xl bg-card font-sans text-sm text-card-foreground shadow-lg ring-1 ring-foreground/10"
+      className="fixed right-6 bottom-6 z-50 w-80 max-w-[calc(100vw-3rem)] gap-0 py-0 font-sans shadow-lg ring-foreground/10"
     >
       <button
         type="button"
@@ -128,6 +130,6 @@ export function PlanDock({
           Open in BetterSSB
         </a>
       </div>
-    </aside>
+    </Card>
   );
 }
