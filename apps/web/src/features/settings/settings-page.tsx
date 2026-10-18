@@ -2,7 +2,6 @@ import { DownloadIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
 import { Fragment, useId, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import type { StoreKey } from "@workspace/shared/types/store";
-import type { RMPSchool } from "@workspace/shared/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,10 +31,11 @@ import { BannerBadge } from "@/components/banner-status";
 import { TermSelect } from "@/components/term-select";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import { useSettings } from "@/hooks/use-settings";
-import { searchSchools } from "@/lib/api/rmp";
+import { findSchools } from "@/lib/schools";
 import { BANNER_REGISTRATION_URL, EXTENSION_INSTALL_URL } from "@/lib/config";
 import { useStoreDocument, useStoreState } from "@/lib/store/store-context";
 import { downloadStoreExport } from "./export-data";
+import type { RmpSchool } from "@workspace/api-client";
 
 const SECTIONS = [
   { id: "account", label: "Account" },
@@ -44,10 +44,6 @@ const SECTIONS = [
   { id: "keyboard", label: "Keyboard" },
   { id: "data", label: "Data and privacy" },
 ] as const;
-
-function findSchools(query: string): Promise<RMPSchool[]> {
-  return searchSchools(query);
-}
 
 function SettingsSection({
   id,
@@ -147,7 +143,7 @@ function SchoolSection() {
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(14rem,100%),1fr))] gap-4">
         <Field>
           <FieldLabel htmlFor="settings-school">School</FieldLabel>
-          <SearchCombobox<RMPSchool>
+          <SearchCombobox<RmpSchool>
             id="settings-school"
             value={
               settings.school

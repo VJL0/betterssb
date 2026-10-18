@@ -8,7 +8,8 @@
     "lint": "turbo lint",
     "format": "turbo format",
     "typecheck": "turbo typecheck",
-    "test": "turbo test"
+    "test": "turbo test",
+    "api:generate": "pnpm --filter api openapi && pnpm --filter @workspace/api-client generate"
   },
   "devDependencies": {
     "prettier": "^3.9.9",
@@ -18,6 +19,6 @@
   },
   "packageManager": "pnpm@11.25.0",
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.12.0"
   }
 }

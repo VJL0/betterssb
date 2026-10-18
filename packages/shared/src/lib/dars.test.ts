@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Requirement } from "../types/dars";
+import type { Requirement } from "@workspace/api-client";
 import { formatCredits, isNoteOnly } from "./dars";
 
 function requirement(overrides: Partial<Requirement>): Requirement {

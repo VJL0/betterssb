@@ -1,10 +1,9 @@
+import type { Audit, ChatMessage, TranscriptData } from "@workspace/api-client";
 /**
  * Documents in the local-first store. The web app keeps them in IndexedDB; with
  * the extension installed, both read and write the extension's
  * chrome.storage.local through the bridge, so guest data is shared.
  */
-import type { Audit } from "./dars";
-import type { ChatMessage, TranscriptData } from "./index";
 
 export interface PlannedMeeting {
   /** Banner days string, e.g. "TR". Empty for online and TBA. */

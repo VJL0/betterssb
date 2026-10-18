@@ -10,7 +10,6 @@ import {
   meetingTimeToDays,
   primaryInstructorName,
 } from "@workspace/shared/lib/sections";
-import type { ClassSection } from "@workspace/shared/types/classes";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { Button } from "@workspace/ui/components/button";
 import { CourseBadge } from "@workspace/ui/components/course-badge";
@@ -20,6 +19,7 @@ import { SeatMeter } from "@workspace/ui/components/seat-meter";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
 import type { RatingLookup } from "@/hooks/use-ratings";
+import type { ClassSection } from "@workspace/api-client";
 
 export interface SectionRowActions {
   isPlanned: (crn: string) => boolean;

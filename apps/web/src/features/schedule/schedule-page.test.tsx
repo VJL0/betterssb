@@ -8,9 +8,8 @@ import {
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
 import { ssbSectionToInternal } from "@workspace/shared/lib/sections";
-import type { ClassSearchFilters } from "@workspace/shared/types/classes";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { generateSchedules } from "@/lib/api/schedule";
+import { mockApi, problemResponse } from "@/test/api";
 import { classSection, meetingTime } from "@/test/class-section";
 import { renderPage } from "@/test/render";
 import { SchedulePage } from "./schedule-page";
@@ -31,33 +30,57 @@ const sys001 = classSection({
 });
 const ALL = [ds001, ds002, sys001];
 
-vi.mock("@/lib/api/classes", () => ({
-  fetchTerms: vi.fn(async () => [
-    { code: "202703", description: "2027 Spring" },
-  ]),
-  searchClasses: vi.fn(async (filters: ClassSearchFilters) => ({
-    totalCount: 0,
-    fetchedAt: "2026-10-17T12:00:00.000Z",
-    sections: ALL.filter((s) => s.courseNumber === filters.courseNumber),
-  })),
-}));
-vi.mock("@/lib/api/schedule", () => ({ generateSchedules: vi.fn() }));
+const GENERATED = [
+  {
+    sections: [ds001, sys001].flatMap(ssbSectionToInternal),
+    score: 92,
+    warnings: [],
+  },
+  {
+    sections: [ds002, sys001].flatMap(ssbSectionToInternal),
+    score: 88,
+    warnings: [],
+  },
+];
+const GENERATE = "POST /api/schedule/generate";
+
+let api: ReturnType<typeof mockApi>;
+let generationFails = false;
 
 beforeEach(() => {
   vi.spyOn(toast, "success");
-  vi.mocked(generateSchedules).mockResolvedValue([
-    {
-      sections: [ds001, sys001].flatMap(ssbSectionToInternal),
-      score: 92,
-      warnings: [],
+  generationFails = false;
+  api = mockApi({
+    "GET /api/classes/terms": [{ code: "202703", description: "2027 Spring" }],
+    "GET /api/classes/search": (request: Request) => {
+      const courseNumber = new URL(request.url).searchParams.get(
+        "courseNumber",
+      );
+      return Response.json({
+        totalCount: 0,
+        fetchedAt: "2026-10-17T12:00:00.000Z",
+        sections: ALL.filter((s) => s.courseNumber === courseNumber),
+      });
     },
-    {
-      sections: [ds002, sys001].flatMap(ssbSectionToInternal),
-      score: 88,
-      warnings: [],
-    },
-  ]);
+    [GENERATE]: () =>
+      generationFails
+        ? problemResponse(503, "The schedule service timed out.")
+        : Response.json(GENERATED),
+  });
 });
+
+/** The meeting blocks sent in the first generate request. */
+async function firstGenerationSent(): Promise<{ crn: string }[]> {
+  const call = api.mock.calls.find(
+    ([input]) =>
+      (input as Request).method === "POST" &&
+      new URL((input as Request).url).pathname === "/api/schedule/generate",
+  );
+  const body = (await (call![0] as Request).clone().json()) as {
+    sections: { crn: string }[];
+  };
+  return body.sections;
+}
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -89,7 +112,7 @@ describe("SchedulePage", () => {
   it("builds schedules from every section of the planned courses", async () => {
     await renderWithPlan();
     expect(await screen.findByText("Schedule 1 of 2")).toBeTruthy();
-    const sent = vi.mocked(generateSchedules).mock.calls[0]![0];
+    const sent = await firstGenerationSent();
     expect(new Set(sent.map((m) => m.crn))).toEqual(
       new Set(["41207", "41208", "41311"]),
     );
@@ -137,7 +160,7 @@ describe("SchedulePage", () => {
     const user = userEvent.setup();
     await renderWithPlan();
     await screen.findByText("Schedule 1 of 2");
-    vi.mocked(generateSchedules).mockRejectedValue(new Error("timeout"));
+    generationFails = true;
     await user.click(screen.getByRole("button", { name: "Friday" }));
     expect(await screen.findByText("Couldn't generate schedules")).toBeTruthy();
     expect(screen.getByText(/Your last 2 schedules from/)).toBeTruthy();

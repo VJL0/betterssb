@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { TranscriptData } from "@workspace/shared/types";
 import { sendMessage } from "@/lib/messaging";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
@@ -13,6 +12,7 @@ import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { Textarea } from "@workspace/ui/components/textarea";
+import type { TranscriptData } from "@workspace/api-client";
 
 export function TranscriptPage() {
   const [text, setText] = useState("");

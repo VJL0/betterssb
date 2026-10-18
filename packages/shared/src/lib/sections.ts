@@ -1,8 +1,11 @@
-import type { ClassMeetingTime, ClassSection } from "../types/classes";
-import type { Section } from "../types/index";
+import type {
+  ClassSection,
+  MeetingTime,
+  SectionOutput as Section,
+} from "@workspace/api-client";
 
 type DayFlags = Pick<
-  ClassMeetingTime,
+  MeetingTime,
   | "monday"
   | "tuesday"
   | "wednesday"
@@ -25,7 +28,7 @@ export type SectionSource = Pick<
   | "seatsAvailable"
   | "maximumEnrollment"
   | "faculty"
-> & { meetingsFaculty: { meetingTime: ClassMeetingTime }[] };
+> & { meetingsFaculty: { meetingTime: MeetingTime }[] };
 
 // A combined "Lecture and Lab" section is the main meeting, so only a type
 // that starts with one of these counts as a support component.

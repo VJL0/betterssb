@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import type { RMPRating } from "@workspace/shared/types";
 import { getCachedRatings, cacheRating } from "@/lib/storage";
 import { sendMessage } from "@/lib/messaging";
+import type { RmpRating } from "@workspace/api-client";
 
 interface UseRatingResult {
-  rating: RMPRating | null;
+  rating: RmpRating | null;
   loading: boolean;
   error: string | null;
 }
@@ -13,7 +13,7 @@ export function useRating(
   professorName: string,
   schoolName: string,
 ): UseRatingResult {
-  const [rating, setRating] = useState<RMPRating | null>(null);
+  const [rating, setRating] = useState<RmpRating | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +44,7 @@ export function useRating(
 
         if (!cancelled) {
           if (response.success && response.data) {
-            const fetched = response.data as RMPRating;
+            const fetched = response.data as RmpRating;
             setRating(fetched);
             await cacheRating(professorName, fetched);
           } else {

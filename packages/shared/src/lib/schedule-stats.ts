@@ -1,4 +1,3 @@
-import type { Section } from "../types/index";
 import {
   MINUTES_PER_HOUR,
   parseClockTime,
@@ -6,6 +5,7 @@ import {
   WEEK_DAYS,
   type WeekDay,
 } from "./meeting-times";
+import type { SectionOutput as Section } from "@workspace/api-client";
 
 /** A gap this long between classes is flagged. */
 export const LONG_GAP_MINUTES = 2 * MINUTES_PER_HOUR;

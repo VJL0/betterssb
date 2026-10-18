@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import type { AuthUser } from "@workspace/shared/types";
 import { fetchCurrentUser, logout as endSession, startLogin } from "@/lib/auth";
+import type { UserResponse } from "@workspace/api-client";
 
 export function useAuth() {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

@@ -1,35 +1,46 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { searchClasses } from "@/lib/api/classes";
+import { mockApi } from "@/test/api";
 import { classSection, meetingTime } from "@/test/class-section";
 import { renderPage } from "@/test/render";
 import { SearchPage } from "./search-page";
 
 const SEARCH_TIMEOUT = { timeout: 3_000 };
 
-vi.mock("@/lib/api/classes", () => ({
-  fetchTerms: vi.fn(async () => [
-    { code: "202703", description: "2027 Spring" },
-  ]),
-  fetchSubjects: vi.fn(async () => [
-    { code: "CIS", description: "Computer & Information Science" },
-  ]),
-  fetchAttributes: vi.fn(async () => []),
-  searchClasses: vi.fn(async () => ({
-    totalCount: 2,
-    fetchedAt: "2026-10-17T12:00:00.000Z",
-    sections: [
-      classSection(),
-      classSection({
-        courseReferenceNumber: "41208",
-        sequenceNumber: "002",
-        meetings: [meetingTime("MWF", "1100", "1150")],
-      }),
+const SEARCH = "GET /api/classes/search";
+let api: ReturnType<typeof mockApi>;
+
+beforeEach(() => {
+  api = mockApi({
+    "GET /api/classes/terms": [{ code: "202703", description: "2027 Spring" }],
+    "GET /api/classes/subjects": [
+      { code: "CIS", description: "Computer & Information Science" },
     ],
-  })),
-}));
+    "GET /api/classes/attributes": [],
+    [SEARCH]: {
+      totalCount: 2,
+      fetchedAt: "2026-10-17T12:00:00.000Z",
+      sections: [
+        classSection(),
+        classSection({
+          courseReferenceNumber: "41208",
+          sequenceNumber: "002",
+          meetings: [meetingTime("MWF", "1100", "1150")],
+        }),
+      ],
+    },
+  });
+});
+
+/** Query strings of the class searches sent so far. */
+function searchesSent(): string[] {
+  return api.mock.calls
+    .map(([input]) => new URL((input as Request).url))
+    .filter((url) => url.pathname === "/api/classes/search")
+    .map((url) => url.search);
+}
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -57,14 +68,9 @@ describe("SearchPage", () => {
       { name: "Add CIS 2168 · 002 (CRN 41208) to your Spring 2027 plan" },
       SEARCH_TIMEOUT,
     );
-    expect(searchClasses).toHaveBeenCalledWith(
-      expect.objectContaining({
-        term: "202703",
-        subject: "CIS",
-        courseNumber: "2168",
-      }),
-      expect.anything(),
-    );
+    expect(searchesSent()).toEqual([
+      "?term=202703&subject=CIS&courseNumber=2168&limit=50&offset=0",
+    ]);
     await user.click(add[0]!);
     await waitFor(async () =>
       expect(

@@ -22,10 +22,13 @@ import {
   primaryInstructorName,
   ssbSectionToInternal,
 } from "@workspace/shared/lib/sections";
-import type { GeneratedSchedule, Section } from "@workspace/shared/types";
-import type { ClassSection } from "@workspace/shared/types/classes";
 import type { TermPlan } from "@workspace/shared/types/store";
 import type { RatingLookup } from "@/hooks/use-ratings";
+import type {
+  ClassSection,
+  GeneratedSchedule,
+  SectionOutput as Section,
+} from "@workspace/api-client";
 
 export type RankBy = "best" | "rating" | "fewerDays";
 /** "planned" keeps a course to the sections already in the plan. */

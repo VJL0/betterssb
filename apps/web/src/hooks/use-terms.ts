@@ -1,6 +1,11 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { queryError, type CodeDescription } from "@workspace/api-client";
+import { listTermsOptions } from "@workspace/api-client/query";
 import { formatTermName, isViewOnlyTerm } from "@workspace/shared/lib/terms";
-import { fetchTerms } from "@/lib/api/classes";
+
+/** Terms change a few times a year. */
+const TERMS_STALE_MS = 60 * 60 * 1000;
+const NO_TERMS: Term[] = [];
 
 export interface Term {
   code: string;
@@ -13,47 +18,29 @@ type TermsState =
   | { status: "ready"; terms: Term[] }
   | { status: "error"; terms: Term[]; error: Error };
 
-// Terms change a few times a year; one request per page load is plenty.
-let termsRequest: Promise<Term[]> | null = null;
-
-function loadTerms(): Promise<Term[]> {
-  termsRequest ??= fetchTerms()
-    // Past, view-only terms can't be planned or registered for.
-    .then((terms) =>
-      terms
-        .filter((t) => !isViewOnlyTerm(t.description))
-        .map((t) => ({ code: t.code, name: formatTermName(t.description) })),
-    )
-    .catch((err: unknown) => {
-      termsRequest = null;
-      throw err;
-    });
-  return termsRequest;
+/** Past, view-only terms can't be planned or registered for. */
+function plannableTerms(terms: CodeDescription[]): Term[] {
+  return terms
+    .filter((t) => !isViewOnlyTerm(t.description))
+    .map((t) => ({ code: t.code, name: formatTermName(t.description) }));
 }
 
 /** Terms open for planning (not view-only), newest first. */
 export function useTerms(): TermsState {
-  const [state, setState] = useState<TermsState>({
-    status: "loading",
-    terms: [],
+  const query = useQuery({
+    ...listTermsOptions({
+      meta: { errorMessage: "Couldn't load terms from Banner." },
+    }),
+    staleTime: TERMS_STALE_MS,
+    select: plannableTerms,
   });
-
-  useEffect(() => {
-    let cancelled = false;
-    loadTerms().then(
-      (terms) => !cancelled && setState({ status: "ready", terms }),
-      (err: unknown) =>
-        !cancelled &&
-        setState({
-          status: "error",
-          terms: [],
-          error: err instanceof Error ? err : new Error(String(err)),
-        }),
-    );
-    return () => {
-      cancelled = true;
+  if (query.isSuccess) return { status: "ready", terms: query.data };
+  if (query.isError) {
+    return {
+      status: "error",
+      terms: NO_TERMS,
+      error: queryError(query.error) ?? new Error("Couldn't load terms."),
     };
-  }, []);
-
-  return state;
+  }
+  return { status: "loading", terms: NO_TERMS };
 }

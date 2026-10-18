@@ -1,8 +1,8 @@
-import type { AuthUser } from "@workspace/shared/types";
 import { Button } from "@workspace/ui/components/button";
+import type { UserResponse } from "@workspace/api-client";
 
 interface UserProfileProps {
-  user: AuthUser;
+  user: UserResponse;
   onLogout: () => void;
 }
 

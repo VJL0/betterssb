@@ -1,5 +1,12 @@
-import { API_URL } from "@/lib/config";
-import type { AuthUser } from "@workspace/shared/types";
+import {
+  ApiError,
+  getMe,
+  logout as endSession,
+  type UserResponse,
+} from "@workspace/api-client";
+import { API_ORIGIN } from "@/lib/config";
+
+const UNAUTHORIZED = 401;
 
 /**
  * Sign-in runs entirely on the backend (Google OAuth code flow). The backend
@@ -7,7 +14,7 @@ import type { AuthUser } from "@workspace/shared/types";
  * permission for that host lets its requests send the cookie, so the
  * extension never sees a token. The web app shares the same session.
  */
-export const LOGIN_URL = `${API_URL}/auth/google/login`;
+export const LOGIN_URL = `${API_ORIGIN}/api/auth/google/login`;
 
 /** Opens the backend's Google sign-in in a new tab. */
 export async function startLogin(): Promise<void> {
@@ -15,17 +22,18 @@ export async function startLogin(): Promise<void> {
 }
 
 /** The signed-in user, or null if there's no valid session. */
-export async function fetchCurrentUser(): Promise<AuthUser | null> {
-  const res = await fetch(`${API_URL}/auth/me`, { credentials: "include" });
-  if (res.status === 401) return null;
-  if (!res.ok) throw new Error(`Couldn't check sign-in (HTTP ${res.status})`);
-  return (await res.json()) as AuthUser;
+export async function fetchCurrentUser(): Promise<UserResponse | null> {
+  try {
+    const { data } = await getMe({
+      meta: { errorMessage: "Couldn't check sign-in." },
+    });
+    return data;
+  } catch (err) {
+    if (err instanceof ApiError && err.status === UNAUTHORIZED) return null;
+    throw err;
+  }
 }
 
 export async function logout(): Promise<void> {
-  const res = await fetch(`${API_URL}/auth/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error(`Sign-out failed (HTTP ${res.status})`);
+  await endSession({ meta: { errorMessage: "Sign-out failed." } });
 }

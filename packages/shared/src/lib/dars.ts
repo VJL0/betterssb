@@ -1,4 +1,4 @@
-import type { Audit, Requirement } from "../types/dars";
+import type { Audit, Requirement } from "@workspace/api-client";
 
 /** A requirement that is only explanatory text (DARS banners like WARNING, MAJOR, SUMMARY). */
 export function isNoteOnly(req: Requirement): boolean {

@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import type { ChatMessage } from "@workspace/shared/types";
 import { sendMessage } from "@/lib/messaging";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { cn } from "@workspace/ui/lib/utils";
+import type { ChatMessage } from "@workspace/api-client";
 
 function bubbleClass(role: "user" | "assistant"): string {
   return cn(
@@ -83,16 +83,11 @@ export function ChatWindow() {
             Ask anything about courses, schedules, or registration.
           </div>
         )}
-        {messages
-          .filter((m) => m.role !== "system")
-          .map((m, i) => (
-            <div
-              key={i}
-              className={bubbleClass(m.role as "user" | "assistant")}
-            >
-              {m.content}
-            </div>
-          ))}
+        {messages.map((m, i) => (
+          <div key={i} className={bubbleClass(m.role)}>
+            {m.content}
+          </div>
+        ))}
         {loading && (
           <div className={bubbleClass("assistant")}>
             <span className="opacity-60">Thinking...</span>

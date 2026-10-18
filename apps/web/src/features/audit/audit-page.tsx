@@ -2,10 +2,9 @@ import { useEffect, useRef, useState, type DragEvent } from "react";
 import { AuditReport } from "./audit-report";
 import { AuditStatusIcon } from "@workspace/ui/components/route-map";
 import { formatCredits, isNoteOnly } from "@workspace/shared/lib/dars";
-import type { Audit } from "@workspace/shared/types/dars";
 import { useStoreDocument } from "@/lib/store/store-context";
-import { runFromFile } from "@/lib/api/dars";
 import { runViaExtension, waitForExtension } from "@/lib/extension";
+import { parseAudit, type Audit } from "@workspace/api-client";
 
 const DARS_URL = "https://prd-dars.temple.edu/selfservice/";
 
@@ -16,6 +15,15 @@ type RunState =
   | { kind: "running"; startedAt: number; label: string }
   | { kind: "error"; message: string }
   | { kind: "done"; audit: Audit };
+
+/** Reads a saved printer-friendly DARS audit file and parses it. */
+async function parseAuditFile(file: File): Promise<Audit> {
+  const { data } = await parseAudit({
+    body: await file.text(),
+    meta: { errorMessage: "Couldn't read the audit." },
+  });
+  return data;
+}
 
 export function AuditPage() {
   const [method, setMethod] = useState<Method>("upload");
@@ -82,7 +90,7 @@ export function AuditPage() {
           <UploadPanel
             running={running}
             onFile={(file) =>
-              execute("Reading your audit…", () => runFromFile(file))
+              execute("Reading your audit…", () => parseAuditFile(file))
             }
           />
         )}

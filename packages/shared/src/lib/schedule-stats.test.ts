@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { Section } from "../types/index";
 import { scheduleStats, usesOnlyDays } from "./schedule-stats";
+import type { SectionOutput as Section } from "@workspace/api-client";
 
 function section(
   crn: string,

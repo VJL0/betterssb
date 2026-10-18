@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { formatCredits, isNoteOnly } from "@workspace/shared/lib/dars";
+import { AuditStatusIcon } from "@workspace/ui/components/route-map";
+import { StatusBadge } from "@workspace/ui/components/status-badge";
 import type {
   Audit,
   AuditCourse,
-  AuditStatus,
   Progress,
   Requirement,
   SubRequirement,
-} from "@workspace/shared/types/dars";
-import { AuditStatusIcon } from "@workspace/ui/components/route-map";
-import { StatusBadge } from "@workspace/ui/components/status-badge";
+} from "@workspace/api-client";
 
 type Filter = "all" | "todo" | "in_progress" | "complete";
 
@@ -202,7 +201,7 @@ function SelectFrom({
   status,
 }: {
   options: string[];
-  status: AuditStatus;
+  status: Requirement["status"];
 }) {
   const [expanded, setExpanded] = useState(false);
   const shown = expanded ? options : options.slice(0, SELECT_FROM_PREVIEW);

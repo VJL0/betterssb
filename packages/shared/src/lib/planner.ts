@@ -2,9 +2,9 @@
  * The semester planner's view of term plans: one entry per course in a term,
  * and credit totals that don't count a course the audit already has.
  */
-import type { Audit } from "../types/dars";
 import type { TermPlan } from "../types/store";
 import { courseKey, replaceSections } from "./plan";
+import type { Audit } from "@workspace/api-client";
 
 /** Full-time is 12 credits; over 18 needs approval at Temple. */
 export const PART_TIME_BELOW = 12;

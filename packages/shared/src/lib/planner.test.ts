@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { Audit } from "../types/dars";
 import type { PlannedCourse, PlannedSection } from "../types/store";
 import { addCourse, addSection, emptyPlan } from "./plan";
 import {
@@ -10,6 +9,7 @@ import {
   removeEntry,
   termEntries,
 } from "./planner";
+import type { Audit } from "@workspace/api-client";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 

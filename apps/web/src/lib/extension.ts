@@ -13,9 +13,8 @@ import {
   isBridgeResponse,
   type BridgeRequest,
 } from "@workspace/shared/lib/bridge";
-import type { Audit } from "@workspace/shared/types/dars";
 import type { BannerConnection, StoreKey } from "@workspace/shared/types/store";
-import { parseAuditHtml } from "./api/dars";
+import { parseAudit, type Audit } from "@workspace/api-client";
 
 const DEFAULT_TIMEOUT_MS = 5_000;
 // A DARS run can wait for the student to finish signing in to DARS.
@@ -112,5 +111,9 @@ export async function runViaExtension(): Promise<Audit> {
     AUDIT_TIMEOUT_MS,
   );
   if (!html) throw new ExtensionError("The audit failed.");
-  return parseAuditHtml(html);
+  const { data } = await parseAudit({
+    body: html,
+    meta: { errorMessage: "Couldn't read the audit." },
+  });
+  return data;
 }

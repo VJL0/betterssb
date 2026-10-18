@@ -6,8 +6,6 @@ import {
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
 import { ssbSectionToInternal } from "@workspace/shared/lib/sections";
-import type { GeneratedSchedule, RMPRating } from "@workspace/shared/types";
-import type { ClassSection } from "@workspace/shared/types/classes";
 import { classSection, meetingTime } from "@/test/class-section";
 import {
   DEFAULT_RULES,
@@ -18,6 +16,11 @@ import {
   placeCourses,
   planCourses,
 } from "./schedule-options";
+import type {
+  ClassSection,
+  GeneratedSchedule,
+  RmpRating,
+} from "@workspace/api-client";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
@@ -177,12 +180,13 @@ describe("buildOptions", () => {
   const sectionsByCrn = new Map(
     [ds001, ds002, sys001, sysLab].map((s) => [s.courseReferenceNumber, s]),
   );
-  const rating = (overallRating: number): RMPRating => ({
+  const rating = (overallRating: number): RmpRating => ({
     professorName: "",
     department: "",
     overallRating,
     difficulty: 3,
     numRatings: 10,
+    wouldTakeAgainPct: null,
     topTags: [],
     rmpUrl: "",
   });

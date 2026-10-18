@@ -1,9 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
-import type { GeneratedSchedule, Section } from "@workspace/shared/types";
-import { generateSchedules } from "@/lib/api/schedule";
+import { useState } from "react";
+import {
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
+import {
+  generateSchedules,
+  type GeneratedSchedule,
+  type SectionOutput as Section,
+} from "@workspace/api-client";
 
 /** The schedule service's cap. */
 export const MAX_SCHEDULES = 50;
+const GENERATION = "generatedSchedules";
+const NO_SCHEDULES: GeneratedSchedule[] = [];
 
 export type GenerationStatus =
   "idle" | "loading" | "ready" | "error" | "cancelled";
@@ -18,117 +28,107 @@ export interface GeneratedSchedules {
   widened: GeneratedSchedule[];
   /** The last good result, kept on screen when a later run fails. */
   last: { schedules: GeneratedSchedule[]; at: string } | null;
-  /** Bumps on every new run, so the loading timer restarts. */
+  /** Changes with every new input, so the loading timer restarts. */
   runKey: string;
   cancel: () => void;
   retry: () => void;
 }
 
-interface Response {
-  key: string;
+interface Generated {
   schedules: GeneratedSchedule[];
   widened: GeneratedSchedule[];
-  failed: boolean;
 }
 
-// One shared empty list, so callers' memos don't rerun while nothing has loaded.
-const NO_SCHEDULES: GeneratedSchedule[] = [];
-const NONE: Response = {
-  key: "",
-  schedules: NO_SCHEDULES,
-  widened: NO_SCHEDULES,
-  failed: false,
-};
+async function run(
+  sections: readonly Section[],
+  signal: AbortSignal,
+): Promise<GeneratedSchedule[]> {
+  if (sections.length === 0) return [];
+  const { data } = await generateSchedules({
+    body: {
+      sections: [...sections],
+      preferences: {},
+      maxResults: MAX_SCHEDULES,
+    },
+    signal,
+    meta: { errorMessage: "Couldn't generate schedules." },
+  });
+  return data;
+}
+
+async function generate(
+  meetings: readonly Section[],
+  widenedMeetings: readonly Section[] | null,
+  signal: AbortSignal,
+): Promise<Generated> {
+  const schedules = await run(meetings, signal);
+  const widened =
+    schedules.length === 0 && widenedMeetings
+      ? await run(widenedMeetings, signal)
+      : NO_SCHEDULES;
+  return { schedules, widened };
+}
+
+/** The most recent earlier run that found schedules, from the query cache. */
+function lastGood(queryClient: QueryClient): GeneratedSchedules["last"] {
+  const [latest] = queryClient
+    .getQueryCache()
+    .findAll({ queryKey: [GENERATION] })
+    .filter(
+      (q) =>
+        q.state.status === "success" &&
+        (q.state.data as Generated).schedules.length > 0,
+    )
+    .sort((a, b) => b.state.dataUpdatedAt - a.state.dataUpdatedAt);
+  if (!latest) return null;
+  return {
+    schedules: (latest.state.data as Generated).schedules,
+    at: new Date(latest.state.dataUpdatedAt).toISOString(),
+  };
+}
 
 /**
  * Conflict-free schedules from the schedule service for `meetings`. When
  * there are none and `widenedMeetings` is given, a run with those shows what
- * a looser day rule would allow.
+ * a looser day rule would allow. It's a POST, but a pure function of its
+ * input, so it's a query: cached by input and cancellable.
  */
 export function useGeneratedSchedules(
   meetings: readonly Section[],
   widenedMeetings: readonly Section[] | null,
 ): GeneratedSchedules {
-  const [attempt, setAttempt] = useState(0);
-  const [response, setResponse] = useState<Response>(NONE);
+  const queryClient = useQueryClient();
   const [cancelledKey, setCancelledKey] = useState<string | null>(null);
-  const [last, setLast] = useState<GeneratedSchedules["last"]>(null);
-  const key = `${attempt}|${JSON.stringify(meetings)}|${widenedMeetings ? JSON.stringify(widenedMeetings) : ""}`;
-
   const nothingToTry = meetings.length === 0 && !widenedMeetings?.length;
+  const queryKey = [GENERATION, meetings, widenedMeetings] as const;
+  const runKey = JSON.stringify(queryKey);
+  const cancelled = cancelledKey === runKey;
 
-  useEffect(() => {
-    if (nothingToTry || cancelledKey === key) return;
-    const controller = new AbortController();
-    const { signal } = controller;
-    const run = async () => {
-      const schedules = meetings.length
-        ? await generateSchedules([...meetings], {}, MAX_SCHEDULES, signal)
-        : [];
-      const widened =
-        schedules.length === 0 && widenedMeetings?.length
-          ? await generateSchedules(
-              [...widenedMeetings],
-              {},
-              MAX_SCHEDULES,
-              signal,
-            )
-          : [];
-      return { schedules, widened };
-    };
-    run().then(
-      ({ schedules, widened }) => {
-        if (signal.aborted) return;
-        setResponse({ key, schedules, widened, failed: false });
-        if (schedules.length > 0) {
-          setLast({ schedules, at: new Date().toISOString() });
-        }
-      },
-      () => {
-        if (signal.aborted) return;
-        setResponse({ ...NONE, key, failed: true });
-      },
-    );
-    return () => controller.abort();
-    // `key` covers the meetings and retries.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, cancelledKey]);
+  const query = useQuery({
+    queryKey,
+    queryFn: ({ signal }) => generate(meetings, widenedMeetings, signal),
+    enabled: !nothingToTry && !cancelled,
+    staleTime: Infinity,
+  });
 
-  const cancel = useCallback(() => setCancelledKey(key), [key]);
-  const retry = useCallback(() => {
-    setCancelledKey(null);
-    setAttempt((n) => n + 1);
-  }, []);
-
-  const base = { last, runKey: key, cancel, retry };
-  if (nothingToTry) {
-    return {
-      ...base,
-      status: "idle",
-      schedules: NO_SCHEDULES,
-      widened: NO_SCHEDULES,
-    };
-  }
-  if (cancelledKey === key) {
-    return {
-      ...base,
-      status: "cancelled",
-      schedules: NO_SCHEDULES,
-      widened: NO_SCHEDULES,
-    };
-  }
-  if (response.key !== key) {
-    return {
-      ...base,
-      status: "loading",
-      schedules: NO_SCHEDULES,
-      widened: NO_SCHEDULES,
-    };
-  }
-  return {
-    ...base,
-    status: response.failed ? "error" : "ready",
-    schedules: response.schedules,
-    widened: response.widened,
+  const base = {
+    runKey,
+    last: query.isError ? lastGood(queryClient) : null,
+    cancel: () => {
+      setCancelledKey(runKey);
+      void queryClient.cancelQueries({ queryKey });
+    },
+    retry: () => {
+      if (cancelled) setCancelledKey(null);
+      else void query.refetch();
+    },
   };
+  const empty = { schedules: NO_SCHEDULES, widened: NO_SCHEDULES };
+
+  if (nothingToTry) return { ...base, ...empty, status: "idle" };
+  if (cancelled) return { ...base, ...empty, status: "cancelled" };
+  if (query.isFetching) return { ...base, ...empty, status: "loading" };
+  if (query.isError) return { ...base, ...empty, status: "error" };
+  if (query.isSuccess) return { ...base, ...query.data, status: "ready" };
+  return { ...base, ...empty, status: "loading" };
 }

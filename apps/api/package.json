@@ -5,6 +5,7 @@
     "dev": "docker compose up -d && uv run uvicorn app.main:app --reload",
     "lint": "uv run ruff check .",
     "format": "uv run ruff format .",
-    "test": "uv run pytest"
+    "test": "uv run pytest",
+    "openapi": "uv run python -m scripts.export_openapi"
   }
 }

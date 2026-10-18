@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { ClassSection } from "../types/classes";
 import type { PlannedSection } from "../types/store";
 import {
   addCourse,
@@ -14,6 +13,7 @@ import {
   removeSection,
   replaceSections,
 } from "./plan";
+import type { ClassSection } from "@workspace/api-client";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 

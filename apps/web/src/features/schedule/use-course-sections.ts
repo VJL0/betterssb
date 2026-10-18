@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import type { ClassSection } from "@workspace/shared/types/classes";
-import { searchClasses } from "@/lib/api/classes";
+import { useCallback } from "react";
+import { useQueries, type UseQueryResult } from "@tanstack/react-query";
+import type { ClassSearchResult, ClassSection } from "@workspace/api-client";
+import { searchSectionsOptions } from "@workspace/api-client/query";
 import type { PlanCourse } from "./schedule-options";
 
 /** The proxy's page cap; no course at Temple has more sections than this. */
@@ -16,41 +17,19 @@ export interface CourseSections {
   retry: () => void;
 }
 
-interface Response {
-  key: string;
+interface Loaded {
+  pending: boolean;
   sectionsByCourse: Map<string, ClassSection[]>;
-  failed: PlanCourse[];
   fetchedAt: string | null;
+  retry: () => void;
 }
 
-const EMPTY: Response = {
-  key: "",
-  sectionsByCourse: new Map(),
-  failed: [],
-  fetchedAt: null,
-};
-
-async function loadCourse(
-  term: string,
-  course: PlanCourse,
-  signal: AbortSignal,
-) {
-  const result = await searchClasses(
-    {
-      term,
-      subject: course.subject,
-      courseNumber: course.courseNumber,
-      limit: SECTIONS_PER_COURSE,
-    },
-    signal,
-  );
-  return {
-    // Only this exact course, whatever else the search matched.
-    sections: result.sections.filter(
-      (s) => s.subjectCourse === course.courseId,
-    ),
-    fetchedAt: result.fetchedAt,
-  };
+/** Only this exact course, whatever else the search matched. */
+function onlyCourse(courseId: string) {
+  return (result: ClassSearchResult): ClassSearchResult => ({
+    ...result,
+    sections: result.sections.filter((s) => s.subjectCourse === courseId),
+  });
 }
 
 /** Live sections from Banner for every course in the plan. */
@@ -58,52 +37,61 @@ export function useCourseSections(
   term: string,
   courses: readonly PlanCourse[],
 ): CourseSections {
-  const [attempt, setAttempt] = useState(0);
-  const [response, setResponse] = useState<Response>(EMPTY);
-  const key = `${term}|${attempt}|${courses
-    .map((c) => c.courseId)
-    .sort()
-    .join(",")}`;
+  const ids = courses.map((c) => c.courseId).join(",");
 
-  useEffect(() => {
-    if (courses.length === 0) return;
-    const controller = new AbortController();
-    void Promise.allSettled(
-      courses.map((c) => loadCourse(term, c, controller.signal)),
-    ).then((results) => {
-      if (controller.signal.aborted) return;
+  // Keyed by the course ids alone, so the result only changes when the data does.
+  const combine = useCallback(
+    (results: UseQueryResult<ClassSearchResult, unknown>[]): Loaded => {
+      const courseIds = ids.split(",");
       const sectionsByCourse = new Map<string, ClassSection[]>();
-      const failed: PlanCourse[] = [];
       const times: string[] = [];
       results.forEach((result, index) => {
-        const course = courses[index]!;
-        if (result.status === "fulfilled") {
-          sectionsByCourse.set(course.courseId, result.value.sections);
-          times.push(result.value.fetchedAt);
-        } else {
-          failed.push(course);
-        }
+        if (!result.data) return;
+        sectionsByCourse.set(courseIds[index]!, result.data.sections);
+        times.push(result.data.fetchedAt);
       });
-      setResponse({
-        key,
+      return {
+        pending: results.some((r) => r.isPending && r.isFetching),
         sectionsByCourse,
-        failed,
         fetchedAt: times.sort()[0] ?? null,
-      });
-    });
-    return () => controller.abort();
-    // `key` covers the term, the course ids and retries.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+        retry: () => {
+          for (const r of results) if (r.isError) void r.refetch();
+        },
+      };
+    },
+    [ids],
+  );
 
-  const retry = useCallback(() => setAttempt((n) => n + 1), []);
+  const loaded = useQueries({
+    queries: courses.map((course) => ({
+      ...searchSectionsOptions({
+        query: {
+          term,
+          subject: course.subject,
+          courseNumber: course.courseNumber,
+          limit: SECTIONS_PER_COURSE,
+        },
+        meta: { errorMessage: `Couldn't load ${course.code} sections.` },
+      }),
+      select: onlyCourse(course.courseId),
+    })),
+    combine,
+  });
 
-  if (courses.length === 0) {
-    return { ...EMPTY, status: "idle", retry };
-  }
-  if (response.key !== key) {
-    return { ...EMPTY, status: "loading", retry };
-  }
-  const allFailed = response.failed.length === courses.length;
-  return { ...response, status: allFailed ? "error" : "ready", retry };
+  const failed = loaded.pending
+    ? []
+    : courses.filter((c) => !loaded.sectionsByCourse.has(c.courseId));
+  let status: CourseSections["status"];
+  if (courses.length === 0) status = "idle";
+  else if (loaded.pending) status = "loading";
+  else if (failed.length === courses.length) status = "error";
+  else status = "ready";
+
+  return {
+    status,
+    sectionsByCourse: loaded.sectionsByCourse,
+    failed,
+    fetchedAt: loaded.fetchedAt,
+    retry: loaded.retry,
+  };
 }
