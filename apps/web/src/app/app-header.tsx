@@ -16,7 +16,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { cn } from "@workspace/ui/lib/utils";
 import { BannerBadge } from "@/components/banner-status";
-import { Logo } from "@/components/logo";
+import { Logo } from "@workspace/ui/components/logo";
 import { TermSelect } from "@/components/term-select";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import {

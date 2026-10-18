@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { addCourse, emptyPlan } from "@workspace/shared/lib/plan";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi, problemResponse } from "@/test/api";
-import { sampleAudit } from "@/test/audit";
+import { mockApi, problemResponse } from "@workspace/api-client/testing";
+import { sampleAudit } from "@workspace/shared/testing/audit";
 import { renderPage } from "@/test/render";
 import { AuditPage } from "./audit-page";
 

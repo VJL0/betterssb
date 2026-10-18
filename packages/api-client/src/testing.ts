@@ -1,5 +1,9 @@
+/**
+ * Test helpers for code that calls the API through this client: answer its
+ * requests by route without a network. Only for tests (it imports Vitest).
+ */
 import { vi } from "vitest";
-import { client } from "@workspace/api-client";
+import { client } from "./generated/client.gen";
 
 /** What a route answers: a body to send as JSON, or a function for anything else. */
 export type Route =

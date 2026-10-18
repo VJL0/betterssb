@@ -1,4 +1,4 @@
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 
 /** The BetterSSB mark: two linked sections. Decorative next to the name. */
 export function LogoMark({ className }: { className?: string }) {
