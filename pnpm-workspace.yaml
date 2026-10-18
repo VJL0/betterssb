@@ -5,6 +5,11 @@ packages:
 allowBuilds:
   esbuild: true
 
+# `pnpm add` uses the catalog entry when one exists, so a shared dependency
+# can't get a second range; install drops entries nothing uses any more.
+catalogMode: prefer
+catalogPrune: true
+
 # One version of each shared tool for every package (https://pnpm.io/catalogs).
 catalog:
   "@eslint/js": ^10.0.1
