@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { TranscriptData } from "@workspace/api-client";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi } from "@workspace/api-client/testing";
+import { API, http, HttpResponse, server } from "@workspace/api-client/testing";
 import { sampleAudit } from "@workspace/shared/testing/audit";
 import { renderPage } from "@/test/render";
 import { TranscriptPage } from "./transcript-page";
@@ -48,8 +48,9 @@ async function paste(text: string) {
 
 describe("TranscriptPage", () => {
   it("reads pasted text into terms and saves only the courses", async () => {
-    const parse = vi.fn(() => Response.json(TRANSCRIPT));
-    mockApi({ "POST /api/transcript/parse": parse });
+    server.use(
+      http.post(`${API}/transcript/parse`, () => HttpResponse.json(TRANSCRIPT)),
+    );
     const { store } = renderPage(<TranscriptPage />);
     await paste("CIS 1051 Intro to Problem Solving  A  4.00  Spring 2026");
 
@@ -62,9 +63,6 @@ describe("TranscriptPage", () => {
   });
 
   it("says when it finds no courses, and saves nothing", async () => {
-    mockApi({
-      "POST /api/transcript/parse": { courses: [], gpa: null },
-    });
     const { store } = renderPage(<TranscriptPage />);
     await paste("Hello");
     expect(

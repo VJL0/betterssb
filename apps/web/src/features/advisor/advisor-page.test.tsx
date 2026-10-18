@@ -2,30 +2,36 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi, problemResponse } from "@workspace/api-client/testing";
+import type { ChatRequest } from "@workspace/api-client";
+import {
+  API,
+  http,
+  HttpResponse,
+  problemResponse,
+  server,
+} from "@workspace/api-client/testing";
 import { sampleAudit } from "@workspace/shared/testing/audit";
 import { renderPage } from "@/test/render";
 import { AdvisorPage } from "./advisor-page";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
-interface ChatBody {
-  messages: { role: string; content: string }[];
-  context: string;
-}
-
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+/**
+ * Answers every message with `reply`. What reaches the AI is the behavior
+ * under test here, so the request bodies are kept.
+ */
 function mockChat(reply = "Take CIS 4398 in the fall.") {
-  const bodies: ChatBody[] = [];
-  mockApi({
-    "POST /api/chat/": async (request: Request) => {
-      bodies.push((await request.json()) as ChatBody);
-      return Response.json({ response: reply });
-    },
-  });
+  const bodies: ChatRequest[] = [];
+  server.use(
+    http.post<never, ChatRequest>(`${API}/chat/`, async ({ request }) => {
+      bodies.push(await request.json());
+      return HttpResponse.json({ response: reply });
+    }),
+  );
   return bodies;
 }
 
@@ -78,10 +84,11 @@ describe("AdvisorPage", () => {
 
   it("keeps the question when the advisor is unavailable", async () => {
     const user = userEvent.setup();
-    mockApi({
-      "POST /api/chat/": () =>
+    server.use(
+      http.post(`${API}/chat/`, () =>
         problemResponse(503, "The chat assistant is unavailable."),
-    });
+      ),
+    );
     renderPage(<AdvisorPage />);
     const box = await screen.findByRole("textbox", {
       name: "Message the advisor",

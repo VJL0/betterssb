@@ -12,7 +12,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./query": "./src/generated/@tanstack/react-query.gen.ts",
-    "./testing": "./src/testing.ts"
+    "./testing": "./src/testing/index.ts"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.104.3"
@@ -28,6 +28,7 @@
     "@tanstack/react-query": "^5.104.3",
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
+    "msw": "^3.0.3",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.0",
     "vitest": "^5.0.5"

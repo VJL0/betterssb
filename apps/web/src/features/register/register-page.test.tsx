@@ -8,7 +8,7 @@ import {
 } from "@workspace/shared/lib/plan";
 import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi } from "@workspace/api-client/testing";
+import { API, http, HttpResponse, server } from "@workspace/api-client/testing";
 import { classSection } from "@workspace/shared/testing/class-section";
 import { EMPTY_AUTO_REGISTER, installFakeBridge } from "@/test/fake-bridge";
 import { renderPage } from "@/test/render";
@@ -21,14 +21,15 @@ const SPRING = { code: "202703", description: "2027 Spring" };
 let bridge: ReturnType<typeof installFakeBridge> | null = null;
 
 beforeEach(() => {
-  mockApi({
-    "GET /api/classes/terms": [SPRING],
-    "GET /api/classes/search": {
-      totalCount: 1,
-      fetchedAt: NOW,
-      sections: [classSection()],
-    },
-  });
+  server.use(
+    http.get(`${API}/classes/search`, () =>
+      HttpResponse.json({
+        totalCount: 1,
+        fetchedAt: NOW,
+        sections: [classSection()],
+      }),
+    ),
+  );
 });
 
 afterEach(() => {

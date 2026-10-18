@@ -2,21 +2,25 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi } from "@workspace/api-client/testing";
+import { API, http, HttpResponse, server } from "@workspace/api-client/testing";
 import { renderPage } from "@/test/render";
 import { GetStartedPage } from "./get-started-page";
 
 beforeEach(() => {
-  mockApi({
-    "GET /api/rmp/schools": [
-      { id: "U2Nob29sLTk5OQ==", legacyId: 999, name: "Temple University" },
-    ],
-    "GET /api/classes/terms": [
-      { code: "202703", description: "2027 Spring" },
-      { code: "202636", description: "2026 Fall" },
-      { code: "202536", description: "2025 Fall (View Only)" },
-    ],
-  });
+  server.use(
+    http.get(`${API}/rmp/schools`, () =>
+      HttpResponse.json([
+        { id: "U2Nob29sLTk5OQ==", legacyId: 999, name: "Temple University" },
+      ]),
+    ),
+    http.get(`${API}/classes/terms`, () =>
+      HttpResponse.json([
+        { code: "202703", description: "2027 Spring" },
+        { code: "202636", description: "2026 Fall" },
+        { code: "202536", description: "2025 Fall (View Only)" },
+      ]),
+    ),
+  );
 });
 
 afterEach(() => {
