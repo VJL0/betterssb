@@ -6,7 +6,10 @@ import {
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
 import { ssbSectionToInternal } from "@workspace/shared/lib/sections";
-import { classSection, meetingTime } from "@/test/class-section";
+import {
+  classSection,
+  meetingTime,
+} from "@workspace/shared/testing/class-section";
 import {
   DEFAULT_RULES,
   buildOptions,

@@ -5,7 +5,10 @@ import {
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
 import type { SSBRegPlanHeader } from "@workspace/shared/types/ssb";
-import { classSection, meetingTime } from "@/test/class-section";
+import {
+  classSection,
+  meetingTime,
+} from "@workspace/shared/testing/class-section";
 import { queueCredits, queueRows } from "./queue-rows";
 
 const NOW = "2026-10-17T12:00:00.000Z";

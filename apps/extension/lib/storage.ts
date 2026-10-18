@@ -1,7 +1,6 @@
-import type { RmpRating, SchedulePreferences } from "@workspace/api-client";
+import type { RmpRating } from "@workspace/api-client";
 
 const KEYS = {
-  SCHEDULE_PREFS: "betterssb:schedulePreferences",
   CACHED_RATINGS: "betterssb:cachedRatings",
 } as const;
 
@@ -16,16 +15,6 @@ export async function setStorageItem<T>(key: string, value: T): Promise<void> {
 
 export async function removeStorageItem(key: string): Promise<void> {
   await browser.storage.local.remove(key);
-}
-
-export async function getSchedulePreferences(): Promise<SchedulePreferences> {
-  return (await getStorageItem<SchedulePreferences>(KEYS.SCHEDULE_PREFS)) ?? {};
-}
-
-export async function saveSchedulePreferences(
-  prefs: SchedulePreferences,
-): Promise<void> {
-  await setStorageItem(KEYS.SCHEDULE_PREFS, prefs);
 }
 
 export async function getCachedRatings(): Promise<Record<string, RmpRating>> {

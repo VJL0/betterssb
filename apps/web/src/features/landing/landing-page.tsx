@@ -18,7 +18,7 @@ import {
 } from "@workspace/ui/components/tabs";
 import { cn } from "@workspace/ui/lib/utils";
 import { PRIMARY_PAGES } from "@/app/pages";
-import { Logo } from "@/components/logo";
+import { Logo } from "@workspace/ui/components/logo";
 import { EXTENSION_INSTALL_URL, SOURCE_CODE_URL } from "@/lib/config";
 import {
   AdvisorPreview,

@@ -2,7 +2,7 @@ import "fake-indexeddb/auto";
 import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach } from "vitest";
 import { configureApiClient } from "@workspace/api-client";
-import { mockApi } from "./api";
+import { mockApi } from "@workspace/api-client/testing";
 
 // Node's Request needs an absolute URL; browsers resolve "/api/…" themselves.
 configureApiClient({ origin: "http://localhost:5173" });

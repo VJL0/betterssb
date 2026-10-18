@@ -2,7 +2,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi } from "@/test/api";
+import { mockApi } from "@workspace/api-client/testing";
 import { renderPage } from "@/test/render";
 import { exportStore } from "./export-data";
 import { SettingsPage } from "./settings-page";

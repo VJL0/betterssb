@@ -9,8 +9,11 @@ import {
 } from "@workspace/shared/lib/plan";
 import { ssbSectionToInternal } from "@workspace/shared/lib/sections";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi, problemResponse } from "@/test/api";
-import { classSection, meetingTime } from "@/test/class-section";
+import { mockApi, problemResponse } from "@workspace/api-client/testing";
+import {
+  classSection,
+  meetingTime,
+} from "@workspace/shared/testing/class-section";
 import { renderPage } from "@/test/render";
 import { SchedulePage } from "./schedule-page";
 
