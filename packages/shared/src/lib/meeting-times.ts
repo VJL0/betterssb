@@ -56,6 +56,11 @@ export function formatClock(minutes: number): string {
   return `${hour12}:${mins}`;
 }
 
+/** "9:30 AM". */
+export function formatTimeOfDay(minutes: number): string {
+  return `${formatClock(minutes)} ${meridiem(minutes)}`;
+}
+
 /** "9:30–10:50 AM", or "11:00 AM–12:15 PM" when the range crosses noon. */
 export function formatTimeRange(start: number, end: number): string {
   const startMeridiem = meridiem(start);
