@@ -1,12 +1,30 @@
-import { HardDriveIcon, SettingsIcon } from "lucide-react";
+import {
+  HardDriveIcon,
+  ListChecksIcon,
+  SettingsIcon,
+  UserRoundIcon,
+} from "lucide-react";
 import { Link, NavLink } from "react-router";
 import { buttonVariants } from "@workspace/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
 import { cn } from "@workspace/ui/lib/utils";
 import { BannerBadge } from "@/components/banner-status";
 import { Logo } from "@/components/logo";
 import { TermSelect } from "@/components/term-select";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
-import { PRIMARY_PAGES, firstReadyPath, readyPages } from "./pages";
+import {
+  PRIMARY_PAGES,
+  SECONDARY_PAGES,
+  firstReadyPath,
+  readyPages,
+} from "./pages";
 
 /** The web top bar (DS4 WHeader). Below 640 px the page links move to the tab bar. */
 export function AppHeader() {
@@ -54,15 +72,42 @@ export function AppHeader() {
             <HardDriveIcon aria-hidden className="size-3.5" />
             Saved on this device
           </span>
-          <Link
-            to="/settings"
-            aria-label="Settings"
-            className={buttonVariants({ variant: "ghost", size: "icon" })}
-          >
-            <SettingsIcon />
-          </Link>
+          <AccountMenu />
         </div>
       </div>
     </header>
+  );
+}
+
+/**
+ * The design's account menu (WHeader). Guests get their records and
+ * settings; sign-in and sync come with accounts.
+ */
+function AccountMenu() {
+  const transcript = SECONDARY_PAGES.find((p) => p.id === "transcript");
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        aria-label="Account and settings"
+        className={buttonVariants({ variant: "ghost", size: "icon" })}
+      >
+        <UserRoundIcon />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Guest · this device</DropdownMenuLabel>
+          {transcript?.ready && (
+            <DropdownMenuItem render={<Link to={transcript.path} />}>
+              <ListChecksIcon />
+              Transcript
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem render={<Link to="/settings" />}>
+            <SettingsIcon />
+            Settings
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

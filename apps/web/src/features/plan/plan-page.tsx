@@ -14,9 +14,8 @@ import {
 import {
   auditCourseKeys,
   placedRequirements,
-  plannedCredits,
+  projectedFinish,
   removeEntry,
-  termEntries,
   type TermEntry,
 } from "@workspace/shared/lib/planner";
 import { nextTerms, templeTermName } from "@workspace/shared/lib/terms";
@@ -115,9 +114,6 @@ export function PlanPage() {
   const editable = plans.filter((p) => statusOf(p.term) !== "past");
   const target =
     editable.find((p) => p.term === targetTerm) ?? editable.at(-1) ?? null;
-  const lastPlanned = [...plans]
-    .reverse()
-    .find((p) => termEntries(p).length > 0);
   const latestCode = plans.at(-1)?.term ?? currentTerm?.code ?? null;
   const upcoming = latestCode
     ? nextTerms(latestCode, TERMS_OFFERED).flatMap((code) => {
@@ -232,9 +228,8 @@ export function PlanPage() {
           {totals ? (
             <DegreeProgress
               totals={totals}
-              planned={plannedCredits(plans, counted)}
+              finish={projectedFinish(totals, plans, counted)}
               unplaced={unplaced.reduce((sum, r) => sum + (r.credits ?? 0), 0)}
-              lastTermName={lastPlanned?.termDescription ?? null}
             />
           ) : (
             // An audit without degree totals still fills "Still needed".

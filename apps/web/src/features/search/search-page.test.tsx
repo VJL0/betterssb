@@ -91,3 +91,13 @@ describe("SearchPage", () => {
     expect(await axeViolations(container)).toEqual([]);
   });
 });
+
+describe("SearchPage links", () => {
+  it("searches for ?q= on arrival", async () => {
+    renderPage(<SearchPage />, { route: "/search?q=CIS%202168" });
+    expect(
+      await screen.findAllByText("Data Structures", undefined, SEARCH_TIMEOUT),
+    ).not.toHaveLength(0);
+    expect(searchesSent()).toHaveLength(1);
+  });
+});
