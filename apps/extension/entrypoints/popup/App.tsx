@@ -1,54 +1,49 @@
 import { useState } from "react";
-import { cn } from "@workspace/ui/lib/utils";
-import { RateMyProfessorPage } from "./pages/RateMyProfessorPage";
-import { AutoRegisterPage } from "./pages/AutoRegisterPage";
-import { LoginPage } from "./pages/LoginPage";
-import { MorePage } from "./pages/MorePage";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+import { PopupHeader } from "./components/popup-header";
+import { PopupTabs, type PopupTab } from "./components/popup-tabs";
+import { useCurrentTerm } from "./hooks/use-current-term";
+import { useStoreDocument } from "./hooks/use-store-document";
+import { AuditTab } from "./tabs/audit-tab";
+import { FirstRun } from "./tabs/first-run";
+import { RegisterTab } from "./tabs/register-tab";
+import { SearchTab } from "./tabs/search-tab";
+import { TodayTab } from "./tabs/today-tab";
 
-const TABS = [
-  { id: "rmp", label: "RateMyProfessor" },
-  { id: "autoreg", label: "Auto register" },
-  { id: "login", label: "Login" },
-  { id: "more", label: "More" },
-] as const;
+/** The popup (E1): first run until a school is chosen, then four tabs. */
+export default function App() {
+  const settings = useStoreDocument("settings");
+  const term = useCurrentTerm();
+  const [tab, setTab] = useState<PopupTab>("today");
 
-type TabId = (typeof TABS)[number]["id"];
-
-function App() {
-  const [activeTab, setActiveTab] = useState<TabId>("rmp");
+  // The shell renders at once; content fills in as storage answers.
+  if (!settings.loaded) {
+    return (
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <Skeleton className="h-8 w-40" />
+        <Skeleton className="h-32 rounded-2xl" />
+      </div>
+    );
+  }
+  if (!settings.value?.school) {
+    return <FirstRun settings={settings.value} onSave={settings.save} />;
+  }
 
   return (
-    <div className="flex h-full min-h-96 flex-col bg-muted/50">
-      <div className="shrink-0 px-3 pt-2.5">
-        <h1 className="text-base font-bold text-foreground">BetterSSB</h1>
-      </div>
-
-      <nav className="mt-2 flex shrink-0 gap-0.5 overflow-x-auto border-b border-border px-2 pb-px">
-        {TABS.map(({ id, label }) => (
-          <button
-            key={id}
-            type="button"
-            className={cn(
-              "shrink-0 cursor-pointer border-b-2 px-2 py-2 text-left text-xs font-medium transition-colors sm:text-sm",
-              activeTab === id
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-primary",
-            )}
-            onClick={() => setActiveTab(id)}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
-
-      <div className="min-h-0 flex-1 overflow-y-auto p-3">
-        {activeTab === "rmp" && <RateMyProfessorPage />}
-        {activeTab === "autoreg" && <AutoRegisterPage />}
-        {activeTab === "login" && <LoginPage />}
-        {activeTab === "more" && <MorePage />}
-      </div>
-    </div>
+    <>
+      <PopupHeader termName={term?.name ?? null} />
+      <main className="min-h-0 flex-1 overflow-y-auto bg-muted/40 p-3 text-sm">
+        {tab === "today" && <TodayTab term={term} onOpenTab={setTab} />}
+        {tab === "search" &&
+          (term ? (
+            <SearchTab term={term} schoolId={settings.value.school.id} />
+          ) : (
+            <Skeleton className="h-40 rounded-2xl" />
+          ))}
+        {tab === "register" && <RegisterTab />}
+        {tab === "audit" && <AuditTab />}
+      </main>
+      <PopupTabs active={tab} onSelect={setTab} />
+    </>
   );
 }
-
-export default App;
