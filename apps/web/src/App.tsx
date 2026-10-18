@@ -44,18 +44,18 @@ function App() {
   const running = run.kind === "running";
 
   return (
-    <div className="min-h-dvh bg-slate-50 text-slate-900 lg:grid lg:h-dvh lg:grid-cols-2">
-      <aside className="flex flex-col gap-6 border-slate-200 p-4 sm:p-6 lg:overflow-y-auto lg:border-r lg:p-10">
+    <div className="min-h-dvh bg-muted/50 text-foreground lg:grid lg:h-dvh lg:grid-cols-2">
+      <aside className="flex flex-col gap-6 border-border p-4 sm:p-6 lg:overflow-y-auto lg:border-r lg:p-10">
         <AccountBar />
 
         <header>
-          <p className="text-sm font-semibold tracking-wide text-rose-700 uppercase">
+          <p className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
             BetterSSB
           </p>
           <h1 className="mt-1 text-3xl font-bold tracking-tight">
             Degree audit
           </h1>
-          <p className="mt-2 max-w-prose text-slate-600">
+          <p className="mt-2 max-w-prose text-muted-foreground">
             See your DARS audit, requirement by requirement — what's done,
             what's in progress, and exactly which courses can fill what's left.
           </p>
@@ -92,7 +92,7 @@ function App() {
         {run.kind === "error" && (
           <div
             role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900"
+            className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
           >
             <p className="font-medium">{run.message}</p>
           </div>
@@ -130,7 +130,7 @@ function MethodTabs({
     <div
       role="tablist"
       aria-label="How to load your audit"
-      className="flex gap-1 rounded-lg bg-slate-100 p-1"
+      className="flex gap-1 rounded-lg bg-muted p-1"
     >
       {tabs.map((t) => (
         <button
@@ -141,8 +141,8 @@ function MethodTabs({
           onClick={() => onChange(t.id)}
           className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-50 ${
             method === t.id
-              ? "bg-white text-slate-900 shadow-sm"
-              : "text-slate-600 hover:text-slate-900"
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           {t.label}
@@ -163,12 +163,12 @@ function ExtensionPanel({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-muted-foreground">
         Runs the audit in your browser using the DARS session you're already
         signed into. Nothing sensitive leaves your computer.
       </p>
       {!installed && (
-        <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+        <p className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning">
           The BetterSSB extension isn't detected. Install it, or use{" "}
           <b>Upload file</b> instead.
         </p>
@@ -177,12 +177,12 @@ function ExtensionPanel({
         type="button"
         onClick={onRun}
         disabled={running || !installed}
-        className="inline-flex items-center justify-center gap-2 rounded-lg bg-rose-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-800 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/80 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {running && <Spinner />}
         {running ? "Running…" : "Run audit"}
       </button>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted-foreground">
         If you're not signed in, a DARS tab opens so you can log in — then the
         audit runs automatically.
       </p>
@@ -221,15 +221,15 @@ function UploadPanel({
         disabled={running}
         className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-8 text-center transition-colors disabled:opacity-50 ${
           dragging
-            ? "border-rose-400 bg-rose-50"
-            : "border-slate-300 bg-white hover:border-slate-400"
+            ? "border-ring bg-accent"
+            : "border-input bg-card hover:border-ring"
         }`}
       >
         <span className="text-2xl">📄</span>
-        <span className="text-sm font-medium text-slate-700">
+        <span className="text-sm font-medium text-foreground">
           Drop your audit file here, or click to choose
         </span>
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-muted-foreground">
           The saved DARS audit page (.html)
         </span>
       </button>
@@ -244,8 +244,8 @@ function UploadPanel({
           e.target.value = "";
         }}
       />
-      <details className="text-sm text-slate-600">
-        <summary className="cursor-pointer font-medium text-slate-700">
+      <details className="text-sm text-muted-foreground">
+        <summary className="cursor-pointer font-medium text-foreground">
           How do I save it?
         </summary>
         <ol className="mt-2 list-decimal space-y-1 pl-5">
@@ -255,7 +255,7 @@ function UploadPanel({
               href={DARS_URL}
               target="_blank"
               rel="noreferrer"
-              className="text-rose-700 underline"
+              className="text-primary underline"
             >
               DARS
             </a>{" "}
@@ -287,11 +287,11 @@ function RunningNotice({
   }, []);
   const seconds = Math.max(0, Math.round((now - startedAt) / 1000));
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700">
+    <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-sm text-foreground">
       <Spinner />
       <span>
         {label} <span className="tabular-nums">{seconds}s</span>
-        <span className="block text-xs text-slate-500">
+        <span className="block text-xs text-muted-foreground">
           A fresh audit usually takes 5–20 seconds.
         </span>
       </span>
@@ -307,12 +307,12 @@ function AuditSummary({ audit }: { audit: Audit }) {
   const totals = audit.requirements.find((r) => r.category === "Total_Hours");
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
       <div className="flex items-start gap-3">
         <StatusIcon status={audit.complete ? "complete" : "incomplete"} />
         <div>
           <h2 className="font-semibold">{audit.programTitle}</h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             {audit.programCode} · Catalog {audit.catalogYear} · Run{" "}
             {audit.preparedOn}
           </p>
@@ -320,20 +320,16 @@ function AuditSummary({ audit }: { audit: Audit }) {
       </div>
 
       <dl className="mt-5 grid grid-cols-3 gap-3 text-center">
-        <Stat
-          label="Complete"
-          value={count("complete")}
-          tone="text-emerald-700"
-        />
+        <Stat label="Complete" value={count("complete")} tone="text-success" />
         <Stat
           label="In progress"
           value={count("in_progress")}
-          tone="text-amber-700"
+          tone="text-info"
         />
         <Stat
           label="Still needed"
           value={count("incomplete")}
-          tone="text-rose-700"
+          tone="text-destructive"
         />
       </dl>
 
@@ -360,8 +356,8 @@ function Stat({
   tone: string;
 }) {
   return (
-    <div className="rounded-lg bg-slate-50 py-3">
-      <dt className="text-xs text-slate-500">{label}</dt>
+    <div className="rounded-lg bg-muted/50 py-3">
+      <dt className="text-xs text-muted-foreground">{label}</dt>
       <dd className={`text-2xl font-bold tabular-nums ${tone}`}>{value}</dd>
     </div>
   );
@@ -381,16 +377,16 @@ function CreditsBar({
   const pct = (n: number) => `${total ? (n / total) * 100 : 0}%`;
   return (
     <div>
-      <div className="flex justify-between text-xs text-slate-600">
+      <div className="flex justify-between text-xs text-muted-foreground">
         <span>Credits toward degree</span>
         <span className="tabular-nums">
           {formatCredits(earned)} earned · {formatCredits(inProgress)} in
           progress · {formatCredits(needed)} to go
         </span>
       </div>
-      <div className="mt-1.5 flex h-2.5 overflow-hidden rounded-full bg-slate-100">
-        <div className="bg-emerald-500" style={{ width: pct(earned) }} />
-        <div className="bg-amber-400" style={{ width: pct(inProgress) }} />
+      <div className="mt-1.5 flex h-2.5 overflow-hidden rounded-full bg-muted">
+        <div className="bg-success" style={{ width: pct(earned) }} />
+        <div className="bg-info" style={{ width: pct(inProgress) }} />
       </div>
     </div>
   );
@@ -399,7 +395,7 @@ function CreditsBar({
 function EmptyReport({ running }: { running: boolean }) {
   return (
     <div className="flex h-full min-h-[50vh] items-center justify-center">
-      <p className="max-w-xs text-center text-sm text-slate-500">
+      <p className="max-w-xs text-center text-sm text-muted-foreground">
         {running
           ? "Waiting for your audit…"
           : "Your audit will appear here once it loads."}

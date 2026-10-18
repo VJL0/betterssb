@@ -66,7 +66,7 @@ export function TranscriptPage() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Paste your transcript text here..."
-          className="min-h-24 w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+          className="min-h-24 w-full resize-y rounded-lg border border-input px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
         />
         <div className="mt-2.5">
           <Button onClick={parse} loading={loading} disabled={!text.trim()}>
@@ -76,7 +76,7 @@ export function TranscriptPage() {
       </Card>
 
       {error && (
-        <div className="rounded-lg bg-red-100 px-3 py-2 text-sm text-red-700">
+        <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {error}
         </div>
       )}
@@ -89,7 +89,7 @@ export function TranscriptPage() {
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-xs">
                 <thead>
-                  <tr className="border-b-2 border-gray-200 text-left">
+                  <tr className="border-b-2 border-border text-left">
                     <th className="px-2 py-1.5 font-semibold">Course</th>
                     <th className="px-2 py-1.5 font-semibold">Title</th>
                     <th className="px-2 py-1.5 font-semibold">Grade</th>
@@ -98,11 +98,13 @@ export function TranscriptPage() {
                 </thead>
                 <tbody>
                   {transcript.courses.map((c, i) => (
-                    <tr key={i} className="border-b border-gray-100">
+                    <tr key={i} className="border-b border-border">
                       <td className="px-2 py-1.5 font-medium">
                         {c.subject} {c.courseNumber}
                       </td>
-                      <td className="px-2 py-1.5 text-gray-500">{c.title}</td>
+                      <td className="px-2 py-1.5 text-muted-foreground">
+                        {c.title}
+                      </td>
                       <td className="px-2 py-1.5">
                         <Badge
                           text={c.grade}
@@ -128,14 +130,14 @@ export function TranscriptPage() {
           <Card title="Check Prerequisites">
             <div className="flex items-end gap-2">
               <div className="min-w-0 flex-1">
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-1 block text-sm font-medium text-foreground">
                   Required courses (comma-separated)
                 </label>
                 <input
                   value={prereqInput}
                   onChange={(e) => setPrereqInput(e.target.value)}
                   placeholder="CS 201, MATH 301"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="w-full rounded-lg border border-input px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
                 />
               </div>
               <Button
@@ -154,7 +156,7 @@ export function TranscriptPage() {
                   <div key={course} className="flex items-center gap-2 text-sm">
                     <span className="text-base">{met ? "✅" : "❌"}</span>
                     <span className="font-medium">{course}</span>
-                    <span className={met ? "text-green-600" : "text-red-600"}>
+                    <span className={met ? "text-success" : "text-destructive"}>
                       {met ? "Satisfied" : "Not met"}
                     </span>
                   </div>
