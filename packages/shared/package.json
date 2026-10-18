@@ -18,12 +18,12 @@
     "@workspace/api-client": "workspace:*"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "catalog:",
     "@typescript/native": "catalog:",
-    "eslint": "^10.12.0",
-    "globals": "^17.13.0",
+    "eslint": "catalog:",
+    "globals": "catalog:",
     "typescript": "catalog:",
-    "typescript-eslint": "^8.71.0",
-    "vitest": "^5.0.5"
+    "typescript-eslint": "catalog:",
+    "vitest": "catalog:"
   }
 }
