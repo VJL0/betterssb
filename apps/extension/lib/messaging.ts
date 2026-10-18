@@ -33,7 +33,12 @@ export type MessageType =
   | "SSB_REG_TUITION"
   | "SSB_AUTO_REGISTER_RUN"
   | "DARS_RUN_AUDIT"
-  | "BANNER_STATUS";
+  | "BANNER_STATUS"
+  | "AUTOREG_GET"
+  | "AUTOREG_SAVE_QUEUE"
+  | "AUTOREG_ARM"
+  | "AUTOREG_DISARM"
+  | "AUTOREG_CHECK_CRNS";
 
 export interface ExtensionMessage {
   type: MessageType;

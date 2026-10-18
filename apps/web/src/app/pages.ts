@@ -55,7 +55,7 @@ export const PRIMARY_PAGES: readonly AppPage[] = [
     path: "/register",
     icon: TimerIcon,
     inTabBar: true,
-    ready: false,
+    ready: true,
   },
   {
     id: "audit",

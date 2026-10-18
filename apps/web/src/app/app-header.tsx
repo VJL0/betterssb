@@ -49,7 +49,7 @@ export function AppHeader() {
                   to={page.path}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center rounded-2xl px-2.5 py-1.5 text-sm font-medium whitespace-nowrap focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none",
+                      "flex items-center rounded-2xl px-1.5 py-1.5 text-sm font-medium whitespace-nowrap focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none lg:px-2.5",
                       isActive
                         ? "bg-muted text-foreground"
                         : "text-muted-foreground hover:text-foreground",
@@ -66,7 +66,7 @@ export function AppHeader() {
           <BannerBadge connection={banner.connection} />
           <TermSelect />
           <span
-            className="hidden items-center gap-1.5 text-xs text-muted-foreground lg:flex"
+            className="hidden items-center gap-1.5 text-xs text-muted-foreground xl:flex"
             title="Your plans are saved in this browser"
           >
             <HardDriveIcon aria-hidden className="size-3.5" />

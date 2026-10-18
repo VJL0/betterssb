@@ -23,6 +23,10 @@ const BADGE_BASE =
   "inline-flex h-6 shrink-0 items-center gap-1.5 rounded-2xl px-2.5 text-xs font-medium whitespace-nowrap focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none";
 
 /** The top bar's Banner badge. It links to Settings, where the connection is explained. */
+// Between the phone tab bar and xl the top bar is tight, so the badge shows
+// only its dot; the words stay for screen readers.
+const BADGE_LABEL = "sm:max-xl:sr-only";
+
 export function BannerBadge({
   connection,
 }: {
@@ -37,7 +41,7 @@ export function BannerBadge({
         className={cn(BADGE_BASE, "border border-border text-foreground")}
       >
         <span aria-hidden className="size-1.5 rounded-full bg-success" />
-        Banner connected
+        <span className={BADGE_LABEL}>Banner connected</span>
       </Link>
     );
   }
@@ -49,7 +53,7 @@ export function BannerBadge({
         className={cn(BADGE_BASE, "bg-destructive/10 text-destructive")}
       >
         <span aria-hidden className="size-1.5 rounded-full bg-current" />
-        Banner signed out
+        <span className={BADGE_LABEL}>Banner signed out</span>
       </Link>
     );
   }
@@ -63,7 +67,7 @@ export function BannerBadge({
       )}
     >
       <PlugIcon aria-hidden className="size-3" />
-      Connect Banner
+      <span className={BADGE_LABEL}>Connect Banner</span>
     </Link>
   );
 }

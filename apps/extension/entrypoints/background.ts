@@ -6,15 +6,30 @@ import {
   type AutoRegBatchResultRecord,
   type StagingFailure,
 } from "@workspace/shared/lib/auto-reg-batch-result";
-import { parseManualCrns } from "@workspace/shared/lib/auto-reg-helpers";
+import {
+  parseAutoRegBatchResultJson,
+  parseManualCrns,
+} from "@workspace/shared/lib/auto-reg-helpers";
+import {
+  armProblem,
+  crnLookupResult,
+} from "@workspace/shared/lib/auto-reg-queue";
+import type {
+  AutoRegQueue,
+  AutoRegSnapshot,
+  CrnCheck,
+} from "@workspace/shared/types/auto-reg";
 import {
   AUTO_REG_SCHEDULE_CONFIG_KEY,
   getAutoRegScheduleConfig,
+  patchAutoRegScheduleConfig,
+  type AutoRegScheduleConfig,
 } from "@/lib/auto-reg-schedule-config";
 import {
   AUTO_REG_RUN_STATE_KEY,
   getAutoRegRunState,
   patchAutoRegRunState,
+  type AutoRegRunState,
 } from "@/lib/auto-reg-run-state";
 import type { BannerConnection } from "@workspace/shared/types/store";
 import {
@@ -153,6 +168,85 @@ async function relayToDarsTab(
   return { success: false, error: lastError };
 }
 
+function queueOf(config: AutoRegScheduleConfig): AutoRegQueue {
+  return {
+    term: config.term.trim(),
+    crns: parseManualCrns(config.crns),
+    scheduledRunAt: config.scheduledRunAt,
+  };
+}
+
+function snapshotOf(
+  config: AutoRegScheduleConfig,
+  run: AutoRegRunState,
+): AutoRegSnapshot {
+  return {
+    ...queueOf(config),
+    armed: run.armed,
+    lastResult: parseAutoRegBatchResultJson(run.lastBatchResultJson),
+  };
+}
+
+/**
+ * Auto-register requests from the website (through the web bridge) and the
+ * popup. Arming is checked here, so no caller can arm an incomplete queue.
+ */
+async function handleAutoRegister(
+  msg: ExtensionMessage,
+): Promise<ExtensionResponse> {
+  const config = await getAutoRegScheduleConfig();
+  const run = await getAutoRegRunState();
+  switch (msg.type) {
+    case "AUTOREG_GET":
+      return { success: true, data: snapshotOf(config, run) };
+    case "AUTOREG_SAVE_QUEUE": {
+      if (run.armed) {
+        return {
+          success: false,
+          error: "Disarm auto-register to change the queue.",
+        };
+      }
+      const { queue } = msg.payload as { queue: AutoRegQueue };
+      await patchAutoRegScheduleConfig({
+        term: queue.term,
+        crns: queue.crns.join(", "),
+        scheduledRunAt: queue.scheduledRunAt,
+        // CRNs come from the website now, not from a Banner plan.
+        manualMode: true,
+      });
+      return { success: true };
+    }
+    case "AUTOREG_ARM": {
+      const problem = armProblem(queueOf(config), Date.now());
+      if (problem) return { success: false, error: problem };
+      await patchAutoRegRunState({ armed: true, dedupeRunKey: "" });
+      return { success: true };
+    }
+    case "AUTOREG_DISARM":
+      await patchAutoRegRunState({ armed: false });
+      return { success: true };
+    case "AUTOREG_CHECK_CRNS": {
+      const { term, crns } = msg.payload as { term: string; crns: string[] };
+      const checks: CrnCheck[] = [];
+      // One at a time: Banner keeps registration state per session.
+      for (const crn of crns) {
+        const result = await relayToSSBTab({
+          type: "SSB_REG_GET_SECTION_CRN",
+          payload: { crn, term },
+        });
+        checks.push({ crn, found: crnLookupResult(crn, result) });
+      }
+      return { success: true, data: checks };
+    }
+    default:
+      return { success: false, error: `Unknown message type: ${msg.type}` };
+  }
+}
+
+function isAutoRegisterMessage(type: string): boolean {
+  return type.startsWith("AUTOREG_");
+}
+
 /** Stable idempotency key for a specific batch attempt (time + term + CRNs). */
 function buildBatchDedupeKey(
   scheduledRunAt: string,
@@ -175,6 +269,11 @@ export default defineBackground(() => {
 
       if (msg.type === "BANNER_STATUS") {
         sendResponse({ success: true, data: await bannerConnection() });
+        return;
+      }
+
+      if (isAutoRegisterMessage(msg.type)) {
+        sendResponse(await handleAutoRegister(msg));
         return;
       }
 
