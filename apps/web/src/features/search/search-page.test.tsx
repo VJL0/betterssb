@@ -2,8 +2,11 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi } from "@/test/api";
-import { classSection, meetingTime } from "@/test/class-section";
+import { mockApi } from "@workspace/api-client/testing";
+import {
+  classSection,
+  meetingTime,
+} from "@workspace/shared/testing/class-section";
 import { renderPage } from "@/test/render";
 import { SearchPage } from "./search-page";
 

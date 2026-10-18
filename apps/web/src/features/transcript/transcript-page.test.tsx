@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { TranscriptData } from "@workspace/api-client";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi } from "@/test/api";
-import { sampleAudit } from "@/test/audit";
+import { mockApi } from "@workspace/api-client/testing";
+import { sampleAudit } from "@workspace/shared/testing/audit";
 import { renderPage } from "@/test/render";
 import { TranscriptPage } from "./transcript-page";
 

@@ -11,7 +11,8 @@
   },
   "exports": {
     "./types/*": "./src/types/*.ts",
-    "./lib/*": "./src/lib/*.ts"
+    "./lib/*": "./src/lib/*.ts",
+    "./testing/*": "./src/testing/*.ts"
   },
   "dependencies": {
     "@workspace/api-client": "workspace:*"

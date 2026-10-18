@@ -1,13 +1,7 @@
 import { useCallback, useMemo } from "react";
+import { DEFAULT_SETTINGS } from "@workspace/shared/lib/store";
 import type { UserSettings } from "@workspace/shared/types/store";
 import { useStoreDocument } from "@/lib/store/store-context";
-
-export const DEFAULT_SETTINGS: Omit<UserSettings, "updatedAt"> = {
-  school: null,
-  term: null,
-  major: "",
-  keyboardShortcuts: true,
-};
 
 /** The student's settings, with defaults until they've saved any. */
 export function useSettings() {

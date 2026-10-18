@@ -1,10 +1,5 @@
 export type MessageType =
-  | "SEARCH_SCHOOLS"
   | "FETCH_RATING"
-  | "GENERATE_SCHEDULE"
-  | "CHAT"
-  | "PARSE_TRANSCRIPT"
-  | "CHECK_PREREQS"
   | "SSB_GET_TERMS"
   | "SSB_GET_SUBJECTS"
   | "SSB_SEARCH_SECTIONS"

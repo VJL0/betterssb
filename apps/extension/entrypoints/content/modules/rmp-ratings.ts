@@ -1,7 +1,7 @@
 import { sendMessage } from "@/lib/messaging";
 import { getCachedRatings, cacheRating } from "@/lib/storage";
-import { getStorageItem } from "@/lib/storage";
-import type { RmpRating, RmpSchool } from "@workspace/api-client";
+import { extensionStore } from "@/lib/local-store";
+import type { RmpRating } from "@workspace/api-client";
 
 const PROCESSED_ATTR = "data-betterssb-rated";
 
@@ -88,7 +88,7 @@ function findInstructorElements(): Element[] {
   return instructorTds;
 }
 
-async function processElement(el: Element, schoolName: string): Promise<void> {
+async function processElement(el: Element, schoolId: string): Promise<void> {
   if (el.hasAttribute(PROCESSED_ATTR)) return;
   el.setAttribute(PROCESSED_ATTR, "true");
 
@@ -106,7 +106,7 @@ async function processElement(el: Element, schoolName: string): Promise<void> {
   try {
     const response = await sendMessage({
       type: "FETCH_RATING",
-      payload: { name, school: schoolName },
+      payload: { name, schoolId },
     });
 
     if (response.success && response.data) {
@@ -121,13 +121,14 @@ async function processElement(el: Element, schoolName: string): Promise<void> {
 
 export function initRMPRatings(_observer?: MutationObserver): void {
   (async () => {
-    const school = await getStorageItem<RmpSchool>("betterssb:school");
-    const schoolName = school?.name ?? "";
-    if (!schoolName) return;
+    // The school picked in the popup's first run or on the website.
+    const settings = await extensionStore.get("settings");
+    const schoolId = settings?.school?.id;
+    if (!schoolId) return;
 
     const elements = findInstructorElements();
     for (const el of elements) {
-      processElement(el, schoolName);
+      processElement(el, schoolId);
     }
   })();
 }

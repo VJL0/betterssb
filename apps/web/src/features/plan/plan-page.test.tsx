@@ -7,8 +7,8 @@ import {
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { classSection } from "@/test/class-section";
-import { mockApi } from "@/test/api";
+import { classSection } from "@workspace/shared/testing/class-section";
+import { mockApi } from "@workspace/api-client/testing";
 import { renderPage } from "@/test/render";
 import { PlanPage } from "./plan-page";
 import type { Audit } from "@workspace/api-client";

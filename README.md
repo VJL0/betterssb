@@ -48,20 +48,20 @@ betterssb/
 
 ### How It Works
 
-1. **Popup** — Primary UI: sign-in (via the backend), school selection, schedule builder, semester planner, AI chat, and transcript upload. Talks to the background worker and (for Banner data) to the content script via message passing.
+1. **Popup** — Quick access while on Banner: first run (pick a school), then Today (armed countdown, this tab, the term's plan with live seats), Search (sections with ratings and seats, add to plan), Register (the queue and last run; arming happens on the website) and Audit (summary, what's still needed, re-run in DARS). Deeper tasks open the website.
 2. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). Handles anything that must execute in the page: calling Ellucian’s in-page APIs for the popup, injecting Rate My Professor badges on listings, and filling/submitting registration forms for auto-registration.
-3. **Background Service Worker** — Relays non-SSB work to the backend (schedules, chat, transcript parsing, RMP search), forwards `SSB_*` messages to an open Banner tab, registration alarms, and `chrome.storage`.
+3. **Background Service Worker** — Rating lookups for the Banner overlay, `SSB_*` messages forwarded to an open Banner tab, DARS runs, auto-register (queue, arming checks, the one-shot alarm) and `chrome.storage`.
 4. **Backend API** — Rate My Professor lookups, schedule optimization, transcript parsing, chatbot inference, and prerequisite validation.
 
 **Where each feature lives**
 
-| Feature | Popup | Content |
-| --- | --- | --- |
-| Sign-in, school | Yes | |
-| Schedule builder & semester planner | Yes | (SSB calls run in page) |
-| AI chat & transcript tools | Yes | |
-| Rate My Professor on course rows | | Yes |
-| Auto-registration (CRN fields / submit) | | Yes |
+| Feature | Website | Popup | Content (Banner) |
+| --- | --- | --- | --- |
+| School and term | Yes | First run | |
+| Search, schedule builder, planner | Yes | Search, plan | |
+| Degree audit, transcript, advisor | Yes | Audit summary | DARS run |
+| Auto-register | Set up and arm | Status, disarm | Submits the batch |
+| Rate My Professors on Banner pages | | | Yes |
 
 ## Tech Stack
 
@@ -69,7 +69,7 @@ betterssb/
 |---|---|
 | Extension Framework | [WXT](https://wxt.dev) v0.20+ |
 | UI | React 19, TypeScript 5.9 |
-| State | `chrome.storage` via custom `useStorage` hook |
+| State | Local-first store: IndexedDB on the website, `chrome.storage.local` in the extension, shared through the web bridge; TanStack Query for API data |
 | Backend | FastAPI, Python 3.14 |
 | Database | PostgreSQL 18 (Docker), SQLAlchemy 2 |
 | Cache | Redis 8 (Docker), short-lived data only |

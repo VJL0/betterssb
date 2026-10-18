@@ -8,8 +8,8 @@ import {
 } from "@workspace/shared/lib/plan";
 import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
 import { axeViolations } from "@workspace/ui/test/axe";
-import { mockApi } from "@/test/api";
-import { classSection } from "@/test/class-section";
+import { mockApi } from "@workspace/api-client/testing";
+import { classSection } from "@workspace/shared/testing/class-section";
 import { EMPTY_AUTO_REGISTER, installFakeBridge } from "@/test/fake-bridge";
 import { renderPage } from "@/test/render";
 import { RegisterPage } from "./register-page";

@@ -32,18 +32,7 @@ import {
   type AutoRegRunState,
 } from "@/lib/auto-reg-run-state";
 import type { BannerConnection } from "@workspace/shared/types/store";
-import {
-  chat,
-  checkPrerequisites,
-  generateSchedules,
-  parseTranscript,
-  searchProfessors,
-  searchSchools,
-  type ChatMessage,
-  type SchedulePreferences,
-  type SectionOutput as Section,
-  type TranscriptCourse,
-} from "@workspace/api-client";
+import { searchProfessors } from "@workspace/api-client";
 
 const SSB_URL_PATTERN = "*://*.edu/StudentRegistrationSsb/*";
 const DARS_URL_PATTERN = "*://prd-dars.temple.edu/selfservice/*";
@@ -284,67 +273,15 @@ export default defineBackground(() => {
       }
 
       switch (msg.type) {
-        case "SEARCH_SCHOOLS": {
-          const { query } = msg.payload as { query: string };
-          const { data: schools } = await searchSchools({ query: { query } });
-          sendResponse({ success: true, data: schools });
-          break;
-        }
-
         case "FETCH_RATING": {
-          const { name, school } = msg.payload as {
+          const { name, schoolId } = msg.payload as {
             name: string;
-            school: string;
+            schoolId: string;
           };
           const { data: ratings } = await searchProfessors({
-            query: { name, school },
+            query: { name, school_id: schoolId },
           });
-          const rating = ratings[0] ?? null;
-          sendResponse({ success: true, data: rating });
-          break;
-        }
-
-        case "GENERATE_SCHEDULE": {
-          const { sections, preferences } = msg.payload as {
-            sections: Section[];
-            preferences: SchedulePreferences;
-          };
-          const { data: schedules } = await generateSchedules({
-            body: { sections, preferences },
-          });
-          sendResponse({ success: true, data: schedules });
-          break;
-        }
-
-        case "CHAT": {
-          const { messages, context } = msg.payload as {
-            messages: ChatMessage[];
-            context?: string;
-          };
-          const { data } = await chat({
-            body: { messages, context: context ?? "" },
-          });
-          const reply = data.response;
-          sendResponse({ success: true, data: reply });
-          break;
-        }
-
-        case "PARSE_TRANSCRIPT": {
-          const { text } = msg.payload as { text: string };
-          const { data: transcript } = await parseTranscript({ body: text });
-          sendResponse({ success: true, data: transcript });
-          break;
-        }
-
-        case "CHECK_PREREQS": {
-          const { completed, required } = msg.payload as {
-            completed: TranscriptCourse[];
-            required: string[];
-          };
-          const { data: result } = await checkPrerequisites({
-            body: { completed, required },
-          });
-          sendResponse({ success: true, data: result });
+          sendResponse({ success: true, data: ratings[0] ?? null });
           break;
         }
 

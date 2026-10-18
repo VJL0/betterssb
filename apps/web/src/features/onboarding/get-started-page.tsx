@@ -36,7 +36,7 @@ import { SearchCombobox } from "@workspace/ui/components/search-combobox";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
 import { firstReadyPath } from "@/app/pages";
-import { Logo } from "@/components/logo";
+import { Logo } from "@workspace/ui/components/logo";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import { useSettings } from "@/hooks/use-settings";
 import { useTerms, type Term } from "@/hooks/use-terms";

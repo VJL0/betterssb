@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { classSection, meetingTime } from "@/test/class-section";
+import {
+  classSection,
+  meetingTime,
+} from "@workspace/shared/testing/class-section";
 import type { RatingLookup } from "@/hooks/use-ratings";
 import {
   DEFAULT_FILTERS,

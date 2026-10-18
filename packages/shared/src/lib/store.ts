@@ -5,6 +5,7 @@ import type {
   StoreDocuments,
   StoreKey,
   TermPlan,
+  UserSettings,
 } from "../types/store";
 
 const PLAN_KEY_PREFIX = "plan:";
@@ -18,6 +19,14 @@ const TERM_CODE = /^\d{6}$/;
 
 /** chrome.storage.local keys for store documents, apart from the extension's own keys. */
 export const EXTENSION_STORE_PREFIX = "betterssb:store:";
+
+/** Settings before the student has saved any (the website and the popup). */
+export const DEFAULT_SETTINGS: Omit<UserSettings, "updatedAt"> = {
+  school: null,
+  term: null,
+  major: "",
+  keyboardShortcuts: true,
+};
 
 export function planKey(term: string): `plan:${string}` {
   return `${PLAN_KEY_PREFIX}${term}`;
