@@ -1,10 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import type {
-  Section,
-  SchedulePreferences,
-  GeneratedSchedule,
-} from "@workspace/shared/types";
-import type {
   SSBTerm,
   SSBSection,
   SSBSectionSearchResponse,
@@ -23,6 +18,11 @@ import { Input } from "@workspace/ui/components/input";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { ScheduleCard } from "@/components/schedule/ScheduleCard";
 import { cn } from "@workspace/ui/lib/utils";
+import type {
+  GeneratedSchedule,
+  SchedulePreferences,
+  SectionOutput as Section,
+} from "@workspace/api-client";
 
 export function ScheduleBuilder() {
   const [terms, setTerms] = useState<SSBTerm[]>([]);

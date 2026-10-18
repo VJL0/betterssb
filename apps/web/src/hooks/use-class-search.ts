@@ -1,57 +1,67 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  useInfiniteQuery,
+  useQuery,
+  type InfiniteData,
+} from "@tanstack/react-query";
+import {
+  queryError,
+  type ClassSearchResult,
+  type CodeDescription,
+  type SearchSectionsData,
+} from "@workspace/api-client";
+import {
+  listSubjectsOptions,
+  searchSectionsInfiniteOptions,
+} from "@workspace/api-client/query";
 import {
   parseClassQuery,
   type ClassQuery,
 } from "@workspace/shared/lib/class-query";
-import type {
-  ClassSearchFilters,
-  ClassSearchResult,
-} from "@workspace/shared/types/classes";
-import { fetchSubjects, searchClasses } from "@/lib/api/classes";
 
 /** Each search opens a Banner session, so wait for typing to pause. */
 const TYPING_PAUSE_MS = 500;
 export const PAGE_SIZE = 50;
+/** Subjects change between terms, not within one. */
+const SUBJECTS_STALE_MS = 24 * 60 * 60 * 1000;
+const NO_SUBJECTS = new Set<string>();
 
-// Subject codes per term, for telling "CIS" (a subject) from "data" (a keyword).
-const subjectsByTerm = new Map<string, Promise<Set<string>>>();
+type SearchQuery = SearchSectionsData["query"];
 
-function loadSubjects(term: string): Promise<Set<string>> {
-  let request = subjectsByTerm.get(term);
-  if (!request) {
-    request = fetchSubjects(term)
-      .then((subjects) => new Set(subjects.map((s) => s.code.toUpperCase())))
-      .catch(() => {
-        subjectsByTerm.delete(term);
-        // Without the list every query searches by keyword, which still works.
-        return new Set<string>();
-      });
-    subjectsByTerm.set(term, request);
-  }
-  return request;
-}
-
-function filtersFor(
-  term: string,
-  query: ClassQuery,
-  offset: number,
-): ClassSearchFilters | null {
+function filtersFor(term: string, query: ClassQuery): SearchQuery | null {
   switch (query.kind) {
     case "course":
       return {
         term,
         subject: query.subject,
         courseNumber: query.courseNumber,
-        offset,
         limit: PAGE_SIZE,
       };
     case "subject":
-      return { term, subject: query.subject, offset, limit: PAGE_SIZE };
+      return { term, subject: query.subject, limit: PAGE_SIZE };
     case "keyword":
-      return { term, keyword: query.keyword, offset, limit: PAGE_SIZE };
+      return { term, keyword: query.keyword, limit: PAGE_SIZE };
     default:
       return null;
   }
+}
+
+function subjectCodes(subjects: CodeDescription[]): Set<string> {
+  return new Set(subjects.map((s) => s.code.toUpperCase()));
+}
+
+function loadedCount(pages: readonly ClassSearchResult[]): number {
+  return pages.reduce((n, page) => n + page.sections.length, 0);
+}
+
+/** Every page so far as one result. Seats are as fresh as the first page. */
+function mergePages(data: InfiniteData<ClassSearchResult>): ClassSearchResult {
+  const first = data.pages[0]!;
+  return {
+    totalCount: data.pages.at(-1)!.totalCount,
+    fetchedAt: first.fetchedAt,
+    sections: data.pages.flatMap((page) => page.sections),
+  };
 }
 
 export type SearchStatus = "idle" | "loading" | "ready" | "error";
@@ -68,148 +78,81 @@ export interface ClassSearch {
   refresh: () => void;
 }
 
-interface SearchResponse {
-  /** The filters and refresh it answers, so an old response never shows for a new query. */
-  key: string;
-  refresh: number;
-  result: ClassSearchResult | null;
-  error: Error | null;
+function useSettledInput(input: string): string {
+  const [settled, setSettled] = useState(input);
+  useEffect(() => {
+    const timer = setTimeout(() => setSettled(input), TYPING_PAUSE_MS);
+    return () => clearTimeout(timer);
+  }, [input]);
+  return settled;
 }
 
-const NO_RESPONSE: SearchResponse = {
-  key: "",
-  refresh: -1,
-  result: null,
-  error: null,
-};
-
+/**
+ * Banner's class search for what the student typed: a course ("CIS 2168"),
+ * a subject ("CIS") or a keyword. Pages load 50 sections at a time.
+ */
 export function useClassSearch(
   term: string | null,
   input: string,
 ): ClassSearch {
-  const [subjects, setSubjects] = useState<{
-    term: string;
-    codes: Set<string>;
-  } | null>(null);
-  const [settledInput, setSettledInput] = useState(input);
-  const [response, setResponse] = useState<SearchResponse>(NO_RESPONSE);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [refreshCount, setRefreshCount] = useState(0);
+  const settledInput = useSettledInput(input);
+  const subjects = useQuery({
+    ...listSubjectsOptions({ query: { term: term ?? "" } }),
+    enabled: term !== null,
+    staleTime: SUBJECTS_STALE_MS,
+    select: subjectCodes,
+  });
+  // Without the list every query searches by keyword, which still works.
+  const subjectsSettled = subjects.isSuccess || subjects.isError;
 
-  useEffect(() => {
-    if (!term) return;
-    let cancelled = false;
-    void loadSubjects(term).then((codes) => {
-      if (!cancelled) setSubjects({ term, codes });
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [term]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setSettledInput(input), TYPING_PAUSE_MS);
-    return () => clearTimeout(timer);
-  }, [input]);
-
-  const subjectsReady = subjects !== null && subjects.term === term;
   const query: ClassQuery = useMemo(
     () =>
-      subjectsReady
-        ? parseClassQuery(settledInput, subjects.codes)
+      subjectsSettled
+        ? parseClassQuery(settledInput, subjects.data ?? NO_SUBJECTS)
         : { kind: "empty" },
-    [settledInput, subjects, subjectsReady],
+    [settledInput, subjects.data, subjectsSettled],
   );
-  const filters = term ? filtersFor(term, query, 0) : null;
-  const filtersKey = filters ? JSON.stringify(filters) : "";
+  const filters = term ? filtersFor(term, query) : null;
 
-  useEffect(() => {
-    if (!filtersKey) return;
-    const controller = new AbortController();
-    const request = JSON.parse(filtersKey) as ClassSearchFilters;
-    searchClasses(request, controller.signal).then(
-      (result) =>
-        setResponse({
-          key: filtersKey,
-          refresh: refreshCount,
-          result,
-          error: null,
-        }),
-      (err: unknown) => {
-        if (controller.signal.aborted) return;
-        setResponse((previous) => ({
-          key: filtersKey,
-          refresh: refreshCount,
-          // Keep showing this query's last results, marked stale.
-          result: previous.key === filtersKey ? previous.result : null,
-          error: err instanceof Error ? err : new Error(String(err)),
-        }));
-      },
-    );
-    return () => controller.abort();
-  }, [filtersKey, refreshCount]);
-
-  const forThisQuery = response.key === filtersKey;
-  const result = forThisQuery ? response.result : null;
-
-  const loadMore = useCallback(() => {
-    if (!term || !result || result.sections.length >= result.totalCount) return;
-    const next = filtersFor(term, query, result.sections.length);
-    if (!next) return;
-    setLoadingMore(true);
-    searchClasses(next).then(
-      (page) => {
-        setResponse((current) =>
-          current.key === filtersKey && current.result
-            ? {
-                ...current,
-                result: {
-                  ...page,
-                  sections: [...current.result.sections, ...page.sections],
-                },
-              }
-            : current,
-        );
-        setLoadingMore(false);
-      },
-      (err: unknown) => {
-        setResponse((current) => ({
-          ...current,
-          error: err instanceof Error ? err : new Error(String(err)),
-        }));
-        setLoadingMore(false);
-      },
-    );
-  }, [term, result, query, filtersKey]);
-
-  const refresh = useCallback(() => setRefreshCount((n) => n + 1), []);
+  const search = useInfiniteQuery({
+    ...searchSectionsInfiniteOptions({
+      query: filters ?? { term: term ?? "" },
+      meta: { errorMessage: "Couldn't search Banner's classes." },
+    }),
+    enabled: filters !== null,
+    initialPageParam: 0,
+    getNextPageParam: (last, pages) => {
+      const loaded = loadedCount(pages);
+      return loaded < last.totalCount ? loaded : undefined;
+    },
+    select: mergePages,
+  });
 
   const typing =
     input.trim() !== settledInput.trim() && input.trim().length >= 2;
-  const waiting =
-    Boolean(term) &&
-    (!subjectsReady ||
-      typing ||
-      (filtersKey !== "" &&
-        (!forThisQuery || response.refresh !== refreshCount)));
-  const status: SearchStatus = !term
-    ? "idle"
-    : waiting
-      ? "loading"
-      : !filtersKey
-        ? "idle"
-        : response.error
-          ? "error"
-          : "ready";
+  const result = filters ? (search.data ?? null) : null;
+  const refreshing = search.isFetching && !search.isFetchingNextPage;
+
+  let status: SearchStatus;
+  if (!term) status = "idle";
+  else if (!subjectsSettled || typing) status = "loading";
+  else if (!filters) status = "idle";
+  else if (search.isError && !refreshing) status = "error";
+  else if (search.isPending || refreshing) status = "loading";
+  else status = "ready";
 
   return {
     query,
     status,
     result,
     stale: status === "error" && result !== null,
-    error: forThisQuery ? response.error : null,
-    loadingMore,
-    loadMore,
-    refresh,
+    error: filters ? queryError(search.error) : null,
+    loadingMore: search.isFetchingNextPage,
+    loadMore: () => {
+      if (search.hasNextPage && !search.isFetchingNextPage) {
+        void search.fetchNextPage();
+      }
+    },
+    refresh: () => void search.refetch(),
   };
 }

@@ -4,7 +4,7 @@ import {
   WEEKDAYS,
   type WeekDay,
 } from "@workspace/shared/lib/meeting-times";
-import type { SSBCodeDescription } from "@workspace/shared/types/ssb";
+import type { CodeDescription } from "@workspace/api-client";
 import { Button } from "@workspace/ui/components/button";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import {
@@ -38,7 +38,7 @@ const RATING_LABEL: Record<MinRating, string> = {
 interface FiltersPanelProps {
   filters: SearchFilters;
   onChange: (filters: SearchFilters) => void;
-  attributes: SSBCodeDescription[];
+  attributes: CodeDescription[];
   /** Ratings need a school; without one the rating filter can't work. */
   ratingsAvailable: boolean;
 }

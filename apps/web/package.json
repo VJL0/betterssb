@@ -13,6 +13,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.104.3",
+    "@workspace/api-client": "workspace:*",
     "@workspace/shared": "workspace:*",
     "@workspace/ui": "workspace:*",
     "class-variance-authority": "^0.7.1",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/eslint-plugin-query": "^5.104.3",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
     "@types/node": "^24.13.3",

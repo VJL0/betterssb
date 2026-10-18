@@ -1,4 +1,4 @@
-import type { RMPRating } from "../types/index";
+import type { RmpRating } from "@workspace/api-client";
 
 export const HIGH_RATING_MIN = 4;
 export const MID_RATING_MIN = 3;
@@ -21,6 +21,6 @@ export function formatRating(rating: number): string {
  * A profile nobody has rated reports 0.0, which would read as a terrible
  * score. It carries no information, so it's treated like no profile.
  */
-export function usableRating(rating: RMPRating | null): RMPRating | null {
+export function usableRating(rating: RmpRating | null): RmpRating | null {
   return rating && rating.numRatings > 0 ? rating : null;
 }

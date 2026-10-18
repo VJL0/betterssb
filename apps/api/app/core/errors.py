@@ -13,9 +13,39 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, ConfigDict, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.security import SECURITY_HEADERS
+
+PROBLEM_MEDIA_TYPE = "application/problem+json"
+
+
+class ProblemError(BaseModel):
+    """One validation error: a JSON Pointer into the body, or a parameter."""
+
+    detail: str
+    pointer: str | None = Field(default=None, description="JSON Pointer into the body.")
+    in_: str | None = Field(
+        default=None,
+        alias="in",
+        description="Parameter location: query, path, header or cookie.",
+    )
+    name: str | None = Field(default=None, description="Parameter name.")
+
+
+class Problem(BaseModel):
+    """RFC 9457 problem details. `detail`, when present, is safe to show users."""
+
+    model_config = ConfigDict(json_schema_serialization_defaults_required=True)
+
+    type: str = "about:blank"
+    title: str
+    status: int
+    detail: str | None = None
+    errors: list[ProblemError] | None = Field(
+        default=None, description="Validation errors (422 only)."
+    )
 
 
 def problem(
@@ -23,17 +53,20 @@ def problem(
     detail: str | None = None,
     *,
     headers: dict[str, str] | None = None,
-    **extensions: Any,
+    errors: list[dict[str, Any]] | None = None,
 ) -> JSONResponse:
     title = HTTPStatus(status).phrase
-    body: dict[str, Any] = {"type": "about:blank", "title": title, "status": status}
-    if detail and detail != title:
-        body["detail"] = detail
+    body = Problem(
+        title=title,
+        status=status,
+        detail=detail if detail and detail != title else None,
+        errors=errors,
+    )
     return JSONResponse(
-        body | extensions,
+        body.model_dump(by_alias=True, exclude_none=True),
         status_code=status,
         headers=headers,
-        media_type="application/problem+json",
+        media_type=PROBLEM_MEDIA_TYPE,
     )
 
 

@@ -10,9 +10,11 @@
     "test": "vitest run"
   },
   "exports": {
-    "./types": "./src/types/index.ts",
     "./types/*": "./src/types/*.ts",
     "./lib/*": "./src/lib/*.ts"
+  },
+  "dependencies": {
+    "@workspace/api-client": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Audit, Requirement } from "../types/dars";
+import type { Audit, Requirement } from "@workspace/api-client";
 import { creditTotals, neededRequirements } from "./dars";
 
 function requirement(overrides: Partial<Requirement>): Requirement {

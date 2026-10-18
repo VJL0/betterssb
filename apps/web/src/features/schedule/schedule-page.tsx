@@ -16,7 +16,6 @@ import {
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
 import { primaryInstructorName } from "@workspace/shared/lib/sections";
-import type { ClassSection } from "@workspace/shared/types/classes";
 import type { PlannedSection } from "@workspace/shared/types/store";
 import {
   Alert,
@@ -67,6 +66,7 @@ import {
   useGeneratedSchedules,
   type GeneratedSchedules,
 } from "./use-generated-schedules";
+import type { ClassSection } from "@workspace/api-client";
 
 const ELAPSED_TICK_MS = 100;
 const MS_PER_SECOND = 1000;

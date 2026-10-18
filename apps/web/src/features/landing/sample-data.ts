@@ -4,8 +4,8 @@
  */
 import type { CourseColor } from "@workspace/shared/lib/course-colors";
 import type { SeatCounts } from "@workspace/shared/lib/seats";
-import type { RMPRating } from "@workspace/shared/types";
 import type { WeekCalendarBlock } from "@workspace/ui/components/week-calendar";
+import type { RmpRating } from "@workspace/api-client";
 
 const H = 60;
 
@@ -15,13 +15,14 @@ export function sampleRating(
   professorName: string,
   overallRating: number,
   difficulty: number,
-): RMPRating {
+): RmpRating {
   return {
     professorName,
     department: "Computer Science",
     overallRating,
     difficulty,
     numRatings: 0,
+    wouldTakeAgainPct: null,
     topTags: [],
     // No link: sample instructors have no real profile.
     rmpUrl: "",
@@ -48,7 +49,7 @@ export interface SampleSection {
   crn: string;
   days: string;
   time: string;
-  instructor: RMPRating;
+  instructor: RmpRating;
   seats: SeatCounts;
 }
 

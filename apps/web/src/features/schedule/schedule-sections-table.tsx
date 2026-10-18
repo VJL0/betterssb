@@ -1,5 +1,4 @@
 import { courseCode, planCourseColor } from "@workspace/shared/lib/plan";
-import type { ClassSection } from "@workspace/shared/types/classes";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { CourseBadge } from "@workspace/ui/components/course-badge";
 import { SeatMeter } from "@workspace/ui/components/seat-meter";
@@ -16,6 +15,7 @@ import {
   SectionInstructor,
   SectionMeetings,
 } from "@/features/search/course-card";
+import type { ClassSection } from "@workspace/api-client";
 
 interface ScheduleSectionsTableProps {
   heading: string;

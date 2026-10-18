@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { RMPRating } from "../types/index";
 import { formatRating, ratingBand, usableRating } from "./ratings";
+import type { RmpRating } from "@workspace/api-client";
 
 describe("ratingBand", () => {
   it.each([
@@ -26,12 +26,13 @@ describe("formatRating", () => {
 });
 
 describe("usableRating", () => {
-  const rating = (numRatings: number): RMPRating => ({
+  const rating = (numRatings: number): RmpRating => ({
     professorName: "Ada Lovelace",
     department: "Computer Science",
     overallRating: numRatings ? 4.2 : 0,
     difficulty: numRatings ? 3.1 : 0,
     numRatings,
+    wouldTakeAgainPct: null,
     topTags: [],
     rmpUrl: "https://www.ratemyprofessors.com/professor/1",
   });
