@@ -11,7 +11,7 @@ export function formatCredits(n: number | null | undefined): string {
 }
 
 /** DARS puts degree-wide credit totals on a requirement in this category. */
-const TOTAL_HOURS_CATEGORY = "Total_Hours";
+export const TOTAL_HOURS_CATEGORY = "Total_Hours";
 
 export interface CreditTotals {
   earned: number;

@@ -7,6 +7,8 @@ import { cn } from "@workspace/ui/lib/utils";
 type ButtonLinkProps = VariantProps<typeof buttonVariants> & {
   className?: string;
   children: ReactNode;
+  /** When the visible text is ambiguous; it must contain that text (WCAG 2.5.3). */
+  "aria-label"?: string;
 } & (
     | { to: string; href?: never }
     | {
@@ -27,17 +29,24 @@ export function ButtonLink({
   children,
   to,
   href,
+  "aria-label": ariaLabel,
 }: ButtonLinkProps) {
   const classes = cn(buttonVariants({ variant, size }), className);
   if (to !== undefined) {
     return (
-      <Link to={to} className={classes}>
+      <Link to={to} className={classes} aria-label={ariaLabel}>
         {children}
       </Link>
     );
   }
   return (
-    <a href={href} target="_blank" rel="noreferrer" className={classes}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={classes}
+      aria-label={ariaLabel}
+    >
       {children}
     </a>
   );

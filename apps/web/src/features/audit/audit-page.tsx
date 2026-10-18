@@ -1,261 +1,251 @@
-import { useEffect, useRef, useState, type DragEvent } from "react";
-import { AuditReport } from "./audit-report";
-import { AuditStatusIcon } from "@workspace/ui/components/route-map";
-import { formatCredits, isNoteOnly } from "@workspace/shared/lib/dars";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  CircleXIcon,
+  FileUpIcon,
+  GraduationCapIcon,
+  InfoIcon,
+  MessageCircleQuestionIcon,
+  RefreshCwIcon,
+} from "lucide-react";
+import { queryError, type Audit } from "@workspace/api-client";
+import {
+  auditGroups,
+  countLines,
+  plannedOptions,
+  type AuditGroup,
+  type LineStatus,
+} from "@workspace/shared/lib/audit-view";
+import { creditTotals, formatCredits } from "@workspace/shared/lib/dars";
+import {
+  auditCourseKeys,
+  projectedFinish,
+  termEntries,
+} from "@workspace/shared/lib/planner";
+import type { TermPlan } from "@workspace/shared/types/store";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@workspace/ui/components/alert";
+import { Button } from "@workspace/ui/components/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@workspace/ui/components/empty";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+import { Spinner } from "@workspace/ui/components/spinner";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
+import { isPageReady } from "@/app/pages";
+import { ButtonLink } from "@/components/button-link";
+import { useBannerConnection } from "@/hooks/use-banner-connection";
+import { usePlans } from "@/hooks/use-plans";
 import { useStoreDocument } from "@/lib/store/store-context";
-import { runViaExtension, waitForExtension } from "@/lib/extension";
-import { parseAudit, type Audit } from "@workspace/api-client";
+import { RequirementGroup } from "./requirement-group";
+import { useAuditRun } from "./use-audit-run";
 
 const DARS_URL = "https://prd-dars.temple.edu/selfservice/";
+const ELAPSED_TICK_MS = 1_000;
+const MS_PER_SECOND = 1_000;
 
-type Method = "extension" | "upload";
+type Filter = LineStatus | "all";
+const FILTERS: { value: Filter; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "needed", label: "Needed" },
+  { value: "progress", label: "In progress" },
+  { value: "done", label: "Done" },
+];
 
-type RunState =
-  | { kind: "idle" }
-  | { kind: "running"; startedAt: number; label: string }
-  | { kind: "error"; message: string }
-  | { kind: "done"; audit: Audit };
-
-/** Reads a saved printer-friendly DARS audit file and parses it. */
-async function parseAuditFile(file: File): Promise<Audit> {
-  const { data } = await parseAudit({
-    body: await file.text(),
-    meta: { errorMessage: "Couldn't read the audit." },
-  });
-  return data;
+function shortDate(value: string): string | null {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? null
+    : date.toLocaleDateString("en", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
 }
 
-export function AuditPage() {
-  const [method, setMethod] = useState<Method>("upload");
-  const [extVersion, setExtVersion] = useState<string | null>(null);
-  const [run, setRun] = useState<RunState>({ kind: "idle" });
-  const storedAudit = useStoreDocument("audit");
+/** DARS writes "10/02/2026 05:14 PM"; fall back to when it was saved here. */
+function runDate(audit: Audit, storedAt: string): string {
+  return (
+    shortDate(audit.preparedOn.split(" ")[0] ?? "") ??
+    shortDate(storedAt) ??
+    audit.preparedOn
+  );
+}
 
-  useEffect(() => {
-    void waitForExtension().then((v) => {
-      setExtVersion(v);
-      if (v) setMethod("extension");
-    });
-  }, []);
-
-  async function execute(label: string, task: () => Promise<Audit>) {
-    setRun({ kind: "running", startedAt: Date.now(), label });
-    try {
-      const audit = await task();
-      setRun({ kind: "done", audit });
-      // Kept on this device for the semester planner. The report shows
-      // either way, so a failed save isn't an error here.
-      void storedAudit
-        .save({ audit, storedAt: new Date().toISOString() })
-        .catch(() => undefined);
-    } catch (err) {
-      setRun({
-        kind: "error",
-        message: err instanceof Error ? err.message : "Something went wrong.",
-      });
+/** The term each planned course key is in, across every term plan. */
+function plannedTermsOf(plans: readonly TermPlan[]): Map<string, string> {
+  const terms = new Map<string, string>();
+  for (const plan of plans) {
+    for (const entry of termEntries(plan)) {
+      if (entry.code) terms.set(entry.key, plan.termDescription);
     }
   }
-
-  const running = run.kind === "running";
-
-  return (
-    <div className="text-foreground lg:grid lg:h-[calc(100dvh-4rem)] lg:grid-cols-2">
-      <title>Degree audit · BetterSSB</title>
-      <aside className="flex flex-col gap-6 border-border p-4 sm:p-6 lg:overflow-y-auto lg:border-r lg:p-10">
-        <header>
-          <h1 className="text-3xl font-bold tracking-tight">Degree audit</h1>
-          <p className="mt-2 max-w-prose text-muted-foreground">
-            See your DARS audit, requirement by requirement — what's done,
-            what's in progress, and exactly which courses can fill what's left.
-          </p>
-        </header>
-
-        <MethodTabs
-          method={method}
-          onChange={setMethod}
-          extInstalled={extVersion != null}
-          disabled={running}
-        />
-
-        {method === "extension" && (
-          <ExtensionPanel
-            installed={extVersion != null}
-            running={running}
-            onRun={() =>
-              execute("Running your audit in DARS…", runViaExtension)
-            }
-          />
-        )}
-        {method === "upload" && (
-          <UploadPanel
-            running={running}
-            onFile={(file) =>
-              execute("Reading your audit…", () => parseAuditFile(file))
-            }
-          />
-        )}
-
-        {run.kind === "running" && (
-          <RunningNotice startedAt={run.startedAt} label={run.label} />
-        )}
-        {run.kind === "error" && (
-          <div
-            role="alert"
-            className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
-          >
-            <p className="font-medium">{run.message}</p>
-          </div>
-        )}
-        {run.kind === "done" && <AuditSummary audit={run.audit} />}
-      </aside>
-
-      <main className="min-h-[50vh] px-4 pb-10 sm:px-6 lg:overflow-y-auto">
-        {run.kind === "done" ? (
-          <AuditReport audit={run.audit} />
-        ) : (
-          <EmptyReport running={running} />
-        )}
-      </main>
-    </div>
-  );
+  return terms;
 }
 
-function MethodTabs({
-  method,
-  onChange,
-  extInstalled,
-  disabled,
-}: {
-  method: Method;
-  onChange: (m: Method) => void;
-  extInstalled: boolean;
-  disabled: boolean;
-}) {
-  const tabs: { id: Method; label: string }[] = [
-    { id: "extension", label: extInstalled ? "Extension" : "Extension •" },
-    { id: "upload", label: "Upload file" },
-  ];
-  return (
-    <div
-      role="tablist"
-      aria-label="How to load your audit"
-      className="flex gap-1 rounded-lg bg-muted p-1"
-    >
-      {tabs.map((t) => (
-        <button
-          key={t.id}
-          role="tab"
-          aria-selected={method === t.id}
-          disabled={disabled}
-          onClick={() => onChange(t.id)}
-          className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-50 ${
-            method === t.id
-              ? "bg-card text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
+function linesFor(group: AuditGroup, filter: Filter) {
+  return filter === "all"
+    ? group.lines
+    : group.lines.filter((line) => line.status === filter);
+}
+
+/** W3.1 · Degree audit: the saved DARS audit, requirement by requirement. */
+export function AuditPage() {
+  const run = useAuditRun();
+  const { extensionInstalled } = useBannerConnection();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const audit = run.stored?.audit ?? null;
+
+  const actions = (
+    <>
+      <Button
+        variant="outline"
+        onClick={() => fileInput.current?.click()}
+        disabled={run.running}
+      >
+        <FileUpIcon data-icon="inline-start" />
+        Upload DARS file
+      </Button>
+      {extensionInstalled && (
+        <Button
+          variant={audit ? "outline" : "default"}
+          onClick={() => run.start({ kind: "extension" })}
+          disabled={run.running}
         >
-          {t.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ExtensionPanel({
-  installed,
-  running,
-  onRun,
-}: {
-  installed: boolean;
-  running: boolean;
-  onRun: () => void;
-}) {
-  return (
-    <div className="flex flex-col gap-3">
-      <p className="text-sm text-muted-foreground">
-        Runs the audit in your browser using the DARS session you're already
-        signed into. Nothing sensitive leaves your computer.
-      </p>
-      {!installed && (
-        <p className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning">
-          The BetterSSB extension isn't detected. Install it, or use{" "}
-          <b>Upload file</b> instead.
-        </p>
+          <RefreshCwIcon data-icon="inline-start" />
+          {audit ? "Re-run audit" : "Run audit"}
+        </Button>
       )}
-      <button
-        type="button"
-        onClick={onRun}
-        disabled={running || !installed}
-        className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/80 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {running && <Spinner />}
-        {running ? "Running…" : "Run audit"}
-      </button>
-      <p className="text-xs text-muted-foreground">
-        If you're not signed in, a DARS tab opens so you can log in — then the
-        audit runs automatically.
-      </p>
-    </div>
+    </>
   );
-}
-
-function UploadPanel({
-  running,
-  onFile,
-}: {
-  running: boolean;
-  onFile: (file: File) => void;
-}) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [dragging, setDragging] = useState(false);
-
-  function onDrop(e: DragEvent) {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) onFile(file);
-  }
 
   return (
-    <div className="flex flex-col gap-3">
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={onDrop}
-        disabled={running}
-        className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-8 text-center transition-colors disabled:opacity-50 ${
-          dragging
-            ? "border-ring bg-accent"
-            : "border-input bg-card hover:border-ring"
-        }`}
-      >
-        <span className="text-2xl">📄</span>
-        <span className="text-sm font-medium text-foreground">
-          Drop your audit file here, or click to choose
-        </span>
-        <span className="text-xs text-muted-foreground">
-          The saved DARS audit page (.html)
-        </span>
-      </button>
+    <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+      <title>Degree audit · BetterSSB</title>
+      {/* Opened by "Upload DARS file"; hidden from tab order and screen readers. */}
       <input
-        ref={inputRef}
+        ref={fileInput}
         type="file"
         accept=".html,.htm,text/html"
-        className="hidden"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) onFile(file);
+          if (file) run.start({ kind: "file", file });
           e.target.value = "";
         }}
       />
-      <details className="text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Degree audit
+          </h1>
+          <p className="text-muted-foreground">
+            {audit && run.stored
+              ? [
+                  audit.programTitle,
+                  audit.catalogYear && `${audit.catalogYear} catalog`,
+                  `DARS run ${runDate(audit, run.stored.storedAt)}`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")
+              : "What's done, in progress and still needed for your degree"}
+          </p>
+        </div>
+        {audit && <div className="flex flex-wrap gap-2">{actions}</div>}
+      </div>
+
+      {run.running && (
+        <Running label={run.runLabel} startedAt={run.startedAt} />
+      )}
+      {run.error && !run.running && (
+        <Alert variant="destructive">
+          <CircleXIcon />
+          <AlertTitle>The audit didn't update</AlertTitle>
+          <AlertDescription>
+            {queryError(run.error)?.message}
+            {audit && " Your last saved audit is below."}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {run.loading ? (
+        <Skeleton className="h-96 rounded-3xl" />
+      ) : audit && run.stored ? (
+        <AuditReport audit={audit} storedAt={run.stored.storedAt} />
+      ) : (
+        !run.running && (
+          <NoAudit actions={actions} extensionInstalled={extensionInstalled} />
+        )
+      )}
+    </div>
+  );
+}
+
+function Running({ label, startedAt }: { label: string; startedAt: number }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), ELAPSED_TICK_MS);
+    return () => clearInterval(timer);
+  }, []);
+  const seconds = Math.max(0, Math.round((now - startedAt) / MS_PER_SECOND));
+  return (
+    <div className="flex items-center gap-3 rounded-3xl bg-card p-4 shadow-sm ring-1 ring-foreground/5">
+      <Spinner aria-hidden />
+      <span role="status" className="flex flex-1 flex-col">
+        {label}
+        <span className="text-xs text-muted-foreground">
+          DARS usually takes 5 to 20 seconds. If you're signed out, a DARS tab
+          opens so you can sign in.
+        </span>
+      </span>
+      <span aria-hidden className="text-muted-foreground tabular-nums">
+        {seconds} s
+      </span>
+    </div>
+  );
+}
+
+function NoAudit({
+  actions,
+  extensionInstalled,
+}: {
+  actions: React.ReactNode;
+  extensionInstalled: boolean;
+}) {
+  return (
+    <Empty className="border border-dashed">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <GraduationCapIcon />
+        </EmptyMedia>
+        <EmptyTitle>See your degree audit</EmptyTitle>
+        <EmptyDescription>
+          {extensionInstalled
+            ? "Run it in DARS with the extension, or upload a saved audit file."
+            : "Upload the audit page you saved from DARS. With the BetterSSB extension, you can run it from here instead."}{" "}
+          It's saved on this device for the planner and the advisor.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent className="flex-row flex-wrap justify-center">
+        {actions}
+      </EmptyContent>
+      <details className="max-w-md text-left text-muted-foreground">
         <summary className="cursor-pointer font-medium text-foreground">
-          How do I save it?
+          How do I save my audit?
         </summary>
         <ol className="mt-2 list-decimal space-y-1 pl-5">
           <li>
@@ -264,160 +254,197 @@ function UploadPanel({
               href={DARS_URL}
               target="_blank"
               rel="noreferrer"
-              className="text-primary underline"
+              className="text-foreground underline underline-offset-4"
             >
               DARS
             </a>{" "}
-            and click the printer-friendly / print view.
+            and switch to the printer-friendly view.
           </li>
-          <li>
-            Save the page (<kbd>⌘S</kbd> / <kbd>Ctrl+S</kbd>) as an HTML file.
-          </li>
-          <li>
-            Drop that file above. It never leaves our server after parsing.
-          </li>
+          <li>Save the page (⌘S or Ctrl+S) as an HTML file.</li>
+          <li>Upload that file here.</li>
         </ol>
       </details>
-    </div>
+    </Empty>
   );
 }
 
-function RunningNotice({
-  startedAt,
-  label,
-}: {
-  startedAt: number;
-  label: string;
-}) {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-  const seconds = Math.max(0, Math.round((now - startedAt) / 1000));
-  return (
-    <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-sm text-foreground">
-      <Spinner />
-      <span>
-        {label} <span className="tabular-nums">{seconds}s</span>
-        <span className="block text-xs text-muted-foreground">
-          A fresh audit usually takes 5–20 seconds.
-        </span>
-      </span>
-    </div>
-  );
-}
-
-function AuditSummary({ audit }: { audit: Audit }) {
-  const reqs = audit.requirements.filter(
-    (r) => !isNoteOnly(r) && r.status !== "none",
-  );
-  const count = (s: string) => reqs.filter((r) => r.status === s).length;
-  const totals = audit.requirements.find((r) => r.category === "Total_Hours");
+function AuditReport({ audit, storedAt }: { audit: Audit; storedAt: string }) {
+  const { plans } = usePlans();
+  const transcript = useStoreDocument("transcript").value;
+  const [filter, setFilter] = useState<Filter>("all");
+  const groups = useMemo(() => auditGroups(audit), [audit]);
+  const counts = countLines(groups);
+  const totals = creditTotals(audit);
+  const plannedTerms = useMemo(() => plannedTermsOf(plans), [plans]);
+  const finish = totals
+    ? projectedFinish(totals, plans, auditCourseKeys(audit))
+    : null;
+  const plannedKeys = new Set(plannedTerms.keys());
+  const covered = groups
+    .flatMap((g) => g.lines)
+    .filter((l) => l.status === "needed")
+    .flatMap((l) => plannedOptions(l, plannedKeys).slice(0, 1));
+  const gpa = transcript?.transcript.gpa ?? null;
 
   return (
-    <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
-      <div className="flex items-start gap-3">
-        <AuditStatusIcon status={audit.complete ? "complete" : "incomplete"} />
-        <div>
-          <h2 className="font-semibold">{audit.programTitle}</h2>
-          <p className="text-sm text-muted-foreground">
-            {audit.programCode} · Catalog {audit.catalogYear} · Run{" "}
-            {audit.preparedOn}
-          </p>
-        </div>
-      </div>
-
-      <dl className="mt-5 grid grid-cols-3 gap-3 text-center">
-        <Stat label="Complete" value={count("complete")} tone="text-success" />
+    <>
+      <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(13.75rem,100%),1fr))] gap-4">
+        {totals && (
+          <Stat
+            label="Credits"
+            value={formatCredits(totals.earned)}
+            detail={`of ${formatCredits(totals.total)} · ${formatCredits(totals.inProgress)} in progress`}
+          >
+            <span
+              aria-hidden
+              className="flex h-2 overflow-hidden rounded-full bg-muted"
+            >
+              <span
+                className="bg-primary"
+                style={{ width: `${(totals.earned / totals.total) * 100}%` }}
+              />
+              <span
+                className="bg-primary/45"
+                style={{
+                  width: `${(totals.inProgress / totals.total) * 100}%`,
+                }}
+              />
+            </span>
+          </Stat>
+        )}
+        {gpa !== null && (
+          <Stat
+            label="GPA"
+            value={gpa.toFixed(2)}
+            detail="from your transcript"
+          />
+        )}
         <Stat
-          label="In progress"
-          value={count("in_progress")}
-          tone="text-info"
-        />
-        <Stat
-          label="Still needed"
-          value={count("incomplete")}
-          tone="text-destructive"
-        />
+          label="Requirements met"
+          value={String(counts.done)}
+          detail={`of ${counts.all}`}
+        >
+          <span className="text-xs text-muted-foreground">
+            {counts.progress} in progress
+          </span>
+        </Stat>
+        {finish && (
+          <Stat
+            label="Projected finish"
+            value={
+              finish.onTrack
+                ? (finish.lastTerm ?? "On track")
+                : `${formatCredits(finish.shortBy)} cr`
+            }
+            detail={finish.onTrack ? undefined : "still to plan"}
+          >
+            {isPageReady("plan") && (
+              <ButtonLink
+                to="/plan"
+                variant="link"
+                size="xs"
+                className="self-start px-0"
+              >
+                See the plan
+              </ButtonLink>
+            )}
+          </Stat>
+        )}
       </dl>
 
-      {totals?.earned?.credits != null && (
-        <div className="mt-5">
-          <CreditsBar
-            earned={totals.earned.credits}
-            inProgress={totals.inProgress?.credits ?? 0}
-            needed={totals.needs?.credits ?? 0}
-          />
-        </div>
-      )}
-    </section>
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <Tabs
+          value={filter}
+          onValueChange={(value) => setFilter(value as Filter)}
+          className="gap-4"
+        >
+          <TabsList aria-label="Filter requirements" className="self-start">
+            {FILTERS.map((f) => (
+              <TabsTrigger key={f.value} value={f.value}>
+                {f.label}
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {counts[f.value]}
+                </span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {FILTERS.map((f) => (
+            <TabsContent
+              key={f.value}
+              value={f.value}
+              className="flex flex-col gap-4"
+            >
+              {groups.map((group) => (
+                <RequirementGroup
+                  key={group.code}
+                  group={group}
+                  lines={linesFor(group, f.value)}
+                  plannedTerms={plannedTerms}
+                />
+              ))}
+            </TabsContent>
+          ))}
+        </Tabs>
+
+        <aside className="flex flex-col gap-4">
+          {covered.length > 0 && (
+            <Alert variant="info">
+              <InfoIcon />
+              <AlertTitle>
+                Your plan covers {covered.length} more{" "}
+                {covered.length === 1 ? "requirement" : "requirements"}
+              </AlertTitle>
+              <AlertDescription>
+                {covered.join(", ")} will count once you take{" "}
+                {covered.length === 1 ? "it" : "them"}.
+              </AlertDescription>
+            </Alert>
+          )}
+          {isPageReady("advisor") && (
+            <ButtonLink
+              to="/advisor"
+              className="h-auto justify-start gap-3 rounded-3xl p-4 text-left whitespace-normal"
+            >
+              <MessageCircleQuestionIcon data-icon="inline-start" />
+              <span className="flex flex-col">
+                <span className="font-medium">Ask about this audit</span>
+                <span className="text-xs font-normal opacity-80">
+                  The advisor can read it if you let it.
+                </span>
+              </span>
+            </ButtonLink>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Saved on this device {shortDate(storedAt)}. DARS is the official
+            record; check anything that matters with your advisor.
+          </p>
+        </aside>
+      </div>
+    </>
   );
 }
 
 function Stat({
   label,
   value,
-  tone,
+  detail,
+  children,
 }: {
   label: string;
-  value: number;
-  tone: string;
+  value: string;
+  detail?: string;
+  children?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg bg-muted/50 py-3">
-      <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className={`text-2xl font-bold tabular-nums ${tone}`}>{value}</dd>
-    </div>
-  );
-}
-
-function CreditsBar({
-  earned,
-  inProgress,
-  needed,
-}: {
-  earned: number;
-  inProgress: number;
-  needed: number;
-}) {
-  // DARS "needs" already subtracts in-progress credits, so the total is the sum of all three.
-  const total = earned + inProgress + needed;
-  const pct = (n: number) => `${total ? (n / total) * 100 : 0}%`;
-  return (
-    <div>
-      <div className="flex justify-between text-xs text-muted-foreground">
-        <span>Credits toward degree</span>
-        <span className="tabular-nums">
-          {formatCredits(earned)} earned · {formatCredits(inProgress)} in
-          progress · {formatCredits(needed)} to go
+    <div className="flex flex-col gap-2 rounded-3xl bg-card px-5 py-4 shadow-sm ring-1 ring-foreground/5">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="flex flex-col gap-2">
+        <span className="flex items-baseline gap-1.5 tabular-nums">
+          <span className="text-3xl font-medium">{value}</span>
+          {detail && <span className="text-muted-foreground">{detail}</span>}
         </span>
-      </div>
-      <div className="mt-1.5 flex h-2.5 overflow-hidden rounded-full bg-muted">
-        <div className="bg-success" style={{ width: pct(earned) }} />
-        <div className="bg-info" style={{ width: pct(inProgress) }} />
-      </div>
+        {children}
+      </dd>
     </div>
-  );
-}
-
-function EmptyReport({ running }: { running: boolean }) {
-  return (
-    <div className="flex h-full min-h-[50vh] items-center justify-center">
-      <p className="max-w-xs text-center text-sm text-muted-foreground">
-        {running
-          ? "Waiting for your audit…"
-          : "Your audit will appear here once it loads."}
-      </p>
-    </div>
-  );
-}
-
-function Spinner() {
-  return (
-    <span
-      aria-hidden
-      className="inline-block size-4 animate-spin rounded-full border-2 border-current border-r-transparent"
-    />
   );
 }

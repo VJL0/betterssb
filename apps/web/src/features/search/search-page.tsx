@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { courseCode, plannedSectionFrom } from "@workspace/shared/lib/plan";
 import { planCredits } from "@workspace/shared/lib/plan";
@@ -88,7 +89,9 @@ const FILTER_LABEL: Record<FilterName, string> = {
 /** W2.1 · Course search: live sections from Banner with ratings and seats. */
 export function SearchPage() {
   const { term, status: termStatus } = useCurrentTerm();
-  const [input, setInput] = useState("");
+  // "Find sections" links from the audit open with ?q=CIS 4398.
+  const [params] = useSearchParams();
+  const [input, setInput] = useState(() => params.get("q") ?? "");
   const inputRef = useRef<HTMLInputElement>(null);
   const search = useClassSearch(term?.code ?? null, input);
 

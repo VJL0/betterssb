@@ -58,6 +58,22 @@ export const router = createBrowserRouter([
           })),
       },
       {
+        path: "/transcript",
+        errorElement: <RouteError />,
+        lazy: () =>
+          import("@/features/transcript/transcript-page").then((m) => ({
+            Component: m.TranscriptPage,
+          })),
+      },
+      {
+        path: "/advisor",
+        errorElement: <RouteError />,
+        lazy: () =>
+          import("@/features/advisor/advisor-page").then((m) => ({
+            Component: m.AdvisorPage,
+          })),
+      },
+      {
         path: "/settings",
         errorElement: <RouteError />,
         lazy: () =>

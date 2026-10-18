@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import type { CreditTotals } from "@workspace/shared/lib/dars";
 import { formatCredits } from "@workspace/shared/lib/dars";
+import type { ProjectedFinish } from "@workspace/shared/lib/planner";
 import { isPageReady } from "@/app/pages";
 import { ButtonLink } from "@/components/button-link";
 
@@ -17,12 +18,9 @@ const CARD_CLASS =
 
 interface DegreeProgressProps {
   totals: CreditTotals;
-  /** Credits planned in terms that the audit doesn't count yet. */
-  planned: number;
+  finish: ProjectedFinish;
   /** Credits of requirements without a term yet. */
   unplaced: number;
-  /** The last term with anything planned, for "on track to finish". */
-  lastTermName: string | null;
 }
 
 function share(credits: number, total: number): string {
@@ -32,13 +30,11 @@ function share(credits: number, total: number): string {
 /** W2.3 summary: credits toward the degree, from the stored audit plus the plan. */
 export function DegreeProgress({
   totals,
-  planned,
+  finish,
   unplaced,
-  lastTermName,
 }: DegreeProgressProps) {
-  const counted = totals.earned + totals.inProgress + planned;
-  const onTrack = counted >= totals.total;
-  const short = totals.total - counted;
+  const { counted, onTrack, shortBy: short, lastTerm: lastTermName } = finish;
+  const planned = counted - totals.earned - totals.inProgress;
   const legend = [
     { label: "Completed", value: totals.earned, swatch: "bg-primary" },
     { label: "In progress", value: totals.inProgress, swatch: "bg-primary/55" },
