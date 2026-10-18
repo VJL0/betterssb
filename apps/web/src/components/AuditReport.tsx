@@ -8,7 +8,8 @@ import type {
   Requirement,
   SubRequirement,
 } from "@workspace/shared/types/dars";
-import { StatusIcon, StatusPill } from "./StatusBadge";
+import { AuditStatusIcon } from "@workspace/ui/components/route-map";
+import { StatusBadge } from "@workspace/ui/components/status-badge";
 
 type Filter = "all" | "todo" | "in_progress" | "complete";
 
@@ -90,7 +91,7 @@ function RequirementCard({
       className="group rounded-xl border border-border bg-card shadow-sm"
     >
       <summary className="flex cursor-pointer list-none items-start gap-3 p-4 [&::-webkit-details-marker]:hidden">
-        <StatusIcon status={req.status} />
+        <AuditStatusIcon status={req.status} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2">
             <h3 className="font-semibold text-foreground">
@@ -127,7 +128,7 @@ function SubRequirementRow({ sub }: { sub: SubRequirement }) {
   return (
     <div className="flex gap-3">
       <div className="flex w-6 shrink-0 flex-col items-center pt-0.5">
-        <StatusIcon status={sub.status} />
+        <AuditStatusIcon status={sub.status} />
       </div>
       <div className="min-w-0 flex-1">
         {(sub.title || sub.number) && (
@@ -283,7 +284,7 @@ function NoteBlock({ req }: { req: Requirement }) {
   return (
     <details className="rounded-xl border border-dashed border-input bg-card/60 px-4 py-3 text-xs text-muted-foreground">
       <summary className="flex cursor-pointer items-center gap-2 font-medium text-foreground">
-        <StatusPill status="none" />
+        <StatusBadge tone="neutral">Info</StatusBadge>
         <span className="truncate">{req.notes[0] ?? req.code}</span>
       </summary>
       <div className="mt-2 space-y-0.5 font-mono leading-relaxed">
