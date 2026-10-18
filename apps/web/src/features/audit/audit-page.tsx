@@ -27,6 +27,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import {
   Empty,
@@ -203,7 +204,7 @@ function Running({ label, startedAt }: { label: string; startedAt: number }) {
   }, []);
   const seconds = Math.max(0, Math.round((now - startedAt) / MS_PER_SECOND));
   return (
-    <div className="flex items-center gap-3 rounded-3xl bg-card p-4 shadow-sm ring-1 ring-foreground/5">
+    <Card className="flex-row items-center gap-3 p-4">
       <Spinner aria-hidden />
       <span role="status" className="flex flex-1 flex-col">
         {label}
@@ -215,7 +216,7 @@ function Running({ label, startedAt }: { label: string; startedAt: number }) {
       <span aria-hidden className="text-muted-foreground tabular-nums">
         {seconds} s
       </span>
-    </div>
+    </Card>
   );
 }
 
@@ -436,7 +437,7 @@ function Stat({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-3xl bg-card px-5 py-4 shadow-sm ring-1 ring-foreground/5">
+    <Card className="gap-2 px-5 py-4">
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="flex flex-col gap-2">
         <span className="flex items-baseline gap-1.5 tabular-nums">
@@ -445,6 +446,6 @@ function Stat({
         </span>
         {children}
       </dd>
-    </div>
+    </Card>
   );
 }

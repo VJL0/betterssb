@@ -23,6 +23,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import {
   Sheet,
@@ -186,9 +187,10 @@ export function AdvisorPage() {
       <div className="grid items-start gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_18rem]">
         <div className="hidden lg:block">{threadList}</div>
 
-        <section
+        <Card
           aria-label="Chat"
-          className="flex min-h-[32rem] flex-col gap-4 rounded-3xl bg-card p-4 shadow-sm ring-1 ring-foreground/5"
+          className="min-h-[32rem] gap-4 p-4"
+          render={<section />}
         >
           {advisor.loading ? (
             <Skeleton className="h-64 rounded-2xl" />
@@ -221,7 +223,7 @@ export function AdvisorPage() {
             busy={!!advisor.pending}
             usedLabels={records.usedLabels}
           />
-        </section>
+        </Card>
 
         <div className="lg:col-start-2 xl:col-start-3">
           <AdvisorContextPanel

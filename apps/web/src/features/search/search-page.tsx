@@ -20,6 +20,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import {
   Empty,
@@ -570,11 +571,7 @@ function LoadingResults() {
         Loading sections from Banner…
       </p>
       {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          aria-hidden
-          className="flex flex-col gap-3.5 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-foreground/5"
-        >
+        <Card key={i} aria-hidden className="gap-3.5 p-5">
           <div className="flex items-center gap-2.5">
             <Skeleton className="h-5 w-16 rounded-2xl" />
             <Skeleton className="h-4 w-56 rounded-2xl" />
@@ -592,7 +589,7 @@ function LoadingResults() {
               <Skeleton className="size-8 rounded-2xl" />
             </div>
           ))}
-        </div>
+        </Card>
       ))}
     </div>
   );

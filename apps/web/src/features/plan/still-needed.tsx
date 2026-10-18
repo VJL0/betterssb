@@ -1,3 +1,4 @@
+import { Card } from "@workspace/ui/components/card";
 import { PlusIcon } from "lucide-react";
 import {
   formatCredits,
@@ -30,9 +31,10 @@ export function StillNeeded({
   onAdd,
 }: StillNeededProps) {
   return (
-    <aside
+    <Card
       aria-labelledby="still-needed-heading"
-      className="flex flex-col gap-3 rounded-3xl bg-card pt-4 pb-3 shadow-sm ring-1 ring-foreground/5"
+      className="gap-3 pt-4 pb-3"
+      render={<aside />}
     >
       <div className="flex flex-col gap-1 px-4">
         <h2 id="still-needed-heading" className="text-base font-medium">
@@ -84,6 +86,6 @@ export function StillNeeded({
             : "Your audit shows nothing left to plan."}
         </p>
       )}
-    </aside>
+    </Card>
   );
 }

@@ -10,6 +10,7 @@ import {
   planCredits,
 } from "@workspace/shared/lib/plan";
 import type { PlannedSection, TermPlan } from "@workspace/shared/types/store";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { CourseDot } from "@workspace/ui/components/course-badge";
 import { StatusBadge } from "@workspace/ui/components/status-badge";
@@ -49,9 +50,10 @@ export function PlanRail({ plan, termName, preview, onRemove }: PlanRailProps) {
   const scheduleReady = isPageReady("schedule");
 
   return (
-    <section
+    <Card
       aria-labelledby="plan-rail-heading"
-      className="flex flex-col gap-4 rounded-3xl bg-card p-4 shadow-sm ring-1 ring-foreground/5"
+      className="gap-4 p-4"
+      render={<section />}
     >
       <div className="flex items-baseline justify-between gap-2">
         <h2 id="plan-rail-heading" className="font-medium">
@@ -127,6 +129,6 @@ export function PlanRail({ plan, termName, preview, onRemove }: PlanRailProps) {
           Build schedules
         </ButtonLink>
       )}
-    </section>
+    </Card>
   );
 }

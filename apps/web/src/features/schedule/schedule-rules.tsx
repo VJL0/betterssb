@@ -5,6 +5,7 @@ import {
   WEEKDAYS,
   type WeekDay,
 } from "@workspace/shared/lib/meeting-times";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { CourseDot } from "@workspace/ui/components/course-badge";
 import {
@@ -70,9 +71,10 @@ export function ScheduleRulesCard({
     Object.values(rules.modes).every((m) => m === "any");
 
   return (
-    <section
+    <Card
       aria-labelledby={`${ids}-heading`}
-      className="flex flex-col gap-4 rounded-3xl bg-card p-4 shadow-sm ring-1 ring-foreground/5"
+      className="gap-4 p-4"
+      render={<section />}
     >
       <div className="flex items-center justify-between">
         <h2 id={`${ids}-heading`} className="text-base font-medium">
@@ -187,7 +189,7 @@ export function ScheduleRulesCard({
           ))}
         </ul>
       </FieldSet>
-    </section>
+    </Card>
   );
 }
 

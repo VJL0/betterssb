@@ -1,5 +1,6 @@
 import { ExternalLinkIcon } from "lucide-react";
 import type { AutoRegBatchResultRecord } from "@workspace/shared/lib/auto-reg-batch-result";
+import { Card } from "@workspace/ui/components/card";
 import { StatusBadge } from "@workspace/ui/components/status-badge";
 import {
   Table,
@@ -33,9 +34,10 @@ export function LastRun({ result }: { result: AutoRegBatchResultRecord }) {
         : "The run didn't go through";
 
   return (
-    <section
+    <Card
       aria-labelledby="last-run-heading"
-      className="flex flex-col gap-3 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-foreground/5"
+      className="gap-3 p-5"
+      render={<section />}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-0.5">
@@ -86,6 +88,6 @@ export function LastRun({ result }: { result: AutoRegBatchResultRecord }) {
           </Table>
         </div>
       )}
-    </section>
+    </Card>
   );
 }

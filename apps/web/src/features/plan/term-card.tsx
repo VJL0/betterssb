@@ -9,6 +9,7 @@ import {
 } from "@workspace/shared/lib/planner";
 import { formatCredits } from "@workspace/shared/lib/dars";
 import type { TermPlan } from "@workspace/shared/types/store";
+import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { courseBackgroundClass } from "@workspace/ui/lib/course-color-classes";
@@ -72,10 +73,11 @@ export function TermCard({
   const editable = status !== "past";
 
   return (
-    <article
+    <Card
+      render={<article />}
       aria-label={name}
       className={cn(
-        "flex flex-col gap-2.5 rounded-3xl bg-card pt-4 pb-3 shadow-sm ring-1 ring-foreground/5",
+        "gap-2.5 pt-4 pb-3",
         isTarget && onTarget && "ring-2 ring-primary",
       )}
     >
@@ -182,6 +184,6 @@ export function TermCard({
           {isTarget ? "Adding here" : `Add to ${name}`}
         </Button>
       )}
-    </article>
+    </Card>
   );
 }

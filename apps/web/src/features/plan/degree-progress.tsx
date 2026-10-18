@@ -7,14 +7,14 @@ import type { CreditTotals } from "@workspace/shared/lib/dars";
 import { formatCredits } from "@workspace/shared/lib/dars";
 import type { ProjectedFinish } from "@workspace/shared/lib/planner";
 import { isPageReady } from "@/app/pages";
+import { Card } from "@workspace/ui/components/card";
 import { ButtonLink } from "@/components/button-link";
 
 // Planned credits are striped: counted toward the degree, but not taken yet.
 const PLANNED_FILL =
   "bg-[image:repeating-linear-gradient(135deg,color-mix(in_oklch,var(--primary)_35%,transparent)_0_4px,color-mix(in_oklch,var(--primary)_15%,transparent)_4px_8px)]";
 
-const CARD_CLASS =
-  "flex flex-wrap items-center gap-6 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-foreground/5";
+const CARD_CLASS = "flex-row flex-wrap items-center gap-6 p-5";
 
 interface DegreeProgressProps {
   totals: CreditTotals;
@@ -47,7 +47,11 @@ export function DegreeProgress({
   ];
 
   return (
-    <section aria-label="Degree progress" className={CARD_CLASS}>
+    <Card
+      render={<section />}
+      aria-label="Degree progress"
+      className={CARD_CLASS}
+    >
       <div className="flex min-w-0 flex-[999_1_32rem] flex-col gap-2.5">
         <div className="flex items-baseline justify-between gap-2">
           <span className="font-medium">
@@ -119,14 +123,18 @@ export function DegreeProgress({
           </span>
         </span>
       </div>
-    </section>
+    </Card>
   );
 }
 
 /** Shown until an audit is saved on this device. */
 export function NoAuditProgress() {
   return (
-    <section aria-label="Degree progress" className={CARD_CLASS}>
+    <Card
+      render={<section />}
+      aria-label="Degree progress"
+      className={CARD_CLASS}
+    >
       <span className="grid size-9 place-items-center rounded-xl bg-muted">
         <GraduationCapIcon aria-hidden className="size-4" />
       </span>
@@ -144,6 +152,6 @@ export function NoAuditProgress() {
           Open degree audit
         </ButtonLink>
       )}
-    </section>
+    </Card>
   );
 }

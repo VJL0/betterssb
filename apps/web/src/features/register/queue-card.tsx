@@ -14,6 +14,7 @@ import { MAX_QUEUED_CRNS } from "@workspace/shared/lib/bridge";
 import { formatCredits } from "@workspace/shared/lib/dars";
 import type { CrnCheck } from "@workspace/shared/types/auto-reg";
 import type { SSBRegPlanHeader } from "@workspace/shared/types/ssb";
+import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -125,9 +126,10 @@ export function QueueCard({
   );
 
   return (
-    <section
+    <Card
       aria-labelledby="queue-heading"
-      className="flex flex-col gap-4 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-foreground/5"
+      className="gap-4 p-5"
+      render={<section />}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="queue-heading" className="text-base font-medium">
@@ -265,7 +267,7 @@ export function QueueCard({
           </div>
         </>
       )}
-    </section>
+    </Card>
   );
 }
 

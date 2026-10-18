@@ -9,6 +9,7 @@ import {
 } from "@workspace/shared/lib/meeting-times";
 import { formatRating } from "@workspace/shared/lib/ratings";
 import type { PlannedSection, TermPlan } from "@workspace/shared/types/store";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { CourseBadge } from "@workspace/ui/components/course-badge";
 import {
@@ -103,7 +104,7 @@ export function SelectedSchedule({
   const blocks = sectionBlocks(sections, plan, { ratingFor });
 
   return (
-    <div className="flex flex-col gap-4 rounded-3xl bg-card px-5 pt-4 pb-5 shadow-sm ring-1 ring-foreground/5">
+    <Card className="gap-4 px-5 pt-4 pb-5">
       <Tabs
         value={view}
         onValueChange={(value) => onView(value as ScheduleView)}
@@ -185,7 +186,7 @@ export function SelectedSchedule({
           />
         </TabsContent>
       </Tabs>
-    </div>
+    </Card>
   );
 }
 

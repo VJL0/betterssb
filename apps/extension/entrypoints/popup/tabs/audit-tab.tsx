@@ -11,6 +11,7 @@ import { creditTotals, formatCredits } from "@workspace/shared/lib/dars";
 import { courseKey } from "@workspace/shared/lib/plan";
 import { termEntries } from "@workspace/shared/lib/planner";
 import type { TermPlan } from "@workspace/shared/types/store";
+import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
@@ -93,7 +94,7 @@ export function AuditTab() {
 
   if (!audit) {
     return (
-      <div className="flex flex-col items-start gap-3 rounded-2xl bg-card p-4 ring-1 ring-foreground/5">
+      <Card className="items-start gap-3 rounded-2xl p-4">
         <h2 className="font-medium">No degree audit yet</h2>
         <p className="text-muted-foreground">
           Run it in DARS from here. If you're signed out, a DARS tab opens so
@@ -101,7 +102,7 @@ export function AuditTab() {
         </p>
         {runButton}
         {error}
-      </div>
+      </Card>
     );
   }
 
@@ -116,7 +117,7 @@ export function AuditTab() {
 
   return (
     <div className="flex flex-col gap-3">
-      <section className="flex flex-col gap-3 rounded-2xl bg-card p-3 shadow-sm ring-1 ring-foreground/5">
+      <Card className="gap-3 rounded-2xl p-3" render={<section />}>
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col">
             <h2 className="truncate font-medium">{audit.programTitle}</h2>
@@ -144,9 +145,9 @@ export function AuditTab() {
           />
           {gpa !== null && <Stat label="GPA" value={gpa.toFixed(2)} />}
         </dl>
-      </section>
+      </Card>
 
-      <section className="rounded-2xl bg-card p-3 shadow-sm ring-1 ring-foreground/5">
+      <Card className="gap-0 rounded-2xl p-3" render={<section />}>
         <h2 className="flex items-baseline justify-between font-medium">
           Still needed
           <span className="text-xs font-normal text-muted-foreground">
@@ -175,7 +176,7 @@ export function AuditTab() {
             );
           })}
         </ul>
-      </section>
+      </Card>
 
       <Button
         variant="link"
@@ -201,10 +202,10 @@ function Stat({
 }) {
   return (
     <div className="rounded-xl bg-muted/50 px-2.5 py-2">
-      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dt className="text-xs text-foreground/70">{label}</dt>
       <dd className="tabular-nums">
         <span className="text-lg font-medium">{value}</span>
-        {of && <span className="text-xs text-muted-foreground"> /{of}</span>}
+        {of && <span className="text-xs text-foreground/70"> /{of}</span>}
       </dd>
     </div>
   );

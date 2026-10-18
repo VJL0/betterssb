@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { ButtonLink } from "@/components/button-link";
 import {
@@ -497,12 +498,11 @@ function Tier({
   dark,
 }: TierProps) {
   return (
-    <article
+    <Card
+      render={<article />}
       className={cn(
-        "flex flex-col gap-4 rounded-3xl p-6",
-        dark
-          ? "bg-primary text-primary-foreground"
-          : "bg-card shadow-sm ring-1 ring-foreground/5",
+        "gap-4 p-6",
+        dark && "bg-primary text-primary-foreground shadow-none ring-0",
       )}
     >
       <div className="flex items-center gap-2.5">
@@ -537,6 +537,6 @@ function Tier({
         <CheckList items={items} />
       </div>
       {action && <div className="[&>*]:w-full">{action}</div>}
-    </article>
+    </Card>
   );
 }

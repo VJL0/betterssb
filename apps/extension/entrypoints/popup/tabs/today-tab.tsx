@@ -16,10 +16,12 @@ import {
 import { planKey, withSettingDefaults } from "@workspace/shared/lib/store";
 import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
 import { Button } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
 import { CourseDot } from "@workspace/ui/components/course-badge";
 import { SeatMeter } from "@workspace/ui/components/seat-meter";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Switch } from "@workspace/ui/components/switch";
+import { cn } from "@workspace/ui/lib/utils";
 import { BANNER_REGISTRATION_URL } from "@/lib/config";
 import { useOnBannerPage, useOverlayStatus } from "../hooks/use-active-tab";
 import {
@@ -44,7 +46,7 @@ function shortTime(iso: string, withDate = false): string {
   });
 }
 
-function Card({
+function Panel({
   children,
   dark = false,
 }: {
@@ -52,15 +54,15 @@ function Card({
   dark?: boolean;
 }) {
   return (
-    <section
-      className={
-        dark
-          ? "flex flex-col gap-2 rounded-2xl bg-primary p-4 text-primary-foreground"
-          : "flex flex-col gap-2 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-foreground/5"
-      }
+    <Card
+      render={<section />}
+      className={cn(
+        "gap-2 rounded-2xl p-4",
+        dark && "bg-primary text-primary-foreground shadow-none ring-0",
+      )}
     >
       {children}
-    </section>
+    </Card>
   );
 }
 
@@ -83,7 +85,7 @@ function Armed({
   const left = countdown(new Date(snapshot.scheduledRunAt).getTime(), now);
   const crns = snapshot.crns.length;
   return (
-    <Card dark>
+    <Panel dark>
       <h2 className="flex items-center gap-2 text-xs font-medium">
         <span aria-hidden className="size-1.5 rounded-full bg-success" />
         Armed · {shortTime(snapshot.scheduledRunAt, true)}
@@ -108,7 +110,7 @@ function Armed({
           Disarm
         </Button>
       </div>
-    </Card>
+    </Panel>
   );
 }
 
@@ -132,7 +134,7 @@ export function TodayTab({
   return (
     <div className="flex flex-col gap-3">
       {snapshot?.armed && banner.data === "signed-out" && (
-        <Card>
+        <Panel>
           <h2 className="flex items-center gap-2 font-medium text-destructive">
             <CircleXIcon aria-hidden className="size-4" />
             Banner signed you out
@@ -148,7 +150,7 @@ export function TodayTab({
           >
             Sign in to Banner
           </Button>
-        </Card>
+        </Panel>
       )}
       {snapshot?.armed && (
         <Armed
@@ -159,7 +161,7 @@ export function TodayTab({
         />
       )}
       {!snapshot?.armed && lastRun && ranRecently && (
-        <Card>
+        <Panel>
           <h2 className="flex items-center gap-2 font-medium">
             <CircleCheckIcon
               aria-hidden
@@ -184,11 +186,11 @@ export function TodayTab({
           >
             See results
           </Button>
-        </Card>
+        </Panel>
       )}
 
       {onBanner.data === false && (
-        <Card>
+        <Panel>
           <h2 className="flex items-center gap-2 font-medium">
             <GlobeIcon aria-hidden className="size-4" />
             Open Banner registration
@@ -206,7 +208,7 @@ export function TodayTab({
             Open Temple Banner
             <ExternalLinkIcon data-icon="inline-end" />
           </Button>
-        </Card>
+        </Panel>
       )}
       {onBanner.data === true && (
         <BannerTabCard signedOut={banner.data === "signed-out"} />
@@ -246,7 +248,7 @@ function BannerTabCard({ signedOut }: { signedOut: boolean }) {
             : "Banner registration"}
       </p>
       {current.bannerOverlay && sections > 0 && (
-        <p className="text-muted-foreground">
+        <p className="text-foreground/70">
           {enhancedSummary(sections, status.data?.inPlan ?? 0)}
         </p>
       )}
@@ -283,7 +285,7 @@ function PlanCard({ term, onSearch }: { term: Term; onSearch: () => void }) {
   if (!doc.loaded) return <Skeleton className="h-40 rounded-2xl" />;
 
   return (
-    <Card>
+    <Panel>
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="font-medium">{term.name} plan</h2>
         <span className="text-xs text-muted-foreground tabular-nums">
@@ -350,6 +352,6 @@ function PlanCard({ term, onSearch }: { term: Term; onSearch: () => void }) {
         Open full plan in BetterSSB
         <ExternalLinkIcon data-icon="inline-end" />
       </Button>
-    </Card>
+    </Panel>
   );
 }

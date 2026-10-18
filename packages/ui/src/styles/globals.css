@@ -152,6 +152,20 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /*
+   * Reduced motion: skeleton pulse, enter/exit animations, toast slides and
+   * transitions finish at once. Spinners keep turning; they mean "working".
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *:not([data-slot="spinner"]),
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
   body {
     @apply bg-background text-foreground;
   }

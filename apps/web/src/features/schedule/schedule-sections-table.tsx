@@ -1,5 +1,6 @@
 import { courseCode, planCourseColor } from "@workspace/shared/lib/plan";
 import type { TermPlan } from "@workspace/shared/types/store";
+import { Card } from "@workspace/ui/components/card";
 import { CourseBadge } from "@workspace/ui/components/course-badge";
 import { SeatMeter } from "@workspace/ui/components/seat-meter";
 import {
@@ -34,9 +35,10 @@ export function ScheduleSectionsTable({
   showRatings,
 }: ScheduleSectionsTableProps) {
   return (
-    <section
+    <Card
       aria-labelledby="schedule-sections-heading"
-      className="flex flex-col gap-2 rounded-3xl bg-card pt-4 pb-1 shadow-sm ring-1 ring-foreground/5"
+      className="gap-2 pt-4 pb-1"
+      render={<section />}
     >
       <h2 id="schedule-sections-heading" className="px-5 text-base font-medium">
         {heading}
@@ -118,6 +120,6 @@ export function ScheduleSectionsTable({
           </TableBody>
         </Table>
       </div>
-    </section>
+    </Card>
   );
 }
