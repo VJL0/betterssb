@@ -16,7 +16,16 @@ import {
 } from "@workspace/shared/lib/auto-reg-helpers";
 import { getPlans, getTerms } from "@/lib/ssb-reg-messages";
 import type { SSBGetPlansResponse, SSBTerm } from "@workspace/shared/types/ssb";
-import { Button, Card, Input, Spinner } from "@/components/ui";
+import { Button } from "@workspace/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import { Field, FieldLabel } from "@workspace/ui/components/field";
+import { Input } from "@workspace/ui/components/input";
+import { Spinner } from "@workspace/ui/components/spinner";
 import { cn } from "@workspace/ui/lib/utils";
 
 function FieldSelect({
@@ -223,193 +232,221 @@ export function AutoRegisterPage() {
         yourself. Set when the auto-register helper should run, then activate.
       </p>
 
-      <Card title="Term &amp; plan">
-        {dataLoading || !storageReady ? (
-          <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
-            <Spinner />
-            <span>Loading terms and plans…</span>
-          </div>
-        ) : loadError ? (
-          <p className="text-sm text-warning">
-            {loadError} Open{" "}
-            <span className="font-medium">Register for Classes</span> on your
-            school&apos;s site in a tab, then try again.
-          </p>
-        ) : terms.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No terms returned. Open registration in a browser tab and refresh
-            this panel.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-2.5">
-            <FieldSelect
-              label="Term"
-              value={selectedTermCode}
-              onChange={(v) => void updateScheduleConfig({ term: v })}
-              disabled={formDisabled}
-            >
-              {terms.map((t) => (
-                <option key={t.code} value={t.code}>
-                  {t.description || t.code}
-                </option>
-              ))}
-            </FieldSelect>
-            <FieldSelect
-              label="Plan"
-              value={selectedPlanId}
-              onChange={(v) => void updateScheduleConfig({ planId: v })}
-              disabled={formDisabled || plansForTerm.length === 0 || manualMode}
-            >
-              {plansForTerm.length === 0 ? (
-                <option value="">No plan for this term</option>
-              ) : (
-                plansForTerm.map((p) => (
-                  <option key={p.id} value={String(p.id)}>
-                    {p.description || `Plan ${p.id}`}
-                  </option>
-                ))
-              )}
-            </FieldSelect>
-
-            {!manualMode && !armed && (
-              <p className="text-xs text-muted-foreground">
-                CRNs update from the courses in this plan.
-                {!planModeOk && selectedPlan && (
-                  <span className="mt-1 block text-warning">
-                    This plan has no sections yet—pick another plan or enter
-                    CRNs manually.
-                  </span>
-                )}
-              </p>
-            )}
-
-            {!armed && !manualMode && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => void switchToManual()}
-                className="self-start pl-0"
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>Term &amp; plan</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {dataLoading || !storageReady ? (
+            <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
+              <Spinner aria-hidden />
+              <span>Loading terms and plans…</span>
+            </div>
+          ) : loadError ? (
+            <p className="text-sm text-warning">
+              {loadError} Open{" "}
+              <span className="font-medium">Register for Classes</span> on your
+              school&apos;s site in a tab, then try again.
+            </p>
+          ) : terms.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No terms returned. Open registration in a browser tab and refresh
+              this panel.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              <FieldSelect
+                label="Term"
+                value={selectedTermCode}
+                onChange={(v) => void updateScheduleConfig({ term: v })}
+                disabled={formDisabled}
               >
-                Enter CRNs manually instead
-              </Button>
-            )}
-
-            {manualMode && (
-              <>
-                <Input
-                  label="CRNs (comma-separated)"
-                  value={crnsCsv}
-                  onChange={(e) =>
-                    void updateScheduleConfig({ crns: e.target.value })
-                  }
-                  placeholder="12345, 67890"
-                  disabled={formDisabled}
-                />
-                {!armed && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => void switchToPlan()}
-                    className="self-start pl-0"
-                  >
-                    Use term &amp; plan instead
-                  </Button>
+                {terms.map((t) => (
+                  <option key={t.code} value={t.code}>
+                    {t.description || t.code}
+                  </option>
+                ))}
+              </FieldSelect>
+              <FieldSelect
+                label="Plan"
+                value={selectedPlanId}
+                onChange={(v) => void updateScheduleConfig({ planId: v })}
+                disabled={
+                  formDisabled || plansForTerm.length === 0 || manualMode
+                }
+              >
+                {plansForTerm.length === 0 ? (
+                  <option value="">No plan for this term</option>
+                ) : (
+                  plansForTerm.map((p) => (
+                    <option key={p.id} value={String(p.id)}>
+                      {p.description || `Plan ${p.id}`}
+                    </option>
+                  ))
                 )}
-              </>
-            )}
+              </FieldSelect>
 
-            {armed && (
-              <p className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-foreground">
-                <span className="font-medium">Armed: </span>
-                {manualMode
-                  ? `Manual CRNs (${parseManualCrns(crnsCsv).length} sections)`
-                  : selectedPlan
-                    ? `${selectedPlan.description || "Plan"} — ${planCrns.length} section(s)`
-                    : "—"}
-              </p>
-            )}
-          </div>
-        )}
+              {!manualMode && !armed && (
+                <p className="text-xs text-muted-foreground">
+                  CRNs update from the courses in this plan.
+                  {!planModeOk && selectedPlan && (
+                    <span className="mt-1 block text-warning">
+                      This plan has no sections yet—pick another plan or enter
+                      CRNs manually.
+                    </span>
+                  )}
+                </p>
+              )}
+
+              {!armed && !manualMode && (
+                <Button
+                  type="button"
+                  variant="link"
+                  size="sm"
+                  onClick={() => void switchToManual()}
+                  className="self-start px-0"
+                >
+                  Enter CRNs manually instead
+                </Button>
+              )}
+
+              {manualMode && (
+                <>
+                  <Field>
+                    <FieldLabel htmlFor="autoreg-crns">
+                      CRNs (comma-separated)
+                    </FieldLabel>
+                    <Input
+                      id="autoreg-crns"
+                      value={crnsCsv}
+                      onChange={(e) =>
+                        void updateScheduleConfig({ crns: e.target.value })
+                      }
+                      placeholder="12345, 67890"
+                      disabled={formDisabled}
+                    />
+                  </Field>
+                  {!armed && (
+                    <Button
+                      type="button"
+                      variant="link"
+                      size="sm"
+                      onClick={() => void switchToPlan()}
+                      className="self-start px-0"
+                    >
+                      Use term &amp; plan instead
+                    </Button>
+                  )}
+                </>
+              )}
+
+              {armed && (
+                <p className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-foreground">
+                  <span className="font-medium">Armed: </span>
+                  {manualMode
+                    ? `Manual CRNs (${parseManualCrns(crnsCsv).length} sections)`
+                    : selectedPlan
+                      ? `${selectedPlan.description || "Plan"} — ${planCrns.length} section(s)`
+                      : "—"}
+                </p>
+              )}
+            </div>
+          )}
+        </CardContent>
       </Card>
 
-      <Card title="Run time">
-        <Input
-          label="When to run auto-register"
-          type="datetime-local"
-          value={scheduledRunAt}
-          onChange={(e) =>
-            void updateScheduleConfig({ scheduledRunAt: e.target.value })
-          }
-          disabled={formDisabled}
-        />
-        <p className="mt-1.5 text-xs text-muted-foreground">
-          Reminders fire up to 5 minutes before. The batch POST runs once, on a
-          one-shot alarm at this time (same endpoint as Banner&apos;s submit).
-        </p>
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>Run time</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Field>
+            <FieldLabel htmlFor="autoreg-run-at">
+              When to run auto-register
+            </FieldLabel>
+            <Input
+              id="autoreg-run-at"
+              type="datetime-local"
+              value={scheduledRunAt}
+              onChange={(e) =>
+                void updateScheduleConfig({ scheduledRunAt: e.target.value })
+              }
+              disabled={formDisabled}
+            />
+          </Field>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            Reminders fire up to 5 minutes before. The batch POST runs once, on
+            a one-shot alarm at this time (same endpoint as Banner&apos;s
+            submit).
+          </p>
+        </CardContent>
       </Card>
 
       {lastBatchResult && (
-        <Card title="Last batch result">
-          <div className="mb-2 flex items-baseline gap-2">
-            <span className="text-xs text-muted-foreground">
-              {new Date(lastBatchResult.at).toLocaleString()}
-            </span>
-            {lastBatchResult.ok ? (
-              <span className="rounded bg-success/10 px-1.5 py-0.5 text-xs font-medium text-success">
-                All registered
+        <Card size="sm">
+          <CardHeader>
+            <CardTitle>Last batch result</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-2 flex items-baseline gap-2">
+              <span className="text-xs text-muted-foreground">
+                {new Date(lastBatchResult.at).toLocaleString()}
               </span>
-            ) : lastBatchResult.error ? (
-              <span className="rounded bg-destructive/10 px-1.5 py-0.5 text-xs font-medium text-destructive">
-                Error
-              </span>
-            ) : (
-              <span className="rounded bg-warning/10 px-1.5 py-0.5 text-xs font-medium text-warning">
-                {lastBatchResult.registeredCount} registered,{" "}
-                {lastBatchResult.failedCount} failed
-              </span>
-            )}
-          </div>
-
-          {lastBatchResult.error && (
-            <p className="mb-2 text-xs text-destructive">
-              {lastBatchResult.error}
-            </p>
-          )}
-
-          {lastBatchResult.registeredHours && (
-            <p className="mb-2 text-xs text-muted-foreground">
-              {lastBatchResult.registeredHours} credit hrs registered
-              {lastBatchResult.billingHours
-                ? ` · ${lastBatchResult.billingHours} billing hrs`
-                : ""}
-            </p>
-          )}
-
-          {lastBatchResult.crnResults.length > 0 && (
-            <div className="space-y-1.5">
-              {lastBatchResult.crnResults.map((r, i) => (
-                <div
-                  key={`${i}-${r.crn}`}
-                  className={cn(
-                    "rounded-md border px-2.5 py-1.5 text-xs",
-                    r.ok
-                      ? "border-success/30 bg-success/10 text-success"
-                      : "border-destructive/30 bg-destructive/10 text-destructive",
-                  )}
-                >
-                  <span className="font-medium">
-                    {r.label || `CRN ${r.crn}`}
-                  </span>
-                  <span className="mx-1.5 text-xs opacity-60">
-                    {r.ok ? "OK" : "FAIL"}
-                  </span>
-                  <span className="text-xs opacity-80">{r.detail}</span>
-                </div>
-              ))}
+              {lastBatchResult.ok ? (
+                <span className="rounded bg-success/10 px-1.5 py-0.5 text-xs font-medium text-success">
+                  All registered
+                </span>
+              ) : lastBatchResult.error ? (
+                <span className="rounded bg-destructive/10 px-1.5 py-0.5 text-xs font-medium text-destructive">
+                  Error
+                </span>
+              ) : (
+                <span className="rounded bg-warning/10 px-1.5 py-0.5 text-xs font-medium text-warning">
+                  {lastBatchResult.registeredCount} registered,{" "}
+                  {lastBatchResult.failedCount} failed
+                </span>
+              )}
             </div>
-          )}
+
+            {lastBatchResult.error && (
+              <p className="mb-2 text-xs text-destructive">
+                {lastBatchResult.error}
+              </p>
+            )}
+
+            {lastBatchResult.registeredHours && (
+              <p className="mb-2 text-xs text-muted-foreground">
+                {lastBatchResult.registeredHours} credit hrs registered
+                {lastBatchResult.billingHours
+                  ? ` · ${lastBatchResult.billingHours} billing hrs`
+                  : ""}
+              </p>
+            )}
+
+            {lastBatchResult.crnResults.length > 0 && (
+              <div className="space-y-1.5">
+                {lastBatchResult.crnResults.map((r, i) => (
+                  <div
+                    key={`${i}-${r.crn}`}
+                    className={cn(
+                      "rounded-md border px-2.5 py-1.5 text-xs",
+                      r.ok
+                        ? "border-success/30 bg-success/10 text-success"
+                        : "border-destructive/30 bg-destructive/10 text-destructive",
+                    )}
+                  >
+                    <span className="font-medium">
+                      {r.label || `CRN ${r.crn}`}
+                    </span>
+                    <span className="mx-1.5 text-xs opacity-60">
+                      {r.ok ? "OK" : "FAIL"}
+                    </span>
+                    <span className="text-xs opacity-80">{r.detail}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
       )}
 
@@ -417,7 +454,7 @@ export function AutoRegisterPage() {
         {!armed ? (
           <Button
             type="button"
-            variant="primary"
+            variant="default"
             size="lg"
             disabled={!canActivate}
             onClick={() => void handleActivate()}
@@ -428,7 +465,7 @@ export function AutoRegisterPage() {
         ) : (
           <Button
             type="button"
-            variant="danger"
+            variant="destructive"
             size="lg"
             onClick={() => void handleDeactivate()}
             className="w-full"

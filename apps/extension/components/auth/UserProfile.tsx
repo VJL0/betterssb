@@ -1,5 +1,5 @@
 import type { AuthUser } from "@workspace/shared/types";
-import { Button } from "@/components/ui";
+import { Button } from "@workspace/ui/components/button";
 
 interface UserProfileProps {
   user: AuthUser;

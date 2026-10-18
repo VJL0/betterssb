@@ -11,7 +11,16 @@ import type {
 } from "@workspace/shared/types/ssb";
 import { sendMessage } from "@/lib/messaging";
 import { ssbSectionToInternal } from "@workspace/shared/lib/sections";
-import { Button, Input, Card } from "@/components/ui";
+import { Button } from "@workspace/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import { Field, FieldLabel } from "@workspace/ui/components/field";
+import { Input } from "@workspace/ui/components/input";
+import { Spinner } from "@workspace/ui/components/spinner";
 import { ScheduleCard } from "@/components/schedule/ScheduleCard";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -147,166 +156,203 @@ export function ScheduleBuilder() {
 
   return (
     <div className="flex flex-col gap-3">
-      <Card title="Search Sections">
-        <div className="flex flex-col gap-2">
-          <div>
-            <label className="mb-1 block text-xs font-semibold">Term</label>
-            <select
-              value={selectedTerm}
-              onChange={(e) => setSelectedTerm(e.target.value)}
-              className="w-full rounded-md border border-input px-2 py-1.5 text-sm"
-            >
-              {terms.length === 0 && <option value="">Loading terms...</option>}
-              {terms.map((t) => (
-                <option key={t.code} value={t.code}>
-                  {t.description}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-end gap-2">
-            <div className="min-w-0 flex-1">
-              <Input
-                label="Course (e.g. CIS2168)"
-                value={courseQuery}
-                onChange={(e) => setCourseQuery(e.target.value)}
-                placeholder="CIS2168"
-                onKeyDown={(e) => e.key === "Enter" && searchSections()}
-              />
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>Search Sections</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-2">
+            <div>
+              <label className="mb-1 block text-xs font-semibold">Term</label>
+              <select
+                value={selectedTerm}
+                onChange={(e) => setSelectedTerm(e.target.value)}
+                className="w-full rounded-md border border-input px-2 py-1.5 text-sm"
+              >
+                {terms.length === 0 && (
+                  <option value="">Loading terms...</option>
+                )}
+                {terms.map((t) => (
+                  <option key={t.code} value={t.code}>
+                    {t.description}
+                  </option>
+                ))}
+              </select>
             </div>
-            <Button
-              size="sm"
-              onClick={searchSections}
-              loading={searching}
-              disabled={!courseQuery.trim() || !selectedTerm}
-            >
-              Search
-            </Button>
+            <div className="flex items-end gap-2">
+              <div className="min-w-0 flex-1">
+                <Field>
+                  <FieldLabel htmlFor="schedule-course">
+                    Course (e.g. CIS2168)
+                  </FieldLabel>
+                  <Input
+                    id="schedule-course"
+                    value={courseQuery}
+                    onChange={(e) => setCourseQuery(e.target.value)}
+                    placeholder="CIS2168"
+                    onKeyDown={(e) => e.key === "Enter" && searchSections()}
+                  />
+                </Field>
+              </div>
+              <Button
+                size="sm"
+                onClick={searchSections}
+                disabled={searching || !courseQuery.trim() || !selectedTerm}
+              >
+                {searching && <Spinner data-icon="inline-start" aria-hidden />}
+                Search
+              </Button>
+            </div>
           </div>
-        </div>
 
-        {searchError && (
-          <div className="mt-2 text-xs text-warning">{searchError}</div>
-        )}
+          {searchError && (
+            <div className="mt-2 text-xs text-warning">{searchError}</div>
+          )}
+        </CardContent>
       </Card>
 
       {ssbSections.length > 0 && (
-        <Card title={`Results (${ssbSections.length} sections)`}>
-          <div className="max-h-64 overflow-y-auto">
-            {ssbSections.map((sec) => {
-              const primaryInstructor =
-                sec.faculty.find((f) => f.primaryIndicator)?.displayName ??
-                sec.faculty[0]?.displayName ??
-                "TBA";
-              const isAdded = selectedSections.some(
-                (s) => s.crn === sec.courseReferenceNumber,
-              );
+        <Card size="sm">
+          <CardHeader>
+            <CardTitle>{`Results (${ssbSections.length} sections)`}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-64 overflow-y-auto">
+              {ssbSections.map((sec) => {
+                const primaryInstructor =
+                  sec.faculty.find((f) => f.primaryIndicator)?.displayName ??
+                  sec.faculty[0]?.displayName ??
+                  "TBA";
+                const isAdded = selectedSections.some(
+                  (s) => s.crn === sec.courseReferenceNumber,
+                );
 
-              return (
-                <div
-                  key={sec.courseReferenceNumber}
-                  className="border-b border-border py-2 text-xs last:border-0"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <strong>
-                        {sec.subject} {sec.courseNumber}-{sec.sequenceNumber}
-                      </strong>{" "}
-                      (CRN: {sec.courseReferenceNumber})
-                      <br />
-                      <span className="text-muted-foreground">
-                        {sec.courseTitle}
-                      </span>
-                      <br />
-                      <span className="text-muted-foreground">
-                        {primaryInstructor} ·{" "}
-                        {sec.instructionalMethodDescription}
-                      </span>
-                      <br />
-                      <span className="text-xs text-muted-foreground">
-                        {formatMeetingDays(sec)}
-                      </span>
-                      <br />
-                      <span
-                        className={cn(
-                          "text-xs font-semibold",
-                          sec.seatsAvailable > 0
-                            ? "text-success"
-                            : "text-destructive",
-                        )}
+                return (
+                  <div
+                    key={sec.courseReferenceNumber}
+                    className="border-b border-border py-2 text-xs last:border-0"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <strong>
+                          {sec.subject} {sec.courseNumber}-{sec.sequenceNumber}
+                        </strong>{" "}
+                        (CRN: {sec.courseReferenceNumber})
+                        <br />
+                        <span className="text-muted-foreground">
+                          {sec.courseTitle}
+                        </span>
+                        <br />
+                        <span className="text-muted-foreground">
+                          {primaryInstructor} ·{" "}
+                          {sec.instructionalMethodDescription}
+                        </span>
+                        <br />
+                        <span className="text-xs text-muted-foreground">
+                          {formatMeetingDays(sec)}
+                        </span>
+                        <br />
+                        <span
+                          className={cn(
+                            "text-xs font-semibold",
+                            sec.seatsAvailable > 0
+                              ? "text-success"
+                              : "text-destructive",
+                          )}
+                        >
+                          {sec.seatsAvailable}/{sec.maximumEnrollment} seats
+                          {sec.waitCount > 0 &&
+                            ` · ${sec.waitCount} waitlisted`}
+                        </span>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant={isAdded ? "outline" : "default"}
+                        onClick={() => addSSBSection(sec)}
+                        disabled={isAdded}
                       >
-                        {sec.seatsAvailable}/{sec.maximumEnrollment} seats
-                        {sec.waitCount > 0 && ` · ${sec.waitCount} waitlisted`}
-                      </span>
+                        {isAdded ? "Added" : "Add"}
+                      </Button>
                     </div>
-                    <Button
-                      size="sm"
-                      variant={isAdded ? "secondary" : "primary"}
-                      onClick={() => addSSBSection(sec)}
-                      disabled={isAdded}
-                    >
-                      {isAdded ? "Added" : "Add"}
-                    </Button>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          </CardContent>
         </Card>
       )}
 
       {selectedSections.length > 0 && (
-        <Card title={`Selected (${selectedSections.length})`}>
-          {selectedSections.map((s) => (
-            <div
-              key={`${s.crn}-${s.days}-${s.startTime}`}
-              className="flex items-center justify-between border-b border-border py-1.5 text-sm last:border-0"
-            >
-              <span>
-                <strong>{s.courseId}</strong> — CRN {s.crn} — {s.days}{" "}
-                {s.startTime}–{s.endTime}
-              </span>
-              <button
-                type="button"
-                onClick={() => removeSection(s.crn)}
-                className="cursor-pointer border-0 bg-transparent text-sm text-destructive"
+        <Card size="sm">
+          <CardHeader>
+            <CardTitle>{`Selected (${selectedSections.length})`}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {selectedSections.map((s) => (
+              <div
+                key={`${s.crn}-${s.days}-${s.startTime}`}
+                className="flex items-center justify-between border-b border-border py-1.5 text-sm last:border-0"
               >
-                Remove
-              </button>
-            </div>
-          ))}
+                <span>
+                  <strong>{s.courseId}</strong> — CRN {s.crn} — {s.days}{" "}
+                  {s.startTime}–{s.endTime}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeSection(s.crn)}
+                  className="cursor-pointer border-0 bg-transparent text-sm text-destructive"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </CardContent>
         </Card>
       )}
 
-      <Card title="Preferences">
-        <div className="grid grid-cols-2 gap-2">
-          <Input
-            label="Preferred Days"
-            value={prefDays}
-            onChange={(e) => setPrefDays(e.target.value)}
-            placeholder="M,W,F"
-          />
-          <div />
-          <Input
-            label="Earliest"
-            type="time"
-            value={earliest}
-            onChange={(e) => setEarliest(e.target.value)}
-          />
-          <Input
-            label="Latest"
-            type="time"
-            value={latest}
-            onChange={(e) => setLatest(e.target.value)}
-          />
-        </div>
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>Preferences</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-2">
+            <Field>
+              <FieldLabel htmlFor="schedule-days">Preferred Days</FieldLabel>
+              <Input
+                id="schedule-days"
+                value={prefDays}
+                onChange={(e) => setPrefDays(e.target.value)}
+                placeholder="M,W,F"
+              />
+            </Field>
+            <div />
+            <Field>
+              <FieldLabel htmlFor="schedule-earliest">Earliest</FieldLabel>
+              <Input
+                id="schedule-earliest"
+                type="time"
+                value={earliest}
+                onChange={(e) => setEarliest(e.target.value)}
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="schedule-latest">Latest</FieldLabel>
+              <Input
+                id="schedule-latest"
+                type="time"
+                value={latest}
+                onChange={(e) => setLatest(e.target.value)}
+              />
+            </Field>
+          </div>
+        </CardContent>
       </Card>
 
       <Button
         onClick={generate}
-        loading={generating}
-        disabled={selectedSections.length === 0}
+        disabled={generating || selectedSections.length === 0}
       >
+        {generating && <Spinner data-icon="inline-start" aria-hidden />}
         Generate Schedules
       </Button>
 

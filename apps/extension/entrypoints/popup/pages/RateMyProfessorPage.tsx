@@ -1,41 +1,18 @@
 import { useStorage } from "@/hooks/useStorage";
-import { cn } from "@workspace/ui/lib/utils";
 import { SchoolCombobox } from "@/components/SchoolCombobox";
-import { Card } from "@/components/ui";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import {
+  Field,
+  FieldContent,
+  FieldLabel,
+} from "@workspace/ui/components/field";
+import { Switch } from "@workspace/ui/components/switch";
 import type { RMPSchool } from "@workspace/shared/types";
-
-function Toggle({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (val: boolean) => void;
-}) {
-  return (
-    <label className="flex cursor-pointer items-center justify-between py-2 text-sm">
-      <span className="text-foreground">{label}</span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={cn(
-          "relative h-6 w-11 rounded-full transition-colors",
-          checked ? "bg-primary" : "bg-input",
-        )}
-      >
-        <span
-          className={cn(
-            "absolute top-0.5 size-5 rounded-full bg-card shadow transition-[left]",
-            checked ? "left-5" : "left-0.5",
-          )}
-        />
-      </button>
-    </label>
-  );
-}
 
 export function RateMyProfessorPage() {
   const [school, setSchool] = useStorage<RMPSchool | null>(
@@ -51,19 +28,42 @@ export function RateMyProfessorPage() {
         show on course and plan pages when enabled.
       </p>
 
-      <Card title="School">
-        <SchoolCombobox
-          initialValue={school?.name ?? ""}
-          onSelect={(s) => setSchool(s)}
-        />
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>School</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Field>
+            <FieldLabel htmlFor="rmp-school" className="sr-only">
+              School
+            </FieldLabel>
+            <SchoolCombobox
+              id="rmp-school"
+              value={school}
+              onSelect={(s) => void setSchool(s)}
+            />
+          </Field>
+        </CardContent>
       </Card>
 
-      <Card title="Display">
-        <Toggle
-          label="Show professor ratings on Banner pages"
-          checked={enableRmp}
-          onChange={setEnableRmp}
-        />
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>Display</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Field orientation="horizontal">
+            <FieldContent>
+              <FieldLabel htmlFor="rmp-enabled">
+                Show professor ratings on Banner pages
+              </FieldLabel>
+            </FieldContent>
+            <Switch
+              id="rmp-enabled"
+              checked={enableRmp}
+              onCheckedChange={(checked) => void setEnableRmp(checked)}
+            />
+          </Field>
+        </CardContent>
       </Card>
     </div>
   );

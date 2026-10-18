@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import type { ChatMessage } from "@workspace/shared/types";
 import { sendMessage } from "@/lib/messaging";
-import { Button } from "@/components/ui";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import { Spinner } from "@workspace/ui/components/spinner";
 import { cn } from "@workspace/ui/lib/utils";
 
 function bubbleClass(role: "user" | "assistant"): string {
@@ -99,8 +101,9 @@ export function ChatWindow() {
       </div>
 
       <div className="flex gap-2 border-t border-border p-3">
-        <input
-          className="min-w-0 flex-1 rounded-lg border border-input px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
+        <Input
+          aria-label="Message"
+          className="min-w-0 flex-1"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -110,9 +113,9 @@ export function ChatWindow() {
         <Button
           size="sm"
           onClick={() => void handleSend()}
-          loading={loading}
-          disabled={!input.trim()}
+          disabled={loading || !input.trim()}
         >
+          {loading && <Spinner data-icon="inline-start" aria-hidden />}
           Send
         </Button>
       </div>

@@ -5,7 +5,16 @@ import type {
   SSBSectionSearchResponse,
 } from "@workspace/shared/types/ssb";
 import { sendMessage } from "@/lib/messaging";
-import { Card, Button, Input } from "@/components/ui";
+import { Button } from "@workspace/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import { Field, FieldLabel } from "@workspace/ui/components/field";
+import { Input } from "@workspace/ui/components/input";
+import { Spinner } from "@workspace/ui/components/spinner";
 import { cn } from "@workspace/ui/lib/utils";
 
 interface PlannedItem {
@@ -161,144 +170,168 @@ export function SemesterPlanner() {
 
   return (
     <div className="flex flex-col gap-3">
-      <Card title="Plan Ahead — Search Courses">
-        <div className="flex flex-col gap-2">
-          <div>
-            <label className="mb-1 block text-xs font-semibold">Term</label>
-            <select
-              value={selectedTerm}
-              onChange={(e) => setSelectedTerm(e.target.value)}
-              className="w-full rounded-md border border-input px-2 py-1.5 text-sm"
-            >
-              {terms.length === 0 && <option value="">Loading terms...</option>}
-              {terms.map((t) => (
-                <option key={t.code} value={t.code}>
-                  {t.description}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-end gap-2">
-            <div className="min-w-0 flex-1">
-              <Input
-                label="Course (e.g. CIS2168)"
-                value={courseQuery}
-                onChange={(e) => setCourseQuery(e.target.value)}
-                placeholder="CIS2168"
-                onKeyDown={(e) => e.key === "Enter" && searchSections()}
-              />
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>Plan Ahead — Search Courses</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-2">
+            <div>
+              <label className="mb-1 block text-xs font-semibold">Term</label>
+              <select
+                value={selectedTerm}
+                onChange={(e) => setSelectedTerm(e.target.value)}
+                className="w-full rounded-md border border-input px-2 py-1.5 text-sm"
+              >
+                {terms.length === 0 && (
+                  <option value="">Loading terms...</option>
+                )}
+                {terms.map((t) => (
+                  <option key={t.code} value={t.code}>
+                    {t.description}
+                  </option>
+                ))}
+              </select>
             </div>
-            <Button
-              size="sm"
-              onClick={searchSections}
-              loading={searching}
-              disabled={!courseQuery.trim() || !selectedTerm}
-            >
-              Search
-            </Button>
+            <div className="flex items-end gap-2">
+              <div className="min-w-0 flex-1">
+                <Field>
+                  <FieldLabel htmlFor="planner-course">
+                    Course (e.g. CIS2168)
+                  </FieldLabel>
+                  <Input
+                    id="planner-course"
+                    value={courseQuery}
+                    onChange={(e) => setCourseQuery(e.target.value)}
+                    placeholder="CIS2168"
+                    onKeyDown={(e) => e.key === "Enter" && searchSections()}
+                  />
+                </Field>
+              </div>
+              <Button
+                size="sm"
+                onClick={searchSections}
+                disabled={searching || !courseQuery.trim() || !selectedTerm}
+              >
+                {searching && <Spinner data-icon="inline-start" aria-hidden />}
+                Search
+              </Button>
+            </div>
           </div>
-        </div>
 
-        {searchError && (
-          <div className="mt-2 text-xs text-warning">{searchError}</div>
-        )}
+          {searchError && (
+            <div className="mt-2 text-xs text-warning">{searchError}</div>
+          )}
+        </CardContent>
       </Card>
 
       {ssbSections.length > 0 && (
-        <Card title={`Sections (${ssbSections.length})`}>
-          <div className="max-h-64 overflow-y-auto">
-            {ssbSections.map((sec) => {
-              const primaryInstructor =
-                sec.faculty.find((f) => f.primaryIndicator)?.displayName ??
-                sec.faculty[0]?.displayName ??
-                "TBA";
-              const isPlanned = plannedCrns.has(sec.courseReferenceNumber);
-              const isAdding = addingCrns.has(sec.courseReferenceNumber);
+        <Card size="sm">
+          <CardHeader>
+            <CardTitle>{`Sections (${ssbSections.length})`}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-64 overflow-y-auto">
+              {ssbSections.map((sec) => {
+                const primaryInstructor =
+                  sec.faculty.find((f) => f.primaryIndicator)?.displayName ??
+                  sec.faculty[0]?.displayName ??
+                  "TBA";
+                const isPlanned = plannedCrns.has(sec.courseReferenceNumber);
+                const isAdding = addingCrns.has(sec.courseReferenceNumber);
 
-              return (
-                <div
-                  key={sec.courseReferenceNumber}
-                  className="border-b border-border py-2 text-xs last:border-0"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <strong>
-                        {sec.subject} {sec.courseNumber}-{sec.sequenceNumber}
-                      </strong>{" "}
-                      (CRN: {sec.courseReferenceNumber})
-                      <br />
-                      <span className="text-muted-foreground">
-                        {sec.courseTitle}
-                      </span>
-                      <br />
-                      <span className="text-muted-foreground">
-                        {primaryInstructor} ·{" "}
-                        {sec.instructionalMethodDescription}
-                      </span>
-                      <br />
-                      <span
-                        className={cn(
-                          "text-xs font-semibold",
-                          sec.seatsAvailable > 0
-                            ? "text-success"
-                            : "text-destructive",
-                        )}
+                return (
+                  <div
+                    key={sec.courseReferenceNumber}
+                    className="border-b border-border py-2 text-xs last:border-0"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <strong>
+                          {sec.subject} {sec.courseNumber}-{sec.sequenceNumber}
+                        </strong>{" "}
+                        (CRN: {sec.courseReferenceNumber})
+                        <br />
+                        <span className="text-muted-foreground">
+                          {sec.courseTitle}
+                        </span>
+                        <br />
+                        <span className="text-muted-foreground">
+                          {primaryInstructor} ·{" "}
+                          {sec.instructionalMethodDescription}
+                        </span>
+                        <br />
+                        <span
+                          className={cn(
+                            "text-xs font-semibold",
+                            sec.seatsAvailable > 0
+                              ? "text-success"
+                              : "text-destructive",
+                          )}
+                        >
+                          {sec.seatsAvailable}/{sec.maximumEnrollment} seats
+                        </span>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant={isPlanned ? "outline" : "default"}
+                        onClick={() => addToPlan(sec)}
+                        disabled={isPlanned || isAdding}
                       >
-                        {sec.seatsAvailable}/{sec.maximumEnrollment} seats
-                      </span>
+                        {isAdding && (
+                          <Spinner data-icon="inline-start" aria-hidden />
+                        )}
+                        {isPlanned ? "Planned" : "Plan"}
+                      </Button>
                     </div>
-                    <Button
-                      size="sm"
-                      variant={isPlanned ? "secondary" : "primary"}
-                      onClick={() => addToPlan(sec)}
-                      loading={isAdding}
-                      disabled={isPlanned || isAdding}
-                    >
-                      {isPlanned ? "Planned" : "Plan"}
-                    </Button>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          </CardContent>
         </Card>
       )}
 
-      <Card title={`My Plan — ${totalCredits} Credits`}>
-        {planned.length === 0 ? (
-          <div className="text-sm text-muted-foreground">
-            Search for courses above and add them to your plan.
-          </div>
-        ) : (
-          planned.map((p) => (
-            <div
-              key={p.crn}
-              className="flex items-center justify-between border-b border-border py-2 text-sm last:border-0"
-            >
-              <div>
-                <strong>
-                  {p.subject} {p.courseNumber}
-                </strong>
-                <span className="text-muted-foreground">
-                  {" "}
-                  — {p.courseTitle}
-                </span>
-                <br />
-                <span className="text-xs text-muted-foreground">
-                  CRN {p.crn} · {p.instructor} · {p.meetingSummary} ·{" "}
-                  {p.creditHours} cr
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => removeFromPlan(p.crn)}
-                className="cursor-pointer border-0 bg-transparent text-sm text-destructive"
-              >
-                Remove
-              </button>
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>{`My Plan — ${totalCredits} Credits`}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {planned.length === 0 ? (
+            <div className="text-sm text-muted-foreground">
+              Search for courses above and add them to your plan.
             </div>
-          ))
-        )}
+          ) : (
+            planned.map((p) => (
+              <div
+                key={p.crn}
+                className="flex items-center justify-between border-b border-border py-2 text-sm last:border-0"
+              >
+                <div>
+                  <strong>
+                    {p.subject} {p.courseNumber}
+                  </strong>
+                  <span className="text-muted-foreground">
+                    {" "}
+                    — {p.courseTitle}
+                  </span>
+                  <br />
+                  <span className="text-xs text-muted-foreground">
+                    CRN {p.crn} · {p.instructor} · {p.meetingSummary} ·{" "}
+                    {p.creditHours} cr
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeFromPlan(p.crn)}
+                  className="cursor-pointer border-0 bg-transparent text-sm text-destructive"
+                >
+                  Remove
+                </button>
+              </div>
+            ))
+          )}
+        </CardContent>
       </Card>
     </div>
   );
