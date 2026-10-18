@@ -26,10 +26,11 @@
     "@eslint/js": "^10.0.1",
     "@hey-api/openapi-ts": "0.99.0",
     "@tanstack/react-query": "^5.104.3",
+    "@typescript/native": "catalog:",
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
     "msw": "^3.0.3",
-    "typescript": "~6.0.3",
+    "typescript": "catalog:",
     "typescript-eslint": "^8.71.0",
     "vitest": "^5.0.5"
   }

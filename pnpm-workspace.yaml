@@ -5,9 +5,14 @@ packages:
 allowBuilds:
   esbuild: true
 
-# One React version for every package (https://pnpm.io/catalogs).
+# One version of each shared tool for every package (https://pnpm.io/catalogs).
 catalog:
   react: ^19.3.1
   react-dom: ^19.3.1
   "@types/react": ^19.3.0
   "@types/react-dom": ^19.3.0
+  # TypeScript 7 has no compiler API yet, so tools that import "typescript"
+  # (typescript-eslint, Hey API) get 6.0's, and tsc is 7's. The TypeScript
+  # team's side-by-side setup: https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/
+  typescript: npm:@typescript/typescript6@^6.0.2
+  "@typescript/native": npm:typescript@~7.0.2
