@@ -91,29 +91,19 @@ const FILTER_LABEL: Record<FilterName, string> = {
 
 /** W2.1 · Course search: live sections from Banner with ratings and seats. */
 export function SearchPage() {
-  // The query string is only known in the browser, so the prerendered page
-  // starts with an empty search.
-  return (
-    <Suspense fallback={<CourseSearch initialQuery="" />}>
-      <CourseSearchFromUrl />
-    </Suspense>
-  );
-}
-
-/** "Find sections" links from the audit open with ?q=CIS 4398. */
-function CourseSearchFromUrl() {
-  const params = useSearchParams();
-  return <CourseSearch initialQuery={params.get("q") ?? ""} />;
-}
-
-function CourseSearch({ initialQuery }: { initialQuery: string }) {
   const { term, status: termStatus } = useCurrentTerm();
-  const [input, setInput] = useState(initialQuery);
+  const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const search = useClassSearch(term?.code ?? null, input);
 
   return (
     <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+      {/* Only the query string waits for the browser. Suspending the whole
+          page would hydrate it after the top bar, which may have loaded the
+          terms by then and so render differently from the server. */}
+      <Suspense>
+        <QueryFromUrl onQuery={setInput} />
+      </Suspense>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -167,6 +157,15 @@ function CourseSearch({ initialQuery }: { initialQuery: string }) {
       )}
     </div>
   );
+}
+
+/** "Find sections" links from the audit open with ?q=CIS 4398. */
+function QueryFromUrl({ onQuery }: { onQuery: (query: string) => void }) {
+  const query = useSearchParams().get("q");
+  useEffect(() => {
+    if (query) onQuery(query);
+  }, [query, onQuery]);
+  return null;
 }
 
 function UpdatedButton({ search }: { search: ClassSearch }) {
