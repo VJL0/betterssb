@@ -116,6 +116,11 @@ class _ProfessorIndex:
         return list(found.values())
 
 
+def _due(last: float | None) -> bool:
+    """Whether it's been `RELOAD_EVERY_SECONDS` since `last`, or there was no last."""
+    return last is None or time.monotonic() - last >= RELOAD_EVERY_SECONDS
+
+
 def _is_fresh(index: _ProfessorIndex | None) -> bool:
     return index is not None and datetime.now(UTC) - index.synced_at < SYNC_EVERY
 
@@ -139,9 +144,10 @@ class RMPRosterService:
         self._cache = cache
         self._sleep = sleep
         self._index: _ProfessorIndex | None = None
-        self._checked_at = 0.0
+        # time.monotonic() values, None until the first time.
+        self._checked_at: float | None = None
+        self._sync_started_at: float | None = None
         self._sync_task: asyncio.Task[None] | None = None
-        self._sync_started_at = -RELOAD_EVERY_SECONDS
 
     async def search(self, name: str) -> list[RMPRating]:
         """Professors whose name could be `name` ("First Last").
@@ -158,7 +164,7 @@ class RMPRosterService:
     def _start_sync(self) -> None:
         # Each attempt re-reads the roster from the cache, so while RMP is down
         # a busy process tries now and then, not on every lookup.
-        if time.monotonic() - self._sync_started_at < RELOAD_EVERY_SECONDS:
+        if not _due(self._sync_started_at):
             return
         self._sync_started_at = time.monotonic()
         self._sync_task = asyncio.create_task(self._sync_in_background())
@@ -194,7 +200,7 @@ class RMPRosterService:
         logger.info("Synced %d Temple professors from RMP", len(professors))
 
     async def _current_index(self, force: bool = False) -> _ProfessorIndex | None:
-        if force or time.monotonic() - self._checked_at >= RELOAD_EVERY_SECONDS:
+        if force or _due(self._checked_at):
             # Marked first, so requests that arrive during the reload don't repeat it.
             self._checked_at = time.monotonic()
             await self._load_newer()

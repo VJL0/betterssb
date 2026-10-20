@@ -227,6 +227,17 @@ class TestSearch:
         reader, _ = roster_service(FakeRMP([]), cache)
         assert len(await reader.search("Cindy Liao")) == 1
 
+    async def test_reads_the_stored_roster_right_after_boot(
+        self, monkeypatch: pytest.MonkeyPatch
+    ):
+        # time.monotonic() counts from about boot, so it can be small on a fresh machine.
+        cache = MemoryCache()
+        await roster_service(FakeRMP(ROSTER), cache)[0].sync()
+        monkeypatch.setattr("app.modules.rmp.service.time.monotonic", lambda: 5.0)
+
+        reader, _ = roster_service(FakeRMP([]), cache)
+        assert len(await reader.search("Cindy Liao")) == 1
+
     @pytest.mark.parametrize(
         ("name", "expected"),
         [
