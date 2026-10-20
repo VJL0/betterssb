@@ -54,7 +54,6 @@ function plannedSection(
 async function seedSettings(bannerOverlay = true) {
   await extensionStore.set("settings", {
     ...DEFAULT_SETTINGS,
-    school: { id: "U2Nob29sLTk5OQ==", name: "Temple University" },
     term: TERM,
     bannerOverlay,
     updatedAt: NOW,

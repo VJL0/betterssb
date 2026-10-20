@@ -13,7 +13,6 @@ export const WEB_ORIGIN: string = (
   import.meta.env.WXT_WEB_ORIGIN || "http://localhost:3000"
 ).replace(/\/+$/, "");
 
-/** Where students sign in to Banner registration. Defaults to Temple's. */
-export const BANNER_REGISTRATION_URL: string =
-  import.meta.env.WXT_BANNER_REGISTRATION_URL ||
+/** Where students sign in to Temple's Banner registration. */
+export const BANNER_REGISTRATION_URL =
   "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/registration";

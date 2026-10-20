@@ -4,8 +4,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from app.api.deps import SettingsDep
 from app.modules.classes.client import (
+    TEMPLE_SSB_BASE_URL,
     BannerClassSearchClient,
     ClassSearchUnavailable,
     SearchFilters,
@@ -28,9 +28,9 @@ def get_cache(request: Request) -> Cache | None:
 
 
 def get_class_search_service(
-    settings: SettingsDep, cache: Annotated[Cache | None, Depends(get_cache)]
+    cache: Annotated[Cache | None, Depends(get_cache)],
 ) -> ClassSearchService:
-    return ClassSearchService(BannerClassSearchClient(settings.SSB_BASE_URL), cache)
+    return ClassSearchService(BannerClassSearchClient(TEMPLE_SSB_BASE_URL), cache)
 
 
 ServiceDep = Annotated[ClassSearchService, Depends(get_class_search_service)]

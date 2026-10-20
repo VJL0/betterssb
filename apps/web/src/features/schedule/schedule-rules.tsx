@@ -8,12 +8,7 @@ import {
 import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { CourseDot } from "@workspace/ui/components/course-badge";
-import {
-  Field,
-  FieldDescription,
-  FieldLegend,
-  FieldSet,
-} from "@workspace/ui/components/field";
+import { Field, FieldLegend, FieldSet } from "@workspace/ui/components/field";
 import {
   Select,
   SelectContent,
@@ -48,8 +43,6 @@ interface ScheduleRulesProps {
   colorFor: (courseId: string) => CourseColor | null;
   /** Why a course is missing from the schedules, by course id. */
   notes: ReadonlyMap<string, string>;
-  /** Ranking by rating needs a school for Rate My Professors. */
-  ratingsAvailable: boolean;
 }
 
 /** The W2.2 rules card: hard limits on days and times, ranking, and per-course choices. */
@@ -59,7 +52,6 @@ export function ScheduleRulesCard({
   courses,
   colorFor,
   notes,
-  ratingsAvailable,
 }: ScheduleRulesProps) {
   const ids = useId();
   const set = (patch: Partial<ScheduleRules>) =>
@@ -157,7 +149,6 @@ export function ScheduleRulesCard({
                 key={rank}
                 value={rank}
                 size="sm"
-                disabled={rank === "rating" && !ratingsAvailable}
                 className={PRESSED_FILTER_CLASS}
               >
                 {RANK_LABEL[rank]}
@@ -165,11 +156,6 @@ export function ScheduleRulesCard({
             ))}
           </ToggleGroup>
         </div>
-        {!ratingsAvailable && (
-          <FieldDescription>
-            Choose your school in Settings to rank by rating.
-          </FieldDescription>
-        )}
       </FieldSet>
 
       <FieldSet>

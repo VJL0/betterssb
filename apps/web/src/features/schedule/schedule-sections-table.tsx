@@ -23,7 +23,6 @@ interface ScheduleSectionsTableProps {
   sections: readonly ClassSection[];
   plan: TermPlan;
   ratings: ReadonlyMap<string, RatingLookup>;
-  showRatings: boolean;
 }
 
 /** Every section in the chosen schedule, with CRNs to register with. */
@@ -32,7 +31,6 @@ export function ScheduleSectionsTable({
   sections,
   plan,
   ratings,
-  showRatings,
 }: ScheduleSectionsTableProps) {
   return (
     <Card
@@ -62,11 +60,7 @@ export function ScheduleSectionsTable({
               {section.courseReferenceNumber}
             </span>
             <SectionMeetings section={section} />
-            <SectionInstructor
-              section={section}
-              ratings={ratings}
-              showRatings={showRatings}
-            />
+            <SectionInstructor section={section} ratings={ratings} />
             <SeatMeter {...section} size="sm" />
           </li>
         ))}
@@ -106,11 +100,7 @@ export function ScheduleSectionsTable({
                   <SectionMeetings section={section} />
                 </TableCell>
                 <TableCell className="align-top">
-                  <SectionInstructor
-                    section={section}
-                    ratings={ratings}
-                    showRatings={showRatings}
-                  />
+                  <SectionInstructor section={section} ratings={ratings} />
                 </TableCell>
                 <TableCell className="align-top">
                   <SeatMeter {...section} size="sm" />

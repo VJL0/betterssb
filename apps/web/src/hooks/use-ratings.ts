@@ -30,9 +30,9 @@ async function withSlot<T>(task: () => Promise<T>): Promise<T> {
   }
 }
 
-function ratingQuery(name: string, schoolId: string) {
+function ratingQuery(name: string) {
   const options = searchProfessorsOptions({
-    query: { name: instructorSearchName(name), school_id: schoolId },
+    query: { name: instructorSearchName(name) },
   });
   return {
     ...options,
@@ -40,20 +40,16 @@ function ratingQuery(name: string, schoolId: string) {
       withSlot(async () => options.queryFn!(context)),
     select: (matches: RmpRating[]) =>
       usableRating(matchingProfile(name, matches)),
-    // One lookup per instructor per school for the life of the page.
+    // One lookup per instructor for the life of the page.
     staleTime: Infinity,
     // A failed lookup shows as "no profile" now and is retried on reload.
     retry: false,
   };
 }
 
-/**
- * Ratings for Banner instructor names ("Last, First"). Without a school
- * there's nothing to look up, so every name maps to undefined.
- */
+/** Temple University ratings for Banner instructor names ("Last, First"). */
 export function useRatings(
   names: readonly string[],
-  schoolId: string | null,
 ): Map<string, RatingLookup> {
   // One string key, so the lookups only change when the set of names does.
   const key = [...new Set(names.filter((n) => n && n !== "TBA"))]
@@ -73,7 +69,7 @@ export function useRatings(
   );
 
   return useQueries({
-    queries: schoolId ? wanted.map((name) => ratingQuery(name, schoolId)) : [],
+    queries: wanted.map(ratingQuery),
     combine,
   });
 }

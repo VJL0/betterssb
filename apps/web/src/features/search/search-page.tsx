@@ -56,7 +56,6 @@ import { useCurrentTerm } from "@/hooks/use-current-term";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { usePlan } from "@/hooks/use-plan";
 import { useRatings } from "@/hooks/use-ratings";
-import { useSettings } from "@/hooks/use-settings";
 import { formatClockTime, formatUpdated } from "@/lib/relative-time";
 import { undoToast } from "@/lib/undo-toast";
 import { CourseCard } from "./course-card";
@@ -201,7 +200,6 @@ interface SearchBodyProps {
 }
 
 function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
-  const { settings } = useSettings();
   const planState = usePlan(term.code, term.name);
   const { plan } = planState;
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
@@ -214,8 +212,7 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
     () => search.result?.sections ?? [],
     [search.result],
   );
-  const schoolId = settings.school?.id ?? null;
-  const ratings = useRatings(sections.map(primaryInstructorName), schoolId);
+  const ratings = useRatings(sections.map(primaryInstructorName));
   const visible = sections.filter((s) => sectionPasses(s, filters, ratings));
   const groups = groupByCourse(visible);
   const plannedCrns = new Set(plan.sections.map((s) => s.crn));
@@ -271,7 +268,6 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
       filters={filters}
       onChange={setFilters}
       attributes={attributes}
-      ratingsAvailable={schoolId !== null}
     />
   );
   const rail = (
@@ -297,16 +293,6 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
           </Button>
         </div>
 
-        {!schoolId && search.result && (
-          <Alert variant="info">
-            <InfoIcon />
-            <AlertTitle>Ratings need your school</AlertTitle>
-            <AlertDescription>
-              Choose your school in Settings to see Rate My Professors ratings.
-            </AlertDescription>
-          </Alert>
-        )}
-
         <Results
           term={term}
           search={search}
@@ -325,7 +311,6 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
               plan={plan}
               termName={term.name}
               ratings={ratings}
-              showRatings={schoolId !== null}
               isPlanned={(crn) => plannedCrns.has(crn)}
               onToggle={(s) => void toggle(s)}
               onPreview={(s) =>

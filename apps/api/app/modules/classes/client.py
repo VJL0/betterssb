@@ -16,9 +16,10 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
+TEMPLE_SSB_BASE_URL = "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb"
 REQUEST_TIMEOUT_SECONDS = 15.0
 USER_AGENT = "BetterSSB/0.1 (read-only class search)"
-# Banner is shared with every student at the school; cap what one API process sends it.
+# Banner is shared with every student at Temple; cap what one API process sends it.
 MAX_CONCURRENT_REQUESTS = 5
 LOOKUP_PAGE_SIZE = 500
 

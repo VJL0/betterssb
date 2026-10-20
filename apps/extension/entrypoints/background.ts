@@ -35,7 +35,7 @@ import {
 import type { BannerConnection } from "@workspace/shared/types/store";
 import { searchProfessors } from "@workspace/api-client";
 
-const SSB_URL_PATTERN = "*://*.edu/StudentRegistrationSsb/*";
+const SSB_URL_PATTERN = "*://*.temple.edu/StudentRegistrationSsb/*";
 const DARS_URL_PATTERN = "*://prd-dars.temple.edu/selfservice/*";
 const DARS_START_URL =
   "https://prd-dars.temple.edu/selfservice/audit/create.html";
@@ -246,8 +246,6 @@ function buildBatchDedupeKey(
   return `${scheduledRunAt}|${termCode}|${crnList.join(",")}`;
 }
 
-const LEGACY_RATINGS_CACHE_KEY = "betterssb:cachedRatings";
-
 export default defineBackground(() => {
   setUpApiClient();
 
@@ -277,12 +275,9 @@ export default defineBackground(() => {
 
       switch (msg.type) {
         case "FETCH_RATING": {
-          const { name, schoolId } = msg.payload as {
-            name: string;
-            schoolId: string;
-          };
+          const { name } = msg.payload as { name: string };
           const { data: ratings } = await searchProfessors({
-            query: { name, school_id: schoolId },
+            query: { name },
           });
           sendResponse({
             success: true,
@@ -306,11 +301,6 @@ export default defineBackground(() => {
   });
 
   void syncAutoRegFireAlarm();
-
-  browser.runtime.onInstalled.addListener(() => {
-    // Ratings the old Banner badges cached; nothing reads them any more.
-    void browser.storage.local.remove(LEGACY_RATINGS_CACHE_KEY);
-  });
 
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;

@@ -34,7 +34,10 @@ async function handleSSBMessage(
 }
 
 export default defineContentScript({
-  matches: ["*://*.edu/StudentRegistrationSsb/*", "*://*.edu/ssb/*"],
+  matches: [
+    "*://*.temple.edu/StudentRegistrationSsb/*",
+    "*://*.temple.edu/ssb/*",
+  ],
 
   async main() {
     const { startOverlay } = await import("./overlay");

@@ -3,9 +3,8 @@
  * Anything unset hides the UI that depends on it rather than linking nowhere.
  */
 
-/** Where students sign in to Banner registration. Defaults to Temple's. */
-export const BANNER_REGISTRATION_URL: string =
-  process.env.NEXT_PUBLIC_BANNER_REGISTRATION_URL ||
+/** Where students sign in to Temple's Banner registration. */
+export const BANNER_REGISTRATION_URL =
   "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/registration";
 
 /** The extension's store listing. Unset until the extension is published. */
@@ -21,6 +20,6 @@ export const SITE_URL: string = process.env.SITE_URL || "http://localhost:3000";
 export const SITE_NAME = "BetterSSB";
 
 export const SITE_DESCRIPTION =
-  "Search every section with instructor ratings and seats, build conflict-free schedules, map your path to graduation, and register the second your window opens. Free for students using Banner Self-Service.";
+  "Search every section with instructor ratings and seats, build conflict-free schedules, map your path to graduation, and register the second your window opens. Free for Temple University students.";
 
 export const SOURCE_CODE_URL = "https://github.com/VJL0/betterssb";

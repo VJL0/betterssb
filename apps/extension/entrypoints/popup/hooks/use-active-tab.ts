@@ -3,7 +3,8 @@ import { sendTabMessage } from "@/lib/messaging";
 import type { OverlayStatus } from "@/lib/overlay-status";
 
 // The URLs the content script runs on (see wxt.config.ts host_permissions).
-const BANNER_PAGE = /^https?:\/\/[^/]+\.edu\/(StudentRegistrationSsb|ssb)\//i;
+const BANNER_PAGE =
+  /^https?:\/\/([^/]+\.)?temple\.edu\/(StudentRegistrationSsb|ssb)\//i;
 
 /** Whether the tab the popup opened over is a Banner page. */
 export function useOnBannerPage() {

@@ -16,15 +16,13 @@ export function clashSummary({ planned, overlap }: PlanClash): string {
   return `${planned.courseCode} · ${planned.section}, ${overlap.days.join("")} ${formatClock(overlap.start)}`;
 }
 
-function useRating(name: string, schoolId: string | null) {
+function useRating(name: string) {
   return useQuery({
-    queryKey: ["rmpRating", schoolId, name],
+    queryKey: ["rmpRating", name],
     queryFn: () =>
       askBackground<RmpRating | null>("FETCH_RATING", {
         name: instructorSearchName(name),
-        schoolId,
       }),
-    enabled: schoolId !== null,
     // A rating doesn't change while the page is open.
     staleTime: Infinity,
     retry: false,
@@ -33,14 +31,12 @@ function useRating(name: string, schoolId: string | null) {
 
 function Rating({
   slot,
-  schoolId,
   popupContainer,
 }: {
   slot: RatingSlot;
-  schoolId: string | null;
   popupContainer: HTMLElement;
 }) {
-  const rating = useRating(slot.name, schoolId);
+  const rating = useRating(slot.name);
   // Nothing while loading or when the lookup fails: Banner's name stands alone.
   if (!rating.isSuccess) return null;
   return createPortal(
@@ -104,24 +100,17 @@ export function RowOverlay({
   row,
   inPlan,
   clashes,
-  schoolId,
   popupContainer,
 }: {
   row: OverlayRow;
   inPlan: boolean;
   clashes: readonly PlanClash[];
-  schoolId: string | null;
   popupContainer: HTMLElement;
 }) {
   return (
     <>
       {row.ratingSlots.map((slot) => (
-        <Rating
-          key={slot.name}
-          slot={slot}
-          schoolId={schoolId}
-          popupContainer={popupContainer}
-        />
+        <Rating key={slot.name} slot={slot} popupContainer={popupContainer} />
       ))}
       {row.seatSlot &&
         row.seats &&

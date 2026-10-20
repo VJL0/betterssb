@@ -196,8 +196,8 @@ export function TodayTab({
             Open Banner registration
           </h2>
           <p className="text-muted-foreground">
-            Auto-register submits through your school's Banner registration
-            page, signed in, in a tab like this one.
+            Auto-register submits through Temple's Banner registration page,
+            signed in, in a tab like this one.
           </p>
           <Button
             size="sm"

@@ -42,7 +42,7 @@ export function OverlayApp({
   popupContainer: HTMLElement;
 }) {
   const settings = useStoreDocument("settings");
-  const { bannerOverlay, school, term } = withSettingDefaults(settings.value);
+  const { bannerOverlay, term } = withSettingDefaults(settings.value);
   const enabled = settings.loaded && bannerOverlay;
 
   useEffect(() => {
@@ -56,24 +56,17 @@ export function OverlayApp({
   const pageTerm = rows.find((row) => row.term)?.term ?? term ?? "";
 
   return enabled ? (
-    <PageOverlay
-      rows={rows}
-      term={pageTerm}
-      schoolId={school?.id ?? null}
-      popupContainer={popupContainer}
-    />
+    <PageOverlay rows={rows} term={pageTerm} popupContainer={popupContainer} />
   ) : null;
 }
 
 function PageOverlay({
   rows,
   term,
-  schoolId,
   popupContainer,
 }: {
   rows: readonly OverlayRow[];
   term: string;
-  schoolId: string | null;
   popupContainer: HTMLElement;
 }) {
   const plan = useStoreDocument(planKey(term)).value;
@@ -97,7 +90,6 @@ function PageOverlay({
           row={row}
           inPlan={planned.has(row.crn)}
           clashes={clashes.get(row.crn)?.clashes ?? []}
-          schoolId={schoolId}
           popupContainer={popupContainer}
         />
       ))}

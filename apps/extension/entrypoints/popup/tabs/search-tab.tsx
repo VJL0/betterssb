@@ -82,13 +82,7 @@ function useSettled(value: string): string {
 }
 
 /** E1.3 Search: quick section lookup with ratings, seats and add to plan. */
-export function SearchTab({
-  term,
-  schoolId,
-}: {
-  term: Term;
-  schoolId: string | null;
-}) {
+export function SearchTab({ term }: { term: Term }) {
   const [input, setInput] = useState("");
   const settled = useSettled(input);
   const subjects = useQuery({
@@ -121,17 +115,15 @@ export function SearchTab({
     (n) => n !== "TBA",
   );
   const ratings = useQueries({
-    queries: schoolId
-      ? names.map((name) => ({
-          ...searchProfessorsOptions({
-            query: { name: instructorSearchName(name), school_id: schoolId },
-          }),
-          staleTime: Infinity,
-          retry: false,
-          select: (matches: RmpRating[]) =>
-            usableRating(matchingProfile(name, matches)),
-        }))
-      : [],
+    queries: names.map((name) => ({
+      ...searchProfessorsOptions({
+        query: { name: instructorSearchName(name) },
+      }),
+      staleTime: Infinity,
+      retry: false,
+      select: (matches: RmpRating[]) =>
+        usableRating(matchingProfile(name, matches)),
+    })),
     combine: (results) => new Map(names.map((name, i) => [name, results[i]])),
   });
 
@@ -224,8 +216,7 @@ export function SearchTab({
                         </span>
                         <span className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
                           <span title={name}>{shortInstructorName(name)}</span>
-                          {schoolId &&
-                            name !== "TBA" &&
+                          {name !== "TBA" &&
                             (rating?.isPending ? (
                               <Skeleton className="h-5 w-16 rounded-2xl" />
                             ) : (

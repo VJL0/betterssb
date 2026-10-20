@@ -57,7 +57,6 @@ describe("SettingsPage", () => {
     const { store } = renderPage(<SettingsPage />);
     await store.set("advisorThreads", [THREAD]);
     await store.set("settings", {
-      school: null,
       term: "202703",
       major: "",
       keyboardShortcuts: true,
