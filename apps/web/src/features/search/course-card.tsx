@@ -33,7 +33,6 @@ interface CourseCardProps extends SectionRowActions {
   plan: TermPlan;
   termName: string;
   ratings: ReadonlyMap<string, RatingLookup>;
-  showRatings: boolean;
 }
 
 function sectionLabel(section: ClassSection): string {
@@ -88,23 +87,20 @@ function room(section: ClassSection): string {
 export function SectionInstructor({
   section,
   ratings,
-  showRatings,
 }: {
   section: ClassSection;
   ratings: ReadonlyMap<string, RatingLookup>;
-  showRatings: boolean;
 }) {
   const name = primaryInstructorName(section);
   const rating = ratings.get(name);
   return (
     <span className="flex flex-wrap items-center gap-2">
       <span title={name}>{shortInstructorName(name)}</span>
-      {showRatings &&
-        name !== "TBA" &&
+      {name !== "TBA" &&
         (rating === undefined ? (
           <Skeleton aria-hidden className="h-5 w-24 rounded-2xl" />
         ) : (
-          <RmpBadge rating={rating} />
+          <RmpBadge rating={rating} instructorName={name} />
         ))}
     </span>
   );
@@ -145,7 +141,6 @@ export function CourseCard({
   plan,
   termName,
   ratings,
-  showRatings,
   isPlanned,
   onToggle,
   onPreview,
@@ -232,11 +227,7 @@ export function CourseCard({
                     <SectionMeetings section={section} />
                   </td>
                   <td className="px-2 py-2 align-top">
-                    <SectionInstructor
-                      section={section}
-                      ratings={ratings}
-                      showRatings={showRatings}
-                    />
+                    <SectionInstructor section={section} ratings={ratings} />
                   </td>
                   <td className="px-2 py-2 align-top text-muted-foreground">
                     {room(section)}
@@ -278,11 +269,7 @@ export function CourseCard({
                   </span>
                 </MobileLine>
                 <SectionMeetings section={section} />
-                <SectionInstructor
-                  section={section}
-                  ratings={ratings}
-                  showRatings={showRatings}
-                />
+                <SectionInstructor section={section} ratings={ratings} />
                 <span className="text-muted-foreground">{room(section)}</span>
                 <SeatMeter {...section} size="sm" />
               </div>

@@ -15,8 +15,8 @@ export function formatTermName(bannerDescription: string): string {
 
 /**
  * Temple University's Banner term codes: the year, then 03 Spring, 20 Summer
- * I, 26 Summer II, 36 Fall. Other schools number terms differently; this is
- * used only to name and add terms Banner hasn't posted yet in the planner.
+ * I, 26 Summer II, 36 Fall. Used to name and add terms Banner hasn't posted
+ * yet in the planner.
  */
 const TEMPLE_SEASONS = [
   { code: "03", name: "Spring" },

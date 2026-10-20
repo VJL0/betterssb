@@ -22,7 +22,6 @@ export const EXTENSION_STORE_PREFIX = "betterssb:store:";
 
 /** Settings before the student has saved any (the website and the popup). */
 export const DEFAULT_SETTINGS: Omit<UserSettings, "updatedAt"> = {
-  school: null,
   term: null,
   major: "",
   keyboardShortcuts: true,

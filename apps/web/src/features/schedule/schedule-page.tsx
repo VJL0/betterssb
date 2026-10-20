@@ -43,7 +43,6 @@ import { useCurrentTerm } from "@/hooks/use-current-term";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { usePlan } from "@/hooks/use-plan";
 import { useRatings } from "@/hooks/use-ratings";
-import { useSettings } from "@/hooks/use-settings";
 import type { Term } from "@/hooks/use-terms";
 import { downloadFile } from "@/lib/download";
 import { formatClockTime } from "@/lib/relative-time";
@@ -133,7 +132,6 @@ function sameCrns(
 }
 
 function ScheduleBuilder({ term }: { term: Term }) {
-  const { settings } = useSettings();
   const planState = usePlan(term.code, term.name);
   const { plan } = planState;
   const courses = useMemo(() => planCourses(plan), [plan]);
@@ -158,8 +156,7 @@ function ScheduleBuilder({ term }: { term: Term }) {
     () => new Map(allSections.map((s) => [s.courseReferenceNumber, s])),
     [allSections],
   );
-  const schoolId = settings.school?.id ?? null;
-  const ratings = useRatings(allSections.map(primaryInstructorName), schoolId);
+  const ratings = useRatings(allSections.map(primaryInstructorName));
 
   const stale = generated.status === "error";
   const options = useMemo(
@@ -324,7 +321,6 @@ function ScheduleBuilder({ term }: { term: Term }) {
             courses={courses}
             colorFor={colorFor}
             notes={placement.notes}
-            ratingsAvailable={!!schoolId}
           />
         </div>
 
@@ -372,7 +368,6 @@ function ScheduleBuilder({ term }: { term: Term }) {
                 sections={selectedSections}
                 plan={plan}
                 ratings={ratings}
-                showRatings={!!schoolId}
               />
             </div>
           )}

@@ -1255,29 +1255,6 @@
         "title": "RMPRating",
         "type": "object"
       },
-      "RMPSchool": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "legacyId": {
-            "title": "Legacyid",
-            "type": "integer"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "legacyId",
-          "name"
-        ],
-        "title": "RMPSchool",
-        "type": "object"
-      },
       "Requirement": {
         "properties": {
           "category": {
@@ -2589,66 +2566,9 @@
         ]
       }
     },
-    "/api/rmp/schools": {
-      "get": {
-        "description": "Search RateMyProfessors for schools by name.",
-        "operationId": "search_schools",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "query",
-            "required": true,
-            "schema": {
-              "title": "Query",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/RMPSchool"
-                  },
-                  "title": "Response Search Schools",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "Search Schools",
-        "tags": [
-          "rmp"
-        ]
-      }
-    },
     "/api/rmp/search": {
       "get": {
-        "description": "Search RateMyProfessors for a professor by name.",
+        "description": "Temple University professors on RateMyProfessors who could be `name`.\n\nMatches are loose (\"Chris\" finds \"Christopher\"); pick the exact profile on\nthe client.",
         "operationId": "search_professors",
         "parameters": [
           {
@@ -2657,26 +2577,6 @@
             "required": true,
             "schema": {
               "title": "Name",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "school",
-            "required": false,
-            "schema": {
-              "default": "",
-              "title": "School",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "school_id",
-            "required": false,
-            "schema": {
-              "default": "",
-              "title": "School Id",
               "type": "string"
             }
           }
@@ -2718,59 +2618,6 @@
           }
         },
         "summary": "Search Professors",
-        "tags": [
-          "rmp"
-        ]
-      }
-    },
-    "/api/rmp/{rmp_id}": {
-      "get": {
-        "description": "Get a single professor's ratings by their RMP ID.",
-        "operationId": "get_professor",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "rmp_id",
-            "required": true,
-            "schema": {
-              "title": "Rmp Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RMPRating"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "Get Professor",
         "tags": [
           "rmp"
         ]

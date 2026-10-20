@@ -54,7 +54,6 @@ function plannedSection(
 async function seedSettings(bannerOverlay = true) {
   await extensionStore.set("settings", {
     ...DEFAULT_SETTINGS,
-    school: { id: "U2Nob29sLTk5OQ==", name: "Temple University" },
     term: TERM,
     bannerOverlay,
     updatedAt: NOW,
@@ -139,7 +138,10 @@ describe("Banner overlay", () => {
     await waitFor(() =>
       expect(lovelace!.textContent).toMatch(/^4\.4 rating for Ada Lovelace/),
     );
-    await waitFor(() => expect(turing!.textContent).toBe("No RMP profile"));
+    await waitFor(() => expect(turing!.textContent).toBe("No RMP"));
+    expect(turing!.querySelector("a")?.getAttribute("aria-label")).toMatch(
+      /^No RMP profile, search Rate My Professors for Alan Turing/,
+    );
     // Right before Banner's own link, inside the same cell.
     const link = document.querySelector("a.email")!;
     expect(link.previousElementSibling?.localName).toBe(HOST_TAG);

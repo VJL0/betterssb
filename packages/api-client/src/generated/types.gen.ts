@@ -729,24 +729,6 @@ export type RmpRating = {
 };
 
 /**
- * RMPSchool
- */
-export type RmpSchool = {
-  /**
-   * Id
-   */
-  id: string;
-  /**
-   * Legacyid
-   */
-  legacyId: number;
-  /**
-   * Name
-   */
-  name: string;
-};
-
-/**
  * Requirement
  */
 export type Requirement = {
@@ -1458,43 +1440,6 @@ export type ParseBulletinResponses = {
 export type ParseBulletinResponse =
   ParseBulletinResponses[keyof ParseBulletinResponses];
 
-export type SearchSchoolsData = {
-  body?: never;
-  path?: never;
-  query: {
-    /**
-     * Query
-     */
-    query: string;
-  };
-  url: "/api/rmp/schools";
-};
-
-export type SearchSchoolsErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type SearchSchoolsError = SearchSchoolsErrors[keyof SearchSchoolsErrors];
-
-export type SearchSchoolsResponses = {
-  /**
-   * Response Search Schools
-   *
-   * Successful Response
-   */
-  200: Array<RmpSchool>;
-};
-
-export type SearchSchoolsResponse =
-  SearchSchoolsResponses[keyof SearchSchoolsResponses];
-
 export type SearchProfessorsData = {
   body?: never;
   path?: never;
@@ -1503,14 +1448,6 @@ export type SearchProfessorsData = {
      * Name
      */
     name: string;
-    /**
-     * School
-     */
-    school?: string;
-    /**
-     * School Id
-     */
-    school_id?: string;
   };
   url: "/api/rmp/search";
 };
@@ -1540,41 +1477,6 @@ export type SearchProfessorsResponses = {
 
 export type SearchProfessorsResponse =
   SearchProfessorsResponses[keyof SearchProfessorsResponses];
-
-export type GetProfessorData = {
-  body?: never;
-  path: {
-    /**
-     * Rmp Id
-     */
-    rmp_id: string;
-  };
-  query?: never;
-  url: "/api/rmp/{rmp_id}";
-};
-
-export type GetProfessorErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type GetProfessorError = GetProfessorErrors[keyof GetProfessorErrors];
-
-export type GetProfessorResponses = {
-  /**
-   * Successful Response
-   */
-  200: RmpRating;
-};
-
-export type GetProfessorResponse =
-  GetProfessorResponses[keyof GetProfessorResponses];
 
 export type GenerateSchedulesData = {
   body: GenerateRequest;

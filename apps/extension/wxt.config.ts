@@ -1,12 +1,12 @@
 import { createRequire } from "node:module";
 import { defineConfig } from "wxt";
 import tailwindcss from "@tailwindcss/vite";
+import { BANNER_ORIGIN, BANNER_PAGES, DARS_PAGES } from "./lib/temple-urls";
 
 const require = createRequire(import.meta.url);
 
 /** Inter's Latin file, which the Banner overlay registers on Banner pages. */
 const OVERLAY_FONT = "fonts/inter-latin-wght-normal.woff2";
-const BANNER_PAGES = ["*://*.edu/StudentRegistrationSsb/*", "*://*.edu/ssb/*"];
 
 /** Host permission for the backend, so the popup and background can call it without CORS. */
 function apiHostPermission(): string {
@@ -25,15 +25,12 @@ export default defineConfig({
   manifest: () => ({
     name: "BetterSSB",
     description:
-      "Supercharge your university's Self-Service Banner registration",
+      "Supercharge Temple University's Self-Service Banner registration",
     permissions: ["storage", "alarms", "notifications", "tabs", "activeTab"],
-    host_permissions: [
-      ...BANNER_PAGES,
-      "*://prd-dars.temple.edu/selfservice/*",
-      apiHostPermission(),
-    ],
+    host_permissions: [BANNER_PAGES, DARS_PAGES, apiHostPermission()],
     web_accessible_resources: [
-      { resources: [OVERLAY_FONT], matches: ["*://*.edu/*"] },
+      // These match patterns must end in "/*": only the origin counts.
+      { resources: [OVERLAY_FONT], matches: [`${BANNER_ORIGIN}/*`] },
     ],
   }),
   hooks: {

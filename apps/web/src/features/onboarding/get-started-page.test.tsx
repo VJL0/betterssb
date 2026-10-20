@@ -9,11 +9,6 @@ import { GetStartedPage } from "./get-started-page";
 
 beforeEach(() => {
   server.use(
-    http.get(`${API}/rmp/schools`, () =>
-      HttpResponse.json([
-        { id: "U2Nob29sLTk5OQ==", legacyId: 999, name: "Temple University" },
-      ]),
-    ),
     http.get(`${API}/classes/terms`, () =>
       HttpResponse.json([
         { code: "202703", description: "2027 Spring" },
@@ -33,28 +28,21 @@ function renderStart(route = "/start") {
 }
 
 describe("GetStartedPage", () => {
-  it("names the school field and asks for a school before continuing", async () => {
+  it("asks for a term before continuing", async () => {
     const user = userEvent.setup();
     renderStart();
-    expect(screen.getByRole("combobox", { name: "School" })).toBeTruthy();
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-    expect(screen.getByText("Choose your school to continue.")).toBeTruthy();
+    await screen.findByRole("radiogroup", { name: "Term" });
     expect(
-      screen
-        .getByRole("combobox", { name: "School" })
-        .getAttribute("aria-invalid"),
-    ).toBe("true");
+      within(screen.getByRole("list", { name: "Setup steps" }))
+        .getAllByRole("listitem")
+        .map((step) => step.textContent),
+    ).toEqual(["Term", "Banner · optional"]);
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    expect(screen.getByText("Choose a term to continue.")).toBeTruthy();
   });
 
-  it("saves the school, then offers plannable terms only", async () => {
-    const user = userEvent.setup();
-    const { store } = renderStart();
-    await user.type(screen.getByRole("combobox", { name: "School" }), "Temple");
-    await user.click(
-      await screen.findByRole("option", { name: "Temple University" }),
-    );
-    await user.click(screen.getByRole("button", { name: "Continue" }));
-
+  it("offers plannable terms only", async () => {
+    renderStart();
     const terms = await screen.findByRole("radiogroup", { name: "Term" });
     expect(within(terms).getAllByRole("radio")).toHaveLength(2);
     expect(
@@ -64,14 +52,11 @@ describe("GetStartedPage", () => {
       within(terms).getByRole("radio", { name: "Fall 2026" }),
     ).toBeTruthy();
     expect(within(terms).queryByRole("radio", { name: /2025/ })).toBeNull();
-    expect((await store.get("settings"))?.school?.name).toBe(
-      "Temple University",
-    );
   });
 
   it("saves the term and major and lets Banner be skipped", async () => {
     const user = userEvent.setup();
-    const { store } = renderStart("/start?step=term");
+    const { store } = renderStart();
     await user.click(await screen.findByRole("radio", { name: "Spring 2027" }));
     await user.type(
       screen.getByRole("textbox", { name: /Major/ }),
@@ -91,7 +76,7 @@ describe("GetStartedPage", () => {
   });
 
   it("has no axe violations on each step", async () => {
-    for (const route of ["/start", "/start?step=term", "/start?step=banner"]) {
+    for (const route of ["/start", "/start?step=banner"]) {
       const { container, unmount } = renderStart(route);
       await screen.findByRole("heading", { level: 1 });
       expect(await axeViolations(container)).toEqual([]);

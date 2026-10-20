@@ -1,7 +1,9 @@
 import { cn } from "cn";
+import { instructorSearchName } from "@workspace/shared/lib/instructors";
 import {
   formatRating,
   ratingBand,
+  rmpSearchUrl,
   type RatingBand,
 } from "@workspace/shared/lib/ratings";
 
@@ -23,6 +25,8 @@ const BAND_VARIANT = {
 interface RmpBadgeProps {
   /** Null when the instructor has no Rate My Professors profile. */
   rating: RmpRating | null;
+  /** Banner's name for the instructor ("Last, First M."); without a profile, the badge searches RMP for it. */
+  instructorName?: string;
   /** Adds "· 88%" (would take again) to the badge. */
   showWouldTakeAgain?: boolean;
   /** Just the score ("4.2", or "No RMP"), for Banner's narrow table cells. */
@@ -63,6 +67,7 @@ function initials(name: string): string {
  */
 function RmpBadge({
   rating,
+  instructorName,
   showWouldTakeAgain = false,
   compact = false,
   popupContainer,
@@ -70,14 +75,11 @@ function RmpBadge({
 }: RmpBadgeProps) {
   if (!rating) {
     return (
-      <Badge
-        data-slot="rmp-badge"
-        variant="outline"
-        className={cn("border-dashed text-muted-foreground", className)}
-      >
-        {compact ? "No RMP" : "No RMP profile"}
-        {compact && <span className="sr-only"> profile</span>}
-      </Badge>
+      <NoProfileBadge
+        instructorName={instructorName}
+        compact={compact}
+        className={className}
+      />
     );
   }
 
@@ -116,6 +118,39 @@ function RmpBadge({
         <RmpDetails rating={rating} />
       </HoverCardContent>
     </HoverCard>
+  );
+}
+
+/** We found no profile, but RMP may list them under another name: link to its search. */
+function NoProfileBadge({
+  instructorName,
+  compact,
+  className,
+}: {
+  instructorName?: string;
+  compact: boolean;
+  className?: string;
+}) {
+  const classes = cn("border-dashed text-muted-foreground", className);
+  if (!instructorName) {
+    return (
+      <Badge data-slot="rmp-badge" variant="outline" className={classes}>
+        {compact ? "No RMP" : "No RMP profile"}
+        {compact && <span className="sr-only"> profile</span>}
+      </Badge>
+    );
+  }
+  return (
+    <a
+      data-slot="rmp-badge"
+      href={rmpSearchUrl(instructorName)}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`No RMP profile, search Rate My Professors for ${instructorSearchName(instructorName)}, opens in a new tab`}
+      className={cn(badgeVariants({ variant: "outline" }), classes)}
+    >
+      {compact ? "No RMP" : "No RMP profile"}
+    </a>
   );
 }
 

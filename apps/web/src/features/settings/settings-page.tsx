@@ -29,20 +29,17 @@ import { Input } from "@workspace/ui/components/input";
 import { Kbd } from "@workspace/ui/components/kbd";
 import { Switch } from "@workspace/ui/components/switch";
 import { Spinner } from "@workspace/ui/components/spinner";
-import { SearchCombobox } from "@workspace/ui/components/search-combobox";
 import { BannerBadge } from "@/components/banner-status";
 import { TermSelect } from "@/components/term-select";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import { useSettings } from "@/hooks/use-settings";
-import { findSchools } from "@/lib/schools";
 import { BANNER_REGISTRATION_URL, EXTENSION_INSTALL_URL } from "@/lib/config";
 import { useStoreDocument, useStoreState } from "@/lib/store/store-context";
 import { downloadStoreExport } from "./export-data";
-import type { RmpSchool } from "@workspace/api-client";
 
 const SECTIONS = [
   { id: "account", label: "Account" },
-  { id: "school", label: "School and term" },
+  { id: "term", label: "Term and major" },
   { id: "banner", label: "Banner" },
   { id: "banner-pages", label: "On Banner pages" },
   { id: "keyboard", label: "Keyboard" },
@@ -104,7 +101,7 @@ export function SettingsPage() {
         </nav>
         <div className="flex min-w-0 flex-[999_1_35rem] flex-col gap-5">
           <AccountSection />
-          <SchoolSection />
+          <TermSection />
           <BannerSection />
           <BannerPagesSection />
           <KeyboardSection />
@@ -138,39 +135,14 @@ function AccountSection() {
   );
 }
 
-function SchoolSection() {
+function TermSection() {
   const { settings, update } = useSettings();
   const [major, setMajor] = useState<string | null>(null);
   const majorId = useId();
 
   return (
-    <SettingsSection id="school" title="School and term">
+    <SettingsSection id="term" title="Term and major">
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(14rem,100%),1fr))] gap-4">
-        <Field>
-          <FieldLabel htmlFor="settings-school">School</FieldLabel>
-          <SearchCombobox<RmpSchool>
-            id="settings-school"
-            value={
-              settings.school
-                ? {
-                    id: settings.school.id,
-                    name: settings.school.name,
-                    legacyId: 0,
-                  }
-                : null
-            }
-            onSelect={(s) => {
-              void update({ school: { id: s.id, name: s.name } }).then(() =>
-                toast.success(`School set to ${s.name}`),
-              );
-            }}
-            search={findSchools}
-            itemKey={(s) => s.id}
-            itemLabel={(s) => s.name}
-            placeholder="Search schools"
-            noun="schools"
-          />
-        </Field>
         <Field>
           {/* The select names itself; this is the visible heading. */}
           <FieldTitle>Term</FieldTitle>
@@ -213,7 +185,7 @@ function BannerPagesSection() {
     <SettingsSection
       id="banner-pages"
       title="On Banner pages"
-      description="What the extension adds to your school's registration pages."
+      description="What the extension adds to Temple's Banner registration pages."
     >
       <Field orientation="horizontal">
         <FieldContent>

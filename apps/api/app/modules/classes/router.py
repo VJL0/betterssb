@@ -2,16 +2,17 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.api.deps import SettingsDep
+from app.core.cache import Cache, get_cache
 from app.modules.classes.client import (
+    TEMPLE_SSB_BASE_URL,
     BannerClassSearchClient,
     ClassSearchUnavailable,
     SearchFilters,
 )
 from app.modules.classes.schemas import ClassSearchResult, CodeDescription
-from app.modules.classes.service import Cache, ClassSearchService
+from app.modules.classes.service import ClassSearchService
 
 router = APIRouter(prefix="/classes", tags=["classes"])
 
@@ -22,15 +23,10 @@ UNAVAILABLE = "Banner's class search isn't responding. Try again in a minute."
 TermQuery = Annotated[str, Query(pattern=r"^\d{6}$", description="Banner term code")]
 
 
-def get_cache(request: Request) -> Cache | None:
-    # Unset when the app runs without its lifespan (tests); searches then go uncached.
-    return getattr(request.app.state, "redis", None)
-
-
 def get_class_search_service(
-    settings: SettingsDep, cache: Annotated[Cache | None, Depends(get_cache)]
+    cache: Annotated[Cache | None, Depends(get_cache)],
 ) -> ClassSearchService:
-    return ClassSearchService(BannerClassSearchClient(settings.SSB_BASE_URL), cache)
+    return ClassSearchService(BannerClassSearchClient(TEMPLE_SSB_BASE_URL), cache)
 
 
 ServiceDep = Annotated[ClassSearchService, Depends(get_class_search_service)]

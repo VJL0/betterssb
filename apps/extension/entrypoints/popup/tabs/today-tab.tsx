@@ -22,7 +22,7 @@ import { SeatMeter } from "@workspace/ui/components/seat-meter";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Switch } from "@workspace/ui/components/switch";
 import { cn } from "@workspace/ui/lib/utils";
-import { BANNER_REGISTRATION_URL } from "@/lib/config";
+import { BANNER_REGISTRATION_URL } from "@/lib/temple-urls";
 import { useOnBannerPage, useOverlayStatus } from "../hooks/use-active-tab";
 import {
   useAutoRegister,
@@ -196,8 +196,8 @@ export function TodayTab({
             Open Banner registration
           </h2>
           <p className="text-muted-foreground">
-            Auto-register submits through your school's Banner registration
-            page, signed in, in a tab like this one.
+            Auto-register submits through Temple's Banner registration page,
+            signed in, in a tab like this one.
           </p>
           <Button
             size="sm"

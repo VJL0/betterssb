@@ -31,6 +31,3 @@ class Settings(DatabaseSettings):
 
     # External services
     OPENAI_API_KEY: str = ""
-    # Banner Self-Service base URL for the public, read-only class search.
-    SSB_BASE_URL: str = "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb"
-    RMP_AUTH_TOKEN: str = ""

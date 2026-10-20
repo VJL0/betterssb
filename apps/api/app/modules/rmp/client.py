@@ -1,51 +1,43 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
 
 import httpx
 
 logger = logging.getLogger(__name__)
 
 GRAPHQL_URL = "https://www.ratemyprofessors.com/graphql"
+REQUEST_TIMEOUT_SECONDS = 30.0
+# RateMyProfessors' own pages ask for 10 at a time; 1000 is the most it serves.
+ROSTER_PAGE_SIZE = 1000
 
-SCHOOL_SEARCH_QUERY = """
-query NewSearchSchoolsQuery($query: SchoolSearchQuery!) {
+# Temple University's main campus in Philadelphia on RateMyProfessors (legacy id
+# 999). The other "Temple University" schools there are separate campuses.
+TEMPLE_SCHOOL_ID = "U2Nob29sLTk5OQ=="
+
+# An empty search lists every professor at the school, a page at a time.
+ROSTER_PAGE_QUERY = """
+query TempleRosterPage($schoolID: ID!, $first: Int!, $after: String) {
   newSearch {
-    schools(query: $query) {
-      edges {
-        cursor
-        node {
-          id
-          legacyId
-          name
-        }
+    teachers(query: {text: "", schoolID: $schoolID}, first: $first, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
       }
-    }
-  }
-}
-"""
-
-TEACHER_SEARCH_QUERY = """
-query TeacherSearchResultsPageQuery($text: String!, $schoolID: ID!) {
-  newSearch {
-    teachers(query: {text: $text, schoolID: $schoolID}) {
       edges {
         node {
-          id
+          legacyId
           firstName
           lastName
           department
           avgRating
-          wouldTakeAgainPercent
           avgDifficulty
           numRatings
+          wouldTakeAgainPercent
           teacherRatingTags {
             tagName
             tagCount
-          }
-          legacyId
-          school {
-            name
           }
         }
       }
@@ -54,32 +46,7 @@ query TeacherSearchResultsPageQuery($text: String!, $schoolID: ID!) {
 }
 """
 
-TEACHER_BY_ID_QUERY = """
-query TeacherRatingsPageQuery($id: ID!) {
-  node(id: $id) {
-    ... on Teacher {
-      id
-      firstName
-      lastName
-      department
-      avgRating
-      wouldTakeAgainPercent
-      avgDifficulty
-      numRatings
-      teacherRatingTags {
-        tagName
-        tagCount
-      }
-      legacyId
-      school {
-        name
-      }
-    }
-  }
-}
-"""
-
-_DEFAULT_HEADERS: dict[str, str] = {
+_HEADERS: dict[str, str] = {
     "Content-Type": "application/json",
     "Referer": "https://www.ratemyprofessors.com/",
     "Origin": "https://www.ratemyprofessors.com",
@@ -91,71 +58,46 @@ _DEFAULT_HEADERS: dict[str, str] = {
 }
 
 
+class RMPUnavailable(Exception):
+    """RateMyProfessors couldn't answer: a network error, an error status or a bad body."""
+
+
+@dataclass(frozen=True)
+class RosterPage:
+    professors: list[dict]
+    next_cursor: str | None
+
+
 class RMPClient:
     """Low-level HTTP adapter for the RateMyProfessors GraphQL API."""
 
-    def __init__(self, auth_token: str = "") -> None:
-        self._headers = {**_DEFAULT_HEADERS}
-        if auth_token:
-            self._headers["Authorization"] = f"Basic {auth_token}"
+    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+        self._transport = transport
 
-    async def search_schools(self, text: str) -> list[dict]:
+    async def roster_page(self, after: str | None = None) -> RosterPage:
+        """One page of Temple's professors; `after` is the previous page's cursor."""
         payload = {
-            "query": SCHOOL_SEARCH_QUERY,
-            "variables": {"query": {"text": text}},
+            "query": ROSTER_PAGE_QUERY,
+            "variables": {
+                "schoolID": TEMPLE_SCHOOL_ID,
+                "first": ROSTER_PAGE_SIZE,
+                "after": after,
+            },
         }
         try:
-            async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(
-                    GRAPHQL_URL, json=payload, headers=self._headers
-                )
+            async with httpx.AsyncClient(
+                timeout=REQUEST_TIMEOUT_SECONDS, transport=self._transport
+            ) as client:
+                resp = await client.post(GRAPHQL_URL, json=payload, headers=_HEADERS)
                 resp.raise_for_status()
-                data = resp.json()
-            return (
-                data.get("data", {})
-                .get("newSearch", {})
-                .get("schools", {})
-                .get("edges", [])
+                teachers = resp.json()["data"]["newSearch"]["teachers"]
+            page_info = teachers["pageInfo"]
+            return RosterPage(
+                professors=[edge["node"] for edge in teachers["edges"]],
+                next_cursor=(
+                    page_info["endCursor"] if page_info["hasNextPage"] else None
+                ),
             )
-        except Exception:
-            logger.exception("RMP school search failed for %r", text)
-            return []
-
-    async def search_teachers(self, name: str, school_id: str = "") -> list[dict]:
-        payload = {
-            "query": TEACHER_SEARCH_QUERY,
-            "variables": {"text": name, "schoolID": school_id},
-        }
-        try:
-            async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(
-                    GRAPHQL_URL, json=payload, headers=self._headers
-                )
-                resp.raise_for_status()
-                data = resp.json()
-            return (
-                data.get("data", {})
-                .get("newSearch", {})
-                .get("teachers", {})
-                .get("edges", [])
-            )
-        except Exception:
-            logger.exception("RMP teacher search failed for %r", name)
-            return []
-
-    async def get_teacher_by_id(self, rmp_id: str) -> dict | None:
-        payload = {
-            "query": TEACHER_BY_ID_QUERY,
-            "variables": {"id": rmp_id},
-        }
-        try:
-            async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.post(
-                    GRAPHQL_URL, json=payload, headers=self._headers
-                )
-                resp.raise_for_status()
-                data = resp.json()
-            return data.get("data", {}).get("node")
-        except Exception:
-            logger.exception("RMP lookup failed for id %r", rmp_id)
-            return None
+        except Exception as exc:
+            logger.exception("RMP roster page after %r failed", after)
+            raise RMPUnavailable from exc

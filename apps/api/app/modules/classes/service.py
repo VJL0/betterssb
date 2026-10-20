@@ -3,33 +3,23 @@ from __future__ import annotations
 import hashlib
 import html
 import json
-import logging
 from dataclasses import asdict
 from datetime import UTC, datetime
-from typing import Any, Protocol
+from typing import Any
 
 from pydantic import TypeAdapter
 
+from app.core.cache import ONE_DAY_SECONDS, Cache, cache_get, cache_set
 from app.modules.classes.client import BannerClassSearchClient, SearchFilters
 from app.modules.classes.schemas import ClassSearchResult, CodeDescription
 
-logger = logging.getLogger(__name__)
-
 # Seats change by the minute during registration; lookups change by the term.
 SEARCH_TTL_SECONDS = 60
-LOOKUP_TTL_SECONDS = 24 * 60 * 60
+LOOKUP_TTL_SECONDS = ONE_DAY_SECONDS
 MAX_TERMS = 10
 CACHE_PREFIX = "classes:"
 
 _code_descriptions = TypeAdapter(list[CodeDescription])
-
-
-class Cache(Protocol):
-    """The subset of `redis.asyncio.Redis` the service uses."""
-
-    async def get(self, name: str) -> bytes | str | None: ...
-
-    async def set(self, name: str, value: str, ex: int) -> Any: ...
 
 
 def _unescape(value: Any) -> Any:
@@ -77,7 +67,7 @@ class ClassSearchService:
 
     async def search(self, filters: SearchFilters) -> ClassSearchResult:
         key = _search_key(filters)
-        if cached := await self._get(key):
+        if cached := await cache_get(self._cache, key):
             return ClassSearchResult.model_validate_json(cached)
         body = _unescape(await self._client.search(filters))
         result = ClassSearchResult(
@@ -85,32 +75,19 @@ class ClassSearchService:
             sections=body.get("data") or [],
             fetched_at=datetime.now(UTC),
         )
-        await self._set(key, result.model_dump_json(by_alias=True), SEARCH_TTL_SECONDS)
+        await cache_set(
+            self._cache, key, result.model_dump_json(by_alias=True), SEARCH_TTL_SECONDS
+        )
         return result
 
     async def _lookup(self, key: str, fetch) -> list[CodeDescription]:
-        if cached := await self._get(key):
+        if cached := await cache_get(self._cache, key):
             return _code_descriptions.validate_json(cached)
         items = _code_descriptions.validate_python(_unescape(await fetch()))
-        await self._set(
-            key, _code_descriptions.dump_json(items).decode(), LOOKUP_TTL_SECONDS
+        await cache_set(
+            self._cache,
+            key,
+            _code_descriptions.dump_json(items).decode(),
+            LOOKUP_TTL_SECONDS,
         )
         return items
-
-    # A cache outage only costs speed: searches still go to Banner.
-    async def _get(self, key: str) -> bytes | str | None:
-        if not self._cache:
-            return None
-        try:
-            return await self._cache.get(key)
-        except Exception:
-            logger.warning("Class search cache read failed", exc_info=True)
-            return None
-
-    async def _set(self, key: str, value: str, ttl: int) -> None:
-        if not self._cache:
-            return
-        try:
-            await self._cache.set(key, value, ex=ttl)
-        except Exception:
-            logger.warning("Class search cache write failed", exc_info=True)

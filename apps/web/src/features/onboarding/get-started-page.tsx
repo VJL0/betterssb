@@ -9,10 +9,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
-import type {
-  BannerConnection,
-  SchoolChoice,
-} from "@workspace/shared/types/store";
+import type { BannerConnection } from "@workspace/shared/types/store";
 import {
   Alert,
   AlertDescription,
@@ -36,7 +33,6 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from "@workspace/ui/components/radio-group";
-import { SearchCombobox } from "@workspace/ui/components/search-combobox";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
 import { firstReadyPath } from "@/components/shell/pages";
@@ -44,11 +40,9 @@ import { Logo } from "@workspace/ui/components/logo";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import { useSettings } from "@/hooks/use-settings";
 import { useTerms, type Term } from "@/hooks/use-terms";
-import { findSchools } from "@/lib/schools";
 import { BANNER_REGISTRATION_URL, EXTENSION_INSTALL_URL } from "@/lib/config";
 
 const STEPS = [
-  { id: "school", label: "School" },
   { id: "term", label: "Term" },
   { id: "banner", label: "Banner · optional" },
 ] as const;
@@ -60,17 +54,16 @@ function isStepId(value: string | null): value is StepId {
 }
 
 interface Draft {
-  school: SchoolChoice | null;
   term: string | null;
   major: string;
 }
 
-/** W1.2 · Guest onboarding: school, term, then an optional Banner connection. No account step. */
+/** W1.2 · Guest onboarding: term, then an optional Banner connection. No account step. */
 export function GetStartedPage() {
   // The step is in the query string, which only the browser knows; the
   // prerendered page shows the first step.
   return (
-    <Suspense fallback={<GetStarted step="school" />}>
+    <Suspense fallback={<GetStarted step="term" />}>
       <GetStartedFromUrl />
     </Suspense>
   );
@@ -78,7 +71,7 @@ export function GetStartedPage() {
 
 function GetStartedFromUrl() {
   const step = useSearchParams().get("step");
-  return <GetStarted step={isStepId(step) ? step : "school"} />;
+  return <GetStarted step={isStepId(step) ? step : "term"} />;
 }
 
 function GetStarted({ step }: { step: StepId }) {
@@ -94,15 +87,14 @@ function GetStarted({ step }: { step: StepId }) {
   // Start from what's saved once it loads, so returning students can edit it.
   if (draft === null && status !== "loading") {
     setDraft({
-      school: settings.school,
       term: settings.term,
       major: settings.major,
     });
   }
-  const current: Draft = draft ?? { school: null, term: null, major: "" };
+  const current: Draft = draft ?? { term: null, major: "" };
 
   function goTo(next: StepId) {
-    router.push(next === "school" ? pathname : `${pathname}?step=${next}`);
+    router.push(next === "term" ? pathname : `${pathname}?step=${next}`);
   }
 
   async function saveAndGo(next: StepId | "done") {
@@ -124,7 +116,7 @@ function GetStarted({ step }: { step: StepId }) {
 
       <main className="mx-auto flex max-w-5xl flex-wrap items-start gap-6 px-4 pt-6 pb-16 sm:px-8">
         <div className="flex min-w-0 flex-[999_1_30rem] flex-col gap-4">
-          <ol aria-label="Setup steps" className="grid grid-cols-3 gap-1.5">
+          <ol aria-label="Setup steps" className="grid grid-cols-2 gap-1.5">
             {STEPS.map((s, i) => (
               <li
                 key={s.id}
@@ -147,13 +139,6 @@ function GetStarted({ step }: { step: StepId }) {
           </ol>
 
           <Card className="gap-5 p-6" render={<section />}>
-            {step === "school" && (
-              <SchoolStep
-                school={current.school}
-                onChange={(school) => setDraft({ ...current, school })}
-                onContinue={() => void saveAndGo("term")}
-              />
-            )}
             {step === "term" && (
               <TermStep
                 terms={terms}
@@ -161,7 +146,6 @@ function GetStarted({ step }: { step: StepId }) {
                 major={current.major}
                 onTerm={(term) => setDraft({ ...current, term })}
                 onMajor={(major) => setDraft({ ...current, major })}
-                onBack={() => goTo("school")}
                 onContinue={() => void saveAndGo("banner")}
               />
             )}
@@ -184,7 +168,7 @@ function GetStarted({ step }: { step: StepId }) {
       </main>
       <p className="px-4 pb-8 text-center text-xs text-muted-foreground">
         BetterSSB is an independent student project, not affiliated with
-        Ellucian or your school.
+        Ellucian or Temple University.
       </p>
     </div>
   );
@@ -205,71 +189,12 @@ function StepHeading({
   );
 }
 
-function SchoolStep({
-  school,
-  onChange,
-  onContinue,
-}: {
-  school: SchoolChoice | null;
-  onChange: (school: SchoolChoice) => void;
-  onContinue: () => void;
-}) {
-  const [showError, setShowError] = useState(false);
-  const invalid = showError && !school;
-  return (
-    <form
-      className="flex flex-col gap-5"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (!school) return setShowError(true);
-        onContinue();
-      }}
-    >
-      <StepHeading title="Which school do you go to?">
-        No account needed. Your choice is saved in this browser.
-      </StepHeading>
-      <Field data-invalid={invalid}>
-        <FieldLabel htmlFor="school">School</FieldLabel>
-        <SearchCombobox<SchoolChoice>
-          id="school"
-          value={school}
-          onSelect={(s) => {
-            setShowError(false);
-            onChange({ id: s.id, name: s.name });
-          }}
-          search={findSchools}
-          itemKey={(s) => s.id}
-          itemLabel={(s) => s.name}
-          placeholder="Search schools"
-          noun="schools"
-          aria-invalid={invalid}
-        />
-        {invalid ? (
-          <FieldError>Choose your school to continue.</FieldError>
-        ) : (
-          <FieldDescription>
-            Instructor ratings come from Rate My Professors for this school.
-            Class search and degree audits currently work with Temple
-            University's Banner.
-          </FieldDescription>
-        )}
-      </Field>
-      <div className="flex justify-end">
-        <Button type="submit" size="lg">
-          Continue
-        </Button>
-      </div>
-    </form>
-  );
-}
-
 function TermStep({
   terms,
   term,
   major,
   onTerm,
   onMajor,
-  onBack,
   onContinue,
 }: {
   terms: ReturnType<typeof useTerms>;
@@ -277,7 +202,6 @@ function TermStep({
   major: string;
   onTerm: (term: string) => void;
   onMajor: (major: string) => void;
-  onBack: () => void;
   onContinue: () => void;
 }) {
   const [showError, setShowError] = useState(false);
@@ -292,7 +216,8 @@ function TermStep({
       }}
     >
       <StepHeading title="What are you planning?">
-        You can switch terms any time from the top bar.
+        BetterSSB is for Temple University students. No account needed, and you
+        can switch terms any time from the top bar.
       </StepHeading>
       <FieldSet data-invalid={invalid}>
         <FieldLegend variant="label">Term</FieldLegend>
@@ -324,10 +249,7 @@ function TermStep({
           browsing.
         </FieldDescription>
       </Field>
-      <div className="flex justify-between gap-2">
-        <Button type="button" variant="ghost" size="lg" onClick={onBack}>
-          Back
-        </Button>
+      <div className="flex justify-end">
         <Button type="submit" size="lg">
           Continue
         </Button>
@@ -522,7 +444,6 @@ function SetupSummary({
   connection: BannerConnection | null;
 }) {
   const rows: [string, string, boolean][] = [
-    ["School", draft.school?.name ?? "Not chosen", !!draft.school],
     ["Term", termName ?? "Not chosen", !!termName],
     ["Major", draft.major || "Optional", !!draft.major],
     [

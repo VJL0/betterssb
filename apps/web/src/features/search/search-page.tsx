@@ -56,7 +56,6 @@ import { useCurrentTerm } from "@/hooks/use-current-term";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { usePlan } from "@/hooks/use-plan";
 import { useRatings } from "@/hooks/use-ratings";
-import { useSettings } from "@/hooks/use-settings";
 import { formatClockTime, formatUpdated } from "@/lib/relative-time";
 import { undoToast } from "@/lib/undo-toast";
 import { CourseCard } from "./course-card";
@@ -91,29 +90,19 @@ const FILTER_LABEL: Record<FilterName, string> = {
 
 /** W2.1 · Course search: live sections from Banner with ratings and seats. */
 export function SearchPage() {
-  // The query string is only known in the browser, so the prerendered page
-  // starts with an empty search.
-  return (
-    <Suspense fallback={<CourseSearch initialQuery="" />}>
-      <CourseSearchFromUrl />
-    </Suspense>
-  );
-}
-
-/** "Find sections" links from the audit open with ?q=CIS 4398. */
-function CourseSearchFromUrl() {
-  const params = useSearchParams();
-  return <CourseSearch initialQuery={params.get("q") ?? ""} />;
-}
-
-function CourseSearch({ initialQuery }: { initialQuery: string }) {
   const { term, status: termStatus } = useCurrentTerm();
-  const [input, setInput] = useState(initialQuery);
+  const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const search = useClassSearch(term?.code ?? null, input);
 
   return (
     <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+      {/* Only the query string waits for the browser. Suspending the whole
+          page would hydrate it after the top bar, which may have loaded the
+          terms by then and so render differently from the server. */}
+      <Suspense>
+        <QueryFromUrl onQuery={setInput} />
+      </Suspense>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -169,6 +158,15 @@ function CourseSearch({ initialQuery }: { initialQuery: string }) {
   );
 }
 
+/** "Find sections" links from the audit open with ?q=CIS 4398. */
+function QueryFromUrl({ onQuery }: { onQuery: (query: string) => void }) {
+  const query = useSearchParams().get("q");
+  useEffect(() => {
+    if (query) onQuery(query);
+  }, [query, onQuery]);
+  return null;
+}
+
 function UpdatedButton({ search }: { search: ClassSearch }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -202,7 +200,6 @@ interface SearchBodyProps {
 }
 
 function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
-  const { settings } = useSettings();
   const planState = usePlan(term.code, term.name);
   const { plan } = planState;
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
@@ -215,8 +212,7 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
     () => search.result?.sections ?? [],
     [search.result],
   );
-  const schoolId = settings.school?.id ?? null;
-  const ratings = useRatings(sections.map(primaryInstructorName), schoolId);
+  const ratings = useRatings(sections.map(primaryInstructorName));
   const visible = sections.filter((s) => sectionPasses(s, filters, ratings));
   const groups = groupByCourse(visible);
   const plannedCrns = new Set(plan.sections.map((s) => s.crn));
@@ -272,7 +268,6 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
       filters={filters}
       onChange={setFilters}
       attributes={attributes}
-      ratingsAvailable={schoolId !== null}
     />
   );
   const rail = (
@@ -298,16 +293,6 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
           </Button>
         </div>
 
-        {!schoolId && search.result && (
-          <Alert variant="info">
-            <InfoIcon />
-            <AlertTitle>Ratings need your school</AlertTitle>
-            <AlertDescription>
-              Choose your school in Settings to see Rate My Professors ratings.
-            </AlertDescription>
-          </Alert>
-        )}
-
         <Results
           term={term}
           search={search}
@@ -326,7 +311,6 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
               plan={plan}
               termName={term.name}
               ratings={ratings}
-              showRatings={schoolId !== null}
               isPlanned={(crn) => plannedCrns.has(crn)}
               onToggle={(s) => void toggle(s)}
               onPreview={(s) =>

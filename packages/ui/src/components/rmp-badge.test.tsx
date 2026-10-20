@@ -80,11 +80,25 @@ describe("RmpBadge", () => {
     );
   });
 
+  it("links an instructor without a profile to RMP's search", () => {
+    render(
+      <RmpBadge rating={null} instructorName="Bray, Benjamin R." compact />,
+    );
+    const link = screen.getByRole("link", {
+      name: "No RMP profile, search Rate My Professors for Benjamin Bray, opens in a new tab",
+    });
+    expect(link.getAttribute("href")).toBe(
+      "https://www.ratemyprofessors.com/search/professors/999?q=Benjamin%20Bray",
+    );
+    expect(link.className).toContain("border-dashed");
+  });
+
   it("has no axe violations", async () => {
     const { container } = render(
       <div>
         <RmpBadge rating={rating()} />
         <RmpBadge rating={null} />
+        <RmpBadge rating={null} instructorName="Bray, Benjamin R." />
       </div>,
     );
     expect(await axeViolations(container)).toEqual([]);

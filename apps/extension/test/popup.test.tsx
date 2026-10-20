@@ -19,7 +19,6 @@ import { answerBackground, renderPopup } from "./popup";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 const SPRING = { code: "202703", description: "2027 Spring" };
-const TEMPLE = { id: "U2Nob29sLTk5OQ==", name: "Temple University" };
 const NOT_ARMED: AutoRegSnapshot = {
   term: "202703",
   crns: [],
@@ -32,10 +31,9 @@ async function seed<K extends StoreKey>(key: K, value: StoreDocuments[K]) {
   await extensionStore.set(key, value);
 }
 
-async function signedUp() {
+async function savedSettings() {
   await seed("settings", {
     ...DEFAULT_SETTINGS,
-    school: TEMPLE,
     term: "202703",
     updatedAt: NOW,
   });
@@ -50,9 +48,6 @@ function api() {
         sections: [classSection()],
       }),
     ),
-    http.get(`${API}/rmp/schools`, () =>
-      HttpResponse.json([{ ...TEMPLE, legacyId: 999 }]),
-    ),
   );
 }
 
@@ -65,23 +60,10 @@ function background(snapshot: Partial<AutoRegSnapshot> = {}) {
 }
 
 describe("popup", () => {
-  it("asks for a school on first run and saves it to the shared settings", async () => {
-    const user = userEvent.setup();
+  it("opens to the tabs before anything is saved", async () => {
     api();
     background();
     renderPopup();
-    expect(await screen.findByText("Welcome to BetterSSB")).toBeTruthy();
-    await user.type(
-      screen.getByRole("combobox", { name: "Your school" }),
-      "Temple",
-    );
-    await user.click(
-      await screen.findByRole("option", { name: "Temple University" }),
-    );
-    await user.click(screen.getByRole("button", { name: "Get started" }));
-    await waitFor(async () =>
-      expect((await extensionStore.get("settings"))?.school).toEqual(TEMPLE),
-    );
     expect(
       await screen.findByRole("navigation", { name: "Popup sections" }),
     ).toBeTruthy();
@@ -95,7 +77,7 @@ describe("popup", () => {
       crns: ["41207", "41311"],
       scheduledRunAt: "2030-11-14T07:00",
     });
-    await signedUp();
+    await savedSettings();
     renderPopup();
     expect(await screen.findByText(/Armed · Nov 14/)).toBeTruthy();
     expect(
@@ -110,7 +92,7 @@ describe("popup", () => {
   it("lists the term's plan with live seats", async () => {
     api();
     background();
-    await signedUp();
+    await savedSettings();
     await seed(
       "plan:202703",
       addSection(
@@ -128,7 +110,7 @@ describe("popup", () => {
     const user = userEvent.setup();
     api();
     background();
-    await signedUp();
+    await savedSettings();
     renderPopup();
     await user.click(await screen.findByRole("button", { name: "Search" }));
     await user.type(
@@ -153,7 +135,7 @@ describe("popup", () => {
     const user = userEvent.setup();
     api();
     background({ crns: ["41207"] });
-    await signedUp();
+    await savedSettings();
     const create = vi.spyOn(fakeBrowser.tabs, "create");
     renderPopup();
     await user.click(await screen.findByRole("button", { name: "Register" }));
@@ -168,7 +150,7 @@ describe("popup", () => {
     const user = userEvent.setup();
     api();
     background();
-    await signedUp();
+    await savedSettings();
     await seed("audit", { audit: sampleAudit(), storedAt: NOW });
     renderPopup();
     await user.click(await screen.findByRole("button", { name: "Audit" }));
@@ -183,7 +165,7 @@ describe("popup", () => {
     const user = userEvent.setup();
     api();
     background();
-    await signedUp();
+    await savedSettings();
     const bannerWindow = await fakeBrowser.windows.create({ focused: true });
     await fakeBrowser.tabs.create({
       windowId: bannerWindow!.id,
@@ -204,7 +186,7 @@ describe("popup", () => {
   it("has no accessibility violations on Today", async () => {
     api();
     background();
-    await signedUp();
+    await savedSettings();
     const { container } = renderPopup();
     await screen.findByText("Spring 2027 plan");
     expect(await axeViolations(container)).toEqual([]);

@@ -1,6 +1,6 @@
 # BetterSSB
 
-A website and a Chrome extension that make Ellucian Self-Service Banner (SSB) registration easier. Start on the website as a guest: search sections, build a schedule, plan your terms and read your degree audit. Add the extension to bring live Banner data onto those pages, auto-register when your window opens, and see ratings, seats and your plan on Banner's own pages.
+A website and a Chrome extension that make Ellucian Self-Service Banner (SSB) registration easier for Temple University students. Class search, DARS and the Banner pages are Temple's, and instructor ratings come from Temple's Rate My Professors page. Start on the website as a guest: search sections, build a schedule, plan your terms and read your degree audit. Add the extension to bring live Banner data onto those pages, auto-register when your window opens, and see ratings, seats and your plan on Banner's own pages.
 
 Everything is saved on your device. There's no account yet; sign-in for sync is a later phase.
 
@@ -61,11 +61,11 @@ betterssb/
 ### How It Works
 
 1. **Website** — Where students do the real work: search, schedule builder, planner, audit, transcript, advisor, auto-register setup and settings. Guests use all of it; data is saved in the browser (IndexedDB), or in the extension once it's installed.
-2. **Popup** — Quick access while on Banner: first run (pick a school), then Today (armed countdown, this tab and the Banner overlay switch, the term's plan with live seats), Search (sections with ratings and seats, add to plan), Register (the queue and last run; arming happens on the website) and Audit (summary, what's still needed, re-run in DARS). Deeper tasks open the website.
-3. **Content Script** — Runs only on Banner URLs (`*://*.edu/StudentRegistrationSsb/*`, `*://*.edu/ssb/*`). It makes the Banner calls that must run in a signed-in Banner tab (registration terms and plans, CRN checks, the auto-register submit) and hosts the Banner overlay. The overlay reads Banner's class search results grid (Browse Classes, Plan Ahead, Find Classes) and adds a Rate My Professors score before each instructor, a seat meter under Banner's seat text, "In your plan" and "Conflicts with your plan" tags under titles, and a collapsible plan dock. Each piece renders in its own shadow root, so Banner's styles and ours never mix; one setting ("On Banner pages" on the website, or the switch on the popup's Today tab) turns all of it off.
+2. **Popup** — Quick access while on Banner: Today (armed countdown, this tab and the Banner overlay switch, the term's plan with live seats), Search (sections with ratings and seats, add to plan), Register (the queue and last run; arming happens on the website) and Audit (summary, what's still needed, re-run in DARS). Deeper tasks open the website.
+3. **Content Script** — Runs only on Temple's Banner registration pages (`https://prd-xereg.temple.edu/StudentRegistrationSsb/*`; the URLs live in `apps/extension/lib/temple-urls.ts`). It makes the Banner calls that must run in a signed-in Banner tab (registration terms and plans, CRN checks, the auto-register submit) and hosts the Banner overlay. The overlay reads Banner's class search results grid (Browse Classes, Plan Ahead, Find Classes) and adds a Rate My Professors score before each instructor, a seat meter under Banner's seat text, "In your plan" and "Conflicts with your plan" tags under titles, and a collapsible plan dock. Each piece renders in its own shadow root, so Banner's styles and ours never mix; one setting ("On Banner pages" on the website, or the switch on the popup's Today tab) turns all of it off.
 4. **Web bridge** — A content script on the website's origin that passes a fixed list of requests between the page and the extension (`packages/shared/src/lib/bridge.ts`): the shared store, Banner status, DARS runs, the auto-register queue and arming, and Banner registration terms and plans. Anything else is dropped. Its `matches` are `localhost` only until the production origin is set.
 5. **Background Service Worker** — Rating lookups for the Banner overlay, `SSB_*` messages forwarded to an open Banner tab, DARS runs, Banner connection status, auto-register (queue, arming checks, the one-shot alarm, notifications) and `chrome.storage`.
-6. **Backend API** — A proxy for Banner's public class search (terms, subjects, sections; cached in Redis), Rate My Professors lookups, schedule generation, DARS audit and transcript parsing, and the advisor chat.
+6. **Backend API** — A proxy for Banner's public class search (terms, subjects, sections; cached in Redis), Rate My Professors ratings (Temple's roster in Redis, matched by name in memory and re-synced in the background when a lookup finds it a day old), schedule generation, DARS audit and transcript parsing, and the advisor chat.
 
 **Local-first data.** Settings, plans per term, the stored audit and transcript, and advisor threads are documents in one store (`packages/shared/src/types/store.ts`). The website keeps them in IndexedDB; with the extension installed, `chrome.storage.local` is the single copy, which the website reaches through the bridge (anything saved locally first is merged in once). The popup and the overlay read the same documents.
 
@@ -73,7 +73,7 @@ betterssb/
 
 | Feature                                      | Website        | Popup          | Content (Banner)  |
 | -------------------------------------------- | -------------- | -------------- | ----------------- |
-| School and term                              | Yes            | First run      |                   |
+| Term and major                               | Yes            |                |                   |
 | Search, schedule builder, planner            | Yes            | Search, plan   |                   |
 | Degree audit, transcript, advisor            | Yes            | Audit summary  | DARS run          |
 | Auto-register                                | Set up and arm | Status, disarm | Submits the batch |
@@ -187,7 +187,6 @@ GOOGLE_REDIRECT_URI=http://localhost:8000/api/auth/google/callback
 FRONTEND_URL=http://localhost:3000
 SESSION_SECRET=...             # Required, 32+ chars: openssl rand -hex 32
 OPENAI_API_KEY=sk-...          # Required for chatbot
-RMP_AUTH_TOKEN=...              # Rate My Professor auth (optional, has fallback)
 ```
 
 The API won't start without `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a valid `SESSION_SECRET`.
@@ -214,10 +213,9 @@ The extension reads its config at build time. Copy `apps/extension/.env.example`
 ```env
 WXT_API_ORIGIN=http://localhost:8000   # Backend API origin; paths start with /api
 WXT_WEB_ORIGIN=http://localhost:3000   # The website, opened from the popup and the plan dock
-WXT_BANNER_REGISTRATION_URL=...        # Optional; defaults to Temple's Banner registration page
 ```
 
-The website reads `NEXT_PUBLIC_BANNER_REGISTRATION_URL` and `NEXT_PUBLIC_EXTENSION_INSTALL_URL` the same way, plus `SITE_URL` (its public origin, for canonical links, the sitemap and social cards) and `API_ORIGIN` (where `/api` is proxied). See `apps/web/.env.example`.
+The website reads `NEXT_PUBLIC_EXTENSION_INSTALL_URL` the same way, plus `SITE_URL` (its public origin, for canonical links, the sitemap and social cards) and `API_ORIGIN` (where `/api` is proxied). See `apps/web/.env.example`.
 
 ## Contributing
 
