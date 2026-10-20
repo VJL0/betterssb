@@ -8,36 +8,14 @@ import {
 } from "@workspace/shared/lib/instructors";
 import { usableRating } from "@workspace/shared/lib/ratings";
 
-/** Rate My Professors is a shared service; don't fire a whole page of lookups at once. */
-const MAX_CONCURRENT_LOOKUPS = 4;
-
 /** undefined while loading, null for no profile. */
 export type RatingLookup = RmpRating | null | undefined;
 
-let running = 0;
-const waiting: (() => void)[] = [];
-
-async function withSlot<T>(task: () => Promise<T>): Promise<T> {
-  if (running >= MAX_CONCURRENT_LOOKUPS) {
-    await new Promise<void>((resolve) => waiting.push(resolve));
-  }
-  running++;
-  try {
-    return await task();
-  } finally {
-    running--;
-    waiting.shift()?.();
-  }
-}
-
 function ratingQuery(name: string) {
-  const options = searchProfessorsOptions({
-    query: { name: instructorSearchName(name) },
-  });
   return {
-    ...options,
-    queryFn: (context: Parameters<NonNullable<typeof options.queryFn>>[0]) =>
-      withSlot(async () => options.queryFn!(context)),
+    ...searchProfessorsOptions({
+      query: { name: instructorSearchName(name) },
+    }),
     select: (matches: RmpRating[]) =>
       usableRating(matchingProfile(name, matches)),
     // One lookup per instructor for the life of the page.

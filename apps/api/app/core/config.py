@@ -31,4 +31,3 @@ class Settings(DatabaseSettings):
 
     # External services
     OPENAI_API_KEY: str = ""
-    RMP_AUTH_TOKEN: str = ""

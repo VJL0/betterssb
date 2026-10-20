@@ -21,9 +21,6 @@ import type {
   GetMeData,
   GetMeErrors,
   GetMeResponses,
-  GetProfessorData,
-  GetProfessorErrors,
-  GetProfessorResponses,
   ListAttributesData,
   ListAttributesErrors,
   ListAttributesResponses,
@@ -48,9 +45,6 @@ import type {
   SearchProfessorsData,
   SearchProfessorsErrors,
   SearchProfessorsResponses,
-  SearchSchoolsData,
-  SearchSchoolsErrors,
-  SearchSchoolsResponses,
   SearchSectionsData,
   SearchSectionsErrors,
   SearchSectionsResponses,
@@ -220,23 +214,12 @@ export const parseBulletin = <ThrowOnError extends boolean = true>(
   });
 
 /**
- * Search Schools
- *
- * Search RateMyProfessors for schools by name.
- */
-export const searchSchools = <ThrowOnError extends boolean = true>(
-  options: Options<SearchSchoolsData, ThrowOnError>,
-): RequestResult<SearchSchoolsResponses, SearchSchoolsErrors, ThrowOnError> =>
-  (options.client ?? client).get<
-    SearchSchoolsResponses,
-    SearchSchoolsErrors,
-    ThrowOnError
-  >({ url: "/api/rmp/schools", ...options });
-
-/**
  * Search Professors
  *
- * Search RateMyProfessors for a professor by name.
+ * Temple University professors on RateMyProfessors who could be `name`.
+ *
+ * Matches are loose ("Chris" finds "Christopher"); pick the exact profile on
+ * the client.
  */
 export const searchProfessors = <ThrowOnError extends boolean = true>(
   options: Options<SearchProfessorsData, ThrowOnError>,
@@ -250,20 +233,6 @@ export const searchProfessors = <ThrowOnError extends boolean = true>(
     SearchProfessorsErrors,
     ThrowOnError
   >({ url: "/api/rmp/search", ...options });
-
-/**
- * Get Professor
- *
- * Get a single professor's ratings by their RMP ID.
- */
-export const getProfessor = <ThrowOnError extends boolean = true>(
-  options: Options<GetProfessorData, ThrowOnError>,
-): RequestResult<GetProfessorResponses, GetProfessorErrors, ThrowOnError> =>
-  (options.client ?? client).get<
-    GetProfessorResponses,
-    GetProfessorErrors,
-    ThrowOnError
-  >({ url: "/api/rmp/{rmp_id}", ...options });
 
 /**
  * Generate Schedules

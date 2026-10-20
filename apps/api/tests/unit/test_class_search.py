@@ -28,9 +28,12 @@ class MemoryCache:
     async def get(self, name: str) -> str | None:
         return self.values.get(name)
 
-    async def set(self, name: str, value: str, ex: int) -> None:
+    async def set(self, name: str, value: str, ex: int, nx: bool = False) -> bool:
+        if nx and name in self.values:
+            return False
         self.values[name] = value
         self.ttls[name] = ex
+        return True
 
 
 class FakeBanner:
