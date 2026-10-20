@@ -27,7 +27,7 @@ afterEach(() => {
 function mockChat(reply = "Take CIS 4398 in the fall.") {
   const bodies: ChatRequest[] = [];
   server.use(
-    http.post<never, ChatRequest>(`${API}/chat/`, async ({ request }) => {
+    http.post<never, ChatRequest>(`${API}/chat`, async ({ request }) => {
       bodies.push(await request.json());
       return HttpResponse.json({ response: reply });
     }),
@@ -85,7 +85,7 @@ describe("AdvisorPage", () => {
   it("keeps the question when the advisor is unavailable", async () => {
     const user = userEvent.setup();
     server.use(
-      http.post(`${API}/chat/`, () =>
+      http.post(`${API}/chat`, () =>
         problemResponse(503, "The chat assistant is unavailable."),
       ),
     );

@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 export const DEFAULT_MIN_QUERY_LENGTH = 2;

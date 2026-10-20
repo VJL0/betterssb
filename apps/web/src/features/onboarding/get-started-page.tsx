@@ -1,11 +1,14 @@
+"use client";
+
 import {
   CircleCheckIcon,
   CircleDashedIcon,
   CircleXIcon,
   HardDriveIcon,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState, type ReactNode } from "react";
 import type {
   BannerConnection,
   SchoolChoice,
@@ -36,7 +39,7 @@ import {
 import { SearchCombobox } from "@workspace/ui/components/search-combobox";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
-import { firstReadyPath } from "@/app/pages";
+import { firstReadyPath } from "@/components/shell/pages";
 import { Logo } from "@workspace/ui/components/logo";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import { useSettings } from "@/hooks/use-settings";
@@ -64,11 +67,23 @@ interface Draft {
 
 /** W1.2 · Guest onboarding: school, term, then an optional Banner connection. No account step. */
 export function GetStartedPage() {
-  const [params, setParams] = useSearchParams();
-  const navigate = useNavigate();
-  const step: StepId = isStepId(params.get("step"))
-    ? (params.get("step") as StepId)
-    : "school";
+  // The step is in the query string, which only the browser knows; the
+  // prerendered page shows the first step.
+  return (
+    <Suspense fallback={<GetStarted step="school" />}>
+      <GetStartedFromUrl />
+    </Suspense>
+  );
+}
+
+function GetStartedFromUrl() {
+  const step = useSearchParams().get("step");
+  return <GetStarted step={isStepId(step) ? step : "school"} />;
+}
+
+function GetStarted({ step }: { step: StepId }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const stepIndex = STEPS.findIndex((s) => s.id === step);
 
   const { settings, status, update } = useSettings();
@@ -87,21 +102,20 @@ export function GetStartedPage() {
   const current: Draft = draft ?? { school: null, term: null, major: "" };
 
   function goTo(next: StepId) {
-    setParams(next === "school" ? {} : { step: next });
+    router.push(next === "school" ? pathname : `${pathname}?step=${next}`);
   }
 
   async function saveAndGo(next: StepId | "done") {
     await update(current);
-    if (next === "done") navigate(firstReadyPath());
+    if (next === "done") router.push(firstReadyPath());
     else goTo(next);
   }
 
   return (
     <div className="min-h-dvh bg-sidebar text-sm text-foreground">
-      <title>Get started · BetterSSB</title>
       <header className="mx-auto flex min-h-18 max-w-5xl items-center px-4 sm:px-8">
         <Link
-          to="/"
+          href="/"
           className="rounded-2xl focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none"
         >
           <Logo />

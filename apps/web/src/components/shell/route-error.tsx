@@ -1,5 +1,6 @@
+"use client";
+
 import { CircleXIcon } from "lucide-react";
-import { isRouteErrorResponse, useRouteError } from "react-router";
 import {
   Alert,
   AlertDescription,
@@ -9,13 +10,8 @@ import { Button } from "@workspace/ui/components/button";
 import { ButtonLink } from "@/components/button-link";
 
 /** A page crashed. Says so plainly and offers a reload; the rest of the app keeps working. */
-export function RouteError() {
-  const error = useRouteError();
-  const detail = isRouteErrorResponse(error)
-    ? `${error.status} ${error.statusText}`
-    : error instanceof Error
-      ? error.message
-      : null;
+export function RouteError({ error }: { error: unknown }) {
+  const detail = error instanceof Error ? error.message : null;
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-12">
@@ -32,7 +28,7 @@ export function RouteError() {
       </Alert>
       <div className="flex gap-2">
         <Button onClick={() => window.location.reload()}>Reload</Button>
-        <ButtonLink variant="outline" to="/">
+        <ButtonLink variant="outline" href="/">
           Go to the home page
         </ButtonLink>
       </div>

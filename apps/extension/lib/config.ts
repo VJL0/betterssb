@@ -10,7 +10,7 @@ export const API_ORIGIN: string = (
 
 /** The BetterSSB website, where the popup sends deeper tasks. */
 export const WEB_ORIGIN: string = (
-  import.meta.env.WXT_WEB_ORIGIN || "http://localhost:5173"
+  import.meta.env.WXT_WEB_ORIGIN || "http://localhost:3000"
 ).replace(/\/+$/, "");
 
 /** Where students sign in to Banner registration. Defaults to Temple's. */

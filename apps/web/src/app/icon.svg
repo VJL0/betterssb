@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34">
+  <!-- The BetterSSB mark (LogoMark in @workspace/ui), on a tile so it reads on dark tabs. -->
+  <rect width="34" height="34" rx="8" fill="#ffffff" />
+  <g transform="translate(0 10)" stroke="#0a0a0a" stroke-width="3">
+    <line x1="7" y1="7" x2="27" y2="7" />
+    <circle cx="7" cy="7" r="5.5" fill="#ffffff" />
+    <circle cx="27" cy="7" r="5.5" fill="#0a0a0a" />
+  </g>
+</svg>

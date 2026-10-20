@@ -9,7 +9,7 @@ from app.modules.chatbot.service import ChatbotService
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 
-@router.post("/", response_model=ChatReply)
+@router.post("", response_model=ChatReply)
 async def chat(body: ChatRequest, settings: SettingsDep) -> ChatReply:
     """Send a conversation to the academic advising chatbot."""
     if not settings.OPENAI_API_KEY:

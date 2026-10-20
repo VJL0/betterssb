@@ -19,6 +19,8 @@ function apiHostPermission(): string {
 
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
+  // WXT's reload server starts its search at 3000, the website's port.
+  dev: { server: { port: 3100 } },
   // A function so .env files are loaded before WXT_API_ORIGIN is read.
   manifest: () => ({
     name: "BetterSSB",

@@ -1,3 +1,5 @@
+"use client";
+
 import { DownloadIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
 import { Fragment, useId, useState, type ReactNode } from "react";
 import { toast } from "sonner";
@@ -81,7 +83,6 @@ function SettingsSection({
 export function SettingsPage() {
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
-      <title>Settings · BetterSSB</title>
       <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
       <div className="flex flex-wrap items-start gap-8">
         <nav

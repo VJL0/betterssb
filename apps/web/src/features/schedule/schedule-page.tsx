@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
 import {
   CalendarDaysIcon,
@@ -81,7 +83,6 @@ export function SchedulePage() {
   const { term, status } = useCurrentTerm();
   return (
     <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
-      <title>Schedule builder · BetterSSB</title>
       {status === "error" ? (
         <>
           <PageHeading subtitle="Banner terms didn't load" />
@@ -217,7 +218,7 @@ function ScheduleBuilder({ term }: { term: Term }) {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <ButtonLink to="/search">
+            <ButtonLink href="/search">
               <SearchIcon data-icon="inline-start" />
               Search courses
             </ButtonLink>
@@ -614,7 +615,7 @@ function NoFit({
             Allow {dayName}s
           </Button>
         )}
-        <ButtonLink to="/search" variant="outline">
+        <ButtonLink href="/search" variant="outline">
           Find other sections
         </ButtonLink>
       </EmptyContent>

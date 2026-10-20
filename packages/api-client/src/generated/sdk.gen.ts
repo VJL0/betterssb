@@ -108,7 +108,7 @@ export const chat = <ThrowOnError extends boolean = true>(
   options: Options<ChatData, ThrowOnError>,
 ): RequestResult<ChatResponses, ChatErrors, ThrowOnError> =>
   (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
-    url: "/api/chat/",
+    url: "/api/chat",
     ...options,
     headers: {
       "Content-Type": "application/json",

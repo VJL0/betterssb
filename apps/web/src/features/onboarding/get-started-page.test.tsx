@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
 import { API, http, HttpResponse, server } from "@workspace/api-client/testing";
+import { testPathname } from "@/test/navigation";
 import { renderPage } from "@/test/render";
 import { GetStartedPage } from "./get-started-page";
 
@@ -28,7 +29,7 @@ afterEach(() => {
 });
 
 function renderStart(route = "/start") {
-  return renderPage(<GetStartedPage />, { route, path: "/start" });
+  return renderPage(<GetStartedPage />, { route });
 }
 
 describe("GetStartedPage", () => {
@@ -70,7 +71,7 @@ describe("GetStartedPage", () => {
 
   it("saves the term and major and lets Banner be skipped", async () => {
     const user = userEvent.setup();
-    const { store, router } = renderStart("/start?step=term");
+    const { store } = renderStart("/start?step=term");
     await user.click(await screen.findByRole("radio", { name: "Spring 2027" }));
     await user.type(
       screen.getByRole("textbox", { name: /Major/ }),
@@ -81,9 +82,7 @@ describe("GetStartedPage", () => {
     await user.click(
       await screen.findByRole("button", { name: "Skip for now" }),
     );
-    await waitFor(() =>
-      expect(router.state.location.pathname).not.toBe("/start"),
-    );
+    await waitFor(() => expect(testPathname()).not.toBe("/start"));
     const settings = await store.get("settings");
     expect(settings).toMatchObject({
       term: "202703",

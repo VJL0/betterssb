@@ -4,6 +4,8 @@ packages:
 
 allowBuilds:
   esbuild: true
+  # Its install script only checks for the prebuilt binding it already ships.
+  unrs-resolver: false
 
 # `pnpm add` uses the catalog entry when one exists, so a shared dependency
 # can't get a second range; install drops entries nothing uses any more.

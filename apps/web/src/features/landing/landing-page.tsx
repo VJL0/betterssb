@@ -6,8 +6,8 @@ import {
   UserRoundXIcon,
   type LucideIcon,
 } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
-import { Link } from "react-router";
 import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { ButtonLink } from "@/components/button-link";
@@ -18,7 +18,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { cn } from "@workspace/ui/lib/utils";
-import { PRIMARY_PAGES } from "@/app/pages";
+import { PRIMARY_PAGES } from "@/components/shell/pages";
 import { Logo } from "@workspace/ui/components/logo";
 import { EXTENSION_INSTALL_URL, SOURCE_CODE_URL } from "@/lib/config";
 import {
@@ -159,7 +159,7 @@ function pagePath(pageId: string | undefined): string | null {
 
 function GetStartedButton({ size = "lg" }: { size?: "lg" | "default" }) {
   return (
-    <ButtonLink size={size} to="/start">
+    <ButtonLink size={size} href="/start">
       Get started
       <ArrowRightIcon data-icon="inline-end" />
     </ButtonLink>
@@ -209,7 +209,6 @@ const SECTION_CLASS = "mx-auto max-w-6xl px-4 pt-24 sm:px-8 sm:pt-28";
 export function LandingPage() {
   return (
     <div className="min-h-dvh bg-background text-sm text-foreground">
-      <title>BetterSSB · Plan and register for classes</title>
       <a
         href="#main"
         className="sr-only z-50 rounded-2xl bg-primary px-3 py-2 font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
@@ -429,7 +428,7 @@ export function LandingPage() {
                 minute.
               </p>
             </div>
-            <ButtonLink size="lg" variant="secondary" to="/start">
+            <ButtonLink size="lg" variant="secondary" href="/start">
               Get started
               <ArrowRightIcon data-icon="inline-end" />
             </ButtonLink>
@@ -468,7 +467,7 @@ function FeatureCopy({ feature }: { feature: Feature }) {
       <CheckList items={feature.points} />
       {path && (
         <Link
-          to={path}
+          href={path}
           className="self-start font-medium underline-offset-4 hover:underline"
         >
           {feature.cta}

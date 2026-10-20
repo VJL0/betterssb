@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
 import {
@@ -8,30 +7,26 @@ import {
   BannerSignedOutAlert,
 } from "./banner-status";
 
-function renderInRouter(ui: React.ReactElement) {
-  return render(<MemoryRouter>{ui}</MemoryRouter>);
-}
-
 describe("BannerBadge", () => {
   it.each([
     ["connected", "Banner connected"],
     ["not-connected", "Connect Banner"],
     ["signed-out", "Banner signed out"],
   ] as const)("names the %s state in words", (connection, text) => {
-    renderInRouter(<BannerBadge connection={connection} />);
+    render(<BannerBadge connection={connection} />);
     const link = screen.getByRole("link", { name: text });
     expect(link.getAttribute("href")).toBe("/settings#banner");
   });
 
   it("shows nothing until the first check finishes", () => {
-    const { container } = renderInRouter(<BannerBadge connection={null} />);
+    const { container } = render(<BannerBadge connection={null} />);
     expect(container.innerHTML).toBe("");
   });
 });
 
 describe("Banner page states", () => {
   it("explains a signed-out session with one fix", async () => {
-    const { container } = renderInRouter(<BannerSignedOutAlert />);
+    const { container } = render(<BannerSignedOutAlert />);
     expect(screen.getByRole("alert").textContent).toContain(
       "Banner signed you out",
     );
@@ -40,7 +35,7 @@ describe("Banner page states", () => {
   });
 
   it("points to Banner when the extension is installed", () => {
-    renderInRouter(
+    render(
       <BannerNotConnected
         title="Connect Banner to run your audit"
         description="The audit runs in your own Banner session."
@@ -51,7 +46,7 @@ describe("Banner page states", () => {
   });
 
   it("offers no install link while the extension isn't published", () => {
-    renderInRouter(
+    render(
       <BannerNotConnected
         title="Connect Banner to run your audit"
         description="The audit runs in your own Banner session."

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   CircleXIcon,
   InfoIcon,
@@ -6,9 +8,9 @@ import {
   SearchXIcon,
   SlidersHorizontalIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { courseCode, plannedSectionFrom } from "@workspace/shared/lib/plan";
 import { planCredits } from "@workspace/shared/lib/plan";
@@ -89,16 +91,29 @@ const FILTER_LABEL: Record<FilterName, string> = {
 
 /** W2.1 · Course search: live sections from Banner with ratings and seats. */
 export function SearchPage() {
+  // The query string is only known in the browser, so the prerendered page
+  // starts with an empty search.
+  return (
+    <Suspense fallback={<CourseSearch initialQuery="" />}>
+      <CourseSearchFromUrl />
+    </Suspense>
+  );
+}
+
+/** "Find sections" links from the audit open with ?q=CIS 4398. */
+function CourseSearchFromUrl() {
+  const params = useSearchParams();
+  return <CourseSearch initialQuery={params.get("q") ?? ""} />;
+}
+
+function CourseSearch({ initialQuery }: { initialQuery: string }) {
   const { term, status: termStatus } = useCurrentTerm();
-  // "Find sections" links from the audit open with ?q=CIS 4398.
-  const [params] = useSearchParams();
-  const [input, setInput] = useState(() => params.get("q") ?? "");
+  const [input, setInput] = useState(initialQuery);
   const inputRef = useRef<HTMLInputElement>(null);
   const search = useClassSearch(term?.code ?? null, input);
 
   return (
     <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
-      <title>Course search · BetterSSB</title>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight">

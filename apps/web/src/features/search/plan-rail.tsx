@@ -15,7 +15,7 @@ import { Button } from "@workspace/ui/components/button";
 import { CourseDot } from "@workspace/ui/components/course-badge";
 import { StatusBadge } from "@workspace/ui/components/status-badge";
 import { WeekCalendar } from "@workspace/ui/components/week-calendar";
-import { isPageReady } from "@/app/pages";
+import { isPageReady } from "@/components/shell/pages";
 import { ButtonLink } from "@/components/button-link";
 import { sectionBlocks, unscheduledSections } from "@/lib/plan-blocks";
 
@@ -125,7 +125,7 @@ export function PlanRail({ plan, termName, preview, onRemove }: PlanRailProps) {
       )}
 
       {scheduleReady && plan.sections.length > 0 && (
-        <ButtonLink to="/schedule" variant="outline" className="w-full">
+        <ButtonLink href="/schedule" variant="outline" className="w-full">
           Build schedules
         </ButtonLink>
       )}

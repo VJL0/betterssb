@@ -57,5 +57,4 @@ Thumbs.db
 # Turborepo / TypeScript
 .turbo/
 *.tsbuildinfo
-dist-ssr/
 *.local

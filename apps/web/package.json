@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc -b",
-    "preview": "vite preview",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
@@ -19,14 +19,15 @@
     "@workspace/ui": "workspace:*",
     "class-variance-authority": "catalog:",
     "lucide-react": "catalog:",
+    "next": "^16.4.2",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-router": "^8.4.0",
     "sonner": "catalog:"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@tailwindcss/vite": "catalog:",
+    "@next/eslint-plugin-next": "^16.4.2",
+    "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/eslint-plugin-query": "^5.104.4",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",
@@ -34,18 +35,14 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@typescript/native": "catalog:",
-    "@vitejs/plugin-react": "catalog:",
     "axe-core": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "catalog:",
-    "eslint-plugin-react-refresh": "catalog:",
     "fake-indexeddb": "^6.2.6",
-    "globals": "catalog:",
     "jsdom": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
-    "vite": "catalog:",
     "vitest": "catalog:"
   }
 }
