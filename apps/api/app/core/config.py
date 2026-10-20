@@ -23,7 +23,7 @@ class Settings(DatabaseSettings):
     # Must exactly match an authorized redirect URI on the Google OAuth client.
     GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/auth/google/callback"
     # Where the browser goes after sign-in.
-    FRONTEND_URL: str = "http://localhost:5173"
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # Sessions
     # Signs the OAuth handshake cookie.

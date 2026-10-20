@@ -6,7 +6,7 @@ import {
 import type { CreditTotals } from "@workspace/shared/lib/dars";
 import { formatCredits } from "@workspace/shared/lib/dars";
 import type { ProjectedFinish } from "@workspace/shared/lib/planner";
-import { isPageReady } from "@/app/pages";
+import { isPageReady } from "@/components/shell/pages";
 import { Card } from "@workspace/ui/components/card";
 import { ButtonLink } from "@/components/button-link";
 
@@ -148,7 +148,7 @@ export function NoAuditProgress() {
         </span>
       </span>
       {isPageReady("audit") && (
-        <ButtonLink to="/audit" variant="outline">
+        <ButtonLink href="/audit" variant="outline">
           Open degree audit
         </ButtonLink>
       )}

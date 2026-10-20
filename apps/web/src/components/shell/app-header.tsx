@@ -1,10 +1,12 @@
+"use client";
+
 import {
   HardDriveIcon,
   ListChecksIcon,
   SettingsIcon,
   UserRoundIcon,
 } from "lucide-react";
-import { Link, NavLink } from "react-router";
+import Link from "next/link";
 import { buttonVariants } from "@workspace/ui/components/button";
 import {
   DropdownMenu,
@@ -14,11 +16,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { cn } from "@workspace/ui/lib/utils";
 import { BannerBadge } from "@/components/banner-status";
 import { Logo } from "@workspace/ui/components/logo";
 import { TermSelect } from "@/components/term-select";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
+import { NavLink } from "./nav-link";
 import {
   PRIMARY_PAGES,
   SECONDARY_PAGES,
@@ -33,7 +35,7 @@ export function AppHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="flex min-h-16 flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 sm:px-6 lg:px-8">
         <Link
-          to={firstReadyPath()}
+          href={firstReadyPath()}
           className="rounded-2xl focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none"
         >
           <Logo />
@@ -46,15 +48,8 @@ export function AppHeader() {
             {readyPages(PRIMARY_PAGES).map((page) => (
               <li key={page.id}>
                 <NavLink
-                  to={page.path}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex items-center rounded-2xl px-1.5 py-1.5 text-sm font-medium whitespace-nowrap focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none lg:px-2.5",
-                      isActive
-                        ? "bg-muted text-foreground"
-                        : "text-muted-foreground hover:text-foreground",
-                    )
-                  }
+                  href={page.path}
+                  className="flex items-center rounded-2xl px-1.5 py-1.5 text-sm font-medium whitespace-nowrap text-muted-foreground hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none aria-[current=page]:bg-muted aria-[current=page]:text-foreground lg:px-2.5"
                 >
                   {page.label}
                 </NavLink>
@@ -97,12 +92,12 @@ function AccountMenu() {
         <DropdownMenuGroup>
           <DropdownMenuLabel>Guest · this device</DropdownMenuLabel>
           {transcript?.ready && (
-            <DropdownMenuItem render={<Link to={transcript.path} />}>
+            <DropdownMenuItem render={<Link href={transcript.path} />}>
               <ListChecksIcon />
               Transcript
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem render={<Link to="/settings" />}>
+          <DropdownMenuItem render={<Link href="/settings" />}>
             <SettingsIcon />
             Settings
           </DropdownMenuItem>

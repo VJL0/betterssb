@@ -1,9 +1,9 @@
-import { Outlet, ScrollRestoration } from "react-router";
-import { AppHeader } from "./app-header";
-import { MobileTabBar } from "./mobile-tab-bar";
+import type { ReactNode } from "react";
+import { AppHeader } from "@/components/shell/app-header";
+import { MobileTabBar } from "@/components/shell/mobile-tab-bar";
 
-/** Layout for app pages: skip link, top bar, page, and the phone tab bar. */
-export function AppShell() {
+/** App pages: skip link, top bar, page, and the phone tab bar. */
+export default function ShellLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-sidebar">
       <a
@@ -18,12 +18,9 @@ export function AppShell() {
         tabIndex={-1}
         className="flex-1 pb-20 outline-none sm:pb-0"
       >
-        <Outlet />
+        {children}
       </main>
       <MobileTabBar />
-      {/* Keyed by path: every fresh page load shares the key "default", which
-          would restore another page's scroll position. */}
-      <ScrollRestoration getKey={(location) => location.pathname} />
     </div>
   );
 }

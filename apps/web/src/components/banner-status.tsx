@@ -1,5 +1,5 @@
 import { CircleXIcon, PlugIcon } from "lucide-react";
-import { Link } from "react-router";
+import Link from "next/link";
 import type { BannerConnection } from "@workspace/shared/types/store";
 import {
   Alert,
@@ -36,7 +36,7 @@ export function BannerBadge({
   if (connection === "connected") {
     return (
       <Link
-        to="/settings#banner"
+        href="/settings#banner"
         title="Live seats, your audit and auto-register are on"
         className={cn(BADGE_BASE, "border border-border text-foreground")}
       >
@@ -48,7 +48,7 @@ export function BannerBadge({
   if (connection === "signed-out") {
     return (
       <Link
-        to="/settings#banner"
+        href="/settings#banner"
         title="Sign in to Banner in any tab to resume live data"
         className={cn(BADGE_BASE, "bg-destructive/10 text-destructive")}
       >
@@ -59,7 +59,7 @@ export function BannerBadge({
   }
   return (
     <Link
-      to="/settings#banner"
+      href="/settings#banner"
       title="Connect for your audit and auto-register"
       className={cn(
         BADGE_BASE,

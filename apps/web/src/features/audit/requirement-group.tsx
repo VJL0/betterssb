@@ -152,7 +152,7 @@ function Line({
         )}
         {findable && (
           <ButtonLink
-            to={`/search?q=${encodeURIComponent(options[0]!)}`}
+            href={`/search?q=${encodeURIComponent(options[0]!)}`}
             aria-label={`Find sections of ${options[0]}`}
             variant="outline"
             size="sm"

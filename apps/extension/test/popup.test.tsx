@@ -160,7 +160,7 @@ describe("popup", () => {
     expect(await screen.findByText("CRN 41207")).toBeTruthy();
     await user.click(screen.getByRole("button", { name: /Arm in BetterSSB/ }));
     expect(create).toHaveBeenCalledWith({
-      url: "http://localhost:5173/register",
+      url: "http://localhost:3000/register",
     });
   });
 
