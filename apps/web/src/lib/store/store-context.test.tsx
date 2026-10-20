@@ -8,7 +8,6 @@ import type { OpenedStore } from "./open-store";
 import { StoreProvider, useStoreDocument } from "./store-context";
 
 const SETTINGS: UserSettings = {
-  school: null,
   term: "202703",
   major: "",
   keyboardShortcuts: true,

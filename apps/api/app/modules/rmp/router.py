@@ -2,43 +2,35 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.api.deps import SettingsDep
-from app.modules.rmp.schemas import RMPRating, RMPSchool
-from app.modules.rmp.service import RMPService
+from app.modules.rmp.client import RMPUnavailable
+from app.modules.rmp.schemas import RMPRating
+from app.modules.rmp.service import RMPRosterService
 
 router = APIRouter(prefix="/rmp", tags=["rmp"])
 
-
-def _rmp_service(settings: SettingsDep) -> RMPService:
-    return RMPService(auth_token=settings.RMP_AUTH_TOKEN)
+UNAVAILABLE = "Rate My Professors ratings aren't loaded yet. Try again in a minute."
 
 
-RMPServiceDep = Annotated[RMPService, Depends(_rmp_service)]
+def get_rmp_roster(request: Request) -> RMPRosterService | None:
+    # Unset when the app runs without its lifespan (tests).
+    return getattr(request.app.state, "rmp_roster", None)
 
 
-@router.get("/schools", response_model=list[RMPSchool])
-async def search_schools(query: str, service: RMPServiceDep) -> list[RMPSchool]:
-    """Search RateMyProfessors for schools by name."""
-    return await service.search_schools(query)
+RosterDep = Annotated[RMPRosterService | None, Depends(get_rmp_roster)]
 
 
 @router.get("/search", response_model=list[RMPRating])
-async def search_professors(
-    name: str,
-    service: RMPServiceDep,
-    school: str = "",
-    school_id: str = "",
-) -> list[RMPRating]:
-    """Search RateMyProfessors for a professor by name."""
-    return await service.search_professor(name, school_name=school, school_id=school_id)
+async def search_professors(name: str, roster: RosterDep) -> list[RMPRating]:
+    """Temple University professors on RateMyProfessors who could be `name`.
 
-
-@router.get("/{rmp_id}", response_model=RMPRating)
-async def get_professor(rmp_id: str, service: RMPServiceDep) -> RMPRating:
-    """Get a single professor's ratings by their RMP ID."""
-    result = await service.get_professor_by_id(rmp_id)
-    if result is None:
-        raise HTTPException(status_code=404, detail="Professor not found")
-    return result
+    Matches are loose ("Chris" finds "Christopher"); pick the exact profile on
+    the client.
+    """
+    try:
+        if roster is None:
+            raise RMPUnavailable
+        return await roster.search(name)
+    except RMPUnavailable as exc:
+        raise HTTPException(status_code=503, detail=UNAVAILABLE) from exc

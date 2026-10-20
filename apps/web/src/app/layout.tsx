@@ -30,7 +30,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    // The BetterSSB extension marks <html> with data-betterssb-extension
+    // before hydration so the site can detect it.
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );

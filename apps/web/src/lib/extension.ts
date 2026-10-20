@@ -41,21 +41,25 @@ export function extensionVersion(): string | null {
   return document.documentElement.dataset.betterssbExtension ?? null;
 }
 
-/** Resolves once the extension announces itself (it sets a marker on load). */
-export function waitForExtension(
-  timeoutMs = DETECT_TIMEOUT_MS,
-): Promise<string | null> {
+/**
+ * Resolves once the extension announces itself (it sets a marker on load), or
+ * with null after a short wait or when `signal` aborts.
+ */
+export function waitForExtension(signal?: AbortSignal): Promise<string | null> {
   return new Promise((resolve) => {
     const found = extensionVersion();
-    if (found) return resolve(found);
+    if (found || signal?.aborted) return resolve(found);
     const started = Date.now();
     const timer = setInterval(() => {
       const version = extensionVersion();
-      if (version || Date.now() - started >= timeoutMs) {
-        clearInterval(timer);
-        resolve(version);
-      }
+      if (version || Date.now() - started >= DETECT_TIMEOUT_MS) finish(version);
     }, DETECT_POLL_MS);
+    signal?.addEventListener("abort", () => finish(null), { once: true });
+
+    function finish(version: string | null) {
+      clearInterval(timer);
+      resolve(version);
+    }
   });
 }
 

@@ -13,7 +13,6 @@ import {
   checkPrerequisites,
   generateSchedules,
   getMe,
-  getProfessor,
   listAttributes,
   listSubjects,
   listTerms,
@@ -23,7 +22,6 @@ import {
   parseBulletin,
   parseTranscript,
   searchProfessors,
-  searchSchools,
   searchSections,
 } from "../sdk.gen";
 import type {
@@ -39,9 +37,6 @@ import type {
   GetMeData,
   GetMeError,
   GetMeResponse,
-  GetProfessorData,
-  GetProfessorError,
-  GetProfessorResponse,
   ListAttributesData,
   ListAttributesError,
   ListAttributesResponse,
@@ -66,9 +61,6 @@ import type {
   SearchProfessorsData,
   SearchProfessorsError,
   SearchProfessorsResponse,
-  SearchSchoolsData,
-  SearchSchoolsError,
-  SearchSchoolsResponse,
   SearchSectionsData,
   SearchSectionsError,
   SearchSectionsResponse,
@@ -450,33 +442,6 @@ export const parseBulletinMutation = (
   return mutationOptions;
 };
 
-export const searchSchoolsQueryKey = (options: Options<SearchSchoolsData>) =>
-  createQueryKey("searchSchools", options);
-
-/**
- * Search Schools
- *
- * Search RateMyProfessors for schools by name.
- */
-export const searchSchoolsOptions = (options: Options<SearchSchoolsData>) =>
-  queryOptions<
-    SearchSchoolsResponse,
-    SearchSchoolsError,
-    SearchSchoolsResponse,
-    ReturnType<typeof searchSchoolsQueryKey>
-  >({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await searchSchools({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: searchSchoolsQueryKey(options),
-  });
-
 export const searchProfessorsQueryKey = (
   options: Options<SearchProfessorsData>,
 ) => createQueryKey("searchProfessors", options);
@@ -484,7 +449,10 @@ export const searchProfessorsQueryKey = (
 /**
  * Search Professors
  *
- * Search RateMyProfessors for a professor by name.
+ * Temple University professors on RateMyProfessors who could be `name`.
+ *
+ * Matches are loose ("Chris" finds "Christopher"); pick the exact profile on
+ * the client.
  */
 export const searchProfessorsOptions = (
   options: Options<SearchProfessorsData>,
@@ -505,33 +473,6 @@ export const searchProfessorsOptions = (
       return data;
     },
     queryKey: searchProfessorsQueryKey(options),
-  });
-
-export const getProfessorQueryKey = (options: Options<GetProfessorData>) =>
-  createQueryKey("getProfessor", options);
-
-/**
- * Get Professor
- *
- * Get a single professor's ratings by their RMP ID.
- */
-export const getProfessorOptions = (options: Options<GetProfessorData>) =>
-  queryOptions<
-    GetProfessorResponse,
-    GetProfessorError,
-    GetProfessorResponse,
-    ReturnType<typeof getProfessorQueryKey>
-  >({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getProfessor({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: getProfessorQueryKey(options),
   });
 
 /**

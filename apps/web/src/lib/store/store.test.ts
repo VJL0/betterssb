@@ -8,7 +8,6 @@ import { IndexedDbStore } from "./indexeddb-store";
 import { openStore } from "./open-store";
 
 const SETTINGS: UserSettings = {
-  school: { id: "U2Nob29sLTk5OQ==", name: "Temple University" },
   term: "202703",
   major: "",
   keyboardShortcuts: true,

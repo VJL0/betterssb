@@ -34,11 +34,8 @@ import {
 } from "@/lib/auto-reg-run-state";
 import type { BannerConnection } from "@workspace/shared/types/store";
 import { searchProfessors } from "@workspace/api-client";
+import { BANNER_PAGES, DARS_PAGES, DARS_START_URL } from "@/lib/temple-urls";
 
-const SSB_URL_PATTERN = "*://*.edu/StudentRegistrationSsb/*";
-const DARS_URL_PATTERN = "*://prd-dars.temple.edu/selfservice/*";
-const DARS_START_URL =
-  "https://prd-dars.temple.edu/selfservice/audit/create.html";
 const DARS_TAB_READY_TIMEOUT_MS = 150_000;
 
 const REG_CHECK_ALARM = "betterssb-reg-check";
@@ -62,7 +59,7 @@ async function syncAutoRegFireAlarm(): Promise<void> {
 }
 
 async function findSSBTab(): Promise<number | null> {
-  const tabs = await browser.tabs.query({ url: SSB_URL_PATTERN });
+  const tabs = await browser.tabs.query({ url: BANNER_PAGES });
   return tabs[0]?.id ?? null;
 }
 
@@ -116,7 +113,7 @@ function isDarsReady(tab: Browser.tabs.Tab): boolean {
  * signing in (SSO + Duo) before resolving with its id.
  */
 async function getOrOpenDarsTab(): Promise<number> {
-  const tabs = await browser.tabs.query({ url: DARS_URL_PATTERN });
+  const tabs = await browser.tabs.query({ url: DARS_PAGES });
   const ready = tabs.find(isDarsReady);
   if (ready?.id != null) return ready.id;
 
@@ -246,8 +243,6 @@ function buildBatchDedupeKey(
   return `${scheduledRunAt}|${termCode}|${crnList.join(",")}`;
 }
 
-const LEGACY_RATINGS_CACHE_KEY = "betterssb:cachedRatings";
-
 export default defineBackground(() => {
   setUpApiClient();
 
@@ -277,12 +272,9 @@ export default defineBackground(() => {
 
       switch (msg.type) {
         case "FETCH_RATING": {
-          const { name, schoolId } = msg.payload as {
-            name: string;
-            schoolId: string;
-          };
+          const { name } = msg.payload as { name: string };
           const { data: ratings } = await searchProfessors({
-            query: { name, school_id: schoolId },
+            query: { name },
           });
           sendResponse({
             success: true,
@@ -306,11 +298,6 @@ export default defineBackground(() => {
   });
 
   void syncAutoRegFireAlarm();
-
-  browser.runtime.onInstalled.addListener(() => {
-    // Ratings the old Banner badges cached; nothing reads them any more.
-    void browser.storage.local.remove(LEGACY_RATINGS_CACHE_KEY);
-  });
 
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;

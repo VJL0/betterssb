@@ -21,13 +21,17 @@ export function useBannerConnection(): BannerState {
   });
 
   useEffect(() => {
-    let cancelled = false;
+    // Unmounting stops the extension check, which reads the page.
+    const unmounted = new AbortController();
     async function check() {
-      const installed = (await waitForExtension()) !== null;
+      const installed = (await waitForExtension(unmounted.signal)) !== null;
+      if (unmounted.signal.aborted) return;
       const connection = await getBannerConnection().catch(
         (): BannerConnection => "not-connected",
       );
-      if (!cancelled) setState({ connection, extensionInstalled: installed });
+      if (!unmounted.signal.aborted) {
+        setState({ connection, extensionInstalled: installed });
+      }
     }
     void check();
     const onVisible = () => {
@@ -37,7 +41,7 @@ export function useBannerConnection(): BannerState {
     window.addEventListener("focus", onVisible);
     const timer = setInterval(() => void check(), RECHECK_MS);
     return () => {
-      cancelled = true;
+      unmounted.abort();
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onVisible);
       clearInterval(timer);

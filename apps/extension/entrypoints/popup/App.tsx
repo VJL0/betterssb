@@ -5,12 +5,11 @@ import { PopupTabs, type PopupTab } from "./components/popup-tabs";
 import { useCurrentTerm } from "./hooks/use-current-term";
 import { useStoreDocument } from "@/hooks/use-store-document";
 import { AuditTab } from "./tabs/audit-tab";
-import { FirstRun } from "./tabs/first-run";
 import { RegisterTab } from "./tabs/register-tab";
 import { SearchTab } from "./tabs/search-tab";
 import { TodayTab } from "./tabs/today-tab";
 
-/** The popup (E1): first run until a school is chosen, then four tabs. */
+/** The popup (E1): four tabs over the shared store. */
 export default function App() {
   const settings = useStoreDocument("settings");
   const term = useCurrentTerm();
@@ -25,9 +24,6 @@ export default function App() {
       </div>
     );
   }
-  if (!settings.value?.school) {
-    return <FirstRun settings={settings.value} onSave={settings.save} />;
-  }
 
   return (
     <>
@@ -36,7 +32,7 @@ export default function App() {
         {tab === "today" && <TodayTab term={term} onOpenTab={setTab} />}
         {tab === "search" &&
           (term ? (
-            <SearchTab term={term} schoolId={settings.value.school.id} />
+            <SearchTab term={term} />
           ) : (
             <Skeleton className="h-40 rounded-2xl" />
           ))}

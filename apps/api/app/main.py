@@ -20,6 +20,8 @@ from app.modules.auth.providers.google import (
     create_google_client,
 )
 from app.modules.auth.router import handle_sign_in_error
+from app.modules.rmp.client import RMPClient
+from app.modules.rmp.service import RMPRosterService
 
 
 @asynccontextmanager
@@ -36,6 +38,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         app.state.google = create_google_client(
             settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET, cache=redis
         )
+        app.state.rmp_roster = RMPRosterService(RMPClient(), redis)
         try:
             yield
         finally:

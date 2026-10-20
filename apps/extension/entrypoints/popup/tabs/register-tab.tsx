@@ -12,7 +12,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { BANNER_REGISTRATION_URL } from "@/lib/config";
+import { BANNER_REGISTRATION_URL } from "@/lib/temple-urls";
 import {
   useAutoRegister,
   useBannerConnection,

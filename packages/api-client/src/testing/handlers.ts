@@ -9,7 +9,6 @@ import type {
   CheckPrerequisitesResponse,
   GenerateSchedulesResponse,
   GetMeResponse,
-  GetProfessorResponse,
   ListAttributesResponse,
   ListSubjectsResponse,
   ListTermsResponse,
@@ -17,7 +16,6 @@ import type {
   ParseBulletinResponse,
   ParseTranscriptResponse,
   SearchProfessorsResponse,
-  SearchSchoolsResponse,
   SearchSectionsResponse,
 } from "../generated/types.gen";
 
@@ -39,17 +37,6 @@ const USER: GetMeResponse = {
   email: "student@temple.edu",
   name: "Test Student",
   pictureUrl: "",
-};
-
-const PROFESSOR: GetProfessorResponse = {
-  professorName: "Jamie Rivera",
-  department: "Computer Science",
-  overallRating: 4.2,
-  difficulty: 3.1,
-  numRatings: 12,
-  wouldTakeAgainPct: 80,
-  topTags: [],
-  rmpUrl: "https://www.ratemyprofessors.com/professor/1",
 };
 
 const AUDIT: ParseAuditResponse = {
@@ -77,7 +64,6 @@ const BULLETIN: ParseBulletinResponse = {
   suggestedPlan: null,
 };
 
-// The specific /api/rmp routes come before /api/rmp/:rmpId, which would match them too.
 export const handlers = [
   http.get<never, never, GetMeResponse>(`${API}/auth/me`, () =>
     HttpResponse.json(USER),
@@ -109,14 +95,8 @@ export const handlers = [
     `${API}/degree/parse-bulletin`,
     () => HttpResponse.json(BULLETIN),
   ),
-  http.get<never, never, SearchSchoolsResponse>(`${API}/rmp/schools`, () =>
-    HttpResponse.json([]),
-  ),
   http.get<never, never, SearchProfessorsResponse>(`${API}/rmp/search`, () =>
     HttpResponse.json([]),
-  ),
-  http.get<never, never, GetProfessorResponse>(`${API}/rmp/:rmpId`, () =>
-    HttpResponse.json(PROFESSOR),
   ),
   http.post<never, never, GenerateSchedulesResponse>(
     `${API}/schedule/generate`,

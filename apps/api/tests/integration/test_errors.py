@@ -51,11 +51,11 @@ class TestProblemDetails:
     async def test_parameter_validation_errors_name_the_parameter(
         self, client: AsyncClient
     ):
-        resp = await client.get("/api/rmp/schools")
+        resp = await client.get("/api/rmp/search")
 
         assert resp.status_code == 422
         assert resp.json()["errors"] == [
-            {"detail": "Field required", "in": "query", "name": "query"}
+            {"detail": "Field required", "in": "query", "name": "name"}
         ]
 
 

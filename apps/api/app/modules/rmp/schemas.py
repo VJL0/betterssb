@@ -14,9 +14,3 @@ class RMPRating(BaseSchema):
     num_ratings: int
     top_tags: list[str] = Field(default_factory=list)
     rmp_url: str = ""
-
-
-class RMPSchool(BaseSchema):
-    id: str
-    legacy_id: int
-    name: str

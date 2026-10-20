@@ -245,7 +245,7 @@ export function LandingPage() {
         >
           <span className="inline-flex h-6 items-center gap-1.5 rounded-2xl border border-border px-2.5 text-xs font-medium">
             <span aria-hidden className="size-1.5 rounded-full bg-success" />
-            Free for students · works with Banner Self-Service
+            Free for Temple University students · works with Banner
           </span>
           <h1
             id="hero-heading"
@@ -344,7 +344,7 @@ export function LandingPage() {
                 icon={ArrowRightIcon}
                 kicker="No setup"
                 title="Just open it"
-                body="Pick your school and start. Everything saves in this browser."
+                body="Pick your term and start. Everything saves in this browser."
                 items={[
                   "Search sections with ratings and seats",
                   "Build and compare schedules",
@@ -391,7 +391,7 @@ export function LandingPage() {
               {[
                 [
                   "Banner stays in Banner",
-                  "BetterSSB never sees your school password. Auto-register runs in your own signed-in Banner tab.",
+                  "BetterSSB never sees your Temple password. Auto-register runs in your own signed-in Banner tab.",
                 ],
                 [
                   "Saved in your browser",
@@ -424,8 +424,7 @@ export function LandingPage() {
                 Have your plan ready before registration opens.
               </h2>
               <p className="text-base text-primary-foreground/80">
-                Pick your school and term. You'll be searching in under a
-                minute.
+                Pick your term. You'll be searching in under a minute.
               </p>
             </div>
             <ButtonLink size="lg" variant="secondary" href="/start">
@@ -439,7 +438,7 @@ export function LandingPage() {
       <footer className="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-4 pt-12 pb-10 text-[13px] text-muted-foreground sm:px-8">
         <span>
           BetterSSB is an independent student project, not affiliated with
-          Ellucian or any school.
+          Ellucian or Temple University.
         </span>
         <a
           href={SOURCE_CODE_URL}

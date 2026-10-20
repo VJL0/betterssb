@@ -39,15 +39,12 @@ interface FiltersPanelProps {
   filters: SearchFilters;
   onChange: (filters: SearchFilters) => void;
   attributes: CodeDescription[];
-  /** Ratings need a school; without one the rating filter can't work. */
-  ratingsAvailable: boolean;
 }
 
 export function FiltersPanel({
   filters,
   onChange,
   attributes,
-  ratingsAvailable,
 }: FiltersPanelProps) {
   const ids = useId();
   const set = (patch: Partial<SearchFilters>) =>
@@ -100,7 +97,6 @@ export function FiltersPanel({
             const picked = Number(value[0] ?? 0) as MinRating;
             set({ minRating: picked });
           }}
-          disabled={!ratingsAvailable}
           className="w-full"
         >
           {MIN_RATING_OPTIONS.map((rating) => (
@@ -113,11 +109,6 @@ export function FiltersPanel({
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
-        {!ratingsAvailable && (
-          <FieldDescription>
-            Choose your school in Settings to use ratings.
-          </FieldDescription>
-        )}
       </FieldSet>
 
       <Field orientation="horizontal">

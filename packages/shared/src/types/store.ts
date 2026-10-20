@@ -58,14 +58,7 @@ export interface TermPlan {
   updatedAt: string;
 }
 
-export interface SchoolChoice {
-  /** Rate My Professors school id, used for rating lookups. */
-  id: string;
-  name: string;
-}
-
 export interface UserSettings {
-  school: SchoolChoice | null;
   /** Banner term code the app opens to. */
   term: string | null;
   major: string;
