@@ -1,10 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { sendTabMessage } from "@/lib/messaging";
 import type { OverlayStatus } from "@/lib/overlay-status";
-
-// The URLs the content script runs on (see wxt.config.ts host_permissions).
-const BANNER_PAGE =
-  /^https?:\/\/([^/]+\.)?temple\.edu\/(StudentRegistrationSsb|ssb)\//i;
+import { isBannerPage } from "@/lib/temple-urls";
 
 /** Whether the tab the popup opened over is a Banner page. */
 export function useOnBannerPage() {
@@ -15,7 +12,7 @@ export function useOnBannerPage() {
         active: true,
         currentWindow: true,
       });
-      return BANNER_PAGE.test(tab?.url ?? "");
+      return isBannerPage(tab?.url ?? "");
     },
     staleTime: Infinity,
   });

@@ -2,6 +2,7 @@ import { onContentMessage } from "@/lib/messaging";
 import { overlayStatus } from "@/lib/overlay-status";
 import type { ExtensionMessage, ExtensionResponse } from "@/lib/messaging";
 import * as ssb from "@/lib/ssb-api";
+import { BANNER_PAGES } from "@/lib/temple-urls";
 
 async function handleSSBMessage(
   msg: ExtensionMessage,
@@ -34,10 +35,7 @@ async function handleSSBMessage(
 }
 
 export default defineContentScript({
-  matches: [
-    "*://*.temple.edu/StudentRegistrationSsb/*",
-    "*://*.temple.edu/ssb/*",
-  ],
+  matches: [BANNER_PAGES],
 
   async main() {
     const { startOverlay } = await import("./overlay");

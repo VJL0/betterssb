@@ -1,5 +1,6 @@
 import { onContentMessage } from "@/lib/messaging";
 import { runAudit, DarsSessionExpiredError } from "@/lib/dars-api";
+import { DARS_PAGES } from "@/lib/temple-urls";
 
 /**
  * Content script for DARS (u.achieve self-service). It does nothing on load;
@@ -7,7 +8,7 @@ import { runAudit, DarsSessionExpiredError } from "@/lib/dars-api";
  * message, using the student's own in-browser session.
  */
 export default defineContentScript({
-  matches: ["*://prd-dars.temple.edu/selfservice/*"],
+  matches: [DARS_PAGES],
 
   main() {
     onContentMessage(async (msg, sendResponse) => {
