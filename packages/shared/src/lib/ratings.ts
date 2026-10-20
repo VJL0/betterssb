@@ -1,6 +1,9 @@
 import type { RmpRating } from "@workspace/api-client";
+import { instructorSearchName } from "./instructors";
 
 export const HIGH_RATING_MIN = 4;
+/** Temple University's main campus on Rate My Professors. */
+const TEMPLE_RMP_SCHOOL_ID = 999;
 export const MID_RATING_MIN = 3;
 
 /** Rate My Professors score bands from the design: 4.0+, 3.0–3.9, under 3.0, no profile. */
@@ -23,4 +26,13 @@ export function formatRating(rating: number): string {
  */
 export function usableRating(rating: RmpRating | null): RmpRating | null {
   return rating && rating.numRatings > 0 ? rating : null;
+}
+
+/**
+ * Rate My Professors' search for a Banner instructor ("Bray, Benjamin R.") at
+ * Temple, for when we found no profile: it may be listed under another name.
+ */
+export function rmpSearchUrl(bannerName: string): string {
+  const query = encodeURIComponent(instructorSearchName(bannerName));
+  return `https://www.ratemyprofessors.com/search/professors/${TEMPLE_RMP_SCHOOL_ID}?q=${query}`;
 }

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formatRating, ratingBand, usableRating } from "./ratings";
+import {
+  formatRating,
+  ratingBand,
+  rmpSearchUrl,
+  usableRating,
+} from "./ratings";
 import type { RmpRating } from "@workspace/api-client";
 
 describe("ratingBand", () => {
@@ -47,5 +52,13 @@ describe("usableRating", () => {
 
   it("passes no profile through", () => {
     expect(usableRating(null)).toBeNull();
+  });
+});
+
+describe("rmpSearchUrl", () => {
+  it("searches Temple's professors by first and last name", () => {
+    expect(rmpSearchUrl("Bray, Benjamin R.")).toBe(
+      "https://www.ratemyprofessors.com/search/professors/999?q=Benjamin%20Bray",
+    );
   });
 });

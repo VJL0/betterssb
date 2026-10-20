@@ -220,7 +220,10 @@ export function SearchTab({ term }: { term: Term }) {
                             (rating?.isPending ? (
                               <Skeleton className="h-5 w-16 rounded-2xl" />
                             ) : (
-                              <RmpBadge rating={rating?.data ?? null} />
+                              <RmpBadge
+                                rating={rating?.data ?? null}
+                                instructorName={name}
+                              />
                             ))}
                         </span>
                       </span>

@@ -42,6 +42,7 @@ function Rating({
   return createPortal(
     <RmpBadge
       rating={usableRating(rating.data)}
+      instructorName={slot.name}
       popupContainer={popupContainer}
       compact
       className="mr-1"

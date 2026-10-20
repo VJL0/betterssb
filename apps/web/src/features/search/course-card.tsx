@@ -100,7 +100,7 @@ export function SectionInstructor({
         (rating === undefined ? (
           <Skeleton aria-hidden className="h-5 w-24 rounded-2xl" />
         ) : (
-          <RmpBadge rating={rating} />
+          <RmpBadge rating={rating} instructorName={name} />
         ))}
     </span>
   );
