@@ -1,6 +1,7 @@
+"use client";
+
 import { EllipsisIcon, SettingsIcon } from "lucide-react";
 import { useState } from "react";
-import { NavLink } from "react-router";
 import {
   Sheet,
   SheetContent,
@@ -8,10 +9,11 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/sheet";
 import { cn } from "@workspace/ui/lib/utils";
+import { NavLink } from "./nav-link";
 import { PRIMARY_PAGES, SECONDARY_PAGES, readyPages } from "./pages";
 
 const TAB_CLASS =
-  "flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none";
+  "flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none aria-[current=page]:bg-muted aria-[current=page]:text-foreground";
 
 /** Phone navigation (under 640 px): main pages as tabs, the rest under More. */
 export function MobileTabBar() {
@@ -36,17 +38,7 @@ export function MobileTabBar() {
       >
         {tabs.map((page) => (
           <li key={page.id}>
-            <NavLink
-              to={page.path}
-              className={({ isActive }) =>
-                cn(
-                  TAB_CLASS,
-                  isActive
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground",
-                )
-              }
-            >
+            <NavLink href={page.path} className={TAB_CLASS}>
               <page.icon aria-hidden className="size-5" />
               {page.label}
             </NavLink>
@@ -56,7 +48,7 @@ export function MobileTabBar() {
           <button
             type="button"
             onClick={() => setMoreOpen(true)}
-            className={cn(TAB_CLASS, "w-full text-muted-foreground")}
+            className={cn(TAB_CLASS, "w-full")}
           >
             <EllipsisIcon aria-hidden className="size-5" />
             More
@@ -80,7 +72,7 @@ export function MobileTabBar() {
             ].map((page) => (
               <li key={page.id}>
                 <NavLink
-                  to={page.path}
+                  href={page.path}
                   onClick={() => setMoreOpen(false)}
                   className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none"
                 >

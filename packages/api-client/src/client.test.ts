@@ -29,7 +29,7 @@ import {
 } from "./testing";
 
 // Node's Request needs an absolute URL; browsers resolve "/api/…" themselves.
-const ORIGIN = "http://localhost:5173";
+const ORIGIN = "http://localhost:3000";
 
 beforeAll(() => {
   server.listen({ onUnhandledFrame: "error" });

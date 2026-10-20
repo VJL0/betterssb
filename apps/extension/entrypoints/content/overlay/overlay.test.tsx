@@ -189,7 +189,7 @@ describe("Banner overlay", () => {
       dock()
         .getByRole("link", { name: "Open in BetterSSB" })
         .getAttribute("href"),
-    ).toBe("http://localhost:5173/plan");
+    ).toBe("http://localhost:3000/plan");
   });
 
   it("adds nothing when the setting is off, and clears up when it's turned off", async () => {

@@ -2094,7 +2094,7 @@
         ]
       }
     },
-    "/api/chat/": {
+    "/api/chat": {
       "post": {
         "description": "Send a conversation to the academic advising chatbot.",
         "operationId": "chat",

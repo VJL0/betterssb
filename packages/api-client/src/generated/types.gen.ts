@@ -1187,7 +1187,7 @@ export type ChatData = {
   body: ChatRequest;
   path?: never;
   query?: never;
-  url: "/api/chat/";
+  url: "/api/chat";
 };
 
 export type ChatErrors = {

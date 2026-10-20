@@ -1,3 +1,5 @@
+"use client";
+
 import { useId, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { CircleXIcon, FileTextIcon, ShieldCheckIcon } from "lucide-react";
@@ -39,7 +41,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { isPageReady } from "@/app/pages";
+import { isPageReady } from "@/components/shell/pages";
 import { ButtonLink } from "@/components/button-link";
 import { useStoreDocument } from "@/lib/store/store-context";
 
@@ -88,7 +90,6 @@ export function TranscriptPage() {
 
   return (
     <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
-      <title>Transcript · BetterSSB</title>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight">Transcript</h1>
@@ -136,7 +137,7 @@ export function TranscriptPage() {
               <p className="rounded-2xl bg-muted/50 p-3">
                 Save your degree audit to see what each course counts toward.{" "}
                 <ButtonLink
-                  to="/audit"
+                  href="/audit"
                   variant="link"
                   size="xs"
                   className="px-0"

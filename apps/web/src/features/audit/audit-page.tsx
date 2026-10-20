@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CircleXIcon,
@@ -45,7 +47,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
-import { isPageReady } from "@/app/pages";
+import { isPageReady } from "@/components/shell/pages";
 import { ButtonLink } from "@/components/button-link";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import { usePlans } from "@/hooks/use-plans";
@@ -134,7 +136,6 @@ export function AuditPage() {
 
   return (
     <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
-      <title>Degree audit · BetterSSB</title>
       {/* Opened by "Upload DARS file"; hidden from tab order and screen readers. */}
       <input
         ref={fileInput}
@@ -341,7 +342,7 @@ function AuditReport({ audit, storedAt }: { audit: Audit; storedAt: string }) {
           >
             {isPageReady("plan") && (
               <ButtonLink
-                to="/plan"
+                href="/plan"
                 variant="link"
                 size="xs"
                 className="self-start px-0"
@@ -403,7 +404,7 @@ function AuditReport({ audit, storedAt }: { audit: Audit; storedAt: string }) {
           )}
           {isPageReady("advisor") && (
             <ButtonLink
-              to="/advisor"
+              href="/advisor"
               className="h-auto justify-start gap-3 rounded-3xl p-4 text-left whitespace-normal"
             >
               <MessageCircleQuestionIcon data-icon="inline-start" />

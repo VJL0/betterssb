@@ -23,11 +23,11 @@ Everything is saved on your device. There's no account yet; sign-in for sync is 
 ```
 betterssb/
 ├── apps/
-│   ├── web/           # Website (Vite + React 19 + React Router + TanStack Query)
+│   ├── web/           # Website (Next.js App Router + React 19 + TanStack Query)
 │   │   └── src/
-│   │       ├── app/                   # Router, header, phone tab bar, error and 404 pages
-│   │       ├── features/              # One folder per route: search, schedule, plan, audit…
-│   │       ├── components/ · hooks/   # Shared across routes
+│   │       ├── app/                   # Routes: layouts, pages, metadata, sitemap, error and 404
+│   │       ├── features/              # One folder per page: search, schedule, plan, audit…
+│   │       ├── components/ · hooks/   # Shared across pages; components/shell is the header and tab bar
 │   │       └── lib/                   # Local store, extension bridge client, config
 │   │
 │   ├── extension/     # Chrome extension (WXT + React + TypeScript)
@@ -83,6 +83,7 @@ betterssb/
 
 | Layer               | Technology                                                                                                                                       |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Website Framework   | [Next.js](https://nextjs.org) 16 App Router; every page is prerendered as static HTML                                                            |
 | Extension Framework | [WXT](https://wxt.dev) v0.21                                                                                                                     |
 | UI                  | React 19, TypeScript, Tailwind CSS 4, shadcn/ui on Base UI                                                                                       |
 | State               | Local-first store: IndexedDB on the website, `chrome.storage.local` in the extension, shared through the web bridge; TanStack Query for API data |
@@ -120,7 +121,7 @@ Redis holds short-lived data only (caches, rate limits, OAuth state). It runs wi
 From the repo root, with Docker running:
 
 ```bash
-pnpm dev     # Postgres + Redis, API on :8000, web on :5173, extension → apps/extension/.output/chrome-mv3-dev
+pnpm dev     # Postgres + Redis, API on :8000, web on :3000, extension → apps/extension/.output/chrome-mv3-dev
 pnpm lint    # ESLint + Ruff
 pnpm test    # pytest + Vitest
 pnpm format  # Prettier + Ruff
@@ -140,6 +141,13 @@ Behind a load balancer or reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy'
 The API adds `Cache-Control: no-store`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and `Content-Security-Policy: frame-ancestors 'none'` to every response ([OWASP REST Security](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html#security-headers)). Set `Strict-Transport-Security` at the HTTPS proxy, where it also covers the web app's pages. `--no-server-header` drops Uvicorn's `Server` header.
 
 The app never creates tables itself. After changing a model, generate a migration with `uv run alembic revision --autogenerate -m "..."`, review it, and commit it. Run `alembic upgrade head` as a deploy step before starting the new version.
+
+Build the website and serve it with Next.js; every page is prerendered, so `next start` serves static HTML:
+
+```bash
+SITE_URL=https://betterssb.example API_ORIGIN=http://localhost:8000 pnpm --filter web build
+pnpm --filter web start   # :3000
+```
 
 ### Loading the Extension Manually
 
@@ -176,7 +184,7 @@ REDIS_URL=redis://localhost:6379/0
 GOOGLE_CLIENT_ID=...           # Google Cloud Console → OAuth client ID (Web application)
 GOOGLE_CLIENT_SECRET=...       # Matching secret
 GOOGLE_REDIRECT_URI=http://localhost:8000/api/auth/google/callback
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:3000
 SESSION_SECRET=...             # Required, 32+ chars: openssl rand -hex 32
 OPENAI_API_KEY=sk-...          # Required for chatbot
 RMP_AUTH_TOKEN=...              # Rate My Professor auth (optional, has fallback)
@@ -197,7 +205,7 @@ Only identity scopes (`openid email profile`) are requested. Google's access tok
 
 Cookies are always `Secure`. In development, use Chrome on `http://localhost`, which Chrome treats as secure.
 
-The API has no CORS. The web app calls it same-origin at `/api` (Vite proxies it in dev; in production serve both from one domain with `/api` routed to the backend). The extension gets the API host in its `host_permissions`, which lets it call the API without CORS.
+The API has no CORS. The web app calls it same-origin at `/api`: Next.js rewrites `/api/*` to `API_ORIGIN` (`apps/web/next.config.ts`). In production, serve both from one domain and route `/api` to the backend at your reverse proxy, so the API sees the client's address in `X-Forwarded-For`; the rewrite doesn't add it. The extension gets the API host in its `host_permissions`, which lets it call the API without CORS.
 
 The website and the extension run as guests today: account sync is a later phase, so neither shows a sign-in button yet. The endpoints above and `apps/web/src/lib/auth.ts` stay in place for it. When sign-in is added, both clients will go through the backend and never talk to Google or hold a token: the website links to `/api/auth/google/login` and reads `/api/auth/me`; the extension's requests use `credentials: "include"`, and its host permission for the API lets the same session cookie through.
 
@@ -205,11 +213,11 @@ The extension reads its config at build time. Copy `apps/extension/.env.example`
 
 ```env
 WXT_API_ORIGIN=http://localhost:8000   # Backend API origin; paths start with /api
-WXT_WEB_ORIGIN=http://localhost:5173   # The website, opened from the popup and the plan dock
+WXT_WEB_ORIGIN=http://localhost:3000   # The website, opened from the popup and the plan dock
 WXT_BANNER_REGISTRATION_URL=...        # Optional; defaults to Temple's Banner registration page
 ```
 
-The website reads `VITE_BANNER_REGISTRATION_URL` and `VITE_EXTENSION_INSTALL_URL` the same way (see `apps/web/.env.example`).
+The website reads `NEXT_PUBLIC_BANNER_REGISTRATION_URL` and `NEXT_PUBLIC_EXTENSION_INSTALL_URL` the same way, plus `SITE_URL` (its public origin, for canonical links, the sitemap and social cards) and `API_ORIGIN` (where `/api` is proxied). See `apps/web/.env.example`.
 
 ## Contributing
 

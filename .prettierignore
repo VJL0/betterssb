@@ -6,3 +6,5 @@ pnpm-lock.yaml
 .pnpm-store/
 .output/
 .wxt/
+.next/
+next-env.d.ts

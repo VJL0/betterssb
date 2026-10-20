@@ -1,5 +1,10 @@
 @import "@workspace/ui/globals.css";
-@import "@workspace/ui/inter.css";
+
+/* Inter comes from next/font (the root layout), which self-hosts and preloads
+   it with a size-matched fallback so text doesn't shift when it loads. */
+@theme inline {
+  --font-sans: var(--font-inter), sans-serif;
+}
 
 /* Keep focused elements clear of the sticky top bar and the phone tab bar (WCAG 2.4.11). */
 html {

@@ -1,3 +1,5 @@
+"use client";
+
 import { useId, useMemo, useRef } from "react";
 import { CircleXIcon, ExternalLinkIcon, PuzzleIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -85,7 +87,6 @@ export function RegisterPage() {
 
   return (
     <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
-      <title>Auto-register · BetterSSB</title>
       {!banner.extensionInstalled ? (
         <>
           <PageHeading subtitle="Registers you the second your window opens" />

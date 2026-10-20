@@ -86,7 +86,7 @@ export const handlers = [
     `${API}/auth/logout`,
     () => new HttpResponse(null, { status: 204 }),
   ),
-  http.post<never, never, ChatResponse>(`${API}/chat/`, () =>
+  http.post<never, never, ChatResponse>(`${API}/chat`, () =>
     HttpResponse.json({ response: "Here's what I found." }),
   ),
   http.get<never, never, ListTermsResponse>(`${API}/classes/terms`, () =>
