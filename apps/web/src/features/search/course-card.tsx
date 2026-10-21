@@ -15,11 +15,11 @@ import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { CourseBadge } from "@workspace/ui/components/course-badge";
 import { DayStrip } from "@workspace/ui/components/day-strip";
-import { RmpBadge } from "@workspace/ui/components/rmp-badge";
+import { RmpBadge, RmpPendingBadge } from "@workspace/ui/components/rmp-badge";
 import { SeatMeter } from "@workspace/ui/components/seat-meter";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
-import type { RatingLookup } from "@/hooks/use-ratings";
+import type { Ratings } from "@/hooks/use-ratings";
 import type { ClassSection } from "@workspace/api-client";
 
 export interface SectionRowActions {
@@ -32,7 +32,7 @@ interface CourseCardProps extends SectionRowActions {
   sections: ClassSection[];
   plan: TermPlan;
   termName: string;
-  ratings: ReadonlyMap<string, RatingLookup>;
+  ratings: Ratings;
 }
 
 function sectionLabel(section: ClassSection): string {
@@ -84,24 +84,35 @@ function room(section: ClassSection): string {
   return [...new Set(rooms)].join(", ") || "Online or TBA";
 }
 
+function InstructorRating({
+  name,
+  ratings,
+}: {
+  name: string;
+  ratings: Ratings;
+}) {
+  const rating = ratings.byName.get(name);
+  if (rating !== undefined) {
+    return <RmpBadge rating={rating} instructorName={name} />;
+  }
+  if (ratings.status === "syncing") return <RmpPendingBadge />;
+  // The page's ratings status says so, with a way to try again.
+  if (ratings.status === "unavailable") return null;
+  return <Skeleton aria-hidden className="h-5 w-24 rounded-2xl" />;
+}
+
 export function SectionInstructor({
   section,
   ratings,
 }: {
   section: ClassSection;
-  ratings: ReadonlyMap<string, RatingLookup>;
+  ratings: Ratings;
 }) {
   const name = primaryInstructorName(section);
-  const rating = ratings.get(name);
   return (
     <span className="flex flex-wrap items-center gap-2">
       <span title={name}>{shortInstructorName(name)}</span>
-      {name !== "TBA" &&
-        (rating === undefined ? (
-          <Skeleton aria-hidden className="h-5 w-24 rounded-2xl" />
-        ) : (
-          <RmpBadge rating={rating} instructorName={name} />
-        ))}
+      {name !== "TBA" && <InstructorRating name={name} ratings={ratings} />}
     </span>
   );
 }

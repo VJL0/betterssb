@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { RmpBadge } from "@workspace/ui/components/rmp-badge";
+import { RmpBadge, RmpPendingBadge } from "@workspace/ui/components/rmp-badge";
 import { axeViolations } from "../test/axe";
 import type { RmpRating } from "@workspace/api-client";
 
@@ -102,5 +102,14 @@ describe("RmpBadge", () => {
       </div>,
     );
     expect(await axeViolations(container)).toEqual([]);
+  });
+});
+
+describe("RmpPendingBadge", () => {
+  it("says the rating is loading, to screen readers too", () => {
+    render(<RmpPendingBadge />);
+    expect(screen.getByText(/Rating loading/).textContent).toBe(
+      "Rating loading from Rate My Professors",
+    );
   });
 });

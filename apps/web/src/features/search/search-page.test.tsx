@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
@@ -103,13 +103,24 @@ describe("SearchPage", () => {
     await waitFor(() => expect(input.hasAttribute("disabled")).toBe(false));
     await user.type(input, "CIS 2168");
 
+    await waitFor(
+      () =>
+        expect(
+          screen.getAllByRole("status").map((el) => el.textContent),
+        ).toContain(
+          "Loading instructor ratings. The first load takes about a minute.",
+        ),
+      SEARCH_TIMEOUT,
+    );
     expect(
-      await screen.findByText(
-        "Loading Rate My Professors ratings",
-        undefined,
-        SEARCH_TIMEOUT,
-      ),
-    ).toBeTruthy();
+      (await screen.findAllByText("Rating loading", { exact: false })).length,
+    ).toBeGreaterThan(0);
+    // Filtering by rating can't work until there are ratings.
+    for (const button of within(
+      screen.getAllByRole("group", { name: "Instructor rating" })[0]!,
+    ).getAllByRole("button")) {
+      expect(button.hasAttribute("disabled")).toBe(true);
+    }
   });
 
   it("has no accessibility violations with results", async () => {

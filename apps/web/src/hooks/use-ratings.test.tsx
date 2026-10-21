@@ -28,6 +28,8 @@ const RATING: RmpRating = {
 
 /** How long the hook waits between lookups while the API's first sync runs. */
 const SYNC_RETRY_DELAY_MS = 10_000;
+/** How long it keeps asking before it gives up: two minutes. */
+const SYNC_GIVE_UP_MS = 12 * SYNC_RETRY_DELAY_MS;
 
 function renderRatings() {
   const queryClient = createQueryClient();
@@ -59,7 +61,7 @@ describe("useRatings", () => {
     const roster = rosterSyncingUntilCalled();
     const { result } = renderRatings();
 
-    await waitFor(() => expect(result.current.syncing).toBe(true));
+    await waitFor(() => expect(result.current.status).toBe("syncing"));
     expect(result.current.byName.get(INSTRUCTOR)).toBeUndefined();
 
     roster.synced();
@@ -68,7 +70,25 @@ describe("useRatings", () => {
     await waitFor(() =>
       expect(result.current.byName.get(INSTRUCTOR)).toEqual(RATING),
     );
-    expect(result.current.syncing).toBe(false);
+    expect(result.current.status).toBe("ready");
+  });
+
+  it("gives up after two minutes without calling anyone unrated, then retries on request", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const roster = rosterSyncingUntilCalled();
+    const { result } = renderRatings();
+    await waitFor(() => expect(result.current.status).toBe("syncing"));
+
+    await act(() => vi.advanceTimersByTimeAsync(SYNC_GIVE_UP_MS));
+    await waitFor(() => expect(result.current.status).toBe("unavailable"));
+    expect(result.current.byName.get(INSTRUCTOR)).toBeUndefined();
+
+    roster.synced();
+    act(() => result.current.retry());
+    await waitFor(() =>
+      expect(result.current.byName.get(INSTRUCTOR)).toEqual(RATING),
+    );
+    expect(result.current.status).toBe("ready");
   });
 
   it("shows other failures as no profile without waiting", async () => {
@@ -78,6 +98,6 @@ describe("useRatings", () => {
     await waitFor(() =>
       expect(result.current.byName.get(INSTRUCTOR)).toBe(null),
     );
-    expect(result.current.syncing).toBe(false);
+    expect(result.current.status).toBe("ready");
   });
 });

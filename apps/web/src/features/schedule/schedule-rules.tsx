@@ -43,6 +43,8 @@ interface ScheduleRulesProps {
   colorFor: (courseId: string) => CourseColor | null;
   /** Why a course is missing from the schedules, by course id. */
   notes: ReadonlyMap<string, string>;
+  /** False while instructor ratings are still loading, when ranking by them can't work. */
+  ratingsReady: boolean;
 }
 
 /** The W2.2 rules card: hard limits on days and times, ranking, and per-course choices. */
@@ -52,6 +54,7 @@ export function ScheduleRulesCard({
   courses,
   colorFor,
   notes,
+  ratingsReady,
 }: ScheduleRulesProps) {
   const ids = useId();
   const set = (patch: Partial<ScheduleRules>) =>
@@ -148,6 +151,7 @@ export function ScheduleRulesCard({
               <ToggleGroupItem
                 key={rank}
                 value={rank}
+                disabled={rank === "rating" && !ratingsReady}
                 size="sm"
                 className={PRESSED_FILTER_CLASS}
               >
