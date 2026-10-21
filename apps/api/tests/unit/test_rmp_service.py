@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import asyncio
+from collections.abc import Awaitable, Iterator
 from datetime import UTC, datetime, timedelta
 
 import pytest
+from vercel.cache.context import set_context
 
 from app.modules.rmp.client import RMPUnavailable, RosterPage
 from app.modules.rmp.service import (
@@ -13,6 +16,9 @@ from app.modules.rmp.service import (
     Roster,
 )
 from tests.unit.test_class_search import MemoryCache
+
+# Enough event-loop turns for a sync against the fakes, which never wait.
+LOOP_TURNS = 10
 
 
 def professor(first: str, last: str, **fields) -> dict:
@@ -171,7 +177,42 @@ async def store_day_old_roster(cache: MemoryCache) -> None:
     cache.values[ROSTER_KEY] = old.model_dump_json()
 
 
+@pytest.fixture()
+def vercel_invocation() -> Iterator[list[Awaitable[object]]]:
+    """Stands in for Vercel's runtime, which waits on these after responding."""
+    kept_alive: list[Awaitable[object]] = []
+    set_context(wait_until=kept_alive.append)
+    yield kept_alive
+    set_context(wait_until=None)
+
+
 class TestSyncOnLookup:
+    async def test_keeps_the_vercel_invocation_alive_for_the_sync(
+        self, vercel_invocation: list[Awaitable[object]]
+    ):
+        rmp = FakeRMP(ROSTER)
+        service, _ = roster_service(rmp, MemoryCache())
+
+        with pytest.raises(RMPUnavailable):
+            await service.search("Cindy Liao")
+
+        assert vercel_invocation == [service._sync_task]
+        await finish_background_sync(service)
+        assert len(await service.search("Cindy Liao")) == 1
+
+    async def test_off_vercel_the_sync_runs_on_its_own(self):
+        rmp = FakeRMP(ROSTER)
+        service, _ = roster_service(rmp, MemoryCache())
+
+        with pytest.raises(RMPUnavailable):
+            await service.search("Cindy Liao")
+        # Nothing awaits the task; it only needs the event loop to get a turn.
+        for _ in range(LOOP_TURNS):
+            await asyncio.sleep(0)
+
+        assert service._sync_task is not None and service._sync_task.done()
+        assert rmp.requests == [None, "1"]
+
     async def test_first_lookup_starts_a_sync_and_answers_once_it_finishes(self):
         rmp = FakeRMP(ROSTER)
         service, _ = roster_service(rmp, MemoryCache())

@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { HourglassIcon } from "lucide-react";
 import { instructorSearchName } from "@workspace/shared/lib/instructors";
 import {
   formatRating,
@@ -121,6 +122,24 @@ function RmpBadge({
   );
 }
 
+/**
+ * Stands in for an RmpBadge while ratings are still being fetched for the
+ * first time, which can take a minute; a skeleton reads as "any moment now".
+ */
+function RmpPendingBadge({ className }: { className?: string }) {
+  return (
+    <Badge
+      data-slot="rmp-badge"
+      variant="outline"
+      className={cn("border-dashed text-muted-foreground", className)}
+    >
+      <HourglassIcon aria-hidden data-icon="inline-start" />
+      Rating loading
+      <span className="sr-only"> from Rate My Professors</span>
+    </Badge>
+  );
+}
+
 /** We found no profile, but RMP may list them under another name: link to its search. */
 function NoProfileBadge({
   instructorName,
@@ -218,5 +237,5 @@ function RmpStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-export { RmpBadge, RmpDetails };
+export { RmpBadge, RmpDetails, RmpPendingBadge };
 export type { RmpBadgeProps };
