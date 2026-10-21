@@ -13,16 +13,20 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ai-sdk/react": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@workspace/api-client": "workspace:*",
     "@workspace/shared": "workspace:*",
     "@workspace/ui": "workspace:*",
+    "ai": "catalog:",
     "class-variance-authority": "catalog:",
     "lucide-react": "catalog:",
     "next": "^16.4.2",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "sonner": "catalog:"
+    "rehype-harden": "catalog:",
+    "sonner": "catalog:",
+    "streamdown": "catalog:"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",

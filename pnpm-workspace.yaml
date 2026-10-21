@@ -44,3 +44,7 @@ catalog:
   # team's side-by-side setup: https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/
   typescript: npm:@typescript/typescript6@^6.0.2
   "@typescript/native": npm:typescript@~7.0.2
+  rehype-harden: ^1.1.8
+  streamdown: ^2.7.1
+  "@ai-sdk/react": ^4.0.150
+  ai: ^7.0.146

@@ -5,6 +5,7 @@ import type {
   ClientMeta,
   Options as Options2,
   RequestResult,
+  ServerSentEventsResult,
   TDataShape,
 } from "./client";
 import { client } from "./client.gen";
@@ -95,13 +96,11 @@ export const getMe = <ThrowOnError extends boolean = true>(
 
 /**
  * Chat
- *
- * Send a conversation to the academic advising chatbot.
  */
 export const chat = <ThrowOnError extends boolean = true>(
-  options: Options<ChatData, ThrowOnError>,
-): RequestResult<ChatResponses, ChatErrors, ThrowOnError> =>
-  (options.client ?? client).post<ChatResponses, ChatErrors, ThrowOnError>({
+  options: Options<ChatData, ThrowOnError, unknown>,
+): Promise<ServerSentEventsResult<ChatResponses>> =>
+  (options.client ?? client).sse.post<ChatResponses, ChatErrors, ThrowOnError>({
     url: "/api/chat",
     ...options,
     headers: {

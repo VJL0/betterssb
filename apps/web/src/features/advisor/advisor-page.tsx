@@ -4,12 +4,10 @@ import { useEffect, useId, useRef, useState } from "react";
 import {
   BotIcon,
   CircleXIcon,
-  CopyIcon,
   MessagesSquareIcon,
   PlusIcon,
   SendIcon,
 } from "lucide-react";
-import { toast } from "sonner";
 import type { ChatMessage } from "@workspace/api-client";
 import {
   advisorContext,
@@ -46,6 +44,7 @@ import {
   type SourceId,
 } from "./advisor-context-panel";
 import { useAdvisor } from "./use-advisor";
+import { AdvisorMessage } from "./advisor-message";
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const SUGGESTIONS = [
@@ -198,7 +197,9 @@ export function AdvisorPage() {
           ) : (
             <Conversation
               messages={advisor.current?.messages ?? []}
-              pending={advisor.pending}
+              pending={advisor.live?.question ?? null}
+              answer={advisor.live?.answer ?? ""}
+              status={advisor.live?.status}
               usedLabels={records.usedLabels}
               onSuggest={ask}
             />
@@ -208,20 +209,35 @@ export function AdvisorPage() {
               <CircleXIcon />
               <AlertTitle>{advisor.error.message}</AlertTitle>
               <AlertDescription>
-                Your question is back in the box below. Try again in a minute.
+                {advisor.live?.status === "unsaved"
+                  ? "Try saving again without generating another reply."
+                  : "Your question is back in the box below. You can try again."}
               </AlertDescription>
               <AlertAction>
-                <Button variant="outline" size="sm" onClick={() => ask(draft)}>
-                  Retry
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={
+                    advisor.live?.status === "unsaved"
+                      ? advisor.retrySave
+                      : () => ask(draft)
+                  }
+                >
+                  {advisor.live?.status === "unsaved" ? "Save reply" : "Retry"}
                 </Button>
               </AlertAction>
             </Alert>
+          )}
+          {advisor.live?.status === "streaming" && (
+            <Button variant="outline" onClick={advisor.stop}>
+              Stop response
+            </Button>
           )}
           <Composer
             draft={draft}
             onDraft={setDraft}
             onSend={() => ask(draft)}
-            busy={!!advisor.pending}
+            busy={!!advisor.pending || advisor.live?.status === "unsaved"}
             usedLabels={records.usedLabels}
           />
         </Card>
@@ -302,11 +318,15 @@ function ThreadList({
 function Conversation({
   messages,
   pending,
+  answer,
+  status,
   usedLabels,
   onSuggest,
 }: {
   messages: readonly ChatMessage[];
   pending: string | null;
+  answer: string;
+  status?: "streaming" | "interrupted" | "saving" | "unsaved";
   usedLabels: readonly string[];
   onSuggest: (question: string) => void;
 }) {
@@ -361,12 +381,31 @@ function Conversation({
       {pending && (
         <>
           <UserMessage text={pending} />
+          {answer && (
+            <div aria-live="off">
+              <AdvisorMessage
+                text={answer}
+                isStreaming={status === "streaming"}
+                isIncomplete={
+                  status === "streaming" || status === "interrupted"
+                }
+              />
+            </div>
+          )}
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Spinner aria-hidden />
+            {status === "streaming" && <Spinner aria-hidden />}
             <span role="status">
-              {usedLabels.length > 0
-                ? `Reading your ${listFormat(usedLabels)}…`
-                : "Thinking…"}
+              {status === "interrupted"
+                ? "Response interrupted"
+                : status === "unsaved"
+                  ? "Reply not saved"
+                  : status === "saving"
+                    ? "Saving reply…"
+                    : answer
+                      ? "Answering…"
+                      : usedLabels.length > 0
+                        ? `Reading your ${listFormat(usedLabels)}…`
+                        : "Thinking…"}
             </span>
           </div>
         </>
@@ -381,42 +420,6 @@ function UserMessage({ text }: { text: string }) {
     <div className="max-w-[80%] self-end rounded-2xl bg-primary px-3.5 py-2.5 whitespace-pre-wrap text-primary-foreground">
       <span className="sr-only">You: </span>
       {text}
-    </div>
-  );
-}
-
-function AdvisorMessage({ text }: { text: string }) {
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success("Copied");
-    } catch {
-      toast.error("Couldn't copy. Select the text instead.");
-    }
-  }
-  return (
-    <div className="flex gap-3">
-      <span
-        aria-hidden
-        className="grid size-7 shrink-0 place-items-center rounded-xl bg-muted"
-      >
-        <BotIcon className="size-4" />
-      </span>
-      <div className="flex min-w-0 flex-col gap-1">
-        <p className="whitespace-pre-wrap">
-          <span className="sr-only">Advisor: </span>
-          {text}
-        </p>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          aria-label="Copy answer"
-          onClick={() => void copy()}
-          className="self-start text-muted-foreground"
-        >
-          <CopyIcon />
-        </Button>
-      </div>
     </div>
   );
 }
