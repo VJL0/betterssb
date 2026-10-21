@@ -37,8 +37,10 @@ def _use_problem_media_type(schema: dict[str, Any]) -> None:
         for operation in operations.values():
             for code, response in operation.get("responses", {}).items():
                 content = response.get("content", {})
-                if code[0] in "45" and "application/json" in content:
-                    content[PROBLEM_MEDIA_TYPE] = content.pop("application/json")
+                if code[0] in "45":
+                    for media_type in ("application/json", "text/event-stream"):
+                        if media_type in content:
+                            content[PROBLEM_MEDIA_TYPE] = content.pop(media_type)
 
 
 def build_openapi(app: FastAPI) -> dict[str, Any]:

@@ -9,7 +9,6 @@ import {
 
 import { client } from "../client.gen";
 import {
-  chat,
   checkPrerequisites,
   generateSchedules,
   getMe,
@@ -25,9 +24,6 @@ import {
   searchSections,
 } from "../sdk.gen";
 import type {
-  ChatData,
-  ChatError,
-  ChatResponse,
   CheckPrerequisitesData,
   CheckPrerequisitesError,
   CheckPrerequisitesResponse,
@@ -157,31 +153,6 @@ export const getMeOptions = (options?: Options<GetMeData>) =>
     },
     queryKey: getMeQueryKey(options),
   });
-
-/**
- * Chat
- *
- * Send a conversation to the academic advising chatbot.
- */
-export const chatMutation = (
-  options?: Partial<Options<ChatData>>,
-): UseMutationOptions<ChatResponse, ChatError, Options<ChatData>> => {
-  const mutationOptions: UseMutationOptions<
-    ChatResponse,
-    ChatError,
-    Options<ChatData>
-  > = {
-    mutationFn: async (fnOptions) => {
-      const { data } = await chat({
-        ...options,
-        ...fnOptions,
-        throwOnError: true,
-      });
-      return data;
-    },
-  };
-  return mutationOptions;
-};
 
 export const listAttributesQueryKey = (options: Options<ListAttributesData>) =>
   createQueryKey("listAttributes", options);

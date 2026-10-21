@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import aclosing
+
 from app.modules.chatbot.client import GeminiClient
 
 SYSTEM_PROMPT = (
@@ -11,17 +14,24 @@ SYSTEM_PROMPT = (
 )
 
 
+def system_instruction(context: str) -> str:
+    if context:
+        return SYSTEM_PROMPT + f"\n\nAdditional context about this student:\n{context}"
+    return SYSTEM_PROMPT
+
+
 class ChatbotService:
     """Academic advising chatbot backed by Gemini."""
 
     def __init__(self, api_key: str) -> None:
         self._client = GeminiClient(api_key=api_key)
 
-    async def chat(self, messages: list[dict], context: str = "") -> str:
-        system_content = SYSTEM_PROMPT
-        if context:
-            system_content += f"\n\nAdditional context about this student:\n{context}"
-
-        return await self._client.chat_completion(
-            messages, system_instruction=system_content
-        )
+    async def stream(
+        self, messages: list[dict], context: str = ""
+    ) -> AsyncIterator[str]:
+        system_content = system_instruction(context)
+        async with aclosing(
+            self._client.stream_completion(messages, system_instruction=system_content)
+        ) as stream:
+            async for text in stream:
+                yield text

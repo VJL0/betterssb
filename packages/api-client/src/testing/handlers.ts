@@ -5,7 +5,6 @@
  */
 import { http, HttpResponse } from "msw/http";
 import type {
-  ChatResponse,
   CheckPrerequisitesResponse,
   GenerateSchedulesResponse,
   GetMeResponse,
@@ -72,9 +71,20 @@ export const handlers = [
     `${API}/auth/logout`,
     () => new HttpResponse(null, { status: 204 }),
   ),
-  http.post<never, never, ChatResponse>(`${API}/chat`, () =>
-    HttpResponse.json({ response: "Here's what I found." }),
-  ),
+  http.post(`${API}/chat`, () => {
+    const events = [
+      { type: "start", messageId: "reply" },
+      { type: "text-start", id: "text" },
+      { type: "text-delta", id: "text", delta: "Here's what I found." },
+      { type: "text-end", id: "text" },
+      { type: "finish", finishReason: "stop" },
+    ];
+    return new HttpResponse(
+      events.map((event) => `data: ${JSON.stringify(event)}\n\n`).join("") +
+        "data: [DONE]\n\n",
+      { headers: { "Content-Type": "text/event-stream" } },
+    );
+  }),
   http.get<never, never, ListTermsResponse>(`${API}/classes/terms`, () =>
     HttpResponse.json(TERMS),
   ),
