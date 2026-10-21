@@ -1,90 +1,54 @@
-from __future__ import annotations
+from pydantic_ai.messages import (
+    ModelRequest,
+    ModelResponse,
+    SystemPromptPart,
+    TextPart,
+    UserPromptPart,
+)
 
-from types import SimpleNamespace
-from unittest.mock import AsyncMock
-
-import pytest
-from google.genai import types
-
+from app.modules.chatbot.client import conversation_messages
 from app.modules.chatbot.service import SYSTEM_PROMPT, ChatbotService
 
 
-class FakeModels:
-    def __init__(self, reply: str | None) -> None:
-        self.reply = reply
-        self.calls: list[dict] = []
-
-    async def generate_content_stream(self, **kwargs):
-        self.calls.append(kwargs)
-
-        async def chunks():
-            yield SimpleNamespace(
-                text=self.reply,
-                candidates=[SimpleNamespace(finish_reason=types.FinishReason.STOP)],
-                prompt_feedback=None,
-            )
-
-        return chunks()
-
-
-def service_with_reply(reply: str | None) -> tuple[ChatbotService, FakeModels]:
-    service = ChatbotService(api_key="test-key")
-    models = FakeModels(reply)
-    service._client._client = SimpleNamespace(
-        aio=SimpleNamespace(models=models, aclose=AsyncMock())
+def test_preserves_conversation_roles_and_text():
+    history = conversation_messages(
+        [
+            {"role": "user", "content": "Hi"},
+            {"role": "assistant", "content": "Hello"},
+            {"role": "user", "content": "Help me plan"},
+        ],
+        "Instructions",
     )
-    return service, models
+    assert isinstance(history[0], ModelRequest)
+    assert isinstance(history[0].parts[0], SystemPromptPart)
+    assert history[0].parts[0].content == "Instructions"
+    assert isinstance(history[1].parts[0], UserPromptPart)
+    assert history[1].parts[0].content == "Hi"
+    assert isinstance(history[2], ModelResponse)
+    assert history[2].parts == [TextPart("Hello")]
+    assert history[3].parts[0].content == "Help me plan"
 
 
-async def test_sends_assistant_turns_as_gemini_model_turns():
-    service, models = service_with_reply("Take CIS 1068 first.")
+async def test_includes_context_and_closes_stream():
+    closed = False
 
-    reply = [
-        text
-        async for text in service.stream(
-            [
-                {"role": "user", "content": "What should I take?"},
-                {"role": "assistant", "content": "What's your major?"},
-                {"role": "user", "content": "Computer science."},
-            ]
-        )
-    ]
+    class Client:
+        async def stream_completion(self, messages, *, system_instruction):
+            nonlocal closed
+            assert messages == [{"role": "user", "content": "Hi"}]
+            assert system_instruction.startswith(SYSTEM_PROMPT)
+            assert system_instruction.endswith("Junior, CS major")
+            try:
+                yield "Take CIS 1068 first."
+            finally:
+                closed = True
 
-    assert reply == ["Take CIS 1068 first."]
-    contents = models.calls[0]["contents"]
-    assert [c.role for c in contents] == ["user", "model", "user"]
-    assert contents[2].parts[0].text == "Computer science."
-
-
-async def test_puts_student_context_in_the_system_instruction():
-    service, models = service_with_reply("Sure.")
-
-    [
+    service = ChatbotService("test", "groq-test")
+    service._client = Client()
+    assert [
         text
         async for text in service.stream(
             [{"role": "user", "content": "Hi"}], context="Junior, CS major"
         )
-    ]
-
-    system_instruction = models.calls[0]["config"].system_instruction
-    assert system_instruction.startswith(SYSTEM_PROMPT)
-    assert system_instruction.endswith("Junior, CS major")
-
-
-async def test_thinks_lightly_without_capping_output():
-    service, models = service_with_reply("Sure.")
-
-    [text async for text in service.stream([{"role": "user", "content": "Hi"}])]
-
-    config = models.calls[0]["config"]
-    assert config.thinking_config.thinking_level == types.ThinkingLevel.LOW
-    # Thinking tokens count toward max_output_tokens, so a cap can truncate.
-    assert config.max_output_tokens is None
-    assert config.temperature is None
-
-
-async def test_rejects_empty_generation():
-    service, _ = service_with_reply(None)
-
-    with pytest.raises(ValueError, match="Generation did not complete"):
-        [text async for text in service.stream([{"role": "user", "content": "Hi"}])]
+    ] == ["Take CIS 1068 first."]
+    assert closed

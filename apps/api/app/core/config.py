@@ -69,4 +69,5 @@ class Settings(DatabaseSettings):
     SESSION_SECRET: str = Field(min_length=32)
 
     # External services
-    GEMINI_API_KEY: str = ""
+    GOOGLE_API_KEY: str = ""
+    GROQ_API_KEY: str = ""

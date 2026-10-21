@@ -18,11 +18,13 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 
 def stream_service(body: ChatRequest, settings: SettingsDep) -> ChatbotService:
     # Validate the request before checking availability or opening a provider client.
-    if not settings.GEMINI_API_KEY:
+    if not settings.GOOGLE_API_KEY:
         raise HTTPException(
             status_code=503, detail="The chat assistant is unavailable."
         )
-    return ChatbotService(api_key=settings.GEMINI_API_KEY)
+    return ChatbotService(
+        google_api_key=settings.GOOGLE_API_KEY, groq_api_key=settings.GROQ_API_KEY
+    )
 
 
 def stream_headers(response: Response) -> None:

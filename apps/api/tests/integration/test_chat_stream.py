@@ -48,7 +48,7 @@ async def test_stream_contract(client, fails):
 
 
 async def test_missing_key_is_problem_before_stream(client, monkeypatch):
-    monkeypatch.setattr(app.state.settings, "GEMINI_API_KEY", "")
+    monkeypatch.setattr(app.state.settings, "GOOGLE_API_KEY", "")
     response = await client.post("/api/chat", json={"messages": []})
     assert response.status_code == 503
     assert response.headers["content-type"] == "application/problem+json"

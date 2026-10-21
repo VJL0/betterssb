@@ -207,10 +207,13 @@ GOOGLE_CLIENT_SECRET=...       # Matching secret
 GOOGLE_REDIRECT_URI=http://localhost:8000/api/auth/google/callback
 FRONTEND_URL=http://localhost:3000
 SESSION_SECRET=...             # Required, 32+ chars: openssl rand -hex 32
-GEMINI_API_KEY=...             # Required for chatbot
+GOOGLE_API_KEY=...             # Required for chatbot
+GROQ_API_KEY=...               # Enables the Qwen fallback on Groq
 ```
 
 The API won't start without `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a valid `SESSION_SECRET`.
+
+The advisor uses PydanticAI with Gemini 3.8 Flash (high thinking) and, when `GROQ_API_KEY` is set, Qwen3.8 27B on Groq (high reasoning). It falls back on model-not-found, rate-limit and server errors before the primary stream emits its first event. Failures after streaming starts end the reply without combining answers.
 
 ### Authentication
 

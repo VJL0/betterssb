@@ -1,77 +1,100 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
-from contextlib import aclosing
+from http import HTTPStatus
 
-from google import genai
-from google.genai import types
+from httpx import AsyncClient
+from pydantic_ai.direct import model_request_stream
+from pydantic_ai.exceptions import ModelHTTPError
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelRequest,
+    ModelResponse,
+    PartDeltaEvent,
+    PartStartEvent,
+    SystemPromptPart,
+    TextPart,
+    TextPartDelta,
+    UserPromptPart,
+)
+from pydantic_ai.models import Model
+from pydantic_ai.models.fallback import FallbackModel
+from pydantic_ai.models.google import GoogleModel, GoogleModelSettings
+from pydantic_ai.models.groq import GroqModel, GroqModelSettings
+from pydantic_ai.providers.google import GoogleProvider
+from pydantic_ai.providers.groq import GroqProvider
 
-DEFAULT_MODEL = "gemini-3.8-flash"
-# 3.8 Flash defaults to "medium"; advising replies are short, so less thinking
-# just cuts latency. It rejects "minimal".
-THINKING_LEVEL = "low"
-
-# Gemini calls the assistant's turns "model".
-GEMINI_ROLES = {"user": "user", "assistant": "model"}
+SERVER_ERROR_MAX = 599
+PRIMARY_MODEL = "gemini-3.8-flash"
+FALLBACK_MODEL = "qwen/qwen3.8-27b"
 
 
-def generation_request(
-    messages: list[dict],
-    system_instruction: str,
-) -> tuple[list[types.Content], types.GenerateContentConfig]:
-    contents = [
-        types.Content(
-            role=GEMINI_ROLES[m["role"]], parts=[types.Part(text=m["content"])]
-        )
-        for m in messages
-    ]
-    # No max_output_tokens or temperature: thinking tokens count toward the
-    # output cap, so a low cap can cut replies short, and Gemini 3.6+ ignores
-    # temperature.
-    config = types.GenerateContentConfig(
-        system_instruction=system_instruction,
-        thinking_config=types.ThinkingConfig(thinking_level=THINKING_LEVEL),
+def should_fallback(error: Exception) -> bool:
+    return isinstance(error, ModelHTTPError) and (
+        error.status_code in {HTTPStatus.NOT_FOUND, HTTPStatus.TOO_MANY_REQUESTS}
+        or HTTPStatus.INTERNAL_SERVER_ERROR <= error.status_code <= SERVER_ERROR_MAX
     )
-    return contents, config
 
 
-class GeminiClient:
-    """Calls generateContent, not the Interactions API.
+def advisor_model(
+    google_api_key: str, groq_api_key: str, http_client: AsyncClient
+) -> Model:
+    primary = GoogleModel(
+        PRIMARY_MODEL,
+        provider=GoogleProvider(api_key=google_api_key, http_client=http_client),
+        settings=GoogleModelSettings(google_thinking_config={"thinking_level": "high"}),
+    )
+    if not groq_api_key:
+        return primary
+    fallback = GroqModel(
+        FALLBACK_MODEL,
+        provider=GroqProvider(api_key=groq_api_key, http_client=http_client),
+        settings=GroqModelSettings(
+            groq_reasoning_effort="high", groq_reasoning_format="hidden"
+        ),
+    )
+    return FallbackModel(primary, fallback, fallback_on=should_fallback)
 
-    Interactions is still in beta, and its stateless mode needs the model's signed
-    thought steps resent verbatim. Our clients only keep each turn's text.
-    """
 
-    def __init__(self, api_key: str) -> None:
-        self._client = genai.Client(api_key=api_key)
+def conversation_messages(
+    messages: list[dict], system_instruction: str
+) -> list[ModelMessage]:
+    history: list[ModelMessage] = [
+        ModelRequest(parts=[SystemPromptPart(system_instruction)])
+    ]
+    for message in messages:
+        if message["role"] == "user":
+            history.append(ModelRequest(parts=[UserPromptPart(message["content"])]))
+        else:
+            history.append(ModelResponse(parts=[TextPart(message["content"])]))
+    return history
+
+
+class AdvisorClient:
+    def __init__(self, google_api_key: str, groq_api_key: str = "") -> None:
+        self._google_api_key = google_api_key
+        self._groq_api_key = groq_api_key
 
     async def stream_completion(
-        self,
-        messages: list[dict],
-        *,
-        system_instruction: str,
-        model: str = DEFAULT_MODEL,
+        self, messages: list[dict], *, system_instruction: str
     ) -> AsyncIterator[str]:
-        contents, config = generation_request(messages, system_instruction)
-        has_text = False
-        finish_reason = None
-        try:
-            stream = await self._client.aio.models.generate_content_stream(
-                model=model,
-                contents=contents,
-                config=config,
-            )
-            async with aclosing(stream):
-                async for chunk in stream:
-                    if chunk.prompt_feedback and chunk.prompt_feedback.block_reason:
-                        raise ValueError("Generation blocked")
-                    for candidate in chunk.candidates or []:
-                        if candidate.finish_reason:
-                            finish_reason = candidate.finish_reason
-                    if chunk.text:
+        history = conversation_messages(messages, system_instruction)
+        async with AsyncClient() as http_client:
+            model = advisor_model(self._google_api_key, self._groq_api_key, http_client)
+            async with model_request_stream(model, history) as stream:
+                has_text = False
+                async for event in stream:
+                    text = ""
+                    if isinstance(event, PartStartEvent) and isinstance(
+                        event.part, TextPart
+                    ):
+                        text = event.part.content
+                    elif isinstance(event, PartDeltaEvent) and isinstance(
+                        event.delta, TextPartDelta
+                    ):
+                        text = event.delta.content_delta
+                    if text:
                         has_text = True
-                        yield chunk.text
-            if not has_text or finish_reason != types.FinishReason.STOP:
-                raise ValueError("Generation did not complete")
-        finally:
-            await self._client.aio.aclose()
+                        yield text
+                if not has_text or stream.get().finish_reason != "stop":
+                    raise ValueError("Generation did not complete")
