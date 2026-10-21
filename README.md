@@ -91,7 +91,7 @@ betterssb/
 | Database            | PostgreSQL 18 (Docker), SQLAlchemy 2                                                                                                             |
 | Cache               | Redis 8 (Docker), short-lived data only                                                                                                          |
 | Auth                | Google OAuth 2.0 / OpenID Connect (Authlib), server-side sessions                                                                                |
-| AI / LLM            | OpenAI API                                                                                                                                       |
+| AI / LLM            | Gemini API                                                                                                                                       |
 | RMP Data            | Rate My Professor GraphQL API                                                                                                                    |
 
 ## Getting Started
@@ -197,7 +197,7 @@ GOOGLE_CLIENT_SECRET=...       # Matching secret
 GOOGLE_REDIRECT_URI=http://localhost:8000/api/auth/google/callback
 FRONTEND_URL=http://localhost:3000
 SESSION_SECRET=...             # Required, 32+ chars: openssl rand -hex 32
-OPENAI_API_KEY=sk-...          # Required for chatbot
+GEMINI_API_KEY=...             # Required for chatbot
 ```
 
 The API won't start without `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a valid `SESSION_SECRET`.

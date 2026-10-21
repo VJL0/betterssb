@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.modules.chatbot.client import OpenAIClient
+from app.modules.chatbot.client import GeminiClient
 
 SYSTEM_PROMPT = (
     "You are BetterSSB Advisor, a friendly and knowledgeable university course advisor. "
@@ -12,15 +12,16 @@ SYSTEM_PROMPT = (
 
 
 class ChatbotService:
-    """Academic advising chatbot backed by OpenAI."""
+    """Academic advising chatbot backed by Gemini."""
 
     def __init__(self, api_key: str) -> None:
-        self._client = OpenAIClient(api_key=api_key)
+        self._client = GeminiClient(api_key=api_key)
 
     async def chat(self, messages: list[dict], context: str = "") -> str:
         system_content = SYSTEM_PROMPT
         if context:
             system_content += f"\n\nAdditional context about this student:\n{context}"
 
-        full_messages = [{"role": "system", "content": system_content}, *messages]
-        return await self._client.chat_completion(full_messages)
+        return await self._client.chat_completion(
+            messages, system_instruction=system_content
+        )

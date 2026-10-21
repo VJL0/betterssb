@@ -30,4 +30,4 @@ class Settings(DatabaseSettings):
     SESSION_SECRET: str = Field(min_length=32)
 
     # External services
-    OPENAI_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
