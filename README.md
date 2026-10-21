@@ -91,7 +91,7 @@ betterssb/
 | Database            | PostgreSQL 18 (Docker), SQLAlchemy 2                                                                                                             |
 | Cache               | Redis 8 (Docker), short-lived data only                                                                                                          |
 | Auth                | Google OAuth 2.0 / OpenID Connect (Authlib), server-side sessions                                                                                |
-| AI / LLM            | OpenAI API                                                                                                                                       |
+| AI / LLM            | Gemini API                                                                                                                                       |
 | RMP Data            | Rate My Professor GraphQL API                                                                                                                    |
 
 ## Getting Started
@@ -155,10 +155,19 @@ The root `vercel.json` deploys the website and the API as one Vercel project wit
 
 Set these in the project's environment variables:
 
-- The API's variables from `apps/api/.env.example`, with `DATABASE_URL` and `REDIS_URL` pointing at hosted Postgres and Redis, `FRONTEND_URL=https://<domain>` and `GOOGLE_REDIRECT_URI=https://<domain>/api/auth/google/callback`.
+- The API's variables from `apps/api/.env.example`, with `REDIS_URL` pointing at hosted Redis, `FRONTEND_URL=https://<domain>` and `GOOGLE_REDIRECT_URI=https://<domain>/api/auth/google/callback`.
 - `SITE_URL=https://<domain>` for the website.
 
-Migrations aren't run by the deploy: run `uv run alembic upgrade head` in `apps/api` against the production database before promoting a build that adds one.
+Postgres uses two connection strings, which Neon's Vercel integration sets for you:
+
+| Variable                | Purpose                                                        |
+| ----------------------- | -------------------------------------------------------------- |
+| `DATABASE_URL`          | The FastAPI app's SQLAlchemy engine, through Neon's pooler     |
+| `DATABASE_URL_UNPOOLED` | Alembic migrations and database administration, direct         |
+
+Neon's PgBouncer runs in transaction mode, which migration tools may not support, so Alembic uses the direct connection and falls back to `DATABASE_URL` when it's unset. Neon's `postgresql://…?sslmode=require&channel_binding=require` strings can be pasted as-is: the API switches them to asyncpg and maps `sslmode` to asyncpg's `ssl`. asyncpg has no channel binding, so that parameter is dropped.
+
+Migrations aren't run by the deploy: run `uv run alembic upgrade head` in `apps/api` with `DATABASE_URL_UNPOOLED` set to the production database before promoting a build that adds one.
 
 ### Loading the Extension Manually
 
@@ -191,13 +200,14 @@ Copy `apps/api/.env.example` to `apps/api/.env` and fill in:
 
 ```env
 DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+DATABASE_URL_UNPOOLED=         # Optional direct connection for Alembic; defaults to DATABASE_URL
 REDIS_URL=redis://localhost:6379/0
 GOOGLE_CLIENT_ID=...           # Google Cloud Console → OAuth client ID (Web application)
 GOOGLE_CLIENT_SECRET=...       # Matching secret
 GOOGLE_REDIRECT_URI=http://localhost:8000/api/auth/google/callback
 FRONTEND_URL=http://localhost:3000
 SESSION_SECRET=...             # Required, 32+ chars: openssl rand -hex 32
-OPENAI_API_KEY=sk-...          # Required for chatbot
+GEMINI_API_KEY=...             # Required for chatbot
 ```
 
 The API won't start without `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a valid `SESSION_SECRET`.
