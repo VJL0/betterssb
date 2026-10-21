@@ -12,13 +12,13 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 @router.post("", response_model=ChatReply)
 async def chat(body: ChatRequest, settings: SettingsDep) -> ChatReply:
     """Send a conversation to the academic advising chatbot."""
-    if not settings.OPENAI_API_KEY:
+    if not settings.GEMINI_API_KEY:
         # Don't reveal configuration details (RFC 9457 §5).
         raise HTTPException(
             status_code=503, detail="The chat assistant is unavailable."
         )
 
-    service = ChatbotService(api_key=settings.OPENAI_API_KEY)
+    service = ChatbotService(api_key=settings.GEMINI_API_KEY)
     reply = await service.chat(
         messages=[m.model_dump() for m in body.messages], context=body.context
     )
