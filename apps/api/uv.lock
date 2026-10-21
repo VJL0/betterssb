@@ -143,7 +143,7 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.30.0" },
     { name = "authlib", specifier = ">=1.8.0" },
     { name = "beautifulsoup4", specifier = ">=4.13.0" },
-    { name = "fastapi", specifier = ">=0.115.0" },
+    { name = "fastapi", specifier = ">=0.135.0" },
     { name = "google-genai", specifier = ">=2.32.0" },
     { name = "httpx", specifier = ">=0.28.0" },
     { name = "httpx2", specifier = ">=2.13.1" },

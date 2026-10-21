@@ -14,7 +14,3 @@ class ChatMessage(BaseSchema):
 class ChatRequest(BaseSchema):
     messages: list[ChatMessage]
     context: str = ""
-
-
-class ChatReply(BaseSchema):
-    response: str

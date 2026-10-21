@@ -129,19 +129,6 @@
         "title": "ChatMessage",
         "type": "object"
       },
-      "ChatReply": {
-        "properties": {
-          "response": {
-            "title": "Response",
-            "type": "string"
-          }
-        },
-        "required": [
-          "response"
-        ],
-        "title": "ChatReply",
-        "type": "object"
-      },
       "ChatRequest": {
         "properties": {
           "context": {
@@ -2073,7 +2060,6 @@
     },
     "/api/chat": {
       "post": {
-        "description": "Send a conversation to the academic advising chatbot.",
         "operationId": "chat",
         "requestBody": {
           "content": {
@@ -2088,13 +2074,28 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChatReply"
+              "text/event-stream": {
+                "itemSchema": {
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    },
+                    "event": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "retry": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "AI SDK UI message stream (v1)"
           },
           "4XX": {
             "content": {

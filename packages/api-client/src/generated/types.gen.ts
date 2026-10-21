@@ -83,16 +83,6 @@ export type ChatMessage = {
 };
 
 /**
- * ChatReply
- */
-export type ChatReply = {
-  /**
-   * Response
-   */
-  response: string;
-};
-
-/**
  * ChatRequest
  */
 export type ChatRequest = {
@@ -1187,12 +1177,10 @@ export type ChatError = ChatErrors[keyof ChatErrors];
 
 export type ChatResponses = {
   /**
-   * Successful Response
+   * AI SDK UI message stream (v1)
    */
-  200: ChatReply;
+  200: unknown;
 };
-
-export type ChatResponse = ChatResponses[keyof ChatResponses];
 
 export type ListAttributesData = {
   body?: never;

@@ -36,6 +36,8 @@ class SecurityHeadersMiddleware:
         async def send_with_headers(message: Message) -> None:
             if message["type"] == "http.response.start":
                 headers = MutableHeaders(scope=message)
+                if headers.get("content-type", "").startswith("text/event-stream"):
+                    headers["Cache-Control"] = "no-store, no-transform"
                 for name, value in SECURITY_HEADERS.items():
                     headers.setdefault(name, value)
             await send(message)
