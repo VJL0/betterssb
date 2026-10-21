@@ -149,6 +149,17 @@ SITE_URL=https://betterssb.example API_ORIGIN=http://localhost:8000 pnpm --filte
 pnpm --filter web start   # :3000
 ```
 
+### Deploying to Vercel
+
+The root `vercel.json` deploys the website and the API as one Vercel project with [services](https://vercel.com/docs/services): `/api/*` goes to the `api` service (FastAPI, `app.main:app`) with its path unchanged, and everything else to `web` (Next.js). Both share one domain, so the API stays same-origin and needs no CORS. Vercel routes `/api` before a request reaches Next, so `API_ORIGIN` and Next's `/api` proxy only matter locally. The extension, the seat tracker and the mock Ellucian API aren't part of it.
+
+Set these in the project's environment variables:
+
+- The API's variables from `apps/api/.env.example`, with `DATABASE_URL` and `REDIS_URL` pointing at hosted Postgres and Redis, `FRONTEND_URL=https://<domain>` and `GOOGLE_REDIRECT_URI=https://<domain>/api/auth/google/callback`.
+- `SITE_URL=https://<domain>` for the website.
+
+Migrations aren't run by the deploy: run `uv run alembic upgrade head` in `apps/api` against the production database before promoting a build that adds one.
+
 ### Loading the Extension Manually
 
 1. Run `pnpm dev` (or `pnpm build` for a production bundle) in `apps/extension/`.
