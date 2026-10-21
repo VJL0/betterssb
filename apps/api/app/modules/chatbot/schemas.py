@@ -4,6 +4,9 @@ from typing import Literal
 
 from app.shared.schemas import BaseSchema
 
+ChatProvider = Literal["gemini", "groq"]
+ThinkingEffort = Literal["low", "high"]
+
 
 class ChatMessage(BaseSchema):
     # No "system": the server writes the system prompt, so a client can't.
@@ -14,3 +17,5 @@ class ChatMessage(BaseSchema):
 class ChatRequest(BaseSchema):
     messages: list[ChatMessage]
     context: str = ""
+    provider: ChatProvider = "gemini"
+    effort: ThinkingEffort = "low"

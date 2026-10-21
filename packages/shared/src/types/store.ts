@@ -1,4 +1,9 @@
-import type { Audit, ChatMessage, TranscriptData } from "@workspace/api-client";
+import type {
+  Audit,
+  ChatMessage,
+  ChatRequest,
+  TranscriptData,
+} from "@workspace/api-client";
 /**
  * Documents in the local-first store. The web app keeps them in IndexedDB; with
  * the extension installed, both read and write the extension's
@@ -83,6 +88,9 @@ export interface AdvisorThread {
   title: string;
   messages: ChatMessage[];
   updatedAt: string;
+  /** Provider that last completed a reply; older chats start with Gemini. */
+  provider?: ChatRequest["provider"];
+  effort?: ChatRequest["effort"];
 }
 
 export interface StoreDocuments {

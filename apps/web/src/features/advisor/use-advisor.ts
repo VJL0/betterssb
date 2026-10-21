@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { UIMessage } from "ai";
+import type { ChatRequest } from "@workspace/api-client";
 import { Chat, useChat } from "@ai-sdk/react";
 import { threadTitle } from "@workspace/shared/lib/advisor-context";
 import type { AdvisorThread } from "@workspace/shared/types/store";
@@ -7,6 +8,7 @@ import { useStoreDocument, useStoreState } from "@/lib/store/store-context";
 import {
   advisorTransport,
   messageText,
+  messageProvider,
   storedMessages,
 } from "./advisor-transport";
 
@@ -21,6 +23,8 @@ export function useAdvisor() {
     b.updatedAt.localeCompare(a.updatedAt),
   );
   const [selected, setSelected] = useState<string | null>(null);
+  const [effortOverride, setEffort] =
+    useState<ChatRequest["effort"]>(undefined);
   const [session, setSession] = useState(
     () => new Chat<UIMessage>({ transport: advisorTransport() }),
   );
@@ -36,6 +40,7 @@ export function useAdvisor() {
       ? null
       : (threads.find((thread) => thread.id === (selected ?? threads[0]?.id)) ??
         null);
+  const effort = effortOverride ?? current?.effort ?? "low";
 
   useEffect(() => {
     mounted.current = true;
@@ -56,6 +61,7 @@ export function useAdvisor() {
     setSaveStatus(null);
     setLocalError(null);
     setSelected(id);
+    setEffort(undefined);
   }
 
   async function save(thread: AdvisorThread, owner: Chat<UIMessage>) {
@@ -125,6 +131,9 @@ export function useAdvisor() {
           title: current?.title ?? threadTitle(text),
           messages: storedMessages(messages),
           updatedAt: new Date().toISOString(),
+          provider:
+            messageProvider(messages.at(-1)) ?? current?.provider ?? "gemini",
+          effort,
         };
         unsaved.current = thread;
         void save(thread, next);
@@ -135,7 +144,10 @@ export function useAdvisor() {
     setQuestion(text);
     setLocalError(null);
     unsaved.current = null;
-    void next.sendMessage({ text }, { body: { context } });
+    void next.sendMessage(
+      { text },
+      { body: { context, provider: current?.provider ?? "gemini", effort } },
+    );
   }
 
   const streaming = sdk.status === "submitted" || sdk.status === "streaming";
@@ -153,6 +165,8 @@ export function useAdvisor() {
   return {
     threads,
     current,
+    effort,
+    setEffort,
     live,
     error: localError ?? sdk.error ?? null,
     loading: doc.status === "loading",
