@@ -1,85 +1,236 @@
-from types import SimpleNamespace
-from unittest.mock import AsyncMock
+import json
+from contextlib import aclosing
 
+import httpx
 import pytest
+from pydantic_ai.exceptions import ModelHTTPError
 
-from app.modules.chatbot.client import GeminiClient
+from app.modules.chatbot import client as client_module
+from app.modules.chatbot.client import FALLBACK_MODEL, PRIMARY_MODEL, AdvisorClient
 
 
-async def test_stream_yields_before_completion_and_closes():
-    client = GeminiClient(api_key="test")
-    closed = False
+def google_chunk(text=None, finish=None):
+    candidate = {
+        "content": {"parts": [{"text": text}] if text else [], "role": "model"}
+    }
+    if finish:
+        candidate["finishReason"] = finish
+    return "data: " + json.dumps({"candidates": [candidate]}) + "\n\n"
 
-    async def chunks():
-        nonlocal closed
-        try:
-            yield SimpleNamespace(text="Hello", candidates=[], prompt_feedback=None)
-            raise AssertionError("requested another chunk after cancellation")
-        finally:
-            closed = True
 
-    upstream = chunks()
-    close = AsyncMock()
-    client._client = SimpleNamespace(
-        aio=SimpleNamespace(
-            models=SimpleNamespace(
-                generate_content_stream=AsyncMock(return_value=upstream)
-            ),
-            aclose=close,
+def groq_chunk(text=None, finish=None):
+    return (
+        "data: "
+        + json.dumps(
+            {
+                "id": "reply",
+                "object": "chat.completion.chunk",
+                "created": 1,
+                "model": FALLBACK_MODEL,
+                "choices": [
+                    {
+                        "index": 0,
+                        "delta": {"content": text} if text else {},
+                        "finish_reason": finish,
+                    }
+                ],
+            }
         )
+        + "\n\n"
     )
-    stream = client.stream_completion(
-        [{"role": "user", "content": "Hi"}], system_instruction="Help"
-    )
-    assert await anext(stream) == "Hello"
-    await stream.aclose()
-    assert closed
-    close.assert_awaited_once()
 
 
-async def test_stream_requires_successful_finish():
-    client = GeminiClient(api_key="test")
+@pytest.fixture
+def mock_provider(monkeypatch):
+    clients = []
+    original = httpx.AsyncClient
 
-    async def chunks():
-        yield SimpleNamespace(text="Partial", candidates=[], prompt_feedback=None)
+    def install(handler):
+        def create():
+            client = original(transport=httpx.MockTransport(handler))
+            clients.append(client)
+            return client
 
-    client._client = SimpleNamespace(
-        aio=SimpleNamespace(
-            models=SimpleNamespace(
-                generate_content_stream=AsyncMock(return_value=chunks())
-            ),
-            aclose=AsyncMock(),
-        )
-    )
-    with pytest.raises(ValueError):
-        async for _ in client.stream_completion([], system_instruction="Help"):
-            pass
+        monkeypatch.setattr(client_module, "AsyncClient", create)
+        return clients
+
+    return install
 
 
-async def test_stream_success_and_metadata():
-    client = GeminiClient(api_key="test")
+@pytest.mark.parametrize("status", [404, 429, 500, 503])
+async def test_fallback_and_provider_settings(mock_provider, status):
+    requests = []
 
-    async def chunks():
-        yield SimpleNamespace(text=None, candidates=[], prompt_feedback=None)
-        yield SimpleNamespace(text="Hello", candidates=[], prompt_feedback=None)
-        yield SimpleNamespace(
-            text=None,
-            candidates=[SimpleNamespace(finish_reason="STOP")],
-            prompt_feedback=None,
+    def handler(request):
+        requests.append(request)
+        if "googleapis" in request.url.host:
+            return httpx.Response(
+                status, json={"error": {"code": status, "message": "Unavailable"}}
+            )
+        return httpx.Response(
+            200,
+            text=groq_chunk("Fallback reply")
+            + groq_chunk(finish="stop")
+            + "data: [DONE]\n\n",
         )
 
-    models = SimpleNamespace(generate_content_stream=AsyncMock(return_value=chunks()))
-    close = AsyncMock()
-    client._client = SimpleNamespace(aio=SimpleNamespace(models=models, aclose=close))
+    clients = mock_provider(handler)
+    client = AdvisorClient("google-test", "groq-test")
     result = [
         text
         async for text in client.stream_completion(
-            [{"role": "assistant", "content": "Hi"}],
-            system_instruction="Student context",
+            [{"role": "user", "content": "Hi"}], system_instruction="Help"
         )
     ]
-    assert result == ["Hello"]
-    args = models.generate_content_stream.call_args.kwargs
-    assert args["contents"][0].role == "model"
-    assert args["config"].system_instruction == "Student context"
-    close.assert_awaited_once()
+    assert result == ["Fallback reply"]
+    google = json.loads(requests[0].content)
+    groq = json.loads(requests[-1].content)
+    assert PRIMARY_MODEL in str(requests[0].url)
+    assert (
+        google["generationConfig"]["thinkingConfig"]["thinking_level"].lower() == "high"
+    )
+    assert groq["model"] == FALLBACK_MODEL
+    assert groq["reasoning_effort"] == "high"
+    assert groq["reasoning_format"] == "hidden"
+    assert groq["messages"] == [
+        {"role": "system", "content": "Help"},
+        {"role": "user", "content": "Hi"},
+    ]
+    assert all(client.is_closed for client in clients)
+
+
+@pytest.mark.parametrize("status", [400, 401, 403])
+async def test_request_errors_do_not_fallback(mock_provider, status):
+    hosts = []
+
+    def handler(request):
+        hosts.append(request.url.host)
+        return httpx.Response(
+            status, json={"error": {"code": status, "message": "Failed"}}
+        )
+
+    mock_provider(handler)
+    with pytest.raises(ModelHTTPError):
+        async for _ in AdvisorClient("google-test", "groq-test").stream_completion(
+            [], system_instruction="Help"
+        ):
+            pass
+    assert all("googleapis" in host for host in hosts)
+
+
+@pytest.mark.parametrize("finish", ["STOP", "MAX_TOKENS", "SAFETY"])
+async def test_finish_and_partial_reply(mock_provider, finish):
+    hosts = []
+
+    def handler(request):
+        hosts.append(request.url.host)
+        return httpx.Response(
+            200, text=google_chunk("Hello") + google_chunk(finish=finish)
+        )
+
+    clients = mock_provider(handler)
+    received = []
+
+    async def consume():
+        async for text in AdvisorClient("google-test", "groq-test").stream_completion(
+            [], system_instruction="Help"
+        ):
+            received.append(text)
+
+    if finish == "STOP":
+        await consume()
+    else:
+        with pytest.raises(ValueError, match="did not complete"):
+            await consume()
+    assert received == ["Hello"]
+    assert len(hosts) == 1
+    assert all(client.is_closed for client in clients)
+
+
+async def test_cancellation_closes_client(mock_provider):
+    clients = mock_provider(
+        lambda request: httpx.Response(
+            200, text=google_chunk("Hello") + google_chunk(" world", "STOP")
+        )
+    )
+    async with aclosing(
+        AdvisorClient("google-test").stream_completion([], system_instruction="Help")
+    ) as stream:
+        assert await anext(stream) == "Hello"
+    assert all(client.is_closed for client in clients)
+
+
+async def test_missing_fallback_key_keeps_primary(mock_provider):
+    hosts = []
+
+    def handler(request):
+        hosts.append(request.url.host)
+        return httpx.Response(404, json={"error": {"code": 404, "message": "Missing"}})
+
+    mock_provider(handler)
+    with pytest.raises(ModelHTTPError):
+        async for _ in AdvisorClient("google-test").stream_completion(
+            [], system_instruction="Help"
+        ):
+            pass
+    assert len(hosts) == 1
+
+
+async def test_both_providers_failing_ends_reply(mock_provider):
+    from pydantic_ai.exceptions import FallbackExceptionGroup
+
+    hosts = []
+
+    def handler(request):
+        hosts.append(request.url.host)
+        return httpx.Response(404, json={"error": {"code": 404, "message": "Missing"}})
+
+    clients = mock_provider(handler)
+    with pytest.raises(FallbackExceptionGroup):
+        async for _ in AdvisorClient("google-test", "groq-test").stream_completion(
+            [], system_instruction="Help"
+        ):
+            pass
+    assert hosts == ["generativelanguage.googleapis.com", "api.groq.com"]
+    assert all(client.is_closed for client in clients)
+
+
+async def test_empty_reply_is_rejected(mock_provider):
+    mock_provider(lambda request: httpx.Response(200, text=google_chunk(finish="STOP")))
+    from pydantic_ai.exceptions import UnexpectedModelBehavior
+
+    with pytest.raises((ValueError, UnexpectedModelBehavior)):
+        async for _ in AdvisorClient("google-test", "groq-test").stream_completion(
+            [], system_instruction="Help"
+        ):
+            pass
+
+
+async def test_thinking_is_not_sent_as_reply_text(mock_provider):
+    thinking = (
+        "data: "
+        + json.dumps(
+            {
+                "candidates": [
+                    {
+                        "content": {
+                            "role": "model",
+                            "parts": [{"text": "Private thoughts", "thought": True}],
+                        }
+                    }
+                ]
+            }
+        )
+        + "\n\n"
+    )
+    mock_provider(
+        lambda request: httpx.Response(
+            200, text=thinking + google_chunk("Answer", "STOP")
+        )
+    )
+    assert [
+        text
+        async for text in AdvisorClient("google-test").stream_completion(
+            [], system_instruction="Help"
+        )
+    ] == ["Answer"]

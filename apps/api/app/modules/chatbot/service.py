@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import aclosing
 
-from app.modules.chatbot.client import GeminiClient
+from app.modules.chatbot.client import AdvisorClient
 
 SYSTEM_PROMPT = (
     "You are BetterSSB Advisor, a friendly and knowledgeable university course advisor. "
@@ -21,10 +21,12 @@ def system_instruction(context: str) -> str:
 
 
 class ChatbotService:
-    """Academic advising chatbot backed by Gemini."""
+    """Academic advising chatbot backed by PydanticAI."""
 
-    def __init__(self, api_key: str) -> None:
-        self._client = GeminiClient(api_key=api_key)
+    def __init__(self, google_api_key: str, groq_api_key: str = "") -> None:
+        self._client = AdvisorClient(
+            google_api_key=google_api_key, groq_api_key=groq_api_key
+        )
 
     async def stream(
         self, messages: list[dict], context: str = ""
