@@ -58,3 +58,6 @@ Thumbs.db
 .turbo/
 *.tsbuildinfo
 *.local
+
+# Vercel
+.vercel/
