@@ -47,6 +47,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { cn } from "@workspace/ui/lib/utils";
+import { RatingsSyncingAlert } from "@/components/ratings-syncing-alert";
 import {
   PAGE_SIZE,
   useClassSearch,
@@ -55,7 +56,7 @@ import {
 import { useCurrentTerm } from "@/hooks/use-current-term";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { usePlan } from "@/hooks/use-plan";
-import { useRatings } from "@/hooks/use-ratings";
+import { useRatings, type RatingLookup } from "@/hooks/use-ratings";
 import { formatClockTime, formatUpdated } from "@/lib/relative-time";
 import { undoToast } from "@/lib/undo-toast";
 import { CourseCard } from "./course-card";
@@ -212,7 +213,9 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
     () => search.result?.sections ?? [],
     [search.result],
   );
-  const ratings = useRatings(sections.map(primaryInstructorName));
+  const { byName: ratings, syncing: ratingsSyncing } = useRatings(
+    sections.map(primaryInstructorName),
+  );
   const visible = sections.filter((s) => sectionPasses(s, filters, ratings));
   const groups = groupByCourse(visible);
   const plannedCrns = new Set(plan.sections.map((s) => s.crn));
@@ -301,6 +304,7 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
           visibleCount={visible.length}
           filters={filters}
           ratings={ratings}
+          ratingsSyncing={ratingsSyncing}
           onResetFilter={(name) => setFilters(resetFilter(filters, name))}
           onResetAll={() => setFilters(DEFAULT_FILTERS)}
           onExample={onExample}
@@ -388,7 +392,8 @@ interface ResultsProps {
   sections: ClassSection[];
   visibleCount: number;
   filters: SearchFilters;
-  ratings: ReturnType<typeof useRatings>;
+  ratings: ReadonlyMap<string, RatingLookup>;
+  ratingsSyncing: boolean;
   onResetFilter: (name: FilterName) => void;
   onResetAll: () => void;
   onExample: (query: string) => void;
@@ -403,6 +408,7 @@ function Results({
   visibleCount,
   filters,
   ratings,
+  ratingsSyncing,
   onResetFilter,
   onResetAll,
   onExample,
@@ -493,6 +499,7 @@ function Results({
           </AlertAction>
         </Alert>
       )}
+      {ratingsSyncing && <RatingsSyncingAlert />}
       <p role="status" className="text-muted-foreground tabular-nums">
         {sections.length === 0
           ? "No sections found."

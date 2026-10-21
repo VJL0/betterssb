@@ -7,6 +7,7 @@ import {
   FETCHED_AT,
   http,
   HttpResponse,
+  problemResponse,
   recordRequests,
   server,
 } from "@workspace/api-client/testing";
@@ -90,6 +91,25 @@ describe("SearchPage", () => {
         (await store.get("plan:202703"))?.sections.map((s) => s.crn),
       ).toEqual(["41208"]),
     );
+  });
+
+  it("says ratings are loading while the API's first sync runs", async () => {
+    server.use(http.get(`${API}/rmp/search`, () => problemResponse(503)));
+    const user = userEvent.setup();
+    renderPage(<SearchPage />);
+    const input = await screen.findByRole("searchbox", {
+      name: "Search courses",
+    });
+    await waitFor(() => expect(input.hasAttribute("disabled")).toBe(false));
+    await user.type(input, "CIS 2168");
+
+    expect(
+      await screen.findByText(
+        "Loading Rate My Professors ratings",
+        undefined,
+        SEARCH_TIMEOUT,
+      ),
+    ).toBeTruthy();
   });
 
   it("has no accessibility violations with results", async () => {

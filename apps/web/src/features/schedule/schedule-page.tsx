@@ -39,6 +39,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { cn } from "@workspace/ui/lib/utils";
 import { ButtonLink } from "@/components/button-link";
+import { RatingsSyncingAlert } from "@/components/ratings-syncing-alert";
 import { useCurrentTerm } from "@/hooks/use-current-term";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { usePlan } from "@/hooks/use-plan";
@@ -156,7 +157,9 @@ function ScheduleBuilder({ term }: { term: Term }) {
     () => new Map(allSections.map((s) => [s.courseReferenceNumber, s])),
     [allSections],
   );
-  const ratings = useRatings(allSections.map(primaryInstructorName));
+  const { byName: ratings, syncing: ratingsSyncing } = useRatings(
+    allSections.map(primaryInstructorName),
+  );
 
   const stale = generated.status === "error";
   const options = useMemo(
@@ -310,6 +313,7 @@ function ScheduleBuilder({ term }: { term: Term }) {
           </AlertAction>
         </Alert>
       )}
+      {ratingsSyncing && <RatingsSyncingAlert />}
 
       {/* Below lg the chosen week comes right after the rules and the list
           follows it; from lg the list sits under the rules. */}
