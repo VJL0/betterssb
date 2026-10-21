@@ -24,9 +24,12 @@ from pydantic_ai.models.groq import GroqModel, GroqModelSettings
 from pydantic_ai.providers.google import GoogleProvider
 from pydantic_ai.providers.groq import GroqProvider
 
+from app.modules.chatbot.schemas import ChatProvider, ThinkingEffort
+
 SERVER_ERROR_MAX = 599
 PRIMARY_MODEL = "gemini-3.8-flash"
 FALLBACK_MODEL = "qwen/qwen3.8-27b"
+ADVISOR_TIMEOUT_SECONDS = 60
 
 
 def should_fallback(error: Exception) -> bool:
@@ -37,12 +40,17 @@ def should_fallback(error: Exception) -> bool:
 
 
 def advisor_model(
-    google_api_key: str, groq_api_key: str, http_client: AsyncClient
+    google_api_key: str,
+    groq_api_key: str,
+    http_client: AsyncClient,
+    *,
+    preferred_provider: ChatProvider = "gemini",
+    effort: ThinkingEffort = "low",
 ) -> Model:
     primary = GoogleModel(
         PRIMARY_MODEL,
         provider=GoogleProvider(api_key=google_api_key, http_client=http_client),
-        settings=GoogleModelSettings(google_thinking_config={"thinking_level": "high"}),
+        settings=GoogleModelSettings(google_thinking_config={"thinking_level": effort}),
     )
     if not groq_api_key:
         return primary
@@ -50,10 +58,13 @@ def advisor_model(
         FALLBACK_MODEL,
         provider=GroqProvider(api_key=groq_api_key, http_client=http_client),
         settings=GroqModelSettings(
-            groq_reasoning_effort="high", groq_reasoning_format="hidden"
+            groq_reasoning_effort=effort, groq_reasoning_format="hidden"
         ),
     )
-    return FallbackModel(primary, fallback, fallback_on=should_fallback)
+    models = (
+        (fallback, primary) if preferred_provider == "groq" else (primary, fallback)
+    )
+    return FallbackModel(*models, fallback_on=should_fallback)
 
 
 def conversation_messages(
@@ -71,16 +82,33 @@ def conversation_messages(
 
 
 class AdvisorClient:
-    def __init__(self, google_api_key: str, groq_api_key: str = "") -> None:
+    def __init__(
+        self,
+        google_api_key: str,
+        groq_api_key: str = "",
+        *,
+        preferred_provider: ChatProvider = "gemini",
+        effort: ThinkingEffort = "low",
+    ) -> None:
         self._google_api_key = google_api_key
         self._groq_api_key = groq_api_key
+        self._preferred_provider = preferred_provider
+        self._effort = effort
+        self.provider: ChatProvider | None = None
 
     async def stream_completion(
         self, messages: list[dict], *, system_instruction: str
     ) -> AsyncIterator[str]:
         history = conversation_messages(messages, system_instruction)
-        async with AsyncClient() as http_client:
-            model = advisor_model(self._google_api_key, self._groq_api_key, http_client)
+        # Google derives its server deadline from this timeout; the default 5s is rejected.
+        async with AsyncClient(timeout=ADVISOR_TIMEOUT_SECONDS) as http_client:
+            model = advisor_model(
+                self._google_api_key,
+                self._groq_api_key,
+                http_client,
+                preferred_provider=self._preferred_provider,
+                effort=self._effort,
+            )
             async with model_request_stream(model, history) as stream:
                 has_text = False
                 async for event in stream:
@@ -96,5 +124,7 @@ class AdvisorClient:
                     if text:
                         has_text = True
                         yield text
-                if not has_text or stream.get().finish_reason != "stop":
-                    raise ValueError("Generation did not complete")
+            response = stream.get()
+            if not has_text or response.finish_reason != "stop":
+                raise ValueError("Generation did not complete")
+            self.provider = "groq" if response.provider_name == "groq" else "gemini"

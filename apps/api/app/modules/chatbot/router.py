@@ -23,7 +23,10 @@ def stream_service(body: ChatRequest, settings: SettingsDep) -> ChatbotService:
             status_code=503, detail="The chat assistant is unavailable."
         )
     return ChatbotService(
-        google_api_key=settings.GOOGLE_API_KEY, groq_api_key=settings.GROQ_API_KEY
+        google_api_key=settings.GOOGLE_API_KEY,
+        groq_api_key=settings.GROQ_API_KEY,
+        preferred_provider=body.provider,
+        effort=body.effort,
     )
 
 
@@ -54,7 +57,13 @@ async def chat(
                     data={"type": "text-delta", "id": text_id, "delta": text}
                 )
         yield ServerSentEvent(data={"type": "text-end", "id": text_id})
-        yield ServerSentEvent(data={"type": "finish", "finishReason": "stop"})
+        yield ServerSentEvent(
+            data={
+                "type": "finish",
+                "finishReason": "stop",
+                "messageMetadata": {"provider": service.provider},
+            }
+        )
     except Exception:
         logging.getLogger(__name__).exception("Advisor stream failed")
         yield ServerSentEvent(

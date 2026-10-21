@@ -32,12 +32,16 @@ afterEach(() => {
  * Answers every message with `reply`. What reaches the AI is the behavior
  * under test here, so the request bodies are kept.
  */
-function mockChat(reply = "Take CIS 4398 in the fall.") {
+function mockChat(reply = "Take CIS 4398 in the fall.", provider = "gemini") {
   const bodies: ChatRequest[] = [];
   server.use(
     http.post<never, ChatRequest>(`${API}/chat`, async ({ request }) => {
       bodies.push(await request.json());
-      return new HttpResponse(STREAM_START + textDelta(reply) + STREAM_FINISH, {
+      const finish = STREAM_FINISH.replace(
+        '"finishReason":"stop"',
+        `"finishReason":"stop","messageMetadata":${JSON.stringify({ provider })}`,
+      );
+      return new HttpResponse(STREAM_START + textDelta(reply) + finish, {
         headers: { "Content-Type": "text/event-stream" },
       });
     }),
@@ -46,6 +50,75 @@ function mockChat(reply = "Take CIS 4398 in the fall.") {
 }
 
 describe("AdvisorPage", () => {
+  it("retains a successful fallback and effort for this chat, then resets for a new chat", async () => {
+    const user = userEvent.setup();
+    const bodies = mockChat("Saved advice", "groq");
+    const { store } = renderPage(<AdvisorPage />);
+    const box = await screen.findByRole("textbox", {
+      name: "Message the advisor",
+    });
+    const effort = screen.getByRole("button", { name: "Think deeper" });
+    expect(effort.getAttribute("aria-pressed")).toBe("false");
+    await user.click(effort);
+    await user.type(box, "Plan my terms{Enter}");
+    await waitFor(async () => {
+      const thread = (await store.get("advisorThreads"))?.[0];
+      expect(thread?.provider).toBe("groq");
+      expect(thread?.effort).toBe("high");
+    });
+    expect(bodies[0]).toMatchObject({ provider: "gemini", effort: "high" });
+    await user.type(box, "What comes next?{Enter}");
+    await waitFor(async () =>
+      expect((await store.get("advisorThreads"))?.[0]?.messages).toHaveLength(
+        4,
+      ),
+    );
+    expect(bodies[1]).toMatchObject({ provider: "groq", effort: "high" });
+
+    await user.click(screen.getAllByRole("button", { name: "New chat" })[0]!);
+    expect(effort.getAttribute("aria-pressed")).toBe("false");
+    await user.type(box, "Another question{Enter}");
+    await waitFor(() => expect(bodies).toHaveLength(3));
+    expect(bodies[2]).toMatchObject({ provider: "gemini", effort: "low" });
+    await user.click(
+      await screen.findByRole("button", { name: /Plan my terms/ }),
+    );
+    expect(effort.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("restores a saved Groq chat and records a successful recovery to Gemini", async () => {
+    const user = userEvent.setup();
+    const bodies = mockChat("Recovered advice", "gemini");
+    const { store } = renderPage(<AdvisorPage />);
+    await store.set("advisorThreads", [
+      {
+        id: "saved",
+        title: "Saved chat",
+        messages: [
+          { role: "user", content: "Hi" },
+          { role: "assistant", content: "Hello" },
+        ],
+        updatedAt: NOW,
+        provider: "groq",
+        effort: "high",
+      },
+    ]);
+    await screen.findByText("Hello");
+    expect(
+      screen
+        .getByRole("button", { name: "Think deeper" })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
+    await user.type(
+      screen.getByRole("textbox", { name: "Message the advisor" }),
+      "Continue{Enter}",
+    );
+    await waitFor(async () =>
+      expect((await store.get("advisorThreads"))?.[0]?.provider).toBe("gemini"),
+    );
+    expect(bodies[0]).toMatchObject({ provider: "groq", effort: "high" });
+  });
+
   it("answers a suggested question and saves the conversation", async () => {
     const user = userEvent.setup();
     const bodies = mockChat();

@@ -136,12 +136,30 @@
             "title": "Context",
             "type": "string"
           },
+          "effort": {
+            "default": "low",
+            "enum": [
+              "low",
+              "high"
+            ],
+            "title": "Effort",
+            "type": "string"
+          },
           "messages": {
             "items": {
               "$ref": "#/components/schemas/ChatMessage"
             },
             "title": "Messages",
             "type": "array"
+          },
+          "provider": {
+            "default": "gemini",
+            "enum": [
+              "gemini",
+              "groq"
+            ],
+            "title": "Provider",
+            "type": "string"
           }
         },
         "required": [
