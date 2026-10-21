@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator
 from contextlib import aclosing
 
 from app.modules.chatbot.client import AdvisorClient
+from app.modules.chatbot.schemas import ChatProvider, ThinkingEffort
 
 SYSTEM_PROMPT = (
     "You are BetterSSB Advisor, a friendly and knowledgeable university course advisor. "
@@ -23,10 +24,24 @@ def system_instruction(context: str) -> str:
 class ChatbotService:
     """Academic advising chatbot backed by PydanticAI."""
 
-    def __init__(self, google_api_key: str, groq_api_key: str = "") -> None:
+    def __init__(
+        self,
+        google_api_key: str,
+        groq_api_key: str = "",
+        *,
+        preferred_provider: ChatProvider = "gemini",
+        effort: ThinkingEffort = "low",
+    ) -> None:
         self._client = AdvisorClient(
-            google_api_key=google_api_key, groq_api_key=groq_api_key
+            google_api_key=google_api_key,
+            groq_api_key=groq_api_key,
+            preferred_provider=preferred_provider,
+            effort=effort,
         )
+
+    @property
+    def provider(self) -> ChatProvider | None:
+        return self._client.provider
 
     async def stream(
         self, messages: list[dict], context: str = ""

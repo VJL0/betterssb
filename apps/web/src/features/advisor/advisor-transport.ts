@@ -1,5 +1,10 @@
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { client, queryError, type ChatMessage } from "@workspace/api-client";
+import {
+  client,
+  queryError,
+  type ChatMessage,
+  type ChatRequest,
+} from "@workspace/api-client";
 
 export function messageText(message: UIMessage): string {
   return message.parts
@@ -30,6 +35,8 @@ export function advisorTransport(): DefaultChatTransport<UIMessage> {
       body: {
         messages: storedMessages(messages),
         context: body?.context ?? "",
+        provider: body?.provider ?? "gemini",
+        effort: body?.effort ?? "low",
       },
     }),
     fetch: async (input, init) => {
@@ -44,4 +51,19 @@ export function advisorTransport(): DefaultChatTransport<UIMessage> {
       return response;
     },
   });
+}
+
+export function messageProvider(
+  message: UIMessage | undefined,
+): ChatRequest["provider"] {
+  const metadata = message?.metadata;
+  if (
+    typeof metadata !== "object" ||
+    metadata === null ||
+    !("provider" in metadata)
+  )
+    return undefined;
+  return metadata.provider === "gemini" || metadata.provider === "groq"
+    ? metadata.provider
+    : undefined;
 }

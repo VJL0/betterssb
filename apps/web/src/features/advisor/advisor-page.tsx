@@ -3,12 +3,13 @@
 import { useEffect, useId, useRef, useState } from "react";
 import {
   BotIcon,
+  BrainIcon,
   CircleXIcon,
   MessagesSquareIcon,
   PlusIcon,
   SendIcon,
 } from "lucide-react";
-import type { ChatMessage } from "@workspace/api-client";
+import type { ChatMessage, ChatRequest } from "@workspace/api-client";
 import {
   advisorContext,
   auditContext,
@@ -35,6 +36,11 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { Textarea } from "@workspace/ui/components/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
 import { usePlans } from "@/hooks/use-plans";
 import { useStoreDocument } from "@/lib/store/store-context";
@@ -234,6 +240,8 @@ export function AdvisorPage() {
             </Button>
           )}
           <Composer
+            effort={advisor.effort}
+            onEffort={advisor.setEffort}
             draft={draft}
             onDraft={setDraft}
             onSend={() => ask(draft)}
@@ -425,12 +433,16 @@ function UserMessage({ text }: { text: string }) {
 }
 
 function Composer({
+  effort,
+  onEffort,
   draft,
   onDraft,
   onSend,
   busy,
   usedLabels,
 }: {
+  effort: NonNullable<ChatRequest["effort"]>;
+  onEffort: (effort: NonNullable<ChatRequest["effort"]>) => void;
   draft: string;
   onDraft: (text: string) => void;
   onSend: () => void;
@@ -464,21 +476,44 @@ function Composer({
         placeholder="Ask about requirements, prerequisites or what to take next"
         className="resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
       />
-      <div className="flex items-center justify-between gap-2 px-3 pb-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 pb-2">
         <span className="text-xs text-muted-foreground">
           {usedLabels.length > 0
             ? `Using your ${listFormat(usedLabels)}`
             : "Not using any of your records"}
         </span>
-        <Button
-          type="submit"
-          size="icon-sm"
-          aria-label="Send"
-          disabled={busy || !draft.trim()}
-          className={cn(busy && "opacity-50")}
-        >
-          <SendIcon />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={effort === "high" ? "secondary" : "ghost"}
+                  aria-pressed={effort === "high"}
+                  disabled={busy}
+                  onClick={() => onEffort(effort === "high" ? "low" : "high")}
+                />
+              }
+            >
+              <BrainIcon aria-hidden />
+              Think deeper
+            </TooltipTrigger>
+            <TooltipContent>
+              Spend more time reasoning through complex plans. Replies may take
+              longer.
+            </TooltipContent>
+          </Tooltip>
+          <Button
+            type="submit"
+            size="icon-sm"
+            aria-label="Send"
+            disabled={busy || !draft.trim()}
+            className={cn(busy && "opacity-50")}
+          >
+            <SendIcon />
+          </Button>
+        </div>
       </div>
     </form>
   );

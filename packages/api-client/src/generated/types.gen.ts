@@ -91,9 +91,17 @@ export type ChatRequest = {
    */
   context?: string;
   /**
+   * Effort
+   */
+  effort?: "low" | "high";
+  /**
    * Messages
    */
   messages: Array<ChatMessage>;
+  /**
+   * Provider
+   */
+  provider?: "gemini" | "groq";
 };
 
 /**
