@@ -17,7 +17,10 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 settings = DatabaseSettings()
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# ConfigParser interpolates "%", and passwords in URLs are percent-encoded.
+config.set_main_option(
+    "sqlalchemy.url", settings.migration_database_url.replace("%", "%%")
+)
 
 target_metadata = Base.metadata
 
