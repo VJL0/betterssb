@@ -47,6 +47,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { cn } from "@workspace/ui/lib/utils";
+import { RatingsStatus } from "@/components/ratings-status";
 import {
   PAGE_SIZE,
   useClassSearch,
@@ -55,7 +56,7 @@ import {
 import { useCurrentTerm } from "@/hooks/use-current-term";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { usePlan } from "@/hooks/use-plan";
-import { useRatings } from "@/hooks/use-ratings";
+import { useRatings, type Ratings } from "@/hooks/use-ratings";
 import { formatClockTime, formatUpdated } from "@/lib/relative-time";
 import { undoToast } from "@/lib/undo-toast";
 import { CourseCard } from "./course-card";
@@ -213,7 +214,9 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
     [search.result],
   );
   const ratings = useRatings(sections.map(primaryInstructorName));
-  const visible = sections.filter((s) => sectionPasses(s, filters, ratings));
+  const visible = sections.filter((s) =>
+    sectionPasses(s, filters, ratings.byName),
+  );
   const groups = groupByCourse(visible);
   const plannedCrns = new Set(plan.sections.map((s) => s.crn));
 
@@ -268,6 +271,7 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
       filters={filters}
       onChange={setFilters}
       attributes={attributes}
+      ratingsReady={ratings.status === "ready"}
     />
   );
   const rail = (
@@ -388,7 +392,7 @@ interface ResultsProps {
   sections: ClassSection[];
   visibleCount: number;
   filters: SearchFilters;
-  ratings: ReturnType<typeof useRatings>;
+  ratings: Ratings;
   onResetFilter: (name: FilterName) => void;
   onResetAll: () => void;
   onExample: (query: string) => void;
@@ -473,7 +477,7 @@ function Results({
   const hiddenByFilters = sections.length - visibleCount;
   const suggestion =
     visibleCount === 0 && sections.length > 0
-      ? mostRestrictiveFilter(sections, filters, ratings)
+      ? mostRestrictiveFilter(sections, filters, ratings.byName)
       : null;
 
   return (
@@ -493,11 +497,14 @@ function Results({
           </AlertAction>
         </Alert>
       )}
-      <p role="status" className="text-muted-foreground tabular-nums">
-        {sections.length === 0
-          ? "No sections found."
-          : `${visibleCount} of ${result.totalCount} sections · ${courses} course${courses === 1 ? "" : "s"}${hiddenByFilters > 0 ? ` · ${hiddenByFilters} hidden by filters` : ""}`}
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <p role="status" className="text-muted-foreground tabular-nums">
+          {sections.length === 0
+            ? "No sections found."
+            : `${visibleCount} of ${result.totalCount} sections · ${courses} course${courses === 1 ? "" : "s"}${hiddenByFilters > 0 ? ` · ${hiddenByFilters} hidden by filters` : ""}`}
+        </p>
+        <RatingsStatus ratings={ratings} />
+      </div>
 
       {sections.length === 0 ? (
         <Empty className="border border-dashed">

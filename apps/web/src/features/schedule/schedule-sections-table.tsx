@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import type { RatingLookup } from "@/hooks/use-ratings";
+import type { Ratings } from "@/hooks/use-ratings";
 import {
   SectionInstructor,
   SectionMeetings,
@@ -22,7 +22,7 @@ interface ScheduleSectionsTableProps {
   heading: string;
   sections: readonly ClassSection[];
   plan: TermPlan;
-  ratings: ReadonlyMap<string, RatingLookup>;
+  ratings: Ratings;
 }
 
 /** Every section in the chosen schedule, with CRNs to register with. */

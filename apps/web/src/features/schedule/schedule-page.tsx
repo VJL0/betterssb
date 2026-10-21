@@ -39,6 +39,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { cn } from "@workspace/ui/lib/utils";
 import { ButtonLink } from "@/components/button-link";
+import { RatingsStatus } from "@/components/ratings-status";
 import { useCurrentTerm } from "@/hooks/use-current-term";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { usePlan } from "@/hooks/use-plan";
@@ -164,7 +165,7 @@ function ScheduleBuilder({ term }: { term: Term }) {
       buildOptions(
         stale ? (generated.last?.schedules ?? []) : generated.schedules,
         sectionsByCrn,
-        ratings,
+        ratings.byName,
         rules.rankBy,
       ),
     [
@@ -172,7 +173,7 @@ function ScheduleBuilder({ term }: { term: Term }) {
       generated.last,
       generated.schedules,
       sectionsByCrn,
-      ratings,
+      ratings.byName,
       rules.rankBy,
     ],
   );
@@ -310,6 +311,7 @@ function ScheduleBuilder({ term }: { term: Term }) {
           </AlertAction>
         </Alert>
       )}
+      <RatingsStatus ratings={ratings} />
 
       {/* Below lg the chosen week comes right after the rules and the list
           follows it; from lg the list sits under the rules. */}
@@ -321,6 +323,7 @@ function ScheduleBuilder({ term }: { term: Term }) {
             courses={courses}
             colorFor={colorFor}
             notes={placement.notes}
+            ratingsReady={ratings.status === "ready"}
           />
         </div>
 
@@ -356,8 +359,9 @@ function ScheduleBuilder({ term }: { term: Term }) {
                 onPrevious={() => step(-1)}
                 onNext={() => step(1)}
                 onSelect={setSelectedId}
+                ratingsLoading={ratings.status === "syncing"}
                 ratingFor={(s) => {
-                  const rating = ratings.get(s.instructor);
+                  const rating = ratings.byName.get(s.instructor);
                   return rating === undefined
                     ? undefined
                     : (rating?.overallRating ?? null);

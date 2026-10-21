@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
@@ -7,6 +7,7 @@ import {
   FETCHED_AT,
   http,
   HttpResponse,
+  problemResponse,
   recordRequests,
   server,
 } from "@workspace/api-client/testing";
@@ -90,6 +91,36 @@ describe("SearchPage", () => {
         (await store.get("plan:202703"))?.sections.map((s) => s.crn),
       ).toEqual(["41208"]),
     );
+  });
+
+  it("says ratings are loading while the API's first sync runs", async () => {
+    server.use(http.get(`${API}/rmp/search`, () => problemResponse(503)));
+    const user = userEvent.setup();
+    renderPage(<SearchPage />);
+    const input = await screen.findByRole("searchbox", {
+      name: "Search courses",
+    });
+    await waitFor(() => expect(input.hasAttribute("disabled")).toBe(false));
+    await user.type(input, "CIS 2168");
+
+    await waitFor(
+      () =>
+        expect(
+          screen.getAllByRole("status").map((el) => el.textContent),
+        ).toContain(
+          "Loading instructor ratings. The first load takes about a minute.",
+        ),
+      SEARCH_TIMEOUT,
+    );
+    expect(
+      (await screen.findAllByText("Rating loading", { exact: false })).length,
+    ).toBeGreaterThan(0);
+    // Filtering by rating can't work until there are ratings.
+    for (const button of within(
+      screen.getAllByRole("group", { name: "Instructor rating" })[0]!,
+    ).getAllByRole("button")) {
+      expect(button.hasAttribute("disabled")).toBe(true);
+    }
   });
 
   it("has no accessibility violations with results", async () => {

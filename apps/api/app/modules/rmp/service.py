@@ -9,6 +9,8 @@ from collections import defaultdict
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime, timedelta
 
+from vercel.functions import wait_until
+
 from app.core.cache import ONE_DAY_SECONDS, Cache, cache_claim, cache_get, cache_set
 from app.modules.rmp.client import RMPClient, RMPUnavailable
 from app.modules.rmp.schemas import RMPRating
@@ -168,6 +170,10 @@ class RMPRosterService:
             return
         self._sync_started_at = time.monotonic()
         self._sync_task = asyncio.create_task(self._sync_in_background())
+        # Vercel suspends a function once it responds, which would stall the
+        # sync until its requests time out; this keeps the invocation alive
+        # until the task ends. Elsewhere it does nothing and the task runs on.
+        wait_until(self._sync_task)
 
     async def _sync_in_background(self) -> None:
         try:

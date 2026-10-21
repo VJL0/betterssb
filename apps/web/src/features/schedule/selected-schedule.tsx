@@ -55,9 +55,15 @@ interface SelectedScheduleProps {
   onNext: () => void;
   onSelect: (id: string) => void;
   ratingFor: (section: PlannedSection) => number | null | undefined;
+  /** Instructor ratings are still loading, so no average yet isn't "none". */
+  ratingsLoading: boolean;
 }
 
-function statsFor(option: ScheduleOption, credits?: number) {
+function statsFor(
+  option: ScheduleOption,
+  credits: number | undefined,
+  ratingsLoading: boolean,
+) {
   const { stats } = option;
   return [
     ...(credits === undefined ? [] : [{ label: "Credits", value: credits }]),
@@ -76,9 +82,11 @@ function statsFor(option: ScheduleOption, credits?: number) {
     {
       label: "Avg instructor",
       value:
-        option.averageRating === null
-          ? "—"
-          : formatRating(option.averageRating),
+        option.averageRating !== null
+          ? formatRating(option.averageRating)
+          : ratingsLoading
+            ? "Loading…"
+            : "—",
     },
   ];
 }
@@ -98,6 +106,7 @@ export function SelectedSchedule({
   onNext,
   onSelect,
   ratingFor,
+  ratingsLoading,
 }: SelectedScheduleProps) {
   const count = options.length;
   const unscheduled = unscheduledSections(unplacedSections);
@@ -145,7 +154,7 @@ export function SelectedSchedule({
         </div>
 
         <dl className="grid grid-cols-[repeat(auto-fit,minmax(7.5rem,1fr))] gap-2">
-          {statsFor(option, credits).map((stat) => (
+          {statsFor(option, credits, ratingsLoading).map((stat) => (
             <div
               key={stat.label}
               className="rounded-2xl bg-sidebar px-3 py-2.5 ring-1 ring-border ring-inset"
@@ -183,6 +192,7 @@ export function SelectedSchedule({
             options={options}
             selectedId={option.id}
             onSelect={onSelect}
+            ratingsLoading={ratingsLoading}
           />
         </TabsContent>
       </Tabs>
@@ -267,16 +277,20 @@ function Compare({
   options,
   selectedId,
   onSelect,
+  ratingsLoading,
 }: {
   options: readonly ScheduleOption[];
   selectedId: string;
   onSelect: (id: string) => void;
+  ratingsLoading: boolean;
 }) {
   const selectedIndex = options.findIndex((o) => o.id === selectedId);
   const shown = options
     .map((option, index) => ({ option, index }))
     .filter(({ index }) => index < COMPARE_COUNT || index === selectedIndex);
-  const rows = statsFor(shown[0]!.option).map((stat) => stat.label);
+  const rows = statsFor(shown[0]!.option, undefined, ratingsLoading).map(
+    (stat) => stat.label,
+  );
 
   return (
     <div className="overflow-x-auto">
@@ -317,7 +331,7 @@ function Compare({
                 <TableCell key={option.id} className="tabular-nums">
                   {label === "Score"
                     ? Math.round(option.score)
-                    : statsFor(option)[row]!.value}
+                    : statsFor(option, undefined, ratingsLoading)[row]!.value}
                 </TableCell>
               ))}
             </TableRow>

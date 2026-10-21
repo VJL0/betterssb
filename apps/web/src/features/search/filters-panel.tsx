@@ -39,12 +39,15 @@ interface FiltersPanelProps {
   filters: SearchFilters;
   onChange: (filters: SearchFilters) => void;
   attributes: CodeDescription[];
+  /** False while instructor ratings are still loading, when filtering by them can't work. */
+  ratingsReady: boolean;
 }
 
 export function FiltersPanel({
   filters,
   onChange,
   attributes,
+  ratingsReady,
 }: FiltersPanelProps) {
   const ids = useId();
   const set = (patch: Partial<SearchFilters>) =>
@@ -89,26 +92,35 @@ export function FiltersPanel({
 
       <FieldSet>
         <FieldLegend variant="label">Instructor rating</FieldLegend>
-        <ToggleGroup
-          variant="outline"
-          spacing={0}
-          value={[String(filters.minRating)]}
-          onValueChange={(value) => {
-            const picked = Number(value[0] ?? 0) as MinRating;
-            set({ minRating: picked });
-          }}
-          className="w-full"
-        >
-          {MIN_RATING_OPTIONS.map((rating) => (
-            <ToggleGroupItem
-              key={rating}
-              value={String(rating)}
-              className={`flex-1 ${PRESSED_FILTER_CLASS}`}
-            >
-              {RATING_LABEL[rating]}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+        <div className="flex flex-col gap-2">
+          <ToggleGroup
+            variant="outline"
+            spacing={0}
+            disabled={!ratingsReady}
+            aria-describedby={ratingsReady ? undefined : `${ids}-rating-wait`}
+            value={[String(filters.minRating)]}
+            onValueChange={(value) => {
+              const picked = Number(value[0] ?? 0) as MinRating;
+              set({ minRating: picked });
+            }}
+            className="w-full"
+          >
+            {MIN_RATING_OPTIONS.map((rating) => (
+              <ToggleGroupItem
+                key={rating}
+                value={String(rating)}
+                className={`flex-1 ${PRESSED_FILTER_CLASS}`}
+              >
+                {RATING_LABEL[rating]}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+          {!ratingsReady && (
+            <FieldDescription id={`${ids}-rating-wait`}>
+              Available once ratings load
+            </FieldDescription>
+          )}
+        </div>
       </FieldSet>
 
       <Field orientation="horizontal">
