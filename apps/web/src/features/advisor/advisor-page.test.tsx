@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { axeViolations } from "@workspace/ui/test/axe";
@@ -13,6 +13,14 @@ import {
 import { sampleAudit } from "@workspace/shared/testing/audit";
 import { renderPage } from "@/test/render";
 import { AdvisorPage } from "./advisor-page";
+
+const STREAM_START =
+  'data: {"type":"start","messageId":"reply"}\n\ndata: {"type":"text-start","id":"text"}\n\n';
+const STREAM_FINISH =
+  'data: {"type":"text-end","id":"text"}\n\ndata: {"type":"finish","finishReason":"stop"}\n\ndata: [DONE]\n\n';
+function textDelta(text: string): string {
+  return `data: ${JSON.stringify({ type: "text-delta", id: "text", delta: text })}\n\n`;
+}
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
@@ -29,7 +37,9 @@ function mockChat(reply = "Take CIS 4398 in the fall.") {
   server.use(
     http.post<never, ChatRequest>(`${API}/chat`, async ({ request }) => {
       bodies.push(await request.json());
-      return HttpResponse.json({ response: reply });
+      return new HttpResponse(STREAM_START + textDelta(reply) + STREAM_FINISH, {
+        headers: { "Content-Type": "text/event-stream" },
+      });
     }),
   );
   return bodies;
@@ -105,4 +115,183 @@ describe("AdvisorPage", () => {
     await screen.findByText("Ask about your degree");
     expect(await axeViolations(container)).toEqual([]);
   });
+});
+
+it("shows text before completion and saves only after done", async () => {
+  let output: ReadableStreamDefaultController<Uint8Array>;
+  const encoder = new TextEncoder();
+  server.use(
+    http.post(
+      `${API}/chat`,
+      () =>
+        new HttpResponse(
+          new ReadableStream({
+            start(controller) {
+              output = controller;
+            },
+          }),
+          { headers: { "Content-Type": "text/event-stream" } },
+        ),
+    ),
+  );
+  const user = userEvent.setup();
+  const { store } = renderPage(<AdvisorPage />);
+  const box = await screen.findByRole("textbox", {
+    name: "Message the advisor",
+  });
+  await user.type(box, "Help me plan{Enter}");
+  await waitFor(() => expect(output).toBeDefined());
+  await act(async () => {
+    output.enqueue(encoder.encode(STREAM_START + textDelta("Take CIS")));
+  });
+  expect(await screen.findByText("Take CIS")).toBeTruthy();
+  expect(await store.get("advisorThreads")).toBeNull();
+  expect(screen.getByRole("button", { name: "Stop response" })).toBeTruthy();
+  await act(async () => {
+    output.enqueue(encoder.encode(textDelta(" 2168.") + STREAM_FINISH));
+    output.close();
+  });
+  await waitFor(async () =>
+    expect((await store.get("advisorThreads"))?.[0]?.messages[1]?.content).toBe(
+      "Take CIS 2168.",
+    ),
+  );
+});
+
+it("stops an unfinished reply without saving it and restores the question", async () => {
+  server.use(
+    http.post(
+      `${API}/chat`,
+      () =>
+        new HttpResponse(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue(
+                new TextEncoder().encode(
+                  STREAM_START + textDelta("Partial advice"),
+                ),
+              );
+            },
+          }),
+          { headers: { "Content-Type": "text/event-stream" } },
+        ),
+    ),
+  );
+  const user = userEvent.setup();
+  const { store } = renderPage(<AdvisorPage />);
+  const box = await screen.findByRole("textbox", {
+    name: "Message the advisor",
+  });
+  await user.type(box, "Help me plan{Enter}");
+  await screen.findByText("Partial advice");
+  await user.click(screen.getByRole("button", { name: "Stop response" }));
+  expect(await screen.findByText("Response interrupted")).toBeTruthy();
+  expect((box as HTMLTextAreaElement).value).toBe("Help me plan");
+  expect(await store.get("advisorThreads")).toBeNull();
+});
+
+it("discards late events after starting a new chat", async () => {
+  let output: ReadableStreamDefaultController<Uint8Array>;
+  server.use(
+    http.post(
+      `${API}/chat`,
+      () =>
+        new HttpResponse(
+          new ReadableStream({
+            start(controller) {
+              output = controller;
+            },
+          }),
+          { headers: { "Content-Type": "text/event-stream" } },
+        ),
+    ),
+  );
+  const user = userEvent.setup();
+  const { store } = renderPage(<AdvisorPage />);
+  const box = await screen.findByRole("textbox", {
+    name: "Message the advisor",
+  });
+  await user.type(box, "Old question{Enter}");
+  await waitFor(() => expect(output).toBeDefined());
+  await user.click(screen.getAllByRole("button", { name: "New chat" })[0]!);
+  await act(async () => {
+    output.enqueue(
+      new TextEncoder().encode(
+        STREAM_START + textDelta("Late answer") + STREAM_FINISH,
+      ),
+    );
+    output.close();
+  });
+  expect(screen.queryByText("Late answer")).toBeNull();
+  expect((box as HTMLTextAreaElement).value).toBe("");
+  expect(await store.get("advisorThreads")).toBeNull();
+});
+
+it("retries a failed save without generating another answer", async () => {
+  const bodies = mockChat("Completed advice");
+  const user = userEvent.setup();
+  const { store } = renderPage(<AdvisorPage />);
+  const box = await screen.findByRole("textbox", {
+    name: "Message the advisor",
+  });
+  vi.spyOn(store, "set").mockRejectedValueOnce(
+    new Error("Storage unavailable"),
+  );
+  await user.type(box, "Help me plan{Enter}");
+  const save = await screen.findByRole("button", { name: "Save reply" });
+  expect(screen.getByText("Completed advice")).toBeTruthy();
+  expect(await store.get("advisorThreads")).toBeNull();
+  await user.click(save);
+  await waitFor(async () =>
+    expect((await store.get("advisorThreads"))?.[0]?.messages).toHaveLength(2),
+  );
+  expect(bodies).toHaveLength(1);
+});
+
+it("does not save an SDK stream that closes before a finish event", async () => {
+  server.use(
+    http.post(
+      `${API}/chat`,
+      () =>
+        new HttpResponse(STREAM_START + textDelta("Incomplete advice"), {
+          headers: { "Content-Type": "text/event-stream" },
+        }),
+    ),
+  );
+  const user = userEvent.setup();
+  const { store } = renderPage(<AdvisorPage />);
+  const box = await screen.findByRole("textbox", {
+    name: "Message the advisor",
+  });
+  await user.type(box, "Help me plan{Enter}");
+  expect(
+    await screen.findByText(
+      "The advisor's reply was interrupted. Please try again.",
+    ),
+  ).toBeTruthy();
+  expect((box as HTMLTextAreaElement).value).toBe("Help me plan");
+  expect(await store.get("advisorThreads")).toBeNull();
+});
+
+it("shows SDK error events without saving partial advice", async () => {
+  server.use(
+    http.post(
+      `${API}/chat`,
+      () =>
+        new HttpResponse(
+          STREAM_START +
+            textDelta("Partial advice") +
+            'data: {"type":"error","errorText":"Please try again later."}\n\ndata: [DONE]\n\n',
+          { headers: { "Content-Type": "text/event-stream" } },
+        ),
+    ),
+  );
+  const user = userEvent.setup();
+  const { store } = renderPage(<AdvisorPage />);
+  const box = await screen.findByRole("textbox", {
+    name: "Message the advisor",
+  });
+  await user.type(box, "Help me plan{Enter}");
+  expect(await screen.findByText("Please try again later.")).toBeTruthy();
+  expect(await store.get("advisorThreads")).toBeNull();
 });
