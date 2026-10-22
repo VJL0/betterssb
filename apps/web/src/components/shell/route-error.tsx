@@ -10,6 +10,8 @@ import {
 } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
 import { ButtonLink } from "@/components/button-link";
+import { openFeedbackForm } from "@/lib/feedback";
+import { FEEDBACK_ENABLED } from "@/lib/sentry";
 
 /** A page crashed. Says so plainly and offers a reload; the rest of the app keeps working. */
 export function RouteError({ error }: { error: unknown }) {
@@ -33,11 +35,16 @@ export function RouteError({ error }: { error: unknown }) {
           )}
         </AlertDescription>
       </Alert>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button onClick={() => window.location.reload()}>Reload</Button>
         <ButtonLink variant="outline" href="/">
           Go to the home page
         </ButtonLink>
+        {FEEDBACK_ENABLED && (
+          <Button variant="ghost" onClick={openFeedbackForm}>
+            Tell us what happened
+          </Button>
+        )}
       </div>
     </div>
   );

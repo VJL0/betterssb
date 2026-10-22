@@ -4,9 +4,17 @@ from contextlib import aclosing
 import httpx
 import pytest
 from pydantic_ai.exceptions import ModelHTTPError
+from pydantic_ai.messages import ModelResponse, TextPart
+from pydantic_ai.usage import RequestUsage
+from sentry_sdk.tracing import Span
 
 from app.modules.chatbot import client as client_module
-from app.modules.chatbot.client import FALLBACK_MODEL, PRIMARY_MODEL, AdvisorClient
+from app.modules.chatbot.client import (
+    FALLBACK_MODEL,
+    PRIMARY_MODEL,
+    AdvisorClient,
+    record_reply,
+)
 
 
 def google_chunk(text=None, finish=None):
@@ -320,3 +328,38 @@ async def test_thinking_is_not_sent_as_reply_text(mock_provider):
             [], system_instruction="Help"
         )
     ] == ["Answer"]
+
+
+def test_reply_span_names_the_answering_model_and_its_usage():
+    span = Span(op="gen_ai.chat", name=f"chat {PRIMARY_MODEL}")
+    response = ModelResponse(
+        parts=[TextPart("Take CIS 1068 first.")],
+        model_name=FALLBACK_MODEL,
+        provider_name="groq",
+        usage=RequestUsage(
+            input_tokens=120,
+            cache_read_tokens=20,
+            output_tokens=40,
+            output_reasoning_tokens=15,
+        ),
+    )
+
+    record_reply(span, response)
+
+    recorded = span.to_json()
+    assert recorded["description"] == f"chat {FALLBACK_MODEL}"
+    assert (
+        recorded["data"]
+        | {
+            "gen_ai.response.model": FALLBACK_MODEL,
+            "gen_ai.provider.name": "groq",
+            "gen_ai.usage.input_tokens": 120,
+            "gen_ai.usage.input_tokens.cached": 20,
+            "gen_ai.usage.output_tokens": 40,
+            "gen_ai.usage.output_tokens.reasoning": 15,
+            "gen_ai.usage.total_tokens": 160,
+        }
+        == recorded["data"]
+    )
+    # Prompts and replies carry student records, so they stay out of spans.
+    assert not any("message" in key or "text" in key for key in recorded["data"])

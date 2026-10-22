@@ -3,6 +3,7 @@
 import {
   HardDriveIcon,
   ListChecksIcon,
+  MessageSquareIcon,
   SettingsIcon,
   UserRoundIcon,
 } from "lucide-react";
@@ -20,6 +21,8 @@ import { BannerBadge } from "@/components/banner-status";
 import { Logo } from "@workspace/ui/components/logo";
 import { TermSelect } from "@/components/term-select";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
+import { openFeedbackForm } from "@/lib/feedback";
+import { FEEDBACK_ENABLED } from "@/lib/sentry";
 import { NavLink } from "./nav-link";
 import {
   PRIMARY_PAGES,
@@ -101,6 +104,12 @@ function AccountMenu() {
             <SettingsIcon />
             Settings
           </DropdownMenuItem>
+          {FEEDBACK_ENABLED && (
+            <DropdownMenuItem onClick={openFeedbackForm}>
+              <MessageSquareIcon />
+              Send feedback
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

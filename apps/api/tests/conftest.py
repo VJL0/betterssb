@@ -11,8 +11,6 @@ os.environ.setdefault(
 os.environ.setdefault("SESSION_SECRET", "test-secret-key-for-tests-at-least-32-bytes")
 os.environ.setdefault("GOOGLE_CLIENT_ID", "test-client-id.apps.googleusercontent.com")
 os.environ.setdefault("GOOGLE_CLIENT_SECRET", "test-client-secret")
-# Keeps a developer's .env DSN from reporting test errors to Sentry.
-os.environ["SENTRY_DSN"] = ""
 
 import pytest
 from httpx import ASGITransport, AsyncClient
