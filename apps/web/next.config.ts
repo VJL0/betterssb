@@ -1,3 +1,4 @@
+import { withSentryConfig } from "@sentry/nextjs/config";
 import type { NextConfig } from "next";
 
 /**
@@ -13,4 +14,14 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: "victor-0z",
+  project: "betterssb-web",
+  // Uploads source maps on production builds; without it, builds still pass
+  // but stack traces stay minified.
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  // Sends browser events through the site, past ad blockers.
+  tunnelRoute: "/monitoring",
+  silent: !process.env.CI,
+});
