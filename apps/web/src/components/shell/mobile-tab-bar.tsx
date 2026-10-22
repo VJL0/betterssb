@@ -92,7 +92,7 @@ export function MobileTabBar() {
                   type="button"
                   onClick={() => {
                     setMoreOpen(false);
-                    void openFeedbackForm();
+                    void openFeedbackForm("menu");
                   }}
                   className={cn(SHEET_ROW_CLASS, "w-full")}
                 >

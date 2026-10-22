@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+os.environ["ENVIRONMENT"] = "development"
+
 # Point at an in-memory SQLite DB before any app imports touch the engine.
 os.environ.setdefault(
     "DATABASE_URL",

@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 import sentry_sdk
 
@@ -14,15 +16,32 @@ def request(path, parent_sampled=None):
     return {"parent_sampled": parent_sampled, "asgi_scope": {"path": path}}
 
 
-def test_development_never_reports():
+def test_development_never_reports(monkeypatch):
+    initialize = Mock()
+    monkeypatch.setattr(sentry_sdk, "init", initialize)
     settings = Settings(
         SENTRY_DSN="https://key@o1.ingest.us.sentry.io/1",
-        SENTRY_ENVIRONMENT="development",
+        ENVIRONMENT="development",
     )
 
     init_sentry(settings)
 
-    assert not sentry_sdk.get_client().is_active()
+    initialize.assert_not_called()
+
+
+def test_production_reports_with_the_app_environment(monkeypatch):
+    initialize = Mock()
+    monkeypatch.setattr(sentry_sdk, "init", initialize)
+    settings = Settings(
+        SENTRY_DSN="https://key@o1.ingest.us.sentry.io/1",
+        ENVIRONMENT="production",
+    )
+
+    init_sentry(settings)
+
+    initialize.assert_called_once()
+    assert initialize.call_args.kwargs["environment"] == "production"
+    assert initialize.call_args.kwargs["dsn"] == settings.SENTRY_DSN
 
 
 def test_requests_are_sampled():
