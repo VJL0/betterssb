@@ -1,6 +1,8 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
 import { CircleXIcon } from "lucide-react";
+import { useEffect } from "react";
 import {
   Alert,
   AlertDescription,
@@ -12,6 +14,11 @@ import { ButtonLink } from "@/components/button-link";
 /** A page crashed. Says so plainly and offers a reload; the rest of the app keeps working. */
 export function RouteError({ error }: { error: unknown }) {
   const detail = error instanceof Error ? error.message : null;
+
+  // The error boundary handled it, so Sentry's global handlers never see it.
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-4 px-4 py-12">

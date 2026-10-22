@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import Field, field_validator
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings
 from sqlalchemy.engine import make_url
 
@@ -71,3 +71,15 @@ class Settings(DatabaseSettings):
     # External services
     GOOGLE_API_KEY: str = ""
     GROQ_API_KEY: str = ""
+
+    # Error monitoring. Empty turns Sentry off (tests, local runs without it).
+    SENTRY_DSN: str = ""
+    # Vercel sets VERCEL_ENV (production, preview) and the deployed commit.
+    SENTRY_ENVIRONMENT: str = Field(
+        default="development",
+        validation_alias=AliasChoices("SENTRY_ENVIRONMENT", "VERCEL_ENV"),
+    )
+    SENTRY_RELEASE: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("SENTRY_RELEASE", "VERCEL_GIT_COMMIT_SHA"),
+    )
