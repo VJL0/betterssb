@@ -12,6 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.api.router import api_router
 from app.core.config import Settings
 from app.core.errors import add_error_handlers
+from app.core.monitoring import init_sentry
 from app.core.openapi import build_openapi, operation_id
 from app.core.security import SecurityHeadersMiddleware
 from app.modules.auth.errors import SignInError
@@ -46,6 +47,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
 
 settings = Settings()  # Fail fast on missing or invalid config.
+init_sentry(settings)
 
 app = FastAPI(
     title="BetterSSB API",

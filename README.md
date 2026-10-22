@@ -157,6 +157,7 @@ Set these in the project's environment variables:
 
 - The API's variables from `apps/api/.env.example`, with `REDIS_URL` pointing at hosted Redis, `FRONTEND_URL=https://<domain>` and `GOOGLE_REDIRECT_URI=https://<domain>/api/auth/google/callback`.
 - `SITE_URL=https://<domain>` for the website.
+- Sentry: `SENTRY_DSN` (project `betterssb-api`), `NEXT_PUBLIC_SENTRY_DSN` (project `betterssb-web`) and `SENTRY_AUTH_TOKEN`, a Sentry organization token the web build uses to upload source maps. Without the token, builds still pass but browser stack traces stay minified. Both apps tag events with Vercel's environment (`production`, `preview`) and the deployed commit as the release.
 
 Postgres uses two connection strings, which Neon's Vercel integration sets for you:
 
@@ -179,6 +180,7 @@ Migrations aren't run by the deploy: run `uv run alembic upgrade head` in `apps/
 
 - **Hot reload** — `pnpm dev` in `apps/extension/` watches for changes and reloads the extension automatically.
 - **API docs** — Visit `http://localhost:8000/docs` for the interactive Swagger UI.
+- **Error monitoring** — Unhandled errors and sampled traces go to [Sentry](https://victor-0z.sentry.io) when a DSN is set: the website from `src/instrumentation.ts` (server and edge), `src/instrumentation-client.ts` (browser, with Session Replay for sessions that hit an error) and its error boundaries, and the API from `app/core/monitoring.py`. Request bodies, local variables and PII stay out of events, since they carry transcripts and audits. Leave the DSNs empty to turn it off; tests always do.
 - **Errors** — API errors are [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) problem details (`application/problem+json`) with `type`, `title`, `status`, and an optional user-safe `detail`; validation errors add an `errors` list. Raise `HTTPException` in endpoints; `app/core/errors.py` formats it. Sign-in failures redirect to the frontend with `?auth_error=` instead.
 - **Type safety** — API types come from the generated `@workspace/api-client` (see API Client); Banner and local-store types live in `@workspace/shared`.
 
@@ -209,6 +211,7 @@ FRONTEND_URL=http://localhost:3000
 SESSION_SECRET=...             # Required, 32+ chars: openssl rand -hex 32
 GOOGLE_API_KEY=...             # Required for chatbot
 GROQ_API_KEY=...               # Enables the Qwen fallback on Groq
+SENTRY_DSN=...                 # Optional: reports errors to Sentry project betterssb-api
 ```
 
 The API won't start without `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a valid `SESSION_SECRET`.
@@ -239,7 +242,7 @@ WXT_API_ORIGIN=http://localhost:8000   # Backend API origin; paths start with /a
 WXT_WEB_ORIGIN=http://localhost:3000   # The website, opened from the popup and the plan dock
 ```
 
-The website reads `NEXT_PUBLIC_EXTENSION_INSTALL_URL` the same way, plus `SITE_URL` (its public origin, for canonical links, the sitemap and social cards) and `API_ORIGIN` (where `/api` is proxied). See `apps/web/.env.example`.
+The website reads `NEXT_PUBLIC_EXTENSION_INSTALL_URL` the same way, plus `SITE_URL` (its public origin, for canonical links, the sitemap and social cards) and `API_ORIGIN` (where `/api` is proxied), and `NEXT_PUBLIC_SENTRY_DSN` (Sentry project `betterssb-web`). See `apps/web/.env.example`.
 
 ## Contributing
 
