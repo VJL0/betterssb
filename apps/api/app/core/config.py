@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings
 from sqlalchemy.engine import make_url
@@ -54,6 +56,11 @@ class DatabaseSettings(BaseSettings):
 class Settings(DatabaseSettings):
     """Application-wide configuration loaded from environment / .env file."""
 
+    ENVIRONMENT: Literal["production", "development"] = Field(
+        default="development",
+        validation_alias=AliasChoices("ENVIRONMENT", "VERCEL_ENV"),
+    )
+
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # Google sign-in
@@ -74,11 +81,7 @@ class Settings(DatabaseSettings):
 
     # Error monitoring. Empty turns Sentry off (tests, local runs without it).
     SENTRY_DSN: str = ""
-    # Vercel sets VERCEL_ENV (production, preview) and the deployed commit.
-    SENTRY_ENVIRONMENT: str = Field(
-        default="development",
-        validation_alias=AliasChoices("SENTRY_ENVIRONMENT", "VERCEL_ENV"),
-    )
+    # Vercel sets the deployed commit.
     SENTRY_RELEASE: str | None = Field(
         default=None,
         validation_alias=AliasChoices("SENTRY_RELEASE", "VERCEL_GIT_COMMIT_SHA"),

@@ -3,6 +3,9 @@
  * Anything unset hides the UI that depends on it rather than linking nowhere.
  */
 
+export const ENVIRONMENT =
+  process.env.NODE_ENV === "production" ? "production" : "development";
+
 /** Where students sign in to Temple's Banner registration. */
 export const BANNER_REGISTRATION_URL =
   "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/registration";

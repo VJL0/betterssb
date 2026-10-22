@@ -105,7 +105,7 @@ function AccountMenu() {
             Settings
           </DropdownMenuItem>
           {FEEDBACK_ENABLED && (
-            <DropdownMenuItem onClick={openFeedbackForm}>
+            <DropdownMenuItem onClick={() => void openFeedbackForm("menu")}>
               <MessageSquareIcon />
               Send feedback
             </DropdownMenuItem>

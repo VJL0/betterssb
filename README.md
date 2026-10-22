@@ -133,7 +133,7 @@ In production, run migrations, then start Uvicorn without `--reload`:
 
 ```bash
 uv run alembic upgrade head
-uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --no-server-header
+ENVIRONMENT=production uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --no-server-header
 ```
 
 Behind a load balancer or reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy's address so client IPs are read from `X-Forwarded-For`. `WEB_CONCURRENCY` can replace `--workers`.
@@ -155,9 +155,9 @@ The root `vercel.json` deploys the website and the API as one Vercel project wit
 
 Set these in the project's environment variables:
 
-- The API's variables from `apps/api/.env.example`, with `REDIS_URL` pointing at hosted Redis, `FRONTEND_URL=https://<domain>` and `GOOGLE_REDIRECT_URI=https://<domain>/api/auth/google/callback`.
+- The API's variables from `apps/api/.env.example`, with `ENVIRONMENT=production`, `REDIS_URL` pointing at hosted Redis, `FRONTEND_URL=https://<domain>` and `GOOGLE_REDIRECT_URI=https://<domain>/api/auth/google/callback`.
 - `SITE_URL=https://<domain>` for the website.
-- Sentry: `SENTRY_DSN` (project `betterssb-api`), `NEXT_PUBLIC_SENTRY_DSN` (project `betterssb-web`) and `SENTRY_AUTH_TOKEN`, a Sentry organization token the web build uses to upload source maps and create the release. Without the token, builds still pass but browser stack traces stay minified and no release is created. Both apps tag events with Vercel's environment (`production`, `preview`) and the deployed commit as the release. The web build creates that release in both projects, records the deploy and, on production deploys, attaches the commits, which needs Sentry's GitHub integration with this repository added.
+- Sentry: `SENTRY_DSN` (project `betterssb-api`), `NEXT_PUBLIC_SENTRY_DSN` (project `betterssb-web`) and `SENTRY_AUTH_TOKEN`, a Sentry organization token the web build uses to upload source maps and create the release. Without the token, builds still pass but browser stack traces stay minified and no release is created. Both apps report only in production, tagging events with the environment and the deployed commit as the release. The web build creates that release in both projects, records the deploy and, on production deploys, attaches the commits, which needs Sentry's GitHub integration with this repository added.
 
 Postgres uses two connection strings, which Neon's Vercel integration sets for you:
 
@@ -180,7 +180,7 @@ Migrations aren't run by the deploy: run `uv run alembic upgrade head` in `apps/
 
 - **Hot reload** — `pnpm dev` in `apps/extension/` watches for changes and reloads the extension automatically.
 - **API docs** — Visit `http://localhost:8000/docs` for the interactive Swagger UI.
-- **Monitoring** — Vercel deployments (production and preview) send [Sentry](https://victor-0z.sentry.io) unhandled errors, sampled traces with profiles, and logs (Python `logging` at INFO and up; console warnings and errors on the website). The website reports from `src/instrumentation.ts` (server and edge), `src/instrumentation-client.ts` (browser) and its error boundaries; the API from `app/core/monitoring.py`. Session Replay records only sessions that hit an error or send feedback. "Send feedback" in the account menu, the mobile More sheet and the error page opens Sentry's feedback form (`src/lib/feedback.ts`), without screenshots. Each advisor reply is a `gen_ai.chat` span with the model that answered and its token counts (`app/modules/chatbot/client.py`), and every reply is traced. Request bodies, local variables, prompts and PII stay out, since they carry transcripts and audits. Local runs and tests never report, even with a DSN set: the website reports only when `NEXT_PUBLIC_VERCEL_ENV` is `production` or `preview`, and the API only when `SENTRY_ENVIRONMENT` (Vercel's `VERCEL_ENV`) isn't `development`.
+- **Monitoring** — Production deployments send [Sentry](https://victor-0z.sentry.io) unhandled errors, sampled traces with profiles, and logs (Python `logging` at INFO and up; console warnings and errors on the website). The website reports from `src/instrumentation.ts` (server and edge), `src/instrumentation-client.ts` (browser) and its error boundaries; the API from `app/core/monitoring.py`. Session Replay records only sessions that hit an error or send feedback. "Send feedback" in the account menu, the mobile More sheet and the error page opens Sentry's feedback form (`src/lib/feedback.ts`), without screenshots. Each advisor reply is a `gen_ai.chat` span with the model that answered and its token counts (`app/modules/chatbot/client.py`), and every reply is traced. Request bodies, local variables, prompts and PII stay out, since they carry transcripts and audits. Development runs and tests never report, even with a DSN set. The website uses its Next.js mode (`NODE_ENV`), and the API uses `ENVIRONMENT`; each reports only in `production`.
 - **Errors** — API errors are [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) problem details (`application/problem+json`) with `type`, `title`, `status`, and an optional user-safe `detail`; validation errors add an `errors` list. Raise `HTTPException` in endpoints; `app/core/errors.py` formats it. Sign-in failures redirect to the frontend with `?auth_error=` instead.
 - **Type safety** — API types come from the generated `@workspace/api-client` (see API Client); Banner and local-store types live in `@workspace/shared`.
 
@@ -198,9 +198,18 @@ Commit both. CI fails if either is out of date, and `apps/api` has a test that f
 
 ## Environment Variables
 
+The application has two environments: `production` and `development`.
+
+- **Website:** Next.js selects development for `pnpm dev` and production for `pnpm build` / `pnpm start`.
+- **Extension:** WXT selects development for `pnpm dev` and production for `pnpm build`.
+- **API:** `ENVIRONMENT` accepts only `production` or `development`. It defaults to development locally and uses `VERCEL_ENV` on Vercel when unset. Set `ENVIRONMENT=production` on other production hosts.
+
+Test runners use development application settings. Keep local values in `.env`; provide production values through the deployment host (or `.env.production` for web and extension builds).
+
 Copy `apps/api/.env.example` to `apps/api/.env` and fill in:
 
 ```env
+ENVIRONMENT=development
 DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
 DATABASE_URL_UNPOOLED=         # Optional direct connection for Alembic; defaults to DATABASE_URL
 REDIS_URL=redis://localhost:6379/0
