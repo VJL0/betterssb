@@ -41,7 +41,10 @@ export function RouteError({ error }: { error: unknown }) {
           Go to the home page
         </ButtonLink>
         {FEEDBACK_ENABLED && (
-          <Button variant="ghost" onClick={openFeedbackForm}>
+          <Button
+            variant="ghost"
+            onClick={() => void openFeedbackForm("error_page")}
+          >
             Tell us what happened
           </Button>
         )}

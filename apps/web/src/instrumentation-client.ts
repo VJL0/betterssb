@@ -32,9 +32,17 @@ Sentry.init({
       showName: false,
       // Screenshots aren't masked like Replay, so they could capture records.
       enableScreenshot: false,
+      // The app's button colors; custom properties reach into the form's
+      // shadow root. Not foreground/background: the form names its own
+      // variables --foreground and --background, so var() there would point
+      // at itself and leave the form transparent.
+      themeLight: {
+        accentForeground: "var(--primary-foreground)",
+        accentBackground: "var(--primary)",
+      },
       formTitle: "Send feedback",
-      messageLabel: "What happened, or what would help?",
-      messagePlaceholder: "",
+      messageLabel: "Message",
+      messagePlaceholder: "What happened, or what would help?",
       emailLabel: "Email, if you'd like a reply",
       submitButtonLabel: "Send",
       successMessageText: "Thanks, your feedback was sent.",
