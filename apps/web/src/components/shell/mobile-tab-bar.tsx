@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisIcon, SettingsIcon } from "lucide-react";
+import { EllipsisIcon, MessageSquareIcon, SettingsIcon } from "lucide-react";
 import { useState } from "react";
 import {
   Sheet,
@@ -9,11 +9,16 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/sheet";
 import { cn } from "@workspace/ui/lib/utils";
+import { openFeedbackForm } from "@/lib/feedback";
+import { FEEDBACK_ENABLED } from "@/lib/sentry";
 import { NavLink } from "./nav-link";
 import { PRIMARY_PAGES, SECONDARY_PAGES, readyPages } from "./pages";
 
 const TAB_CLASS =
   "flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none aria-[current=page]:bg-muted aria-[current=page]:text-foreground";
+
+const SHEET_ROW_CLASS =
+  "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none";
 
 /** Phone navigation (under 640 px): main pages as tabs, the rest under More. */
 export function MobileTabBar() {
@@ -74,13 +79,28 @@ export function MobileTabBar() {
                 <NavLink
                   href={page.path}
                   onClick={() => setMoreOpen(false)}
-                  className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none"
+                  className={SHEET_ROW_CLASS}
                 >
                   <page.icon aria-hidden className="size-4" />
                   {page.label}
                 </NavLink>
               </li>
             ))}
+            {FEEDBACK_ENABLED && (
+              <li>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMoreOpen(false);
+                    void openFeedbackForm();
+                  }}
+                  className={cn(SHEET_ROW_CLASS, "w-full")}
+                >
+                  <MessageSquareIcon aria-hidden className="size-4" />
+                  Send feedback
+                </button>
+              </li>
+            )}
           </ul>
         </SheetContent>
       </Sheet>
