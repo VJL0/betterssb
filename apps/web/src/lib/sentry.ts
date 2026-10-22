@@ -9,5 +9,11 @@ const DEPLOYED_TRACES_SAMPLE_RATE = 0.1;
 /** Empty turns Sentry off, as in tests and local runs without a DSN. */
 export const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 
+/** A build-time constant, so server and client render the same feedback UI. */
+export const FEEDBACK_ENABLED = Boolean(SENTRY_DSN);
+
 export const TRACES_SAMPLE_RATE =
   process.env.NODE_ENV === "development" ? 1 : DEPLOYED_TRACES_SAMPLE_RATE;
+
+/** Console warnings and errors become Sentry Logs; routine output stays local. */
+export const CONSOLE_LOG_LEVELS: ("warn" | "error")[] = ["warn", "error"];

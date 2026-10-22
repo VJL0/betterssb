@@ -12,13 +12,25 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [{ source: "/api/:path*", destination: `${API_ORIGIN}/api/:path*` }];
   },
+  async headers() {
+    // Lets Sentry's browser profiler use the JS Self-Profiling API.
+    return [
+      {
+        source: "/:path*",
+        headers: [{ key: "Document-Policy", value: "js-profiling" }],
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, {
   org: "victor-0z",
-  project: "betterssb-web",
-  // Uploads source maps on production builds; without it, builds still pass
-  // but stack traces stay minified.
+  // The release (named for the commit on Vercel) is created in both projects,
+  // since the API tags its events with the same commit. On Vercel the plugin
+  // also attaches commits to production releases and records each deploy.
+  project: ["betterssb-web", "betterssb-api"],
+  // Uploads source maps and creates the release on production builds; without
+  // it, builds still pass but stack traces stay minified.
   authToken: process.env.SENTRY_AUTH_TOKEN,
   widenClientFileUpload: true,
   // Sends browser events through the site, past ad blockers.
