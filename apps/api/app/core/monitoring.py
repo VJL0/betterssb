@@ -10,8 +10,6 @@ from sentry_sdk.integrations.logging import ignore_logger_for_sentry_logs
 
 from app.core.config import Settings
 
-# Local runs (SENTRY_ENVIRONMENT unset) never report, even with a DSN set.
-DEVELOPMENT_ENVIRONMENT = "development"
 # Errors are always sent; only this share of traces is, to stay within quota.
 TRACES_SAMPLE_RATE = 0.1
 # Advisor replies are few and costly, so every one is traced for AI monitoring.
@@ -22,15 +20,15 @@ PROFILE_SESSION_SAMPLE_RATE = 1.0
 
 def init_sentry(settings: Settings) -> None:
     """Report unhandled errors, sampled traces and profiles, and logs from
-    deployments. A no-op in development or without a DSN.
+    production. A no-op in development or without a DSN.
 
     Must run before the FastAPI app is created so its integration hooks in.
     """
-    if settings.SENTRY_ENVIRONMENT == DEVELOPMENT_ENVIRONMENT:
+    if settings.ENVIRONMENT != "production":
         return
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
-        environment=settings.SENTRY_ENVIRONMENT,
+        environment=settings.ENVIRONMENT,
         release=settings.SENTRY_RELEASE,
         traces_sampler=sample_traces,
         profile_session_sample_rate=PROFILE_SESSION_SAMPLE_RATE,
@@ -39,7 +37,6 @@ def init_sentry(settings: Settings) -> None:
         enable_logs=True,
         # Requests and stack frames carry students' transcripts, audits and
         # advisor chats, so keep bodies, local variables, prompts and PII out.
-        send_default_pii=False,
         max_request_body_size="never",
         include_local_variables=False,
         # The advisor records one span per reply, whichever provider answers
