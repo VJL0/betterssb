@@ -91,7 +91,8 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.CheckConstraint(
-            "status IN ('staged', 'published', 'superseded', 'pruned')", name="batch_status"
+            "status IN ('staged', 'published', 'superseded', 'pruned')",
+            name="batch_status",
         ),
         sa.ForeignKeyConstraint(
             ["edition_id"], ["bulletin.edition.id"], ondelete="RESTRICT"
