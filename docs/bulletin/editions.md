@@ -31,13 +31,25 @@ it does not mean academically reviewed (see `progress.md`).
 - **Legacy layouts.** The 2000–2014 editions use different page structures from
   CourseLeaf; the current extractors classify them as `legacy` and do not parse
   them. They need their own extractors once fetched.
-- **PDF-only editions.** `extract-pdf` (pdfplumber, ingest-only dependency
-  group) reads CourseLeaf PDFs with page and bounding-box evidence. On all 1,672
-  retained 2024–2025 page PDFs it matched every one of 25,984 courses and 99.88%
-  of requirement rows from the HTML (see `technology.md`). A 2025–2026 volume
-  has not been available to run it on; once recorded with `import-file`, its
-  output still needs an interpreter path from PDF records (the HTML interpreter
-  reads `ProgramPage` records, which PDF volumes don't yet produce).
+- **PDF-only editions.** `extract-volume` turns a full CourseLeaf volume into an
+  edition's extraction (pages, courses, programs with requirement tables), with
+  page and bounding-box evidence citing the volume, so `interpret`, `import` and
+  `publish` run unchanged. Validated on the two volumes with HTML twins:
+  - 2026–2027 undergraduate, mapped through 2024–2025 pages only (the
+    PDF-only situation): all 6,122 courses with identical titles, credits and
+    prerequisites; 424 programs, 409 with requirement course sets identical to
+    the HTML edition's; 35 new programs unmapped. Importing it staged the batch
+    and publication was refused on those 35 errors, as intended, until
+    overrides name their pages.
+  - 2024–2025 graduate/professional (two-column pages): 6,878 of 6,878
+    courses; 5,659 of 6,163 requirement courses; 393 of 439 programs with
+    identical course sets. Curricula printed only as semester grids (DMD, DPT,
+    OTD, DNP) aren't read from PDFs yet.
+
+  A 2025–2026 volume has not been available. Once recorded with `import-file`,
+  run `extract-volume --edition 2025-2026 --reference-edition 2026-2027
+  --reference-edition 2024-2025`, review the unmapped sections, add overrides,
+  then interpret and import.
 
 ## Adding an edition
 

@@ -157,6 +157,48 @@ def cmd_extract_pdf(args: argparse.Namespace) -> None:
         state.close()
 
 
+def read_extracted_pages(edition: str) -> list:
+    from app.modules.bulletin.ingest.extract.run import ExtractedPage
+
+    with (paths.extracted_dir() / edition / "pages.jsonl").open() as handle:
+        return [ExtractedPage.model_validate_json(line) for line in handle]
+
+
+def cmd_extract_volume(args: argparse.Namespace) -> None:
+    # Needs the `ingest` dependency group (pdfplumber, pdfminer.six).
+    from app.modules.bulletin.ingest.extract.run import write_extraction
+    from app.modules.bulletin.ingest.extract.volume import (
+        extract_volume,
+        reference_paths,
+        tab_vocabulary,
+    )
+
+    output = args.output or paths.extracted_dir() / args.edition
+    if (output / "pages.jsonl").exists() and not args.replace:
+        raise SystemExit(f"{output} already holds an extraction; pass --replace")
+    state = open_state()
+    try:
+        row = state.get(args.url)
+        if row is None or not row["sha256"]:
+            raise SystemExit(f"{args.url} isn't stored; record it with import-file")
+        body = open_store().get(row["sha256"])
+        references = [read_extracted_pages(e) for e in args.reference_edition]
+        overrides = json.loads(args.overrides.read_text()) if args.overrides else None
+        result = extract_volume(
+            body,
+            args.url,
+            row["sha256"],
+            args.edition,
+            reference_paths(*references),
+            tab_vocabulary(*references),
+            overrides,
+        )
+        counts = write_extraction(result, output)
+        logger.info("Extracted volume %s into %s: %s", args.edition, output, counts)
+    finally:
+        state.close()
+
+
 def cmd_relink(_: argparse.Namespace) -> None:
     state = open_state()
     try:
@@ -333,6 +375,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     extract_pdf.add_argument("--edition", action="append", required=True)
 
+    volume = commands.add_parser(
+        "extract-volume",
+        help="split a full-volume PDF into an edition's extraction (--group ingest)",
+    )
+    volume.add_argument("--edition", required=True)
+    volume.add_argument("--url", required=True, help="the volume's official URL")
+    volume.add_argument(
+        "--reference-edition",
+        action="append",
+        required=True,
+        help="extracted editions whose pages name the volume's sections, nearest first",
+    )
+    volume.add_argument(
+        "--overrides", type=Path, help="JSON: section title path → page path"
+    )
+    volume.add_argument("--output", type=Path, help="default: extracted/<edition>")
+    volume.add_argument("--replace", action="store_true")
+
     commands.add_parser(
         "relink",
         help="re-apply scope rules; rebuild links and discovery methods offline",
@@ -410,6 +470,8 @@ def main() -> None:
             cmd_extract(args)
         case "extract-pdf":
             cmd_extract_pdf(args)
+        case "extract-volume":
+            cmd_extract_volume(args)
         case "relink":
             cmd_relink(args)
         case "status":

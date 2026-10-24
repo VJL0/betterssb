@@ -52,8 +52,14 @@ session; robots.txt could not be rechecked here.
   run over every stored PDF took 34 min 47 s in one process (peak 1,691 MB):
   2024–2025, 1,674 PDFs → 38,973 course records (all-level and level listings
   both print each course), 2,744 tables, 0 issues; the 2026–2027 undergraduate
-  volume → 6,122 courses, 920 tables, 0 issues. PDF records don't yet feed
-  `interpret`; a volume-to-pages bridge is being validated on that volume.
+  volume → 6,122 courses, 920 tables, 0 issues.
+- **PDF-only editions** (`extract-volume`): splits a full volume by its
+  bookmarks into the HTML extractor's records, reads two-column pages, maps
+  sections to Bulletin pages through reference editions, and cites the volume
+  as each record's source. Validation numbers are in `editions.md`. Unmapped
+  program sections block publication until an override names their page.
+- **Retention:** `prune` deletes any unpublished batch's rows; once-released
+  batches keep their record as `pruned`.
 
 ### Measured results (local disposable Postgres 16.15, not production)
 
@@ -122,19 +128,25 @@ with the published database:
 2. **Manual sources for disallowed editions.** Archived CourseLeaf editions
    2014–2015 to 2023–2024, the 2025–2026 PDF-only edition and the full-volume
    PDFs are disallowed by robots.txt; they need files saved by a person and
-   recorded with `import-file`/`import-capture` (see `editions.md`).
-3. **Academic review.** Review the 6 + 5 failed totals, the partial and
+   recorded with `import-file`/`import-capture` (see `editions.md`). For a
+   PDF-only volume, `extract-volume` is ready; expect overrides for programs
+   new since the reference editions.
+3. **PDF gaps.** Curricula printed only as semester grids (DMD, DPT, OTD,
+   DNP) and suggested plans aren't read from PDFs; GenEd course lists printed
+   as plain text in volumes give no designations; the volume's Academic
+   Programs chart isn't parsed, so volume programs' credentials are "other".
+4. **Academic review.** Review the 6 + 5 failed totals, the partial and
    uninterpreted nodes (largest groups: elective slots described only in prose,
    counts on text leaves, footnote conditions), and the 23 + 38 programs with
    no requirement or curriculum root; mark reviewed nodes `reviewed`.
-4. **Degree evaluator.** `evaluate.py` evaluates trees conservatively (see
+5. **Degree evaluator.** `evaluate.py` evaluates trees conservatively (see
    `schema.md`); not yet exposed through the API or the web app. Next: overlap
    rules from policy text, and optimal course allocation (OR-Tools CP-SAT)
    outside the read path.
-5. **Production.** Run the migration, import and publish against production's
+6. **Production.** Run the migration, import and publish against production's
    direct database URL after review. Not done.
-6. **Checkpoint.** Publish a new checkpoint release (`bulletin-checkpoint-…`)
-   with the v3 extracts and interpreted files. The `gh` token on this host was
+7. **Checkpoint.** Publish a new checkpoint release (`bulletin-checkpoint-…`)
+   with the v4 extracts, PDF extracts and interpreted files. The `gh` token on this host was
    invalid, so no release was created this session.
 
 ## 2026-10-24 (session 1, Mac) — portable recovery checkpoint
