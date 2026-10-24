@@ -91,3 +91,12 @@ def test_excluded_reasons_group_by_pattern() -> None:
 @pytest.mark.parametrize("printed", ["CIS 4X9X", "BIOL 4XXX", "GUS/ENST 08XX"])
 def test_wildcard_numbers_are_not_courses(printed: str) -> None:
     assert expand_course_code(printed) == []
+
+
+def test_release_actions_say_which_way_they_move() -> None:
+    from app.modules.bulletin.ingest.load import release_action
+
+    assert release_action(3, None, "staged") == "publish"
+    assert release_action(4, 3, "staged") == "publish"
+    assert release_action(3, 4, "superseded") == "rollback"
+    assert release_action(4, 3, "superseded") == "republish"

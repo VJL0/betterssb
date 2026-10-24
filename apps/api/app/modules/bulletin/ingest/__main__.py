@@ -363,7 +363,9 @@ def build_parser() -> argparse.ArgumentParser:
     publish.add_argument("batch", type=int)
     publish.add_argument("--dry-run", action="store_true", help="only run the gates")
     add_database_option(publish)
-    prune = commands.add_parser("prune", help="delete a never-published batch")
+    prune = commands.add_parser(
+        "prune", help="delete an unpublished batch's rows (retention)"
+    )
     prune.add_argument("batch", type=int)
     add_database_option(prune)
     report = commands.add_parser(

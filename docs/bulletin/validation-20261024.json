@@ -12,10 +12,10 @@
       "sha256": {
         "courses.jsonl": "abc30aaf90068223bd63dc58df79bf0cec1c86ae9d3bb8b90925992b4b4b0af7",
         "issues.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "pages.jsonl": "1cf07f5cfe0809fdb8f34701fc0f27bcf11724a9eeb0c47637f2c18f157109f2",
+        "pages.jsonl": "1223fd1ff97849fa1eb983b16c26cd9fd00e71161172a780db8934ea00879e89",
         "program_index.json": "2d11a531cb398b7565f3890435a6c0b10978450c34755d09c678328407c72e0d",
-        "programs.jsonl": "0e6d568fdd26e44a007d2bc8f3fc46fb503faeffeca667f37f0b9b07ff2f8a82",
-        "summary.json": "7533d0ef8bb956dad2e35f6bb9d492397adea82aa97fa6b30e33183d7264295f"
+        "programs.jsonl": "3414c30003994d71c398e55b3d5c515a848e0b9e20d20c0a2ae53046751c593b",
+        "summary.json": "a29f9402003ac02b18cba0bc7614c4bde9fef81cbfb23658d9ebfde1632383ff"
       }
     },
     "2026-2027": {
@@ -29,10 +29,10 @@
       "sha256": {
         "courses.jsonl": "46f9c932ff07453f612b94c97e244ea268d9fbe243b678c2fdda7873fb73eb07",
         "issues.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "pages.jsonl": "ac08a391cebde43166d930049faeaa2148ad92c024b869343fdb6b98cacd41e1",
+        "pages.jsonl": "603187923f4bb95b42fba7f340728458ce308490857e7995940a80911a90366a",
         "program_index.json": "809ffafd45a85ddde58ed48862c62c07b063a16c3e180772e8667f1965b238c0",
-        "programs.jsonl": "91365ceb39acf7d522c3c87bee9150c5b8aaf70a1f23184086c4d15d56e95fe9",
-        "summary.json": "50b40744b3e1d0dfc4d97a9af818b23643b057c2ed96b0c2b74d5de45467da7d"
+        "programs.jsonl": "f50c4b51c17f0ebcd6cd92f7be1693c7b9b0135dd01460771329975b2ebf602a",
+        "summary.json": "a6e4dc6afaccd7452d387c67bf2a34625a1a014f467054b223f2804b27b8475f"
       }
     }
   }

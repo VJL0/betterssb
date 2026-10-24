@@ -36,6 +36,8 @@ class LabeledFact(Record):
 class ProgramPage(Record):
     url: str
     sha256: str
+    # Set when the page was read from another snapshot (a PDF volume).
+    source_url: str | None = None
     name: str
     level: str
     # Breadcrumb trail above the page (Undergraduate › … › College of …).

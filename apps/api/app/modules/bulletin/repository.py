@@ -15,7 +15,16 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 
-from sqlalchemy import Select, and_, case, func, literal_column, or_, select
+from sqlalchemy import (
+    Select,
+    and_,
+    case,
+    func,
+    literal_column,
+    or_,
+    select,
+    text,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.bulletin import schemas
@@ -40,6 +49,7 @@ from app.modules.bulletin.rules import RequirementTree, RequisiteExpression, Sou
 # "CIS", "cis 21", "CIS2168": a subject and an optional number prefix.
 CODE_QUERY = re.compile(r"\s*([A-Za-z]{2,5})\s*([0-9][0-9A-Za-z]{0,4})?\s*")
 REQUISITE_RELATIONS = ("prerequisite", "corequisite")
+CUSTOM_PLANS = text("SET LOCAL plan_cache_mode = force_custom_plan")
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,14 +68,6 @@ class ProgramFilters:
     level: str | None = None
     credential: str | None = None
     unit: str | None = None
-
-
-def _published_batch(edition: str) -> Select[tuple[int]]:
-    return (
-        select(Release.batch_id)
-        .join(Edition, Edition.id == Release.edition_id)
-        .where(Edition.code == edition)
-    )
 
 
 def _text_match(search_column, text_column, query: str):
@@ -119,6 +121,20 @@ class BulletinRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
+    async def _batch(self, edition: str) -> int | None:
+        """The edition's published batch, looked up first so each query plans
+        with its value. Custom plans for the rest of the transaction: asyncpg
+        prepares statements, and after five runs Postgres may switch to a
+        generic plan that ignores the batch, filter and limit values, which
+        took the attribute filter from 5 ms to 64 ms once superseded batches
+        shared the tables."""
+        await self.session.execute(CUSTOM_PLANS)
+        return await self.session.scalar(
+            select(Release.batch_id)
+            .join(Edition, Edition.id == Release.edition_id)
+            .where(Edition.code == edition)
+        )
+
     async def editions(self) -> list[schemas.EditionSummary]:
         courses = (
             select(func.count())
@@ -152,7 +168,8 @@ class BulletinRepository:
             for code, url, published_at, course_count, program_count in rows
         ]
 
-    def _course_rows(self, edition: str) -> Select:
+    @staticmethod
+    def _course_rows(batch_id: int) -> Select:
         return (
             select(
                 CourseVersion.id,
@@ -167,15 +184,15 @@ class BulletinRepository:
                 _attributes(CourseVersion.id).label("attributes"),
             )
             .join(Course, Course.id == CourseVersion.course_id)
-            .where(
-                CourseVersion.batch_id == _published_batch(edition).scalar_subquery()
-            )
+            .where(CourseVersion.batch_id == batch_id)
         )
 
     async def search_courses(
         self, edition: str, filters: CourseFilters, limit: int, offset: int
     ) -> list[schemas.CourseSummary]:
-        statement = self._course_rows(edition)
+        if (batch_id := await self._batch(edition)) is None:
+            return []
+        statement = self._course_rows(batch_id)
         order = [Course.subject, Course.number]
         if filters.query:
             match, rank = _text_match(
@@ -231,16 +248,17 @@ class BulletinRepository:
     async def course(
         self, edition: str, subject: str, number: str
     ) -> schemas.CourseDetail | None:
+        if (batch_id := await self._batch(edition)) is None:
+            return None
         row = (
             await self.session.execute(
-                self._course_rows(edition)
+                self._course_rows(batch_id)
                 .add_columns(
                     CourseVersion.description,
                     CourseVersion.credit_options,
                     CourseVersion.parts,
                     CourseVersion.source,
                     CourseVersion.course_id,
-                    CourseVersion.batch_id,
                 )
                 .where(
                     Course.subject == subject.upper(), Course.number == number.upper()
@@ -277,8 +295,8 @@ class BulletinRepository:
                 )
                 for requisite in requisites
             ],
-            required_by=await self._required_by(row.batch_id, row.course_id),
-            programs=await self._programs_using(row.batch_id, row.course_id),
+            required_by=await self._required_by(batch_id, row.course_id),
+            programs=await self._programs_using(batch_id, row.course_id),
             source=SourceRef.model_validate(row.source),
         )
 
@@ -355,7 +373,8 @@ class BulletinRepository:
             for code, title, credits, d in rows
         ]
 
-    def _program_rows(self, edition: str) -> Select:
+    @staticmethod
+    def _program_rows(batch_id: int) -> Select:
         return select(
             ProgramVersion.id.label("version_id"),
             ProgramVersion.program_id,
@@ -366,7 +385,7 @@ class BulletinRepository:
             ProgramVersion.program_code,
             ProgramVersion.unit_slug,
             ProgramVersion.campuses,
-        ).where(ProgramVersion.batch_id == _published_batch(edition).scalar_subquery())
+        ).where(ProgramVersion.batch_id == batch_id)
 
     @staticmethod
     def _program_summary(row) -> schemas.ProgramSummary:
@@ -384,7 +403,9 @@ class BulletinRepository:
     async def search_programs(
         self, edition: str, filters: ProgramFilters, limit: int, offset: int
     ) -> list[schemas.ProgramSummary]:
-        statement = self._program_rows(edition)
+        if (batch_id := await self._batch(edition)) is None:
+            return []
+        statement = self._program_rows(batch_id)
         order = [ProgramVersion.name]
         if filters.query:
             match, rank = _text_match(
@@ -408,9 +429,11 @@ class BulletinRepository:
     async def program(
         self, edition: str, program_id: int
     ) -> schemas.ProgramDetail | None:
+        if (batch_id := await self._batch(edition)) is None:
+            return None
         row = (
             await self.session.execute(
-                self._program_rows(edition)
+                self._program_rows(batch_id)
                 .add_columns(
                     ProgramVersion.url,
                     ProgramVersion.facts,
@@ -462,9 +485,9 @@ class BulletinRepository:
     async def policies(
         self, edition: str, query: str, topic: str | None, limit: int, offset: int
     ) -> list[schemas.PolicySection]:
-        statement = select(PolicySection).where(
-            PolicySection.batch_id == _published_batch(edition).scalar_subquery()
-        )
+        if (batch_id := await self._batch(edition)) is None:
+            return []
+        statement = select(PolicySection).where(PolicySection.batch_id == batch_id)
         order: Sequence = [PolicySection.url, PolicySection.position]
         if query:
             ts_query = func.websearch_to_tsquery(SEARCH_CONFIG, query)
@@ -488,9 +511,11 @@ class BulletinRepository:
         ]
 
     async def units(self, edition: str) -> list[schemas.AcademicUnit]:
+        if (batch_id := await self._batch(edition)) is None:
+            return []
         units = await self.session.scalars(
             select(AcademicUnit)
-            .where(AcademicUnit.batch_id == _published_batch(edition).scalar_subquery())
+            .where(AcademicUnit.batch_id == batch_id)
             .order_by(AcademicUnit.name)
         )
         return [

@@ -334,7 +334,7 @@ class Loader:
                     _dump(program.facts),
                     program.requirements.model_dump_json(exclude_defaults=True),
                     program.url,
-                    self.document_ids[(program.url, program.sha256)],
+                    self.document_ids[(program.snapshot_url, program.sha256)],
                 )
             )
             tree = program.requirements
@@ -448,7 +448,7 @@ class Loader:
                     unit.kind,
                     unit.level,
                     unit.url,
-                    self.document_ids.get((unit.url, unit.sha256 or "")),
+                    self.document_ids.get((unit.snapshot_url, unit.sha256 or "")),
                 )
                 for unit in units
             ],
@@ -481,7 +481,7 @@ class Loader:
                     policy.tab,
                     policy.topic,
                     policy.body,
-                    self.document_ids[(policy.url, policy.sha256)],
+                    self.document_ids[(policy.snapshot_url, policy.sha256)],
                     _dump([s.model_dump(exclude_none=True) for s in policy.sources]),
                 )
                 for policy in policies
@@ -542,9 +542,9 @@ class EditionRecords:
 
     def source_keys(self) -> set[tuple[str, str]]:
         keys = {(c.source.url, c.source.sha256) for c in self.courses}
-        keys |= {(p.url, p.sha256) for p in self.programs}
-        keys |= {(p.url, p.sha256) for p in self.policies}
-        keys |= {(u.url, u.sha256) for u in self.units if u.sha256}
+        keys |= {(p.snapshot_url, p.sha256) for p in self.programs}
+        keys |= {(p.snapshot_url, p.sha256) for p in self.policies}
+        keys |= {(u.snapshot_url, u.sha256) for u in self.units if u.sha256}
         return keys
 
     def course_codes(self) -> set[str]:
@@ -664,6 +664,14 @@ async def publication_blockers(
     return blockers
 
 
+def release_action(batch_id: int, previous: int | None, status: str) -> str:
+    """How a release event reads: a first release, or a move back to an older
+    batch or forward to a newer one that was released before."""
+    if status != "superseded":
+        return "publish"
+    return "rollback" if previous is not None and batch_id < previous else "republish"
+
+
 async def publish_batch(
     connection: asyncpg.Connection, batch_id: int, *, dry_run: bool = False
 ) -> dict[str, Any]:
@@ -711,14 +719,16 @@ async def publish_batch(
             batch["edition_id"],
             batch_id,
             previous,
-            "rollback" if batch["status"] == "superseded" else "publish",
+            release_action(batch_id, previous, batch["status"]),
         )
     return result
 
 
 async def prune_batch(connection: asyncpg.Connection, batch_id: int) -> None:
-    """Delete a never-published batch's rows. Identities and documents stay.
-    Batches that were ever published are kept for the release history."""
+    """Delete a batch's rows, unless an edition publishes it. Identities and
+    documents stay. A batch that was ever released keeps its record, marked
+    `pruned`, so the release history still resolves; it can't be published
+    again (it has no rows), which ends rollback to it."""
     async with connection.transaction():
         published = await connection.fetchval(
             f"SELECT 1 FROM {SCHEMA}.release WHERE batch_id = $1", batch_id
@@ -730,12 +740,16 @@ async def prune_batch(connection: asyncpg.Connection, batch_id: int) -> None:
             WHERE batch_id = $1 OR previous_batch_id = $1""",
             batch_id,
         )
-        if in_history:
-            raise PublishRefused(f"batch {batch_id} is in the release history")
         for table in ("course_version", "program_version", *BATCH_TABLES[2:]):
             await connection.execute(
                 f"DELETE FROM {SCHEMA}.{table} WHERE batch_id = $1", batch_id
             )
-        await connection.execute(
-            f"DELETE FROM {SCHEMA}.import_batch WHERE id = $1", batch_id
-        )
+        if in_history:
+            await connection.execute(
+                f"UPDATE {SCHEMA}.import_batch SET status = 'pruned' WHERE id = $1",
+                batch_id,
+            )
+        else:
+            await connection.execute(
+                f"DELETE FROM {SCHEMA}.import_batch WHERE id = $1", batch_id
+            )

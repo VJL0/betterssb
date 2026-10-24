@@ -179,6 +179,7 @@ class PolicySection(Record):
     edition: str
     url: str
     sha256: str
+    source_url: str | None = None
     page_kind: PageKind
     page_heading: str
     # "undergraduate", "graduate", or "all" for pages outside both sections.
@@ -334,6 +335,7 @@ def policy_sections(page: ExtractedPage, edition: str) -> list[PolicySection]:
                 edition=edition,
                 url=document.url,
                 sha256=document.sha256,
+                source_url=document.source_url,
                 page_kind=page.kind,
                 page_heading=document.heading,
                 level=page_level(document.url),
@@ -436,7 +438,7 @@ def _heading_evidence(document: PageDocument) -> Evidence:
     # The heading comes from the page's <h1>, which isn't one of its blocks, so
     # the citation is the page as a whole.
     return Evidence(
-        url=document.url,
+        url=document.snapshot_url,
         sha256=document.sha256,
         locator=Locator(),
         text=document.heading,

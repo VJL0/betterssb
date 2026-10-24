@@ -142,6 +142,7 @@ def program_out(
         path=edition_path(program.url),
         url=program.url,
         sha256=program.sha256,
+        source_url=program.source_url,
         name=program.name,
         level=facts.level,
         credential=facts.credential_type,
@@ -175,6 +176,7 @@ def policy_out(section: catalog.PolicySection, position: int) -> PolicyOut:
     return PolicyOut(
         url=section.url,
         sha256=section.sha256,
+        source_url=section.source_url,
         position=position,
         page_kind=section.page_kind,
         page_title=section.page_heading,
@@ -195,6 +197,7 @@ def unit_out(unit: catalog.AcademicUnit) -> UnitOut:
         level=unit.level,
         url=unit.url,
         sha256=unit.evidence.sha256,
+        source_url=unit.evidence.url if unit.evidence.url != unit.url else None,
     )
 
 

@@ -353,7 +353,7 @@
         "programs": 904,
         "units": 31
       },
-      "fingerprint": "abb1aa32a500fbb7d1e6c6d6b9f7f25640e7e5ad994b9b50b5076ae62a1d5ef1",
+      "fingerprint": "5838b9ab1929cb512708b2a53e0d0a96eb66638c9af8bd691679ea6e018587b5",
       "issues": {
         "warning:interpret:requirement_check_failed": 5
       },
@@ -373,7 +373,7 @@
         "professional": 28,
         "undergraduate": 462
       },
-      "published_at": "2026-10-24T18:52:35.891027+00:00",
+      "published_at": "2026-10-24T20:02:53.540201+00:00",
       "requirement_courses_not_listed": 88,
       "requirement_nodes_by_interpretation": {
         "interpreted": 31485,
@@ -403,7 +403,7 @@
         "prerequisite:uninterpreted": 7
       },
       "versions": {
-        "extractor": "3",
+        "extractor": "4",
         "interpreter": "1",
         "rules": "1"
       }
@@ -418,7 +418,7 @@
         "programs": 917,
         "units": 33
       },
-      "fingerprint": "3bc5e6cfa0fd06cf6fcf2bded6532bb7f0b00060d5e2ff4e298ba51cf7c27dda",
+      "fingerprint": "c1f1a162a1ee884fdeee4c44b53869e4f5f6f37b39e78bf0f7e527320283c408",
       "issues": {
         "warning:interpret:requirement_check_failed": 6
       },
@@ -438,7 +438,7 @@
         "professional": 28,
         "undergraduate": 465
       },
-      "published_at": "2026-10-24T18:52:29.019884+00:00",
+      "published_at": "2026-10-24T20:02:47.535010+00:00",
       "requirement_courses_not_listed": 98,
       "requirement_nodes_by_interpretation": {
         "interpreted": 29239,
@@ -468,7 +468,7 @@
         "prerequisite:uninterpreted": 2
       },
       "versions": {
-        "extractor": "3",
+        "extractor": "4",
         "interpreter": "1",
         "rules": "1"
       }

@@ -348,3 +348,31 @@ async def test_search_and_program_queries(
         await client.get(f"/api/bulletin/{CURRENT}/policies", params={"limit": 5})
     ).json()
     assert all(section["sources"] for section in policies)
+
+
+async def test_superseded_batches_can_be_pruned(
+    connection, state, tmp_path: Path
+) -> None:
+    old = await published(
+        connection, state, tmp_path / "a", CURRENT, COURSES_URL, "Data Structures"
+    )
+    new = await published(
+        connection, state, tmp_path / "b", CURRENT, COURSES_URL, "Data Structures II"
+    )
+    await prune_batch(connection, old.batch_id)
+
+    status = await connection.fetchval(
+        "SELECT status FROM bulletin.import_batch WHERE id = $1", old.batch_id
+    )
+    rows = await connection.fetchval(
+        "SELECT count(*) FROM bulletin.course_version WHERE batch_id = $1",
+        old.batch_id,
+    )
+    history = await connection.fetchval("SELECT count(*) FROM bulletin.release_event")
+    assert (status, rows, history) == ("pruned", 0, 2)
+    # Rolling back to a pruned batch is refused; the release stays where it was.
+    with pytest.raises(PublishRefused, match="no course_version rows"):
+        await publish_batch(connection, old.batch_id)
+    assert await connection.fetchval("SELECT batch_id FROM bulletin.release") == (
+        new.batch_id
+    )

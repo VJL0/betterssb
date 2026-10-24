@@ -57,8 +57,14 @@ erDiagram
   never visible.
 - Foreign keys from batches and identities are `RESTRICT`. Only a batch's own
   child rows (attributes, requisites, references, nodes, plans) cascade from
-  their version row. `prune` deletes a never-published batch explicitly;
-  batches that were ever released stay for the history.
+  their version row. `prune` is the retention step: it deletes the rows of any
+  batch that isn't currently published. A batch that was ever released keeps
+  its `import_batch` record, marked `pruned`, so `release_event` still resolves;
+  it can no longer be published (the gates find no rows), so pruning ends the
+  option to roll back to it. Keep the previous batch until the new one has been
+  checked, then prune it: superseded rows share the GIN indexes and slow
+  searches (title search went from about 7 to 12 ms p95 with one superseded
+  batch per edition).
 - Identities are deliberately thin. A course is its code; renumberings and
   equivalencies are not inferred. A program is its path within an edition
   (`/undergraduate/science-technology/computer-science-bs/`); renamed or moved

@@ -34,7 +34,7 @@ Code lives in `apps/api/app/modules/bulletin/`: `ingest/` is the offline tool,
 | Interpret | `interpret --edition E` | — | `interpreted/E/` (courses with requisites, programs with requirement trees and plans, units, policy sections, designations, issues, fingerprinted summary) |
 | Import | `import --edition E --database-url URL [--publish] [--dry-run]` | Postgres | a staged batch (idempotent) |
 | Publish / roll back | `publish BATCH --database-url URL [--dry-run]` | Postgres | the edition's release pointer |
-| Prune | `prune BATCH --database-url URL` | Postgres | deletes a never-published batch |
+| Prune | `prune BATCH --database-url URL` | Postgres | deletes an unpublished batch's rows; a once-released batch keeps its record as `pruned` |
 | Report | `report --database-url URL [--output FILE]` | Postgres | coverage and quality JSON |
 | Checkpoint | `checkpoint --output DIR`, `verify-checkpoint DIR` | — | a verified, portable copy of the data directory |
 
@@ -66,7 +66,8 @@ same batch fingerprint.
 Fetch with `--refresh` (conditional requests) or record new manual files, then
 extract, interpret and import. Changed inputs produce a new batch; the old one
 stays published until `publish` switches to the new one, and publishing the old
-batch again rolls back. Compare `report` output before publishing.
+batch again rolls back. Compare `report` output before publishing, and `prune`
+the superseded batch once the new one is confirmed.
 
 ## Reproduce the environment
 

@@ -74,6 +74,13 @@ class ProgramOut(Record):
     path: str
     url: str
     sha256: str
+    # The snapshot's URL when it isn't `url` (a PDF volume).
+    source_url: str | None = None
+
+    @property
+    def snapshot_url(self) -> str:
+        return self.source_url or self.url
+
     name: str
     level: str
     credential: str
@@ -94,11 +101,22 @@ class UnitOut(Record):
     level: str
     url: str
     sha256: str | None
+    source_url: str | None = None
+
+    @property
+    def snapshot_url(self) -> str:
+        return self.source_url or self.url
 
 
 class PolicyOut(Record):
     url: str
     sha256: str
+    source_url: str | None = None
+
+    @property
+    def snapshot_url(self) -> str:
+        return self.source_url or self.url
+
     position: int
     page_kind: str
     page_title: str

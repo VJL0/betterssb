@@ -87,13 +87,24 @@ class PageDocument(Record):
     sha256: str
     title: str
     heading: str
+    # The snapshot's own URL when it isn't the page's: a section of a full
+    # PDF volume is the page `url`, read from the volume at `source_url`.
+    source_url: str | None = None
     edition_label: str | None = None
     breadcrumbs: list[Crumb] = Field(default_factory=list)
     tabs: list[Tab] = Field(default_factory=list)
     blocks: list[Block] = Field(default_factory=list)
     links: list[Link] = Field(default_factory=list)
 
+    @property
+    def snapshot_url(self) -> str:
+        """Where the bytes at `sha256` came from."""
+        return self.source_url or self.url
+
     def evidence(self, block: Block) -> Evidence:
         return Evidence(
-            url=self.url, sha256=self.sha256, locator=block.locator, text=block.text
+            url=self.snapshot_url,
+            sha256=self.sha256,
+            locator=block.locator,
+            text=block.text,
         )

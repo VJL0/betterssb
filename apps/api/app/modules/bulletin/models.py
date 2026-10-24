@@ -43,7 +43,9 @@ SCHEMA = "bulletin"
 # Course and program text is English; `simple` would miss stemming
 # ("programming" for "program").
 SEARCH_CONFIG = "english"
-BATCH_STATUSES = ("staged", "published", "superseded")
+# "pruned": a superseded batch whose rows were deleted to bound the tables
+# size; its record stays for the release history.
+BATCH_STATUSES = ("staged", "published", "superseded", "pruned")
 
 
 class Base(DeclarativeBase):
