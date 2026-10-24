@@ -48,9 +48,12 @@ session; robots.txt could not be rechecked here.
   group): text blocks, courses and requirement-table rows with page and bbox
   locators. Against all 1,672 retained 2024–2025 page PDFs with HTML twins:
   25,984 of 25,984 courses matched with identical titles, credits and
-  prerequisites, 99.88% of requirement rows, 100% of characters kept. PDF
-  records don't yet feed `interpret`; a volume-to-pages bridge is being
-  validated on the 2026–2027 undergraduate volume.
+  prerequisites, 99.88% of requirement rows, 100% of characters kept. The full
+  run over every stored PDF took 34 min 47 s in one process (peak 1,691 MB):
+  2024–2025, 1,674 PDFs → 38,973 course records (all-level and level listings
+  both print each course), 2,744 tables, 0 issues; the 2026–2027 undergraduate
+  volume → 6,122 courses, 920 tables, 0 issues. PDF records don't yet feed
+  `interpret`; a volume-to-pages bridge is being validated on that volume.
 
 ### Measured results (local disposable Postgres 16.15, not production)
 
