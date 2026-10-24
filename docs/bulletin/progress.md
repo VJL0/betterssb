@@ -42,6 +42,8 @@ session; robots.txt could not be rechecked here.
   script `scripts/bulletin_benchmark.py`.
 - **API:** nine read-only endpoints under `/api/bulletin`; OpenAPI schema and
   the generated TypeScript client regenerated.
+- **Degree evaluator** (`evaluate.py`): pure, conservative evaluation of a tree
+  against completed courses, with property tests over real programs.
 - **PDF extraction:** pdfplumber in an ingest-only dependency group; see the PDF
   status below.
 
@@ -117,9 +119,10 @@ with the published database:
    uninterpreted nodes (largest groups: elective slots described only in prose,
    counts on text leaves, footnote conditions), and the 23 + 38 programs with
    no requirement or curriculum root; mark reviewed nodes `reviewed`.
-4. **Degree evaluator.** A deterministic evaluator over the trees, returning the
-   `Outcome` states; OR-Tools CP-SAT only for optimal course allocation across
-   overlapping requirements, outside the read path.
+4. **Degree evaluator.** `evaluate.py` evaluates trees conservatively (see
+   `schema.md`); not yet exposed through the API or the web app. Next: overlap
+   rules from policy text, and optimal course allocation (OR-Tools CP-SAT)
+   outside the read path.
 5. **Production.** Run the migration, import and publish against production's
    direct database URL after review. Not done.
 6. **Checkpoint.** Publish a new checkpoint release (`bulletin-checkpoint-…`)
