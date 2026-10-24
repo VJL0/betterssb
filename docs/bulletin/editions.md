@@ -40,7 +40,9 @@ it does not mean academically reviewed (see `progress.md`).
     prerequisites; 424 programs, 409 with requirement course sets identical to
     the HTML edition's; 35 new programs unmapped. Importing it staged the batch
     and publication was refused on those 35 errors, as intended, until
-    overrides name their pages.
+    overrides name their pages. Mapped through its own edition's pages, the
+    same volume published cleanly: 6,122 courses, 459 programs, 22,870
+    requirement nodes, 0 errors, the volume as its only source document.
   - 2024–2025 graduate/professional (two-column pages): 6,878 of 6,878
     courses; 5,659 of 6,163 requirement courses; 393 of 439 programs with
     identical course sets. Curricula printed only as semester grids (DMD, DPT,

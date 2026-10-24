@@ -88,13 +88,16 @@ fingerprint, same batch).
 review. No record is marked `reviewed`. Counts come from `report-20261024.json`
 and direct queries of the published batches.
 
-Query latency (warm p95, 50 runs, production repository code; cold-connection
-first runs 13–28 ms): course by code 5.6 ms, title search 7.8 ms, misspelt
-search 6.9 ms, code-prefix search 5.1 ms, subject/credit filter 3.7 ms,
-attribute/level filter 4.3 ms, majors in a college 1.5 ms, program search
-3.6 ms, full requirement tree 3.2 ms, course history 1.6 ms, program history
-1.0 ms, policy search 5.7 ms, comparing a program across two editions 8.8 ms.
-Database size 139 MB including indexes. See `benchmark-20261024.json`.
+Query latency (warm p95 over 50 runs on an idle host, production repository
+code; cold-connection first runs 8–32 ms): course by code 8.3 ms, title search
+12.2 ms, misspelt search 9.3 ms, code-prefix search 6.2 ms, subject/credit
+filter 5.0 ms, attribute/level filter 6.7 ms, majors in a college 2.4 ms,
+program search 6.0 ms, full requirement tree 6.5 ms, course history 1.4 ms,
+program history 1.4 ms, policy search 5.0 ms, comparing a program across two
+editions 10.4 ms. Database size 139 MB including indexes. Each request first
+resolves the published batch and keeps custom plans, adding about 1 ms; without
+that, Postgres's generic plan took the attribute filter to 64 ms once
+superseded batches shared the tables. See `benchmark-20261024.json`.
 
 Tests: 268 bulletin unit tests and 8 Postgres integration tests pass; the full
 API suite (556 tests) and the API client's typecheck and tests pass.
