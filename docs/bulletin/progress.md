@@ -62,7 +62,7 @@ retained extraction files. The release upload status is recorded below.
    retained program index. Zero extraction issues does not establish completeness
    or correctness. Add input/parser fingerprints and review decisions so unchanged
    approved records can be reused without interpretation.
-3. Review 11 failed URL records and two robots-blocked current records. Twenty-one
+3. Review 13 failed URL records and two robots-blocked current records. Twenty-three
    legacy URLs spanning 2000–2014 remain pending. Earlier CourseLeaf archives and
    PDFs remain excluded by crawler policy; use existing/manual source imports.
 4. Compare the prior schema and deterministic loader against the current evidence
@@ -76,4 +76,16 @@ retained extraction files. The release upload status is recorded below.
 
 ### Persistence status
 
-Prepared locally; upload receipt will be appended after GitHub confirms it.
+GitHub upload completed and was downloaded into a new directory. The downloaded
+archive checksum and full restored checkpoint verification both passed (5,086
+files, 686,344,343 payload bytes). GitHub reports archive asset 672950464 as
+`uploaded`, size 217,105,396 bytes, with the same SHA-256 recorded above.
+
+[Draft release](https://github.com/VJL0/betterssb/releases/tag/untagged-9339984c61372c62b896)
+requires authenticated access. Retrieve by the logical tag
+`bulletin-checkpoint-20261024` using the CLI, even while GitHub displays an
+`untagged-…` URL for the draft.
+
+Remote branches verified: `feat/bulletin-knowledge-base` (implementation checkpoint
+`f855bad98e9fbd28eafae6849312b8f4c0d15bb0`) and `backup/bulletin-v1`
+(`d7c24cd17658d0acd9f866667fb879148f332188`). The main branch was not changed.
