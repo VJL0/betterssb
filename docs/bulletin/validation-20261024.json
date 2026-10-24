@@ -1,0 +1,39 @@
+{
+  "academic_validation": "not_asserted",
+  "editions": {
+    "2024-2025": {
+      "counts": {
+        "courses": 12995,
+        "issues": 0,
+        "pages": 1674,
+        "programs": 880
+      },
+      "evidence_references_checked": 67942,
+      "sha256": {
+        "courses.jsonl": "89a05aca5f51f043da253c73a4c145783f04a13e7fa41b967ecab91b612681ba",
+        "issues.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pages.jsonl": "650bb9f8204d9912112bc028250f6b2a90948ec57b285ac2e685d1c11136bed4",
+        "program_index.json": "2d11a531cb398b7565f3890435a6c0b10978450c34755d09c678328407c72e0d",
+        "programs.jsonl": "41ca6d7f2ce33b8ba92f7b210c01b2d4d6551f28aab7fd58a5b579b69c22d42d",
+        "summary.json": "0faa52cb006b53e2f4bf281c6d244f3b9c954631f736b1f3d362943844e64d79"
+      }
+    },
+    "2026-2027": {
+      "counts": {
+        "courses": 12831,
+        "issues": 0,
+        "pages": 1680,
+        "programs": 909
+      },
+      "evidence_references_checked": 67773,
+      "sha256": {
+        "courses.jsonl": "cc75140c617233483f8280e02731aceac2de4b1a6ef81900dcce80df6a46030f",
+        "issues.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pages.jsonl": "8850dac500b399a2867c8575a0785e32cb84edcb2b45f53364c4af6c9de0e696",
+        "program_index.json": "809ffafd45a85ddde58ed48862c62c07b063a16c3e180772e8667f1965b238c0",
+        "programs.jsonl": "89e186180a1356b17fc87489369c5d8a14bc5118e15ee54b820bf60d9a6cfa7f",
+        "summary.json": "ba5f62b8b2b55ba8806bb795a137ea2b64f4364e2a7bdd910b3b7a4f83562b2f"
+      }
+    }
+  }
+}
