@@ -8,6 +8,7 @@ treated as failures: requirements legitimately name discontinued courses.
 
 from __future__ import annotations
 
+import re
 from collections import Counter, defaultdict
 from typing import Any
 
@@ -15,6 +16,10 @@ import asyncpg
 
 from app.modules.bulletin.ingest.crawl_state import CrawlState
 from app.modules.bulletin.models import SCHEMA
+
+# Reasons name the page they defer to ("its content is on /courses/aaas/");
+# grouping needs the pattern, not the path.
+REASON_PATH = re.compile(r"/[\w./-]+/")
 
 
 def crawl_coverage(state: CrawlState) -> dict[str, Any]:
@@ -28,7 +33,7 @@ def crawl_coverage(state: CrawlState) -> dict[str, Any]:
         if row["edition"]:
             by_edition[row["edition"]][f"{row['level']}:{row['status']}"] += 1
         if row["status"] == "excluded":
-            excluded_reasons[row["reason"]] += 1
+            excluded_reasons[REASON_PATH.sub("<path>", row["reason"])] += 1
         elif row["status"] in {"failed", "blocked_robots", "pending"}:
             failures.append(
                 {

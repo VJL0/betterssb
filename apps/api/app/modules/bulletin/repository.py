@@ -2,17 +2,20 @@
 
 Every query goes through `release`, so only published batches are visible and
 an import in progress never is. Search uses Postgres full-text search (ranked
-by `ts_rank`) and falls back to trigram similarity on titles, so "data struct"
-and "datastructures" both find Data Structures.
+by `ts_rank`) or-ed with trigram similarity on titles, so "data structure" and
+the misspelt "data structres" both find Data Structures; both conditions use
+their GIN indexes. A query shaped like a course code ("CIS 21", "cis2168")
+also matches codes by prefix through the course identity index.
 """
 
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 
-from sqlalchemy import Select, and_, func, literal_column, or_, select
+from sqlalchemy import Select, and_, case, func, literal_column, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.bulletin import schemas
@@ -34,8 +37,8 @@ from app.modules.bulletin.models import (
 )
 from app.modules.bulletin.rules import RequirementTree, RequisiteExpression, SourceRef
 
-# Below this, a trigram match is noise ("cis" matches half the catalog).
-TRIGRAM_THRESHOLD = 0.3
+# "CIS", "cis 21", "CIS2168": a subject and an optional number prefix.
+CODE_QUERY = re.compile(r"\s*([A-Za-z]{2,5})\s*([0-9][0-9A-Za-z]{0,4})?\s*")
 REQUISITE_RELATIONS = ("prerequisite", "corequisite")
 
 
@@ -66,13 +69,23 @@ def _published_batch(edition: str) -> Select[tuple[int]]:
 
 
 def _text_match(search_column, text_column, query: str):
+    """Full-text or trigram match, and a rank for both. `%` is pg_trgm's
+    indexable similarity operator (threshold `pg_trgm.similarity_threshold`,
+    0.3 by default); calling `similarity()` in the condition would scan."""
     ts_query = func.websearch_to_tsquery(SEARCH_CONFIG, query)
     return (
-        or_(
-            search_column.op("@@")(ts_query),
-            func.similarity(text_column, query) > TRIGRAM_THRESHOLD,
-        ),
+        or_(search_column.op("@@")(ts_query), text_column.op("%")(query)),
         func.ts_rank(search_column, ts_query) + func.similarity(text_column, query),
+    )
+
+
+def _code_prefix(query: str) -> Select[tuple[int]] | None:
+    """Course ids whose code starts like the query, if it's shaped like a code."""
+    if (match := CODE_QUERY.fullmatch(query)) is None:
+        return None
+    subject, number = match[1].upper(), (match[2] or "").upper()
+    return select(Course.id).where(
+        Course.subject == subject, Course.number.startswith(number)
     )
 
 
@@ -165,14 +178,30 @@ class BulletinRepository:
         statement = self._course_rows(edition)
         order = [Course.subject, Course.number]
         if filters.query:
-            code = filters.query.upper().replace(" ", "")
             match, rank = _text_match(
                 CourseVersion.search, CourseVersion.title, filters.query
             )
-            statement = statement.where(
-                or_(match, func.replace(Course.code, " ", "").startswith(code))
+            code_prefix = _code_prefix(filters.query)
+            # Resolved first: an id list or-ed with the text match keeps every
+            # branch on an index, where a subquery would scan the versions.
+            course_ids = (
+                list(await self.session.scalars(code_prefix))
+                if code_prefix is not None
+                else []
             )
-            order = [rank.desc(), *order]
+            if course_ids:
+                code_match = CourseVersion.course_id.in_(course_ids)
+                statement = statement.where(or_(match, code_match))
+                # Code matches first, in code order; then text matches by rank.
+                order = [
+                    case((code_match, 0), else_=1),
+                    case((code_match, Course.code)),
+                    rank.desc(),
+                    *order,
+                ]
+            else:
+                statement = statement.where(match)
+                order = [rank.desc(), *order]
         if filters.subject:
             statement = statement.where(Course.subject == filters.subject.upper())
         if filters.attribute:

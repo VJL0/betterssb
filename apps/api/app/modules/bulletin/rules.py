@@ -24,6 +24,7 @@ from enum import StrEnum
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
 
 RULES_VERSION = "1"
 
@@ -56,7 +57,14 @@ def expand_course_code(text: str) -> list[str]:
 
 
 class RuleModel(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    # Stored and written snake_case (`model_dump_json()`); the API serializes
+    # by alias, so responses are camelCase like the rest of BetterSSB's API.
+    model_config = ConfigDict(
+        extra="forbid",
+        alias_generator=to_camel,
+        validate_by_name=True,
+        validate_by_alias=True,
+    )
 
 
 class Interpretation(StrEnum):

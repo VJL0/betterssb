@@ -672,11 +672,11 @@
             "title": "Attributes",
             "type": "array"
           },
-          "exclude_courses": {
+          "excludeCourses": {
             "items": {
               "type": "string"
             },
-            "title": "Exclude Courses",
+            "title": "Excludecourses",
             "type": "array"
           },
           "level": {
@@ -690,7 +690,7 @@
             ],
             "title": "Level"
           },
-          "number_max": {
+          "numberMax": {
             "anyOf": [
               {
                 "type": "string"
@@ -699,9 +699,9 @@
                 "type": "null"
               }
             ],
-            "title": "Number Max"
+            "title": "Numbermax"
           },
-          "number_min": {
+          "numberMin": {
             "anyOf": [
               {
                 "type": "string"
@@ -710,7 +710,7 @@
                 "type": "null"
               }
             ],
-            "title": "Number Min"
+            "title": "Numbermin"
           },
           "subjects": {
             "items": {
@@ -2202,7 +2202,7 @@
             ],
             "title": "Course"
           },
-          "course_filter": {
+          "courseFilter": {
             "anyOf": [
               {
                 "$ref": "#/components/schemas/CourseFilter"
@@ -2219,9 +2219,9 @@
             "title": "Footnotes",
             "type": "array"
           },
-          "hours_text": {
+          "hoursText": {
             "default": "",
-            "title": "Hours Text",
+            "title": "Hourstext",
             "type": "string"
           },
           "id": {
@@ -2250,7 +2250,7 @@
             "title": "Label",
             "type": "string"
           },
-          "max_courses": {
+          "maxCourses": {
             "anyOf": [
               {
                 "type": "integer"
@@ -2259,9 +2259,9 @@
                 "type": "null"
               }
             ],
-            "title": "Max Courses"
+            "title": "Maxcourses"
           },
-          "max_credits": {
+          "maxCredits": {
             "anyOf": [
               {
                 "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
@@ -2271,7 +2271,7 @@
                 "type": "null"
               }
             ],
-            "title": "Max Credits"
+            "title": "Maxcredits"
           },
           "milestone": {
             "anyOf": [
@@ -2298,7 +2298,7 @@
             ],
             "title": "Milestone"
           },
-          "min_courses": {
+          "minCourses": {
             "anyOf": [
               {
                 "type": "integer"
@@ -2307,9 +2307,9 @@
                 "type": "null"
               }
             ],
-            "title": "Min Courses"
+            "title": "Mincourses"
           },
-          "min_credits": {
+          "minCredits": {
             "anyOf": [
               {
                 "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
@@ -2319,9 +2319,9 @@
                 "type": "null"
               }
             ],
-            "title": "Min Credits"
+            "title": "Mincredits"
           },
-          "min_grade": {
+          "minGrade": {
             "anyOf": [
               {
                 "type": "string"
@@ -2330,7 +2330,7 @@
                 "type": "null"
               }
             ],
-            "title": "Min Grade"
+            "title": "Mingrade"
           },
           "notes": {
             "items": {
@@ -2339,9 +2339,9 @@
             "title": "Notes",
             "type": "array"
           },
-          "source_text": {
+          "sourceText": {
             "default": "",
-            "title": "Source Text",
+            "title": "Sourcetext",
             "type": "string"
           },
           "sources": {
@@ -2367,8 +2367,8 @@
         "additionalProperties": false,
         "description": "A program version's requirements: one root per requirement table, in page\norder, under the headings and tab the table sits in.",
         "properties": {
-          "program_url": {
-            "title": "Program Url",
+          "programUrl": {
+            "title": "Programurl",
             "type": "string"
           },
           "prose": {
@@ -2385,14 +2385,14 @@
             "title": "Roots",
             "type": "array"
           },
-          "rules_version": {
+          "rulesVersion": {
             "default": "1",
-            "title": "Rules Version",
+            "title": "Rulesversion",
             "type": "string"
           }
         },
         "required": [
-          "program_url",
+          "programUrl",
           "roots"
         ],
         "title": "RequirementTree",
@@ -2425,7 +2425,7 @@
             ],
             "title": "Course"
           },
-          "course_filter": {
+          "courseFilter": {
             "anyOf": [
               {
                 "$ref": "#/components/schemas/CourseFilter"
@@ -2449,7 +2449,7 @@
             "title": "Kind",
             "type": "string"
           },
-          "min_count": {
+          "minCount": {
             "anyOf": [
               {
                 "type": "integer"
@@ -2458,9 +2458,9 @@
                 "type": "null"
               }
             ],
-            "title": "Min Count"
+            "title": "Mincount"
           },
-          "min_credits": {
+          "minCredits": {
             "anyOf": [
               {
                 "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
@@ -2470,9 +2470,9 @@
                 "type": "null"
               }
             ],
-            "title": "Min Credits"
+            "title": "Mincredits"
           },
-          "min_gpa": {
+          "minGpa": {
             "anyOf": [
               {
                 "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
@@ -2482,9 +2482,9 @@
                 "type": "null"
               }
             ],
-            "title": "Min Gpa"
+            "title": "Mingpa"
           },
-          "min_grade": {
+          "minGrade": {
             "anyOf": [
               {
                 "type": "string"
@@ -2493,7 +2493,7 @@
                 "type": "null"
               }
             ],
-            "title": "Min Grade"
+            "title": "Mingrade"
           },
           "score": {
             "anyOf": [

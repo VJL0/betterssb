@@ -425,21 +425,21 @@ export type CourseFilter = {
    */
   attributes?: Array<string>;
   /**
-   * Exclude Courses
+   * Excludecourses
    */
-  exclude_courses?: Array<string>;
+  excludeCourses?: Array<string>;
   /**
    * Level
    */
   level?: string | null;
   /**
-   * Number Max
+   * Numbermax
    */
-  number_max?: string | null;
+  numberMax?: string | null;
   /**
-   * Number Min
+   * Numbermin
    */
-  number_min?: string | null;
+  numberMin?: string | null;
   /**
    * Subjects
    */
@@ -1326,15 +1326,15 @@ export type RequirementNode = {
    * Course
    */
   course?: string | null;
-  course_filter?: CourseFilter | null;
+  courseFilter?: CourseFilter | null;
   /**
    * Footnotes
    */
   footnotes?: Array<string>;
   /**
-   * Hours Text
+   * Hourstext
    */
-  hours_text?: string;
+  hoursText?: string;
   /**
    * Id
    */
@@ -1356,13 +1356,13 @@ export type RequirementNode = {
    */
   label?: string;
   /**
-   * Max Courses
+   * Maxcourses
    */
-  max_courses?: number | null;
+  maxCourses?: number | null;
   /**
-   * Max Credits
+   * Maxcredits
    */
-  max_credits?: string | null;
+  maxCredits?: string | null;
   /**
    * Milestone
    */
@@ -1381,25 +1381,25 @@ export type RequirementNode = {
     | "other"
     | null;
   /**
-   * Min Courses
+   * Mincourses
    */
-  min_courses?: number | null;
+  minCourses?: number | null;
   /**
-   * Min Credits
+   * Mincredits
    */
-  min_credits?: string | null;
+  minCredits?: string | null;
   /**
-   * Min Grade
+   * Mingrade
    */
-  min_grade?: string | null;
+  minGrade?: string | null;
   /**
    * Notes
    */
   notes?: Array<string>;
   /**
-   * Source Text
+   * Sourcetext
    */
-  source_text?: string;
+  sourceText?: string;
   /**
    * Sources
    */
@@ -1415,9 +1415,9 @@ export type RequirementNode = {
  */
 export type RequirementTree = {
   /**
-   * Program Url
+   * Programurl
    */
-  program_url: string;
+  programUrl: string;
   /**
    * Prose
    */
@@ -1427,9 +1427,9 @@ export type RequirementTree = {
    */
   roots: Array<RequirementNode>;
   /**
-   * Rules Version
+   * Rulesversion
    */
-  rules_version?: string;
+  rulesVersion?: string;
 };
 
 /**
@@ -1450,7 +1450,7 @@ export type RequisiteExpression = {
    * Course
    */
   course?: string | null;
-  course_filter?: CourseFilter | null;
+  courseFilter?: CourseFilter | null;
   /**
    * Kind
    */
@@ -1464,21 +1464,21 @@ export type RequisiteExpression = {
     | "condition"
     | "text";
   /**
-   * Min Count
+   * Mincount
    */
-  min_count?: number | null;
+  minCount?: number | null;
   /**
-   * Min Credits
+   * Mincredits
    */
-  min_credits?: string | null;
+  minCredits?: string | null;
   /**
-   * Min Gpa
+   * Mingpa
    */
-  min_gpa?: string | null;
+  minGpa?: string | null;
   /**
-   * Min Grade
+   * Mingrade
    */
-  min_grade?: string | null;
+  minGrade?: string | null;
   /**
    * Score
    */
