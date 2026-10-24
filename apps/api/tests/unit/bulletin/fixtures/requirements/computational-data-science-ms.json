@@ -1,0 +1,1596 @@
+{
+ "facts": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 454,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[4]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Time Limit for Degree Completion: 5 years",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Time Limit for Degree Completion",
+   "value": "5 years"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 455,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[5]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Campus Location: Main",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Campus Location",
+   "value": "Main"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 456,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[6]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Full-Time/Part-Time Status: Students complete the degree program through classes offered after 4:30 p.m. The degree program can be completed on a full- or part-time basis.",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Full-Time/Part-Time Status",
+   "value": "Students complete the degree program through classes offered after 4:30 p.m. The degree program can be completed on a full- or part-time basis."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 457,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[7]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Areas of Specialization: Research interests of faculty include:",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Areas of Specialization",
+   "value": "Research interests of faculty include:"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 481,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[8]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Job Prospects: Graduates gain the necessary skills to find positions in the data science field requiring a mix of data analysis skills, the ability to deal with large quantities of data, and a strong foundation in computer science. Graduates are also prepared to undertake doctoral studies, either to deepen their overall data science expertise or learn how to better use their analytics skills in a particular data-rich domain.",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Job Prospects",
+   "value": "Graduates gain the necessary skills to find positions in the data science field requiring a mix of data analysis skills, the ability to deal with large quantities of data, and a strong foundation in computer science. Graduates are also prepared to undertake doctoral studies, either to deepen their overall data science expertise or learn how to better use their analytics skills in a particular data-rich domain."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 482,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[9]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Non-Matriculated Student Policy: Non-matriculated students are permitted to take a maximum of two graduate-level CIS courses.",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Non-Matriculated Student Policy",
+   "value": "Non-matriculated students are permitted to take a maximum of two graduate-level CIS courses."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 483,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[10]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Financing Opportunities: Assistantships provide a stipend and full-time tuition to qualified students, but are typically reserved for doctoral students.",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Financing Opportunities",
+   "value": "Assistantships provide a stipend and full-time tuition to qualified students, but are typically reserved for doctoral students."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 487,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[1]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Application Deadline:",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Application Deadline",
+   "value": ""
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 492,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[5]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Letters of Reference: Number Required: 2",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Letters of Reference",
+   "value": "Number Required: 2"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 495,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[7]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Coursework Required for Admission Consideration: A minimum of one year of programming and data structures using the C++ or Java programming language and one year of theoretical calculus are required. This includes coursework equivalent to CIS 1068 Program Design and Abstraction, CIS 2168 Data Structures, MATH 1041 Calculus I, and MATH 1042 Calculus II.",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Coursework Required for Admission Consideration",
+   "value": "A minimum of one year of programming and data structures using the C++ or Java programming language and one year of theoretical calculus are required. This includes coursework equivalent to CIS 1068 Program Design and Abstraction, CIS 2168 Data Structures, MATH 1041 Calculus I, and MATH 1042 Calculus II."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 498,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[8]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Bachelor's Degree in Discipline/Related Discipline: A baccalaureate degree in Computer Science is required. Applicants who have insufficient undergraduate coursework in Computer Science will need to take undergraduate courses to address any deficiencies. Students without a Computer Science degree are typically required to take the following courses, which cannot be counted for credit toward the MS degree:",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Bachelor's Degree in Discipline/Related Discipline",
+   "value": "A baccalaureate degree in Computer Science is required. Applicants who have insufficient undergraduate coursework in Computer Science will need to take undergraduate courses to address any deficiencies. Students without a Computer Science degree are typically required to take the following courses, which cannot be counted for credit toward the MS degree:"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 524,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[9]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Statement of Goals: In up to 500 words, explain your interest in this specific program and what career goals you have. Describe your work and academic experiences with specific mentions of internships, course projects, or research. Share any other relevant information that you feel should be taken into consideration.",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Statement of Goals",
+   "value": "In up to 500 words, explain your interest in this specific program and what career goals you have. Describe your work and academic experiences with specific mentions of internships, course projects, or research. Share any other relevant information that you feel should be taken into consideration."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 525,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[10]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Standardized Test Scores: GRE: Not required",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Standardized Test Scores",
+   "value": "GRE: Not required"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 534,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[12]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Resume: Current resume required.",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Resume",
+   "value": "Current resume required."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 535,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[13]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Transfer Credit: Graduate-level Computer Science coursework completed no more than five years prior to the student's matriculation in the graduate program may be transferred into the Computational Data Science MS program. The student must have earned an \"A\" in the course, and must submit a rationale for applying the credits to the current graduate program. The maximum number of credits a student may transfer is 6.",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Transfer Credit",
+   "value": "Graduate-level Computer Science coursework completed no more than five years prior to the student's matriculation in the graduate program may be transferred into the Computational Data Science MS program. The student must have earned an \"A\" in the course, and must submit a rationale for applying the credits to the current graduate program. The maximum number of credits a student may transfer is 6."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 538,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/p[1]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "General Program Requirements: Number of Credits Required Beyond the Baccalaureate: 30",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "General Program Requirements",
+   "value": "Number of Credits Required Beyond the Baccalaureate: 30"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 539,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/p[3]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Culminating Event: Capstone Project: Under the close supervision of CIS graduate faculty, students complete a capstone project as the culminating event. CIS 9995 Capstone Project is taken for only 3 credits. Students who choose to complete a master's thesis must take 6 credits of CIS 9996 Master's Thesis Research for the capstone.",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Culminating Event",
+   "value": "Capstone Project: Under the close supervision of CIS graduate faculty, students complete a capstone project as the culminating event. CIS 9995 Capstone Project is taken for only 3 credits. Students who choose to complete a master's thesis must take 6 credits of CIS 9996 Master's Thesis Research for the capstone."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 553,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/p[3]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Cohort Code: XMSCDS",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Cohort Code",
+   "value": "XMSCDS"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 554,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/p[4]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Minimum Cumulative GPA: 3.25",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "Minimum Cumulative GPA",
+   "value": "3.25"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 691,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/p[6]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "\u200bApplication: https://cst.temple.edu/admissions/graduate-admissions",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "label": "\u200bApplication",
+   "value": "https://cst.temple.edu/admissions/graduate-admissions"
+  }
+ ],
+ "level": "graduate",
+ "name": "Computational Data Science MS",
+ "plans": [],
+ "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+ "tables": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 499,
+     "page": null,
+     "tab": "admissiontextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Course List Code Title Credit Hours CIS 2107Computer Systems and Low-Level Programming4 CIS 2166Mathematical Concepts in Computing II4 CIS 2168Data Structures4 CIS 3207Introduction to Systems Programming and Operating Systems3-4 or CIS 5012 System Software and Operating Systems CIS 3223Data Structures and Algorithms3 or CIS 5011 Programming and Data Structure",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "footnotes": [],
+   "index": 0,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "firstrow"
+     ],
+     "code_text": "CIS 2107",
+     "comment": "",
+     "courses": [
+      "CIS 2107"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 514,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[1]"
+     },
+     "title": "Computer Systems and Low-Level Programming"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 2166",
+     "comment": "",
+     "courses": [
+      "CIS 2166"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 515,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[2]"
+     },
+     "title": "Mathematical Concepts in Computing II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 2168",
+     "comment": "",
+     "courses": [
+      "CIS 2168"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 516,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[3]"
+     },
+     "title": "Data Structures"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3207",
+     "comment": "",
+     "courses": [
+      "CIS 3207"
+     ],
+     "footnotes": [],
+     "hours": "3-4",
+     "indent": 0,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 517,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[4]"
+     },
+     "title": "Introduction to Systems Programming and Operating Systems"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd"
+     ],
+     "code_text": "or CIS 5012",
+     "comment": "",
+     "courses": [
+      "CIS 5012"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 4,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 518,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[5]"
+     },
+     "title": "System Software and Operating Systems"
+    },
+    {
+     "classes": [
+      "even",
+      "lastrow"
+     ],
+     "code_text": "CIS 3223",
+     "comment": "",
+     "courses": [
+      "CIS 3223"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 5,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 519,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[6]"
+     },
+     "title": "Data Structures and Algorithms"
+    },
+    {
+     "classes": [
+      "orclass",
+      "even",
+      "lastrow"
+     ],
+     "code_text": "or CIS 5011",
+     "comment": "",
+     "courses": [
+      "CIS 5011"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 6,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 520,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[7]"
+     },
+     "title": "Programming and Data Structure"
+    }
+   ],
+   "section": [
+    "Admission Requirements and Deadlines"
+   ],
+   "tab": "admissiontextcontainer"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 538,
+     "page": null,
+     "tab": "programrequirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Course List Code Title Credit Hours Core Courses CIS 5511Programming Techniques3 CIS 5515Design and Analysis of Algorithms3 CIS 5526Machine Learning3 Select one from the following:3 CIS 5512Operating Systems CIS 5516Principles of Data Management CIS 5642Computer Architecture Electives15-12 Select at most three Big Data courses from the following: CIS 5512Operating Systems 1 CIS 5516Principles of Data Management 1 CIS 5517Data-Intensive and Cloud Computing CIS 5590Topics in Computer Science 2 CIS",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "footnotes": [
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 538,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl/dd[1]"
+      },
+      "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+      "text": "Course may be selected as an elective if not taken as a core course above.",
+      "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+     },
+     "marker": "1",
+     "text": "Course may be selected as an elective if not taken as a core course above."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 538,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl/dd[2]"
+      },
+      "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+      "text": "Selection of any of these courses requires approval from the student's advisor.",
+      "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+     },
+     "marker": "2",
+     "text": "Selection of any of these courses requires approval from the student's advisor."
+    }
+   ],
+   "index": 1,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "areaheader",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "Core Courses",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5511",
+     "comment": "",
+     "courses": [
+      "CIS 5511"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[2]"
+     },
+     "title": "Programming Techniques"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5515",
+     "comment": "",
+     "courses": [
+      "CIS 5515"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[3]"
+     },
+     "title": "Design and Analysis of Algorithms"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5526",
+     "comment": "",
+     "courses": [
+      "CIS 5526"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[4]"
+     },
+     "title": "Machine Learning"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Select one from the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 4,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[5]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5512",
+     "comment": "",
+     "courses": [
+      "CIS 5512"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 5,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[6]"
+     },
+     "title": "Operating Systems"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5516",
+     "comment": "",
+     "courses": [
+      "CIS 5516"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[7]"
+     },
+     "title": "Principles of Data Management"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5642",
+     "comment": "",
+     "courses": [
+      "CIS 5642"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 7,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[8]"
+     },
+     "title": "Computer Architecture"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Electives",
+     "courses": [],
+     "footnotes": [],
+     "hours": "15-12",
+     "indent": 0,
+     "index": 8,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[9]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Select at most three Big Data courses from the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 9,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[10]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5512",
+     "comment": "",
+     "courses": [
+      "CIS 5512"
+     ],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "",
+     "indent": 1,
+     "index": 10,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[11]"
+     },
+     "title": "Operating Systems"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5516",
+     "comment": "",
+     "courses": [
+      "CIS 5516"
+     ],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "",
+     "indent": 1,
+     "index": 11,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[12]"
+     },
+     "title": "Principles of Data Management"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5517",
+     "comment": "",
+     "courses": [
+      "CIS 5517"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 12,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[13]"
+     },
+     "title": "Data-Intensive and Cloud Computing"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5590",
+     "comment": "",
+     "courses": [
+      "CIS 5590"
+     ],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "",
+     "indent": 1,
+     "index": 13,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[14]"
+     },
+     "title": "Topics in Computer Science"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5642",
+     "comment": "",
+     "courses": [
+      "CIS 5642"
+     ],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "",
+     "indent": 1,
+     "index": 14,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[15]"
+     },
+     "title": "Computer Architecture"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5643",
+     "comment": "",
+     "courses": [
+      "CIS 5643"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 15,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[16]"
+     },
+     "title": "Emerging Storage Systems and Technologies"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5644",
+     "comment": "",
+     "courses": [
+      "CIS 5644"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 16,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[17]"
+     },
+     "title": "Distributed Systems"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 9665",
+     "comment": "",
+     "courses": [
+      "CIS 9665"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 17,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[18]"
+     },
+     "title": "Advanced Topics in Data Base Systems"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Select at most three Data Analysis courses from the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 18,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[19]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5523",
+     "comment": "",
+     "courses": [
+      "CIS 5523"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 19,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[20]"
+     },
+     "title": "Knowledge Discovery and Data Mining"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5524",
+     "comment": "",
+     "courses": [
+      "CIS 5524"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 20,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[21]"
+     },
+     "title": "Analysis and Modeling of Social and Information Networks"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5525",
+     "comment": "",
+     "courses": [
+      "CIS 5525"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 21,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[22]"
+     },
+     "title": "Deep Learning"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5535",
+     "comment": "",
+     "courses": [
+      "CIS 5535"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 22,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[23]"
+     },
+     "title": "Probabilistic Graph Models"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5538",
+     "comment": "",
+     "courses": [
+      "CIS 5538"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 23,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[24]"
+     },
+     "title": "Text Mining and Language Processing"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5543",
+     "comment": "",
+     "courses": [
+      "CIS 5543"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 24,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[25]"
+     },
+     "title": "Computer Vision"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5603",
+     "comment": "",
+     "courses": [
+      "CIS 5603"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 25,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[26]"
+     },
+     "title": "Artificial Intelligence"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Select at most two Statistics and domain-related courses",
+     "courses": [],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 26,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[27]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Select at most one CIS course numbered less than 5500",
+     "courses": [],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 27,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[28]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Select at most three credits of Independent Study:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 28,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[29]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 9282",
+     "comment": "",
+     "courses": [
+      "CIS 9282"
+     ],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "",
+     "indent": 1,
+     "index": 29,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[30]"
+     },
+     "title": "Independent Study"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Capstone Course",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 30,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[31]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "lastrow"
+     ],
+     "code_text": "CIS 9995",
+     "comment": "",
+     "courses": [
+      "CIS 9995"
+     ],
+     "footnotes": [],
+     "hours": "3-6",
+     "indent": 0,
+     "index": 31,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[32]"
+     },
+     "title": "Capstone Project"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd",
+      "lastrow"
+     ],
+     "code_text": "or CIS 9996",
+     "comment": "",
+     "courses": [
+      "CIS 9996"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 32,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[33]"
+     },
+     "title": "Master's Thesis Research"
+    },
+    {
+     "classes": [
+      "listsum"
+     ],
+     "code_text": "",
+     "comment": "Total Credit Hours",
+     "courses": [],
+     "footnotes": [],
+     "hours": "30",
+     "indent": 0,
+     "index": 33,
+     "joiner": null,
+     "kind": "total",
+     "locator": {
+      "bbox": null,
+      "line": 538,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[34]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Program Requirements"
+   ],
+   "tab": "programrequirementstextcontainer"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 556,
+     "page": null,
+     "tab": "acceleratedprogramstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/table[1]"
+    },
+    "sha256": "db7d1356dc5a5a83e1bf0a3af196a0b25a27dbf368ae559461bf36c99eca903b",
+    "text": "Course List Code Title Credit Hours CIS 5511Programming Techniques3 Select two or three from the following6-9 CIS 5512Operating Systems CIS 5515Design and Analysis of Algorithms CIS 5516Principles of Data Management CIS 5526Machine Learning CIS 5642Computer Architecture",
+    "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+   },
+   "footnotes": [],
+   "index": 2,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "firstrow"
+     ],
+     "code_text": "CIS 5511",
+     "comment": "",
+     "courses": [
+      "CIS 5511"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 571,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/table[1]/tbody/tr[1]"
+     },
+     "title": "Programming Techniques"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Select two or three from the following",
+     "courses": [],
+     "footnotes": [],
+     "hours": "6-9",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 572,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/table[1]/tbody/tr[2]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5512",
+     "comment": "",
+     "courses": [
+      "CIS 5512"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 573,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/table[1]/tbody/tr[3]"
+     },
+     "title": "Operating Systems"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5515",
+     "comment": "",
+     "courses": [
+      "CIS 5515"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 574,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/table[1]/tbody/tr[4]"
+     },
+     "title": "Design and Analysis of Algorithms"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 5516",
+     "comment": "",
+     "courses": [
+      "CIS 5516"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 4,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 575,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/table[1]/tbody/tr[5]"
+     },
+     "title": "Principles of Data Management"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 5526",
+     "comment": "",
+     "courses": [
+      "CIS 5526"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 5,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 576,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/table[1]/tbody/tr[6]"
+     },
+     "title": "Machine Learning"
+    },
+    {
+     "classes": [
+      "even",
+      "lastrow"
+     ],
+     "code_text": "CIS 5642",
+     "comment": "",
+     "courses": [
+      "CIS 5642"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 577,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[4]/table[1]/tbody/tr[7]"
+     },
+     "title": "Computer Architecture"
+    }
+   ],
+   "section": [
+    "Accelerated Programs",
+    "Graduate Courses Approved to Count for Both Undergraduate and Graduate Degrees"
+   ],
+   "tab": "acceleratedprogramstextcontainer"
+  }
+ ],
+ "units": [
+  "Graduate and Professional",
+  "Schools and Colleges",
+  "College of Science and Technology"
+ ],
+ "url": "https://bulletin.temple.edu/graduate/scd/cst/computational-data-science-ms/"
+}

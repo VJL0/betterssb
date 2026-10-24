@@ -1,0 +1,1927 @@
+{
+ "facts": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 428,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[8]"
+    },
+    "sha256": "f149d227516c265ef970bfe9b3ebd72ad1608a042f2b36be4fb4357697ed130d",
+    "text": "Licensure/Certification: In order to become a practicing dentist, students must first obtain licensure. This process includes completing an educational program that is accredited by the Commission on Dental Accreditation (CODA). Students also need to complete Parts I and II of the National Board Dental Examination (NBDE) administered by the Joint Commission on National Dental Examinations. For most U.S. jurisdictions, the last component is that students complete a clinical licensure examination.",
+    "url": "https://bulletin.temple.edu/graduate/scd/dentistry/dentistry-dmd/"
+   },
+   "label": "Licensure/Certification",
+   "value": "In order to become a practicing dentist, students must first obtain licensure. This process includes completing an educational program that is accredited by the Commission on Dental Accreditation (CODA). Students also need to complete Parts I and II of the National Board Dental Examination (NBDE) administered by the Joint Commission on National Dental Examinations. For most U.S. jurisdictions, the last component is that students complete a clinical licensure examination."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 453,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[10]"
+    },
+    "sha256": "f149d227516c265ef970bfe9b3ebd72ad1608a042f2b36be4fb4357697ed130d",
+    "text": "Transcripts: Complete official transcripts for all undergraduate coursework must be submitted.",
+    "url": "https://bulletin.temple.edu/graduate/scd/dentistry/dentistry-dmd/"
+   },
+   "label": "Transcripts",
+   "value": "Complete official transcripts for all undergraduate coursework must be submitted."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 454,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[11]"
+    },
+    "sha256": "f149d227516c265ef970bfe9b3ebd72ad1608a042f2b36be4fb4357697ed130d",
+    "text": "Interview: Applicants are invited to visit the Kornberg School of Dentistry for a formal interview. The visit involves meeting with current students in the program, touring the facility, reviewing financial aid and housing procedures, and engaging in an interview. The applicant is given an opportunity to learn more about Temple and to review the submitted application. The interview affords the Admissions Committee an opportunity to learn more about the applicant and to gauge motivation, approach to problems and communication skills.",
+    "url": "https://bulletin.temple.edu/graduate/scd/dentistry/dentistry-dmd/"
+   },
+   "label": "Interview",
+   "value": "Applicants are invited to visit the Kornberg School of Dentistry for a formal interview. The visit involves meeting with current students in the program, touring the facility, reviewing financial aid and housing procedures, and engaging in an interview. The applicant is given an opportunity to learn more about Temple and to review the submitted application. The interview affords the Admissions Committee an opportunity to learn more about the applicant and to gauge motivation, approach to problems and communication skills."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 455,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[12]"
+    },
+    "sha256": "f149d227516c265ef970bfe9b3ebd72ad1608a042f2b36be4fb4357697ed130d",
+    "text": "Acceptance: Decisions are made starting December 1. Admission is rolling after that date. Upon acceptance, a non-refundable deposit is required to hold a seat in the class.",
+    "url": "https://bulletin.temple.edu/graduate/scd/dentistry/dentistry-dmd/"
+   },
+   "label": "Acceptance",
+   "value": "Decisions are made starting December 1. Admission is rolling after that date. Upon acceptance, a non-refundable deposit is required to hold a seat in the class."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 458,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/p[1]"
+    },
+    "sha256": "f149d227516c265ef970bfe9b3ebd72ad1608a042f2b36be4fb4357697ed130d",
+    "text": "General Program Requirements: Number of Credits Required: 152",
+    "url": "https://bulletin.temple.edu/graduate/scd/dentistry/dentistry-dmd/"
+   },
+   "label": "General Program Requirements",
+   "value": "Number of Credits Required: 152"
+  }
+ ],
+ "level": "graduate",
+ "name": "Dentistry DMD",
+ "plans": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 458,
+     "page": null,
+     "tab": "programrequirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table"
+    },
+    "sha256": "f149d227516c265ef970bfe9b3ebd72ad1608a042f2b36be4fb4357697ed130d",
+    "text": "Plan of Study Grid Year 1 FallCredit Hours DENT D100 Biochemistry 3 DENT D102 Anatomical Sciences 4 DENT D150 Dental Materials I 1 DENT D162 Restorative Dentistry I - Lecture 2 DENT D163 Restorative Dentistry I - Lab 2 Credit Hours12 Spring DENT D200 Inflammation, Infection and Wound Healing 3 DENT D204 The Nervous System and Pain 3 DENT D262 Restorative Dentistry II Lecture 2 DENT D263 Restorative Dentistry II Lab 3 DENT D239 Dental Public Health I: Cariology, Evidence Based Dentistry and Princ",
+    "url": "https://bulletin.temple.edu/graduate/scd/dentistry/dentistry-dmd/"
+   },
+   "footnotes": [],
+   "index": 0,
+   "section": [
+    "Program Requirements"
+   ],
+   "tab": "programrequirementstextcontainer",
+   "terms": [
+    {
+     "rows": [
+      {
+       "code_text": "DENT D100",
+       "courses": [
+        "DENT D100"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[3]"
+       },
+       "title": "Biochemistry"
+      },
+      {
+       "code_text": "DENT D102",
+       "courses": [
+        "DENT D102"
+       ],
+       "footnotes": [],
+       "hours": "4",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[4]"
+       },
+       "title": "Anatomical Sciences"
+      },
+      {
+       "code_text": "DENT D150",
+       "courses": [
+        "DENT D150"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[5]"
+       },
+       "title": "Dental Materials I"
+      },
+      {
+       "code_text": "DENT D162",
+       "courses": [
+        "DENT D162"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[6]"
+       },
+       "title": "Restorative Dentistry I - Lecture"
+      },
+      {
+       "code_text": "DENT D163",
+       "courses": [
+        "DENT D163"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[7]"
+       },
+       "title": "Restorative Dentistry I - Lab"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "12",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[8]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Fall",
+     "year": "Year 1"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D200",
+       "courses": [
+        "DENT D200"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[10]"
+       },
+       "title": "Inflammation, Infection and Wound Healing"
+      },
+      {
+       "code_text": "DENT D204",
+       "courses": [
+        "DENT D204"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[11]"
+       },
+       "title": "The Nervous System and Pain"
+      },
+      {
+       "code_text": "DENT D262",
+       "courses": [
+        "DENT D262"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[12]"
+       },
+       "title": "Restorative Dentistry II Lecture"
+      },
+      {
+       "code_text": "DENT D263",
+       "courses": [
+        "DENT D263"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[13]"
+       },
+       "title": "Restorative Dentistry II Lab"
+      },
+      {
+       "code_text": "DENT D239",
+       "courses": [
+        "DENT D239"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[14]"
+       },
+       "title": "Dental Public Health I: Cariology, Evidence Based Dentistry and Principles of Prevention"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "12",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[15]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Spring",
+     "year": "Year 1"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D211",
+       "courses": [
+        "DENT D211"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[17]"
+       },
+       "title": "Behavioral Science I"
+      },
+      {
+       "code_text": "DENT D299",
+       "courses": [
+        "DENT D299"
+       ],
+       "footnotes": [],
+       "hours": "4",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[18]"
+       },
+       "title": "Human Systems and Disease I"
+      },
+      {
+       "code_text": "DENT D259",
+       "courses": [
+        "DENT D259"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[19]"
+       },
+       "title": "Dental Public Health II: Health Promotion in Populations"
+      },
+      {
+       "code_text": "DENT D264",
+       "courses": [
+        "DENT D264"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[20]"
+       },
+       "title": "Restorative Dentistry III Lecture"
+      },
+      {
+       "code_text": "DENT D265",
+       "courses": [
+        "DENT D265"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[21]"
+       },
+       "title": "Restorative Dentistry III Lab"
+      },
+      {
+       "code_text": "DENT D220",
+       "courses": [
+        "DENT D220"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[22]"
+       },
+       "title": "The Practice and Profession of Dentistry"
+      },
+      {
+       "code_text": "DENT D273",
+       "courses": [
+        "DENT D273"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[23]"
+       },
+       "title": "Introduction to Periodontology"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "11",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[24]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Summer",
+     "year": "Year 1"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D300",
+       "courses": [
+        "DENT D300"
+       ],
+       "footnotes": [],
+       "hours": "4",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[27]"
+       },
+       "title": "Human Systems and Disease II"
+      },
+      {
+       "code_text": "DENT D310",
+       "courses": [
+        "DENT D310"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[28]"
+       },
+       "title": "Craniofacial Growth, Cephalometrics, and Dental Development"
+      },
+      {
+       "code_text": "DENT D360",
+       "courses": [
+        "DENT D360"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[29]"
+       },
+       "title": "Restorative Dentistry IV Lecture"
+      },
+      {
+       "code_text": "DENT D361",
+       "courses": [
+        "DENT D361"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[30]"
+       },
+       "title": "Restorative Dentistry IV Lab"
+      },
+      {
+       "code_text": "DENT D366",
+       "courses": [
+        "DENT D366"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[31]"
+       },
+       "title": "Pediatric Dentistry Lecture"
+      },
+      {
+       "code_text": "DENT D367",
+       "courses": [
+        "DENT D367"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[32]"
+       },
+       "title": "Pediatric Dentistry Lab"
+      },
+      {
+       "code_text": "DENT D365",
+       "courses": [
+        "DENT D365"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[33]"
+       },
+       "title": "Dental Radiology I"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "15",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[34]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Fall",
+     "year": "Year 2"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D408",
+       "courses": [
+        "DENT D408"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[36]"
+       },
+       "title": "Oral Pathology I"
+      },
+      {
+       "code_text": "DENT D442",
+       "courses": [
+        "DENT D442"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[37]"
+       },
+       "title": "Dental Radiology II"
+      },
+      {
+       "code_text": "DENT D443",
+       "courses": [
+        "DENT D443"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[38]"
+       },
+       "title": "Dental Radiology Lab"
+      },
+      {
+       "code_text": "DENT D456",
+       "courses": [
+        "DENT D456"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[39]"
+       },
+       "title": "Restorative Dentistry V Lecture"
+      },
+      {
+       "code_text": "DENT D457",
+       "courses": [
+        "DENT D457"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[40]"
+       },
+       "title": "Restorative Dentistry V Lab"
+      },
+      {
+       "code_text": "DENT D473",
+       "courses": [
+        "DENT D473"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[41]"
+       },
+       "title": "Principles of Periodontology II Lecture"
+      },
+      {
+       "code_text": "DENT D474",
+       "courses": [
+        "DENT D474"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[42]"
+       },
+       "title": "Principles of Periodontology Lab"
+      },
+      {
+       "code_text": "DENT D478",
+       "courses": [
+        "DENT D478"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[43]"
+       },
+       "title": "Fundamentals of Oral Surgery and Anesthesia"
+      },
+      {
+       "code_text": "DENT D405",
+       "courses": [
+        "DENT D405"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[44]"
+       },
+       "title": "Temporomandibular Disorders (TMD) and Oral Medicine"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "16",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[45]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Spring",
+     "year": "Year 2"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D403",
+       "courses": [
+        "DENT D403"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[47]"
+       },
+       "title": "Restorative Dentistry VI Lecture"
+      },
+      {
+       "code_text": "DENT D404",
+       "courses": [
+        "DENT D404"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[48]"
+       },
+       "title": "Restorative Dentistry VI Lab"
+      },
+      {
+       "code_text": "DENT D410",
+       "courses": [
+        "DENT D410"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[49]"
+       },
+       "title": "Basic Interdisciplinary Implantology Lecture"
+      },
+      {
+       "code_text": "DENT D411",
+       "courses": [
+        "DENT D411"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[50]"
+       },
+       "title": "Basic Interdisciplinary Implantology Lab"
+      },
+      {
+       "code_text": "DENT D418",
+       "courses": [
+        "DENT D418"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[51]"
+       },
+       "title": "Science in Dental Practice I"
+      },
+      {
+       "code_text": "DENT D420",
+       "courses": [
+        "DENT D420"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[52]"
+       },
+       "title": "Introduction to Clinical Dentistry"
+      },
+      {
+       "code_text": "DENT D421",
+       "courses": [
+        "DENT D421"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[53]"
+       },
+       "title": "Treatment Planning"
+      },
+      {
+       "code_text": "DENT D422",
+       "courses": [
+        "DENT D422"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[54]"
+       },
+       "title": "Medical Emergencies"
+      },
+      {
+       "code_text": "DENT D452",
+       "courses": [
+        "DENT D452"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[55]"
+       },
+       "title": "Endodontology Lecture"
+      },
+      {
+       "code_text": "DENT D453",
+       "courses": [
+        "DENT D453"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[56]"
+       },
+       "title": "Endodontology Laboratory"
+      },
+      {
+       "code_text": "DENT D491",
+       "courses": [
+        "DENT D491"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[57]"
+       },
+       "title": "Clinical Caries Management"
+      },
+      {
+       "code_text": "DENT D599",
+       "courses": [
+        "DENT D599"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[58]"
+       },
+       "title": "Clinical Practice and Management II"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "15",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[59]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Summer",
+     "year": "Year 2"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D506",
+       "courses": [
+        "DENT D506"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[62]"
+       },
+       "title": "Oral Pathology II"
+      },
+      {
+       "code_text": "DENT D552",
+       "courses": [
+        "DENT D552"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[63]"
+       },
+       "title": "Endodontology"
+      },
+      {
+       "code_text": "DENT D553",
+       "courses": [
+        "DENT D553"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[64]"
+       },
+       "title": "Restorative Dentistry VII"
+      },
+      {
+       "code_text": "DENT D567",
+       "courses": [
+        "DENT D567"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[65]"
+       },
+       "title": "Dental Radiology III"
+      },
+      {
+       "code_text": "DENT D573",
+       "courses": [
+        "DENT D573"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[66]"
+       },
+       "title": "Periodontal Therapy and Treatment Planning"
+      },
+      {
+       "code_text": "DENT D591",
+       "courses": [
+        "DENT D591"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[67]"
+       },
+       "title": "Clinical Practice and Management I"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "9",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[68]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Fall",
+     "year": "Year 3"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D600",
+       "courses": [
+        "DENT D600"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[70]"
+       },
+       "title": "Clinical Practice and Management III"
+      },
+      {
+       "code_text": "DENT D608",
+       "courses": [
+        "DENT D608"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[71]"
+       },
+       "title": "Dental Radiology IV"
+      },
+      {
+       "code_text": "DENT D610",
+       "courses": [
+        "DENT D610"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[72]"
+       },
+       "title": "Adv Interdis Implant"
+      },
+      {
+       "code_text": "DENT D620",
+       "courses": [
+        "DENT D620"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[73]"
+       },
+       "title": "Dental Ethics and Jurisprudence"
+      },
+      {
+       "code_text": "DENT D637",
+       "courses": [
+        "DENT D637"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[74]"
+       },
+       "title": "Practice Management I"
+      },
+      {
+       "code_text": "DENT D662",
+       "courses": [
+        "DENT D662"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[75]"
+       },
+       "title": "Restorative Dentistry VIII"
+      },
+      {
+       "code_text": "DENT D666",
+       "courses": [
+        "DENT D666"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[76]"
+       },
+       "title": "Pediatric Dentistry"
+      },
+      {
+       "code_text": "DENT D668",
+       "courses": [
+        "DENT D668"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[77]"
+       },
+       "title": "Oral Surgery"
+      },
+      {
+       "code_text": "DENT D671",
+       "courses": [
+        "DENT D671"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[78]"
+       },
+       "title": "Ortho Consideration in General Dental Practice"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "9",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[79]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Spring",
+     "year": "Year 3"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D601",
+       "courses": [
+        "DENT D601"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[81]"
+       },
+       "title": "Clinical Practice and Management IV"
+      },
+      {
+       "code_text": "DENT D611",
+       "courses": [
+        "DENT D611"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[82]"
+       },
+       "title": "Practice Management II"
+      },
+      {
+       "code_text": "DENT D644",
+       "courses": [
+        "DENT D644"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[83]"
+       },
+       "title": "Dentistry for Patients with Special Needs"
+      },
+      {
+       "code_text": "DENT D660",
+       "courses": [
+        "DENT D660"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[84]"
+       },
+       "title": "Behavioral Science II"
+      },
+      {
+       "code_text": "DENT D674",
+       "courses": [
+        "DENT D674"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[85]"
+       },
+       "title": "Admissions Clinic I"
+      },
+      {
+       "code_text": "DENT D675",
+       "courses": [
+        "DENT D675"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[86]"
+       },
+       "title": "Emergency Service/Oral Surgery Clinic I"
+      },
+      {
+       "code_text": "DENT D676",
+       "courses": [
+        "DENT D676"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[87]"
+       },
+       "title": "Radiology Clinic I"
+      },
+      {
+       "code_text": "DENT D691",
+       "courses": [
+        "DENT D691"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[88]"
+       },
+       "title": "Orthodontics Clinic I"
+      },
+      {
+       "code_text": "DENT D692",
+       "courses": [
+        "DENT D692"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[89]"
+       },
+       "title": "Endodontology Clinic I"
+      },
+      {
+       "code_text": "DENT D693",
+       "courses": [
+        "DENT D693"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[90]"
+       },
+       "title": "Periodontology Clinic I"
+      },
+      {
+       "code_text": "DENT D696",
+       "courses": [
+        "DENT D696"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[91]"
+       },
+       "title": "Pediatric Dentistry Clinic I"
+      },
+      {
+       "code_text": "DENT D697",
+       "courses": [
+        "DENT D697"
+       ],
+       "footnotes": [],
+       "hours": "5",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[92]"
+       },
+       "title": "Restorative Dentistry Clinic I"
+      },
+      {
+       "code_text": "DENT D700",
+       "courses": [
+        "DENT D700"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[93]"
+       },
+       "title": "Clinical Practice and Management V"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "22",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[94]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Summer",
+     "year": "Year 3"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D790",
+       "courses": [
+        "DENT D790"
+       ],
+       "footnotes": [],
+       "hours": "9",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[97]"
+       },
+       "title": "Clinical Practice and Management VI"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "9",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[98]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Fall",
+     "year": "Year 4"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "DENT D800",
+       "courses": [
+        "DENT D800"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[100]"
+       },
+       "title": "Clinical Practice and Management VII"
+      },
+      {
+       "code_text": "DENT D801",
+       "courses": [
+        "DENT D801"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[101]"
+       },
+       "title": "Science in Dental Practice II"
+      },
+      {
+       "code_text": "DENT D808",
+       "courses": [
+        "DENT D808"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[102]"
+       },
+       "title": "Comprehensive Care"
+      },
+      {
+       "code_text": "DENT D809",
+       "courses": [
+        "DENT D809"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[103]"
+       },
+       "title": "Practice Management III"
+      },
+      {
+       "code_text": "DENT D810",
+       "courses": [
+        "DENT D810"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[104]"
+       },
+       "title": "DPH III: Community Health Engagement"
+      },
+      {
+       "code_text": "DENT D874",
+       "courses": [
+        "DENT D874"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[105]"
+       },
+       "title": "Admissions Clinic II"
+      },
+      {
+       "code_text": "DENT D875",
+       "courses": [
+        "DENT D875"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[106]"
+       },
+       "title": "Emergency Service/Oral Surgery Clinic II"
+      },
+      {
+       "code_text": "DENT D891",
+       "courses": [
+        "DENT D891"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[107]"
+       },
+       "title": "Orthodontics Clinic II"
+      },
+      {
+       "code_text": "DENT D876",
+       "courses": [
+        "DENT D876"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[108]"
+       },
+       "title": "Radiology Clinic II"
+      },
+      {
+       "code_text": "DENT D892",
+       "courses": [
+        "DENT D892"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[109]"
+       },
+       "title": "Endodontology Clinic II"
+      },
+      {
+       "code_text": "DENT D893",
+       "courses": [
+        "DENT D893"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[110]"
+       },
+       "title": "Periodontology Clinic II"
+      },
+      {
+       "code_text": "DENT D896",
+       "courses": [
+        "DENT D896"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[111]"
+       },
+       "title": "Pediatric Dentistry Clinic II"
+      },
+      {
+       "code_text": "DENT D897",
+       "courses": [
+        "DENT D897"
+       ],
+       "footnotes": [],
+       "hours": "5",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[112]"
+       },
+       "title": "Restorative Dentistry Clinic II"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "22",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 458,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[113]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Spring",
+     "year": "Year 4"
+    }
+   ],
+   "total_hours": "152"
+  }
+ ],
+ "sha256": "f149d227516c265ef970bfe9b3ebd72ad1608a042f2b36be4fb4357697ed130d",
+ "tables": [],
+ "units": [
+  "Graduate and Professional",
+  "Schools and Colleges",
+  "Kornberg School of Dentistry"
+ ],
+ "url": "https://bulletin.temple.edu/graduate/scd/dentistry/dentistry-dmd/"
+}

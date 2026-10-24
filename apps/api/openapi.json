@@ -2339,6 +2339,19 @@
             "title": "Notes",
             "type": "array"
           },
+          "role": {
+            "default": "requirement",
+            "enum": [
+              "requirement",
+              "curriculum",
+              "admission",
+              "academic_plan",
+              "accelerated",
+              "other"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
           "sourceText": {
             "default": "",
             "title": "Sourcetext",

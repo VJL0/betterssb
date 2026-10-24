@@ -1397,6 +1397,16 @@ export type RequirementNode = {
    */
   notes?: Array<string>;
   /**
+   * Role
+   */
+  role?:
+    | "requirement"
+    | "curriculum"
+    | "admission"
+    | "academic_plan"
+    | "accelerated"
+    | "other";
+  /**
    * Sourcetext
    */
   sourceText?: string;

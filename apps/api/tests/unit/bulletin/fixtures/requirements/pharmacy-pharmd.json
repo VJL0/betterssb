@@ -1,0 +1,2728 @@
+{
+ "facts": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 462,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[8]"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "Time Limit for Program Completion: 4 years",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "label": "Time Limit for Program Completion",
+   "value": "4 years"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 463,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[9]"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "Campus Location: Health Sciences Center",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "label": "Campus Location",
+   "value": "Health Sciences Center"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 464,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[10]"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "Full-Time/Part-Time Status: The program may be completed on a full-time basis.",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "label": "Full-Time/Part-Time Status",
+   "value": "The program may be completed on a full-time basis."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 468,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[1]"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "Application Deadline: March 1",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "label": "Application Deadline",
+   "value": "March 1"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 473,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[6]"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "Prerequisites for the PharmD Program: All applicants are required to complete and pass the coursework identified below at either Temple University or another fully accredited institution of higher learning regardless of how many years of pre-pharmacy coursework was taken before starting the professional PharmD degree program.",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "label": "Prerequisites for the PharmD Program",
+   "value": "All applicants are required to complete and pass the coursework identified below at either Temple University or another fully accredited institution of higher learning regardless of how many years of pre-pharmacy coursework was taken before starting the professional PharmD degree program."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 476,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[9]"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "Standardized Test Scores: A standardized test is not required for admission. The Pharmacy College Admission Test (PCAT\u00ae) was retired on January 10, 2024. No PCAT testing dates will be offered during the 2024\u20132025 admissions cycle or beyond.",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "label": "Standardized Test Scores",
+   "value": "A standardized test is not required for admission. The Pharmacy College Admission Test (PCAT\u00ae) was retired on January 10, 2024. No PCAT testing dates will be offered during the 2024\u20132025 admissions cycle or beyond."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 541,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/p[1]"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "General Program Requirements: Number of Credits Required: 144",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "label": "General Program Requirements",
+   "value": "Number of Credits Required: 144"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 542,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/p[3]"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "Additional Requirements:",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "label": "Additional Requirements",
+   "value": ""
+  }
+ ],
+ "level": "graduate",
+ "name": "Pharmacy PharmD",
+ "plans": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 541,
+     "page": null,
+     "tab": "programrequirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "Plan of Study Grid Year 1 FallCredit Hours PP P140 Professional Practice 1 PP P145 Immunology/Biotechnology 3 PP P146 Drug Information 1 PS P151 Medicinal Chemistry I 4 PS P155 Principles of Infectious Diseases 3 PS P161 Pharmaceutics I 3 PS P171 Pharmacy Lab I 1 Credit Hours16 Spring PP P136 IPPE 1 1 2 Community Pharmacy Experience Faculty Shadow/Reflection IPE Workshops 2 PP P142 Soc & Econ Aspcts/Hlthcare 2 PP P148 Introduction to Pharmacy Care 2 PS P152 Medicinal Chemistry II 4 PS P162 Pharm",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "footnotes": [
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 541,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl/dd[1]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "During the first through third professional years of study, students are required to complete a total of 300 hours of Introductory Pharmacy Practice Experiences (IPPEs). These hours may be scheduled throughout the year.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "1",
+     "text": "During the first through third professional years of study, students are required to complete a total of 300 hours of Introductory Pharmacy Practice Experiences (IPPEs). These hours may be scheduled throughout the year."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 541,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl/dd[2]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "Students are required to complete the Interprofessional Education (IPE) workshops, simulations and community service activities as outlined in the IPPE manual.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "2",
+     "text": "Students are required to complete the Interprofessional Education (IPE) workshops, simulations and community service activities as outlined in the IPPE manual."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 541,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl/dd[3]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "\"CPD\" indicates Continuing Personal/Professional Development.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "3",
+     "text": "\"CPD\" indicates Continuing Personal/Professional Development."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 541,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl/dd[4]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "The Pathophysiology and Therapeutics (P/T) courses are offered sequentially in each semester.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "4",
+     "text": "The Pathophysiology and Therapeutics (P/T) courses are offered sequentially in each semester."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 541,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl/dd[5]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "During the third year of professional study at Temple University School of Pharmacy, students may begin to differentiate their degree by choosing electives in one of the following tracks: Advanced Clinical Practice, Clinical Research, Community Pharmacy, and Drug Safety. Students are required to take a minimum of 8 elective credits but may choose to take up to 12 elective credits.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "5",
+     "text": "During the third year of professional study at Temple University School of Pharmacy, students may begin to differentiate their degree by choosing electives in one of the following tracks: Advanced Clinical Practice, Clinical Research, Community Pharmacy, and Drug Safety. Students are required to take a minimum of 8 elective credits but may choose to take up to 12 elective credits."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 541,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl/dd[6]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "All students are required to complete eight 5-week Advanced Pharmacy Practice Experiences (APPEs) and are awarded 5 credits for each experience. These rotations are scheduled throughout the student's fourth professional year (May-May).",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "6",
+     "text": "All students are required to complete eight 5-week Advanced Pharmacy Practice Experiences (APPEs) and are awarded 5 credits for each experience. These rotations are scheduled throughout the student's fourth professional year (May-May)."
+    }
+   ],
+   "index": 0,
+   "section": [
+    "Program Requirements"
+   ],
+   "tab": "programrequirementstextcontainer",
+   "terms": [
+    {
+     "rows": [
+      {
+       "code_text": "PP P140",
+       "courses": [
+        "PP P140"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[3]"
+       },
+       "title": "Professional Practice"
+      },
+      {
+       "code_text": "PP P145",
+       "courses": [
+        "PP P145"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[4]"
+       },
+       "title": "Immunology/Biotechnology"
+      },
+      {
+       "code_text": "PP P146",
+       "courses": [
+        "PP P146"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[5]"
+       },
+       "title": "Drug Information"
+      },
+      {
+       "code_text": "PS P151",
+       "courses": [
+        "PS P151"
+       ],
+       "footnotes": [],
+       "hours": "4",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[6]"
+       },
+       "title": "Medicinal Chemistry I"
+      },
+      {
+       "code_text": "PS P155",
+       "courses": [
+        "PS P155"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[7]"
+       },
+       "title": "Principles of Infectious Diseases"
+      },
+      {
+       "code_text": "PS P161",
+       "courses": [
+        "PS P161"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[8]"
+       },
+       "title": "Pharmaceutics I"
+      },
+      {
+       "code_text": "PS P171",
+       "courses": [
+        "PS P171"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[9]"
+       },
+       "title": "Pharmacy Lab I"
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "16",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[10]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Fall",
+     "year": "Year 1"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "PP P136",
+       "courses": [
+        "PP P136"
+       ],
+       "footnotes": [
+        "1"
+       ],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[12]"
+       },
+       "title": "IPPE 1"
+      },
+      {
+       "code_text": "Community Pharmacy Experience",
+       "courses": [],
+       "footnotes": [],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[13]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "Faculty Shadow/Reflection",
+       "courses": [],
+       "footnotes": [],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[14]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "IPE Workshops",
+       "courses": [],
+       "footnotes": [
+        "2"
+       ],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[15]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "PP P142",
+       "courses": [
+        "PP P142"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[16]"
+       },
+       "title": "Soc & Econ Aspcts/Hlthcare"
+      },
+      {
+       "code_text": "PP P148",
+       "courses": [
+        "PP P148"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[17]"
+       },
+       "title": "Introduction to Pharmacy Care"
+      },
+      {
+       "code_text": "PS P152",
+       "courses": [
+        "PS P152"
+       ],
+       "footnotes": [],
+       "hours": "4",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[18]"
+       },
+       "title": "Medicinal Chemistry II"
+      },
+      {
+       "code_text": "PS P162",
+       "courses": [
+        "PS P162"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[19]"
+       },
+       "title": "Pharmaceutics II"
+      },
+      {
+       "code_text": "PS P164",
+       "courses": [
+        "PS P164"
+       ],
+       "footnotes": [],
+       "hours": "4",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[20]"
+       },
+       "title": "Pharmacology"
+      },
+      {
+       "code_text": "PS P172",
+       "courses": [
+        "PS P172"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[21]"
+       },
+       "title": "Pharmacy Lab II"
+      },
+      {
+       "code_text": "Self-Selected Co-Curricular Activity (CPD)",
+       "courses": [],
+       "footnotes": [
+        "3"
+       ],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[22]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "18",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[23]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Spring",
+     "year": "Year 1"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "PP P233",
+       "courses": [
+        "PP P233"
+       ],
+       "footnotes": [
+        "4"
+       ],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[26]"
+       },
+       "title": "Path/Ther Cardiopulm I"
+      },
+      {
+       "code_text": "PP P235",
+       "courses": [
+        "PP P235"
+       ],
+       "footnotes": [
+        "4"
+       ],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[27]"
+       },
+       "title": "Pathophysiology/Therapeutics: Pediatrics"
+      },
+      {
+       "code_text": "PP P239",
+       "courses": [
+        "PP P239"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[28]"
+       },
+       "title": "Pharm Care Rec I"
+      },
+      {
+       "code_text": "PP P248",
+       "courses": [
+        "PP P248"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[29]"
+       },
+       "title": "Communication Skills"
+      },
+      {
+       "code_text": "PS P251",
+       "courses": [
+        "PS P251"
+       ],
+       "footnotes": [],
+       "hours": "4",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[30]"
+       },
+       "title": "Medicinal Chemistry III and Natural Products"
+      },
+      {
+       "code_text": "PS P261",
+       "courses": [
+        "PS P261"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[31]"
+       },
+       "title": "Concepts in Pharmacogenomics"
+      },
+      {
+       "code_text": "PS P265",
+       "courses": [
+        "PS P265"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[32]"
+       },
+       "title": "Pharmacology II"
+      },
+      {
+       "code_text": "PS P271",
+       "courses": [
+        "PS P271"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[33]"
+       },
+       "title": "Pharmacy Lab III"
+      },
+      {
+       "code_text": "Self-Selected Co-Curricular Activity (CPD)",
+       "courses": [],
+       "footnotes": [
+        "3"
+       ],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[34]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "17",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[35]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Fall",
+     "year": "Year 2"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "PP P234",
+       "courses": [
+        "PP P234"
+       ],
+       "footnotes": [
+        "4"
+       ],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[37]"
+       },
+       "title": "Path/Ther Cardiopulm II"
+      },
+      {
+       "code_text": "PP P236",
+       "courses": [
+        "PP P236"
+       ],
+       "footnotes": [
+        "1"
+       ],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[38]"
+       },
+       "title": "IPPE 2"
+      },
+      {
+       "code_text": "Hospital Pharmacy",
+       "courses": [],
+       "footnotes": [],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[39]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "IPE Workshop and IPE Community Service Activity",
+       "courses": [],
+       "footnotes": [],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[40]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "PY-4 Student Shadow/Reflection",
+       "courses": [],
+       "footnotes": [],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[41]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "PP P237",
+       "courses": [
+        "PP P237"
+       ],
+       "footnotes": [
+        "4"
+       ],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[42]"
+       },
+       "title": "Path/Ther Endocr/Meta Di"
+      },
+      {
+       "code_text": "PP P246",
+       "courses": [
+        "PP P246"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[43]"
+       },
+       "title": "Pharm Care Rec II"
+      },
+      {
+       "code_text": "PP P254",
+       "courses": [
+        "PP P254"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[44]"
+       },
+       "title": "Bio Stat/Med Lit Eval"
+      },
+      {
+       "code_text": "PP P260",
+       "courses": [
+        "PP P260"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[45]"
+       },
+       "title": "Contemporary Pharmacy"
+      },
+      {
+       "code_text": "PP P280",
+       "courses": [
+        "PP P280"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[46]"
+       },
+       "title": "Pharmacist Directed Care"
+      },
+      {
+       "code_text": "PS P262",
+       "courses": [
+        "PS P262"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[47]"
+       },
+       "title": "Pharmacokinetics"
+      },
+      {
+       "code_text": "PS P272",
+       "courses": [
+        "PS P272"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[48]"
+       },
+       "title": "Pharmacy Lab IV"
+      },
+      {
+       "code_text": "Self-Selected Co-Curricular Activity (CPD)",
+       "courses": [],
+       "footnotes": [
+        "3"
+       ],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[49]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "19",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[50]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Spring",
+     "year": "Year 2"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "PP P312",
+       "courses": [
+        "PP P312"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[53]"
+       },
+       "title": "ADRS Organ Systems Appr"
+      },
+      {
+       "code_text": "PP P321",
+       "courses": [
+        "PP P321"
+       ],
+       "footnotes": [
+        "4"
+       ],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[54]"
+       },
+       "title": "Pathophysiology/Therapeutics Neurology/Psychiatry"
+      },
+      {
+       "code_text": "PP P325",
+       "courses": [
+        "PP P325"
+       ],
+       "footnotes": [
+        "4"
+       ],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[55]"
+       },
+       "title": "Pathophysiology/Therapeutics - Infectious Diseases"
+      },
+      {
+       "code_text": "PP P347",
+       "courses": [
+        "PP P347"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[56]"
+       },
+       "title": "Pharm Care Rec III"
+      },
+      {
+       "code_text": "PP P352",
+       "courses": [
+        "PP P352"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[57]"
+       },
+       "title": "Economics of Pharm Pract"
+      },
+      {
+       "code_text": "Electives",
+       "courses": [],
+       "footnotes": [
+        "5"
+       ],
+       "hours": "4",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[58]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "Self-Selected Co-Curricular Activity (CPD)",
+       "courses": [],
+       "footnotes": [
+        "3"
+       ],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[59]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "16",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[60]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Fall",
+     "year": "Year 3"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "PP P313",
+       "courses": [
+        "PP P313"
+       ],
+       "footnotes": [],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[62]"
+       },
+       "title": "Clin Pharmacokinetics"
+      },
+      {
+       "code_text": "PP P323",
+       "courses": [
+        "PP P323"
+       ],
+       "footnotes": [
+        "4"
+       ],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[63]"
+       },
+       "title": "Pathophysiology/Therapeutics of Oncology and Immunology"
+      },
+      {
+       "code_text": "PP P336",
+       "courses": [
+        "PP P336"
+       ],
+       "footnotes": [
+        "1"
+       ],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[64]"
+       },
+       "title": "IPPE 3"
+      },
+      {
+       "code_text": "Inpatient or Clinic - Patient and Interprofessional Communications",
+       "courses": [],
+       "footnotes": [],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[65]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "IPE Community Service Activity",
+       "courses": [],
+       "footnotes": [],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[66]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "PP P338",
+       "courses": [
+        "PP P338"
+       ],
+       "footnotes": [
+        "4"
+       ],
+       "hours": "3",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[67]"
+       },
+       "title": "Pathophysiology/Therapeutics - Gastroenterology/Nutrition and Renal Disorders"
+      },
+      {
+       "code_text": "PP P341",
+       "courses": [
+        "PP P341"
+       ],
+       "footnotes": [],
+       "hours": "2",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[68]"
+       },
+       "title": "Pharmacy Law"
+      },
+      {
+       "code_text": "PP P348",
+       "courses": [
+        "PP P348"
+       ],
+       "footnotes": [],
+       "hours": "1",
+       "joiner": null,
+       "kind": "course",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[69]"
+       },
+       "title": "Pathway to Practice: Skills for APPE Readiness"
+      },
+      {
+       "code_text": "Electives",
+       "courses": [],
+       "footnotes": [
+        "5"
+       ],
+       "hours": "4",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[70]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "Self-Selected Co-Curricular Activity (CPD)",
+       "courses": [],
+       "footnotes": [
+        "3"
+       ],
+       "hours": "",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[71]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "18",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[72]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Spring",
+     "year": "Year 3"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "Advanced Pharmacy Practice Experience (APPE)",
+       "courses": [],
+       "footnotes": [
+        "6"
+       ],
+       "hours": "5",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[75]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "Advanced Pharmacy Practice Experience (APPE)",
+       "courses": [],
+       "footnotes": [
+        "6"
+       ],
+       "hours": "5",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[76]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "Advanced Pharmacy Practice Experience (APPE)",
+       "courses": [],
+       "footnotes": [
+        "6"
+       ],
+       "hours": "5",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[77]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "Advanced Pharmacy Practice Experience (APPE)",
+       "courses": [],
+       "footnotes": [
+        "6"
+       ],
+       "hours": "5",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[78]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "20",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[79]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Fall",
+     "year": "Year 4"
+    },
+    {
+     "rows": [
+      {
+       "code_text": "Advanced Pharmacy Practice Experience (APPE)",
+       "courses": [],
+       "footnotes": [
+        "6"
+       ],
+       "hours": "5",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[81]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "Advanced Pharmacy Practice Experience (APPE)",
+       "courses": [],
+       "footnotes": [
+        "6"
+       ],
+       "hours": "5",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[82]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "Advanced Pharmacy Practice Experience (APPE)",
+       "courses": [],
+       "footnotes": [
+        "6"
+       ],
+       "hours": "5",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[83]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "Advanced Pharmacy Practice Experience (APPE)",
+       "courses": [],
+       "footnotes": [
+        "6"
+       ],
+       "hours": "5",
+       "joiner": null,
+       "kind": "comment",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[84]"
+       },
+       "title": ""
+      },
+      {
+       "code_text": "",
+       "courses": [],
+       "footnotes": [],
+       "hours": "20",
+       "joiner": null,
+       "kind": "term_total",
+       "locator": {
+        "bbox": null,
+        "line": 541,
+        "page": null,
+        "tab": null,
+        "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tr[85]"
+       },
+       "title": "Credit Hours"
+      }
+     ],
+     "term": "Spring",
+     "year": "Year 4"
+    }
+   ],
+   "total_hours": "144"
+  }
+ ],
+ "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+ "tables": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 477,
+     "page": null,
+     "tab": "admissiontextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table"
+    },
+    "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+    "text": "Course List Code Title Credit Hours Math Discipline Calculus I4 Science Discipline Anatomy/Physiology I 13-4 Anatomy/Physiology II 13-4 Biology I 23 Biology I Lab1 Biology II 23 Biology II Lab1 General Chemistry I3 General Chemistry I Lab1 General Chemistry II3 General Chemistry II Lab1 Organic Chemistry I3 Organic Chemistry I Lab1 Organic Chemistry II3 Organic Chemistry II Lab1 Physics I 33 Physics I Lab1 English Discipline Analytical Reading and Writing English Composition 43-4 Electives Compl",
+    "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+   },
+   "footnotes": [
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 538,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/dl/dd[1]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "An Anatomy/Physiology Lab is not required.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "1",
+     "text": "An Anatomy/Physiology Lab is not required."
+    },
+    {
+     "courses": [
+      "BIOL 1111",
+      "BIOL 1112",
+      "BIOL 2112"
+     ],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 538,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/dl/dd[2]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "Biology I must be equivalent to BIOL 1111 and Biology II must be equivalent to BIOL 1112 or BIOL 2112 at Temple University. For details, refer to the Temple University Course Catalog.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "2",
+     "text": "Biology I must be equivalent to BIOL 1111 and Biology II must be equivalent to BIOL 1112 or BIOL 2112 at Temple University. For details, refer to the Temple University Course Catalog."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 538,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/dl/dd[3]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "A non-calculus-based Physics course is acceptable.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "3",
+     "text": "A non-calculus-based Physics course is acceptable."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 538,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/dl/dd[4]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "Analytical Reading and Writing English Composition may be taken in the Fall or Spring semester. Students taking a course for ESL students are required to take an additional English course, which may be counted as a Humanities Elective.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "4",
+     "text": "Analytical Reading and Writing English Composition may be taken in the Fall or Spring semester. Students taking a course for ESL students are required to take an additional English course, which may be counted as a Humanities Elective."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 538,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/dl/dd[5]"
+      },
+      "sha256": "78dbb56fe42fe5d6a7db8822a3a62736172315156b14d484e375e1215ee76e74",
+      "text": "Temple students are advised to select courses within each of the GenEd areas.",
+      "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+     },
+     "marker": "5",
+     "text": "Temple students are advised to select courses within each of the GenEd areas."
+    }
+   ],
+   "index": 0,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "areaheader",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "Math Discipline",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 492,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Calculus I",
+     "courses": [],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 493,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[2]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Science Discipline",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 494,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[3]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Anatomy/Physiology I",
+     "courses": [],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "3-4",
+     "indent": 0,
+     "index": 3,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 495,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[4]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Anatomy/Physiology II",
+     "courses": [],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "3-4",
+     "indent": 0,
+     "index": 4,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 496,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[5]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Biology I",
+     "courses": [],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "3",
+     "indent": 0,
+     "index": 5,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 497,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[6]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Biology I Lab",
+     "courses": [],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 6,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 498,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[7]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Biology II",
+     "courses": [],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "3",
+     "indent": 0,
+     "index": 7,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 499,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[8]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Biology II Lab",
+     "courses": [],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 8,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 500,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[9]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "General Chemistry I",
+     "courses": [],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 9,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 501,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[10]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "General Chemistry I Lab",
+     "courses": [],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 10,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 502,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[11]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "General Chemistry II",
+     "courses": [],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 11,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 503,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[12]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "General Chemistry II Lab",
+     "courses": [],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 12,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 504,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[13]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Organic Chemistry I",
+     "courses": [],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 13,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 505,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[14]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Organic Chemistry I Lab",
+     "courses": [],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 14,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 506,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[15]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Organic Chemistry II",
+     "courses": [],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 15,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 507,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[16]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Organic Chemistry II Lab",
+     "courses": [],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 16,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[17]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Physics I",
+     "courses": [],
+     "footnotes": [
+      "3"
+     ],
+     "hours": "3",
+     "indent": 0,
+     "index": 17,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 509,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[18]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Physics I Lab",
+     "courses": [],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 18,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 510,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[19]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "English Discipline",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 19,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 511,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[20]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Analytical Reading and Writing English Composition",
+     "courses": [],
+     "footnotes": [
+      "4"
+     ],
+     "hours": "3-4",
+     "indent": 0,
+     "index": 20,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 512,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[21]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Electives",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 21,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 513,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[22]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Complete a minimum of 18 credits in the following disciplines, meeting the stated minimums:",
+     "courses": [],
+     "footnotes": [
+      "5"
+     ],
+     "hours": "18",
+     "indent": 0,
+     "index": 22,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 514,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[23]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Social Sciences Discipline",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 23,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 515,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[24]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Complete a minimum of 6 credits from at least two different departments:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 24,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 516,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[25]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Anthropology",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 25,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 517,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[26]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Geography",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 26,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 518,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[27]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "History",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 27,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 519,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[28]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Political Science",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 28,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 520,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[29]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Psychology",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 29,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 521,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[30]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Religion",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 30,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 522,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[31]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Sociology",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 31,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 523,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[32]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Humanities Discipline",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 32,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[33]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Complete a minimum of 6 credits from at least two different departments:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 33,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 525,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[34]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Architecture",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 34,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 526,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[35]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Communication/Public Speaking",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 35,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 527,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[36]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Fine Arts",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 36,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 528,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[37]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Languages",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 37,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 529,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[38]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Literature",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 38,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 530,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[39]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Literature/Classics",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 39,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 531,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[40]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Philosophy",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 40,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 532,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[41]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Mathematics Discipline",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 41,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 533,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[42]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even",
+      "lastrow"
+     ],
+     "code_text": "",
+     "comment": "Statistics recommended",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 42,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 534,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[43]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "listsum"
+     ],
+     "code_text": "",
+     "comment": "Total Credit Hours",
+     "courses": [],
+     "footnotes": [],
+     "hours": "59-62",
+     "indent": 0,
+     "index": 43,
+     "joiner": null,
+     "kind": "total",
+     "locator": {
+      "bbox": null,
+      "line": 535,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[44]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Admission Requirements and Deadline"
+   ],
+   "tab": "admissiontextcontainer"
+  }
+ ],
+ "units": [
+  "Graduate and Professional",
+  "Schools and Colleges",
+  "School of Pharmacy"
+ ],
+ "url": "https://bulletin.temple.edu/graduate/scd/pharmacy/pharmacy-pharmd/"
+}

@@ -1,0 +1,1778 @@
+{
+ "facts": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 420,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[9]"
+    },
+    "sha256": "054b11f776ed18eb399644e8fe6829b0a26e087fba6369c27f85fc23c8806588",
+    "text": "Licensure/Certification: Podiatric physicians are licensed in all 50 states, Washington, D.C., and Puerto Rico to treat the foot, ankle and related structures of the leg by medical, surgical or other means.",
+    "url": "https://bulletin.temple.edu/graduate/scd/podiatry/podiatric-medicine-dpm/"
+   },
+   "label": "Licensure/Certification",
+   "value": "Podiatric physicians are licensed in all 50 states, Washington, D.C., and Puerto Rico to treat the foot, ankle and related structures of the leg by medical, surgical or other means."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 452,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[10]"
+    },
+    "sha256": "054b11f776ed18eb399644e8fe6829b0a26e087fba6369c27f85fc23c8806588",
+    "text": "Interview: A personal interview is required for all students under consideration by the Admissions Committee. Applicants take part in an interview day that consists of a tour of the TUSPM campus, lunch with current students, and interviews conducted by faculty members and admissions personnel.",
+    "url": "https://bulletin.temple.edu/graduate/scd/podiatry/podiatric-medicine-dpm/"
+   },
+   "label": "Interview",
+   "value": "A personal interview is required for all students under consideration by the Admissions Committee. Applicants take part in an interview day that consists of a tour of the TUSPM campus, lunch with current students, and interviews conducted by faculty members and admissions personnel."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 456,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/p[1]"
+    },
+    "sha256": "054b11f776ed18eb399644e8fe6829b0a26e087fba6369c27f85fc23c8806588",
+    "text": "General Program Requirements: Number of Credits Required: 196.15",
+    "url": "https://bulletin.temple.edu/graduate/scd/podiatry/podiatric-medicine-dpm/"
+   },
+   "label": "General Program Requirements",
+   "value": "Number of Credits Required: 196.15"
+  }
+ ],
+ "level": "graduate",
+ "name": "Podiatric Medicine DPM",
+ "plans": [],
+ "sha256": "054b11f776ed18eb399644e8fe6829b0a26e087fba6369c27f85fc23c8806588",
+ "tables": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 456,
+     "page": null,
+     "tab": "programrequirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table"
+    },
+    "sha256": "054b11f776ed18eb399644e8fe6829b0a26e087fba6369c27f85fc23c8806588",
+    "text": "Course List Code Title Credit Hours Year 1 PBMS P100Histology6.25 PBMS P102General Anatomy7 PBMS P103Lower Extremity Anatomy7.7 PBMS P104Physiology II2.5 PBMS P105Neuroanatomy2 PBMS P109Biomechanics2 PBMS P110Biochemistry6 PBMS P111Physiology5 PBMS P120Microbiology6.8 PDMD P130Fundmntl of Podiatric Pract I3.5 Year 2 PBMS P210Pharmacology5.25 PBMS P221Pathology9 PBMS P222Pathophysiology3 PDMD P200Fundmntl of Podiatric Pract II2.7 PDMD P215Internal Medicine3 PDMD P230Fundamentals of Dermatology2.2",
+    "url": "https://bulletin.temple.edu/graduate/scd/podiatry/podiatric-medicine-dpm/"
+   },
+   "footnotes": [],
+   "index": 0,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "areaheader",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "Year 1",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PBMS P100",
+     "comment": "",
+     "courses": [
+      "PBMS P100"
+     ],
+     "footnotes": [],
+     "hours": "6.25",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[2]"
+     },
+     "title": "Histology"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PBMS P102",
+     "comment": "",
+     "courses": [
+      "PBMS P102"
+     ],
+     "footnotes": [],
+     "hours": "7",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[3]"
+     },
+     "title": "General Anatomy"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PBMS P103",
+     "comment": "",
+     "courses": [
+      "PBMS P103"
+     ],
+     "footnotes": [],
+     "hours": "7.7",
+     "indent": 0,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[4]"
+     },
+     "title": "Lower Extremity Anatomy"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PBMS P104",
+     "comment": "",
+     "courses": [
+      "PBMS P104"
+     ],
+     "footnotes": [],
+     "hours": "2.5",
+     "indent": 0,
+     "index": 4,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[5]"
+     },
+     "title": "Physiology II"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PBMS P105",
+     "comment": "",
+     "courses": [
+      "PBMS P105"
+     ],
+     "footnotes": [],
+     "hours": "2",
+     "indent": 0,
+     "index": 5,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[6]"
+     },
+     "title": "Neuroanatomy"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PBMS P109",
+     "comment": "",
+     "courses": [
+      "PBMS P109"
+     ],
+     "footnotes": [],
+     "hours": "2",
+     "indent": 0,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[7]"
+     },
+     "title": "Biomechanics"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PBMS P110",
+     "comment": "",
+     "courses": [
+      "PBMS P110"
+     ],
+     "footnotes": [],
+     "hours": "6",
+     "indent": 0,
+     "index": 7,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[8]"
+     },
+     "title": "Biochemistry"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PBMS P111",
+     "comment": "",
+     "courses": [
+      "PBMS P111"
+     ],
+     "footnotes": [],
+     "hours": "5",
+     "indent": 0,
+     "index": 8,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[9]"
+     },
+     "title": "Physiology"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PBMS P120",
+     "comment": "",
+     "courses": [
+      "PBMS P120"
+     ],
+     "footnotes": [],
+     "hours": "6.8",
+     "indent": 0,
+     "index": 9,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[10]"
+     },
+     "title": "Microbiology"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDMD P130",
+     "comment": "",
+     "courses": [
+      "PDMD P130"
+     ],
+     "footnotes": [],
+     "hours": "3.5",
+     "indent": 0,
+     "index": 10,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[11]"
+     },
+     "title": "Fundmntl of Podiatric Pract I"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Year 2",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 11,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[12]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PBMS P210",
+     "comment": "",
+     "courses": [
+      "PBMS P210"
+     ],
+     "footnotes": [],
+     "hours": "5.25",
+     "indent": 0,
+     "index": 12,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[13]"
+     },
+     "title": "Pharmacology"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PBMS P221",
+     "comment": "",
+     "courses": [
+      "PBMS P221"
+     ],
+     "footnotes": [],
+     "hours": "9",
+     "indent": 0,
+     "index": 13,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[14]"
+     },
+     "title": "Pathology"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PBMS P222",
+     "comment": "",
+     "courses": [
+      "PBMS P222"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 14,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[15]"
+     },
+     "title": "Pathophysiology"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDMD P200",
+     "comment": "",
+     "courses": [
+      "PDMD P200"
+     ],
+     "footnotes": [],
+     "hours": "2.7",
+     "indent": 0,
+     "index": 15,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[16]"
+     },
+     "title": "Fundmntl of Podiatric Pract II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDMD P215",
+     "comment": "",
+     "courses": [
+      "PDMD P215"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 16,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[17]"
+     },
+     "title": "Internal Medicine"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDMD P230",
+     "comment": "",
+     "courses": [
+      "PDMD P230"
+     ],
+     "footnotes": [],
+     "hours": "2.2",
+     "indent": 0,
+     "index": 17,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[18]"
+     },
+     "title": "Fundamentals of Dermatology"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDMD P236",
+     "comment": "",
+     "courses": [
+      "PDMD P236"
+     ],
+     "footnotes": [],
+     "hours": "2.6",
+     "indent": 0,
+     "index": 18,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[19]"
+     },
+     "title": "Foot and Ankle Radiology"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDMD P237",
+     "comment": "",
+     "courses": [
+      "PDMD P237"
+     ],
+     "footnotes": [],
+     "hours": "2",
+     "indent": 0,
+     "index": 19,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[20]"
+     },
+     "title": "Vascular Disease"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDMD P239",
+     "comment": "",
+     "courses": [
+      "PDMD P239"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 20,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[21]"
+     },
+     "title": "Infectious Disease"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDMD P336",
+     "comment": "",
+     "courses": [
+      "PDMD P336"
+     ],
+     "footnotes": [],
+     "hours": "1.6",
+     "indent": 0,
+     "index": 21,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[22]"
+     },
+     "title": "Neurology"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDOR P240",
+     "comment": "",
+     "courses": [
+      "PDOR P240"
+     ],
+     "footnotes": [],
+     "hours": "2",
+     "indent": 0,
+     "index": 22,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[23]"
+     },
+     "title": "Pathomechanics"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDOR P241",
+     "comment": "",
+     "courses": [
+      "PDOR P241"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 23,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[24]"
+     },
+     "title": "Casting"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDOR P243",
+     "comment": "",
+     "courses": [
+      "PDOR P243"
+     ],
+     "footnotes": [],
+     "hours": "1.8",
+     "indent": 0,
+     "index": 24,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[25]"
+     },
+     "title": "Clinic Foot Orthopedics"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDOR P248",
+     "comment": "",
+     "courses": [
+      "PDOR P248"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 25,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[26]"
+     },
+     "title": "Sports Medicine"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDSR P250",
+     "comment": "",
+     "courses": [
+      "PDSR P250"
+     ],
+     "footnotes": [],
+     "hours": "2.8",
+     "indent": 0,
+     "index": 26,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[27]"
+     },
+     "title": "Principles of Podiatric Surgery I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDSR P252",
+     "comment": "",
+     "courses": [
+      "PDSR P252"
+     ],
+     "footnotes": [],
+     "hours": "2.5",
+     "indent": 0,
+     "index": 27,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[28]"
+     },
+     "title": "Principles of Podiatric Surgery II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDSR P253",
+     "comment": "",
+     "courses": [
+      "PDSR P253"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 28,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[29]"
+     },
+     "title": "O R Protocol"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDSR P257",
+     "comment": "",
+     "courses": [
+      "PDSR P257"
+     ],
+     "footnotes": [],
+     "hours": "2.4",
+     "indent": 0,
+     "index": 29,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[30]"
+     },
+     "title": "Podiatric Surgical Skills"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Year 3",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 30,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[31]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCED P381",
+     "comment": "",
+     "courses": [
+      "PCED P381"
+     ],
+     "footnotes": [],
+     "hours": "13.5",
+     "indent": 0,
+     "index": 31,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[32]"
+     },
+     "title": "Intro Clerkship Clinical Pod I"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PCED P384",
+     "comment": "",
+     "courses": [
+      "PCED P384"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 32,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[33]"
+     },
+     "title": "Clerkship Clinical Podiatry I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCED P385",
+     "comment": "",
+     "courses": [
+      "PCED P385"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 33,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[34]"
+     },
+     "title": "Clerkship Clinical Podiatry II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PCED P386",
+     "comment": "",
+     "courses": [
+      "PCED P386"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 34,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[35]"
+     },
+     "title": "Clerkship Clinical Podiatry III"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCHA P360",
+     "comment": "",
+     "courses": [
+      "PCHA P360"
+     ],
+     "footnotes": [],
+     "hours": "2",
+     "indent": 0,
+     "index": 35,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[36]"
+     },
+     "title": "Community Health"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PCHA P361",
+     "comment": "",
+     "courses": [
+      "PCHA P361"
+     ],
+     "footnotes": [],
+     "hours": "1.8",
+     "indent": 0,
+     "index": 36,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[37]"
+     },
+     "title": "Law & Podiatric Medicine"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCHA P362",
+     "comment": "",
+     "courses": [
+      "PCHA P362"
+     ],
+     "footnotes": [],
+     "hours": "2",
+     "indent": 0,
+     "index": 37,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[38]"
+     },
+     "title": "Professional Administration and Development"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDOR P340",
+     "comment": "",
+     "courses": [
+      "PDOR P340"
+     ],
+     "footnotes": [],
+     "hours": "2",
+     "indent": 0,
+     "index": 38,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[39]"
+     },
+     "title": "General Orthopedics"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDOR P342",
+     "comment": "",
+     "courses": [
+      "PDOR P342"
+     ],
+     "footnotes": [],
+     "hours": "1.8",
+     "indent": 0,
+     "index": 39,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[40]"
+     },
+     "title": "Pediatric Foot Orthopedics"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDOR P346",
+     "comment": "",
+     "courses": [
+      "PDOR P346"
+     ],
+     "footnotes": [],
+     "hours": "1.75",
+     "indent": 0,
+     "index": 40,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[41]"
+     },
+     "title": "Traumatology"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDSR P352",
+     "comment": "",
+     "courses": [
+      "PDSR P352"
+     ],
+     "footnotes": [],
+     "hours": "2.6",
+     "indent": 0,
+     "index": 41,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[42]"
+     },
+     "title": "Princ First Ray Surgery"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDSR P353",
+     "comment": "",
+     "courses": [
+      "PDSR P353"
+     ],
+     "footnotes": [],
+     "hours": "2.6",
+     "indent": 0,
+     "index": 42,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[43]"
+     },
+     "title": "Reconstruct Surgery Foot & Leg"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Select one from the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 43,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[44]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PCED P387",
+     "comment": "",
+     "courses": [
+      "PCED P387"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 44,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[45]"
+     },
+     "title": "Medical Elective"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDMD P334",
+     "comment": "",
+     "courses": [
+      "PDMD P334"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 45,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[46]"
+     },
+     "title": "Clerkship Internal Medicine"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Select one from the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 46,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[47]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDMD P331",
+     "comment": "",
+     "courses": [
+      "PDMD P331"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 47,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[48]"
+     },
+     "title": "Clerkship Clinical Neurology"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDMD P332",
+     "comment": "",
+     "courses": [
+      "PDMD P332"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 48,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[49]"
+     },
+     "title": "Clerkship Periph Vascular Dis"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDMD P334",
+     "comment": "",
+     "courses": [
+      "PDMD P334"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 49,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[50]"
+     },
+     "title": "Clerkship Internal Medicine (may be taken twice for credit)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDMD P338",
+     "comment": "",
+     "courses": [
+      "PDMD P338"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 50,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[51]"
+     },
+     "title": "Clerkship Infectious Disease"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDOR P341",
+     "comment": "",
+     "courses": [
+      "PDOR P341"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 51,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[52]"
+     },
+     "title": "Clrkshp Gen Orthopedics"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Year 4",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 52,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[53]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCED P431",
+     "comment": "",
+     "courses": [
+      "PCED P431"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 53,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[54]"
+     },
+     "title": "Clerkship Clinical Podiatry IV"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PCED P432",
+     "comment": "",
+     "courses": [
+      "PCED P432"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 54,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[55]"
+     },
+     "title": "Clerkship Clinical Podiatry V"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCED P440",
+     "comment": "",
+     "courses": [
+      "PCED P440"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 55,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[56]"
+     },
+     "title": "Community Clerkship"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PCED P441",
+     "comment": "",
+     "courses": [
+      "PCED P441"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 56,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[57]"
+     },
+     "title": "External Podiatric Clerkship I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCED P442",
+     "comment": "",
+     "courses": [
+      "PCED P442"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 57,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[58]"
+     },
+     "title": "External Podiatric Clerkship II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PCED P443",
+     "comment": "",
+     "courses": [
+      "PCED P443"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 58,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[59]"
+     },
+     "title": "External Podiatric Clerkship III"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCED P444",
+     "comment": "",
+     "courses": [
+      "PCED P444"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 59,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[60]"
+     },
+     "title": "External Podiatric Clerkship IV"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PCED P446",
+     "comment": "",
+     "courses": [
+      "PCED P446"
+     ],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 60,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[61]"
+     },
+     "title": "External Podiatric Clerkship V"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Select one from the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 61,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[62]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PCED P443",
+     "comment": "",
+     "courses": [
+      "PCED P443"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 62,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[63]"
+     },
+     "title": "External Podiatric Clerkship III"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCED P447",
+     "comment": "",
+     "courses": [
+      "PCED P447"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 63,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[64]"
+     },
+     "title": "External Podiatric Clerkship VI"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Select one from the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "4.5",
+     "indent": 0,
+     "index": 64,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[65]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PCED P410",
+     "comment": "",
+     "courses": [
+      "PCED P410"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 65,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[66]"
+     },
+     "title": "Clerkship in General Orthopedics (cannot be taken in addition to PDOR P341)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDMD P421",
+     "comment": "",
+     "courses": [
+      "PDMD P421"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 66,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[67]"
+     },
+     "title": "Clerkship Clinical Neurology (cannot be taken in addition to PDMD P331)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PDMD P421",
+     "comment": "",
+     "courses": [
+      "PDMD P421"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 67,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[68]"
+     },
+     "title": "Clerkship Clinical Neurology (may be taken after PDMD P334 and/or PCED P387, and must be selected if PDMD P334 or PCED P387 has not already been completed)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PDMD P428",
+     "comment": "",
+     "courses": [
+      "PDMD P428"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 68,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[69]"
+     },
+     "title": "Clerkship Infectious Disease (cannot be taken in addition to PDMD P338)"
+    },
+    {
+     "classes": [
+      "odd",
+      "lastrow"
+     ],
+     "code_text": "PDMD P445",
+     "comment": "",
+     "courses": [
+      "PDMD P445"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 69,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[70]"
+     },
+     "title": "Clerkship in Peripheral Vascular Disease (cannot be taken in addition to PDMD P332)"
+    },
+    {
+     "classes": [
+      "listsum"
+     ],
+     "code_text": "",
+     "comment": "Total Credit Hours",
+     "courses": [],
+     "footnotes": [],
+     "hours": "196.15",
+     "indent": 0,
+     "index": 70,
+     "joiner": null,
+     "kind": "total",
+     "locator": {
+      "bbox": null,
+      "line": 456,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[71]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Program Requirements"
+   ],
+   "tab": "programrequirementstextcontainer"
+  }
+ ],
+ "units": [
+  "Graduate and Professional",
+  "Schools and Colleges",
+  "School of Podiatric Medicine"
+ ],
+ "url": "https://bulletin.temple.edu/graduate/scd/podiatry/podiatric-medicine-dpm/"
+}

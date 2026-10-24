@@ -31,13 +31,19 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 
 from app.modules.bulletin.ingest.extract.programs import ProgramPage
-from app.modules.bulletin.ingest.extract.tables import CourseListTable, TableRow
+from app.modules.bulletin.ingest.extract.tables import (
+    CourseListTable,
+    PlanGrid,
+    PlanRow,
+    TableRow,
+)
 from app.modules.bulletin.rules import (
     CourseFilter,
     Interpretation,
     MilestoneKind,
     RequirementNode,
     RequirementTree,
+    RootRole,
     SourceRef,
     Validation,
     expand_course_code,
@@ -92,6 +98,14 @@ EITHER = re.compile(r"\b(?:select|choose|take|complete)\s+either\b", re.IGNORECA
 ANY_COMBINATION = re.compile(r"\bany\s+combination\b", re.IGNORECASE)
 CHOSEN_FROM = re.compile(
     r"\b(?:chosen|selected)\s+from\b|\bselect\s+from\b", re.IGNORECASE
+)
+# "Select at most three credits of Independent Study".
+AT_MOST_CREDITS = re.compile(
+    r"\b(?:select|choose|take|count)\s+(?:up\s+to|at\s+most|no\s+more\s+than)\s+"
+    r"(?P<count>" + NUMBER + r")"
+    r"(?:\s+(?!of\b|from\b|the\b|following\b|courses?\b)[\w&/-]+){0,4}?\s*"
+    + CREDIT_WORD,
+    re.IGNORECASE,
 )
 AT_MOST = re.compile(
     r"\b(?:select|choose|take)\s+(?:up\s+to|at\s+most|no\s+more\s+than)\s+"
@@ -174,8 +188,26 @@ HOURS = re.compile(r"^\s*" + CREDIT_RANGE + r"\s*$")
 
 Credits = tuple[Decimal, Decimal]
 
+# "CIS 4X9X", "BIOL 4XXX": any course whose number fits the pattern.
+WILDCARD_CODE = re.compile(
+    r"^\s*(?P<subject>[A-Z]{2,5})\s+(?P<number>(?=[0-9X]*X)(?=[0-9X]*[0-9])[0-9X]{4})\s*$"
+)
+# Conditions a row's title states beside the course ("cannot be taken in
+# addition to PDMD P331", "must be completed at Temple", "taken six times").
+CONDITION_WORDING = re.compile(
+    r"\b(?:cannot|can\s+not|may\s+not|must|only\s+if|only\s+when|unless|"
+    r"in\s+addition\s+to|at\s+temple|instead\s+of|in\s+place\s+of|"
+    r"(?:\d+|two|three|four|five|six|seven|eight|several)\s+times)\b",
+    re.IGNORECASE,
+)
+
 NOTE_OFFERING = "offering-pattern legend, not a requirement"
 NOTE_UNLINKED = "course printed without a catalog link"
+NOTE_PLAN = "published as a semester sequence; order is not a requirement"
+NOTE_LEGEND_ONLY = "table holds only offering legends; not a requirement"
+NOTE_UNCHECKED_WORDING = (
+    "rows add up to the printed total, but uninterpreted wording keeps it unverified"
+)
 NOTE_UNCOUNTED = "selection count not stated; any one of the listed items is assumed"
 
 
@@ -228,6 +260,8 @@ def selection(text: str) -> Selection | None:
         return Selection(min_credits=low, max_credits=high)
     if EITHER.search(text):
         return Selection(min_courses=1)
+    if match := AT_MOST_CREDITS.search(text):
+        return Selection(max_credits=_amount(match["count"]))
     if (match := AT_MOST.search(text)) and (count := _count(match["count"])):
         return Selection(max_courses=count)
     if ANY_COMBINATION.search(text):
@@ -301,6 +335,145 @@ def _row_text(row: TableRow) -> str:
     return " | ".join(part for part in parts if part)
 
 
+def code_fields(code: str, node_id: str, source: SourceRef) -> dict:
+    """A printed course code as node fields: one course, the codes of a
+    cross-listed course as alternatives, a wildcard ("CIS 4X9X") as a number
+    range, or text if it isn't a code."""
+    if match := WILDCARD_CODE.match(code):
+        number = match["number"]
+        return {
+            "kind": "course_filter",
+            "label": code,
+            "course_filter": CourseFilter(
+                subjects=[match["subject"]],
+                number_min=number.replace("X", "0"),
+                number_max=number.replace("X", "9"),
+            ),
+            "interpretation": Interpretation.PARTIAL,
+            "notes": ["wildcard course number read as a number range"],
+        }
+    codes = expand_course_code(code)
+    if len(codes) == 1:
+        return {"kind": "course", "course": codes[0]}
+    if not codes or any(WILDCARD_CODE.match(listed) for listed in codes):
+        return {
+            "kind": "text",
+            "label": code,
+            "interpretation": Interpretation.UNINTERPRETED,
+            "notes": [f"{code!r} is not a course code"],
+        }
+    return {
+        "kind": "any",
+        "label": code,
+        "children": [
+            RequirementNode(
+                id=f"{node_id}.x{position}",
+                kind="course",
+                course=listed,
+                source_text=code,
+                sources=[source],
+            )
+            for position, listed in enumerate(codes)
+        ],
+        "notes": [f"cross-listed under {len(codes)} codes"],
+    }
+
+
+def text_fields(text: str, node_id: str, source: SourceRef) -> dict:
+    """A row printed as words: a subtotal or legend, an unlinked course code,
+    an open-ended slot, a named milestone, or published wording kept as is."""
+    if TOTAL_WORDING.search(text):
+        return {
+            "kind": "text",
+            "label": text,
+            "interpretation": Interpretation.UNINTERPRETED,
+            "notes": [NOTE_SUBTOTAL],
+        }
+    if is_offering_note(text):
+        return {
+            "kind": "text",
+            "label": text,
+            "interpretation": Interpretation.UNINTERPRETED,
+            "notes": [NOTE_OFFERING],
+        }
+    if WILDCARD_CODE.match(text) or expand_course_code(text):
+        fields = code_fields(text, node_id, source)
+        fields["notes"] = [*fields.get("notes", []), NOTE_UNLINKED]
+        return fields
+    if found := slot_filter(text):
+        course_filter, notes = found
+        fields = {
+            "kind": "course_filter",
+            "label": text,
+            "course_filter": course_filter,
+            "interpretation": (
+                Interpretation.PARTIAL if notes else Interpretation.INTERPRETED
+            ),
+            "notes": notes,
+        }
+        return _condition_fields(fields, text)
+    if kind := milestone(text):
+        return {
+            "kind": "milestone",
+            "label": text,
+            "milestone": kind,
+            "interpretation": Interpretation.PARTIAL,
+            "notes": ["milestone named; its conditions are in the program's prose"],
+        }
+    return {
+        "kind": "text",
+        "label": text,
+        "interpretation": Interpretation.UNINTERPRETED,
+        "notes": ["published wording only; not expressed as a rule"],
+    }
+
+
+def _condition(text: str) -> str | None:
+    # Upper-case matches are subject codes ("MUST 1000-4999"), not words.
+    worded = any(
+        not match.group().isupper() for match in CONDITION_WORDING.finditer(text)
+    )
+    return text if worded else None
+
+
+def _condition_fields(fields: dict, text: str) -> dict:
+    if (condition := _condition(text)) is None:
+        return fields
+    return {
+        **fields,
+        "interpretation": Interpretation.PARTIAL,
+        "notes": [*fields.get("notes", []), f"condition not captured: {condition!r}"],
+    }
+
+
+def footnote_conditions(node: RequirementNode) -> RequirementNode:
+    """The node, marked partial if a footnote on its row states a condition
+    ("must be completed at Temple")."""
+    for footnote in node.footnotes:
+        node = with_condition(node, footnote, "footnote condition not captured")
+    return node
+
+
+def with_condition(
+    node: RequirementNode, text: str, note: str = "condition not captured"
+) -> RequirementNode:
+    """The node, marked partial if its printed title states a condition the
+    structure doesn't carry ("cannot be taken in addition to…")."""
+    if (condition := _condition(text)) is None:
+        return node
+    interpretation = (
+        node.interpretation
+        if node.interpretation is Interpretation.UNINTERPRETED
+        else Interpretation.PARTIAL
+    )
+    return node.model_copy(
+        update={
+            "interpretation": interpretation,
+            "notes": [*node.notes, f"{note}: {condition!r}"],
+        }
+    )
+
+
 class _TableReader:
     """Reads one table's rows into nodes, front to back."""
 
@@ -328,52 +501,28 @@ class _TableReader:
                 footnotes.append(f"[{marker}] {self.footnotes[marker]}")
             else:
                 notes.append(f"footnote {marker!r} is not printed under the table")
-        return RequirementNode(
-            id=f"{parent}.r{row.index}",
-            hours_text=row.hours,
-            footnotes=footnotes,
-            source_text=_row_text(row),
-            sources=[self.source(row)],
-            notes=notes,
-            **fields,
+        return footnote_conditions(
+            RequirementNode(
+                id=f"{parent}.r{row.index}",
+                hours_text=row.hours,
+                footnotes=footnotes,
+                source_text=_row_text(row),
+                sources=[self.source(row)],
+                notes=notes,
+                **fields,
+            )
         )
 
     # Course rows -----------------------------------------------------------
 
-    def code_fields(self, code: str, node_id: str, row: TableRow) -> dict:
-        """A printed course code as node fields: one course, the codes of a
-        cross-listed course as alternatives, or text if it isn't a code."""
-        codes = expand_course_code(code)
-        if len(codes) == 1:
-            return {"kind": "course", "course": codes[0]}
-        if not codes:
-            return {
-                "kind": "text",
-                "label": code,
-                "interpretation": Interpretation.UNINTERPRETED,
-                "notes": [f"{code!r} is not a course code"],
-            }
-        return {
-            "kind": "any",
-            "label": code,
-            "children": [
-                RequirementNode(
-                    id=f"{node_id}.x{position}",
-                    kind="course",
-                    course=listed,
-                    source_text=code,
-                    sources=[self.source(row)],
-                )
-                for position, listed in enumerate(codes)
-            ],
-            "notes": [f"cross-listed under {len(codes)} codes"],
-        }
-
     def course_row(self, row: TableRow, parent: str) -> RequirementNode:
+        return with_condition(self._course_row(row, parent), row.title)
+
+    def _course_row(self, row: TableRow, parent: str) -> RequirementNode:
         node_id = f"{parent}.r{row.index}"
         if len(row.courses) == 1:
             return self.node(
-                row, parent, **self.code_fields(row.courses[0], node_id, row)
+                row, parent, **code_fields(row.courses[0], node_id, self.source(row))
             )
         kind = "any" if row.joiner == "or" else "all"
         notes = (
@@ -389,7 +538,7 @@ class _TableReader:
                     id=leaf_id,
                     source_text=code,
                     sources=[self.source(row)],
-                    **self.code_fields(code, leaf_id, row),
+                    **code_fields(code, leaf_id, self.source(row)),
                 )
             )
         return self.node(
@@ -429,59 +578,8 @@ class _TableReader:
 
     def leaf(self, row: TableRow, parent: str) -> RequirementNode:
         text = row.comment or row.title or row.code_text
-        if TOTAL_WORDING.search(text):
-            return self.node(
-                row,
-                parent,
-                kind="text",
-                label=text,
-                interpretation=Interpretation.UNINTERPRETED,
-                notes=[NOTE_SUBTOTAL],
-            )
-        if is_offering_note(text):
-            return self.node(
-                row,
-                parent,
-                kind="text",
-                label=text,
-                interpretation=Interpretation.UNINTERPRETED,
-                notes=[NOTE_OFFERING],
-            )
-        if expand_course_code(text):
-            fields = self.code_fields(text, f"{parent}.r{row.index}", row)
-            fields["notes"] = [*fields.get("notes", []), NOTE_UNLINKED]
-            return self.node(row, parent, **fields)
-        if found := slot_filter(text):
-            course_filter, notes = found
-            return self.node(
-                row,
-                parent,
-                kind="course_filter",
-                label=text,
-                course_filter=course_filter,
-                interpretation=(
-                    Interpretation.PARTIAL if notes else Interpretation.INTERPRETED
-                ),
-                notes=notes,
-            )
-        if kind := milestone(text):
-            return self.node(
-                row,
-                parent,
-                kind="milestone",
-                label=text,
-                milestone=kind,
-                interpretation=Interpretation.PARTIAL,
-                notes=["milestone named; its conditions are in the program's prose"],
-            )
-        return self.node(
-            row,
-            parent,
-            kind="text",
-            label=text,
-            interpretation=Interpretation.UNINTERPRETED,
-            notes=["published wording only; not expressed as a rule"],
-        )
+        fields = text_fields(text, f"{parent}.r{row.index}", self.source(row))
+        return self.node(row, parent, **fields)
 
     # Groups ----------------------------------------------------------------
 
@@ -742,7 +840,259 @@ def interpret_table(table: CourseListTable) -> RequirementNode:
         notes=notes,
         **fields,
     )
-    return _check_total(root, printed, bool(totals), worded)
+    role = section_role(table.tab, table.section)
+    if (
+        role == "requirement"
+        and children
+        and all(NOTE_OFFERING in child.notes for child in children)
+    ):
+        role = "other"
+        root = root.model_copy(update={"notes": [*root.notes, NOTE_LEGEND_ONLY]})
+    checked = _check_total(root, printed, bool(totals), worded)
+    return settle(checked.model_copy(update={"role": role}))
+
+
+def section_role(tab: str | None, section: list[str]) -> RootRole:
+    """What a table or plan grid is for, from the tab and headings it sits
+    under."""
+    tab = (tab or "").lower()
+    headings = " ".join(section).lower()
+    if "admission" in tab or "prepharmacy" in tab or "pre-pharmacy" in headings:
+        return "admission"
+    if "academicplan" in tab or "academic plan" in headings:
+        return "academic_plan"
+    if "accelerated" in tab:
+        return "accelerated"
+    # Overview tabs list deficiency, honors or prerequisite courses beside the
+    # program; ROTC pages list course offerings.
+    if tab == "textcontainer" or "course offerings" in headings:
+        return "other"
+    return "requirement"
+
+
+def settle(node: RequirementNode) -> RequirementNode:
+    """Statuses that agree with the node's descendants: a parent is no more
+    interpreted than its parts, and nothing holding uninterpreted wording is
+    reported as checked."""
+    children = [settle(child) for child in node.children]
+    update: dict = {"children": children}
+    if node.interpretation is Interpretation.INTERPRETED and any(
+        child.interpretation is not Interpretation.INTERPRETED for child in children
+    ):
+        update["interpretation"] = Interpretation.PARTIAL
+    if node.validation is Validation.STRUCTURALLY_CHECKED and any(
+        _uninterpreted_within(child) for child in children
+    ):
+        update["validation"] = Validation.UNVERIFIED
+        if node.id.count(".") == 0:
+            update["notes"] = [*node.notes, NOTE_UNCHECKED_WORDING]
+    return node.model_copy(update=update)
+
+
+def _uninterpreted_within(node: RequirementNode) -> bool:
+    return node.interpretation is Interpretation.UNINTERPRETED or any(
+        _uninterpreted_within(child) for child in node.children
+    )
+
+
+# Plan grids ------------------------------------------------------------------
+
+
+def _plan_row_text(row: PlanRow) -> str:
+    parts = [row.code_text, row.title, row.hours]
+    return " | ".join(part for part in parts if part)
+
+
+class _PlanReader:
+    """Reads a plan grid into a curriculum: every term's rows, in order."""
+
+    def __init__(self, grid: PlanGrid):
+        self.grid = grid
+        self.footnotes = {footnote.marker: footnote.text for footnote in grid.footnotes}
+
+    def source(self, locator_xpath: str | None, line: int | None, text: str):
+        return SourceRef(
+            url=self.grid.evidence.url,
+            sha256=self.grid.evidence.sha256,
+            xpath=locator_xpath,
+            line=line,
+            tab=self.grid.tab,
+            text=text,
+        )
+
+    def row_source(self, row: PlanRow) -> SourceRef:
+        return self.source(row.locator.xpath, row.locator.line, _plan_row_text(row))
+
+    def node(self, row: PlanRow, node_id: str, **fields) -> RequirementNode:
+        notes = list(fields.pop("notes", []))
+        footnotes = []
+        for marker in row.footnotes:
+            if marker in self.footnotes:
+                footnotes.append(f"[{marker}] {self.footnotes[marker]}")
+            else:
+                notes.append(f"footnote {marker!r} is not printed under the plan")
+        return footnote_conditions(
+            RequirementNode(
+                id=node_id,
+                hours_text=row.hours,
+                footnotes=footnotes,
+                source_text=_plan_row_text(row),
+                sources=[self.row_source(row)],
+                notes=notes,
+                **fields,
+            )
+        )
+
+    def course(self, row: PlanRow, node_id: str) -> RequirementNode:
+        source = self.row_source(row)
+        if len(row.courses) == 1:
+            node = self.node(
+                row, node_id, **code_fields(row.courses[0], node_id, source)
+            )
+            return with_condition(node, row.title)
+        text = row.code_text.lower()
+        notes = []
+        if "&" in text:
+            kind = "all"
+        elif " or " in text or "/" in text:
+            kind = "any"
+        else:
+            kind = "all"
+            notes.append("code cell names several courses without '&' or 'or'")
+        leaves = [
+            RequirementNode(
+                id=f"{node_id}.c{position}",
+                source_text=code,
+                sources=[source],
+                **code_fields(code, f"{node_id}.c{position}", source),
+            )
+            for position, code in enumerate(row.courses)
+        ]
+        node = self.node(
+            row,
+            node_id,
+            kind=kind,
+            label=row.code_text,
+            children=leaves,
+            interpretation=(
+                Interpretation.PARTIAL if notes else Interpretation.INTERPRETED
+            ),
+            notes=notes,
+        )
+        return with_condition(node, row.title)
+
+    def rows(self, rows: list[PlanRow], term_id: str) -> list[RequirementNode]:
+        nodes: list[RequirementNode] = []
+        position = 0
+        while position < len(rows):
+            row = rows[position]
+            node_id = f"{term_id}.r{position}"
+            if row.kind in {"term_total", "plan_total"}:
+                position += 1
+                continue
+            if row.kind == "course":
+                nodes.append(self.course(row, node_id))
+                position += 1
+                continue
+            text = row.code_text or row.title
+            chosen = selection(text) if text.rstrip().endswith(":") else None
+            members = []
+            following = position + 1
+            # A plan grid has no indentation: the hourless course rows after a
+            # "Select one of the following:" row are its options.
+            while (
+                chosen is not None
+                and following < len(rows)
+                and rows[following].kind == "course"
+                and not rows[following].hours
+            ):
+                members.append(self.course(rows[following], f"{node_id}.r{following}"))
+                following += 1
+            if members:
+                bounds = (
+                    {"kind": "any"}
+                    if chosen.uncounted
+                    else {
+                        "kind": "choose",
+                        "min_courses": chosen.min_courses,
+                        "max_courses": chosen.max_courses,
+                        "min_credits": chosen.min_credits,
+                        "max_credits": chosen.max_credits,
+                    }
+                )
+                nodes.append(
+                    self.node(
+                        row,
+                        node_id,
+                        label=text,
+                        children=members,
+                        interpretation=Interpretation.PARTIAL,
+                        notes=["options inferred from the hourless rows after it"],
+                        **bounds,
+                    )
+                )
+                position = following
+                continue
+            nodes.append(
+                self.node(
+                    row, node_id, **text_fields(text, node_id, self.row_source(row))
+                )
+            )
+            position += 1
+        return nodes
+
+    def root(self) -> RequirementNode:
+        grid = self.grid
+        root_id = f"p{grid.index}"
+        years: dict[str, int] = {}
+        terms = []
+        for position, term in enumerate(grid.terms):
+            year = years.setdefault(term.year, len(years))
+            term_id = f"{root_id}.y{year}.t{position}"
+            totals = [row for row in term.rows if row.kind == "term_total"]
+            anchor = totals[0] if totals else (term.rows[0] if term.rows else None)
+            label = " ".join(part for part in (term.year, term.term) if part)
+            terms.append(
+                RequirementNode(
+                    id=term_id,
+                    kind="all",
+                    label=label,
+                    children=self.rows(term.rows, term_id),
+                    hours_text=totals[0].hours if totals else "",
+                    source_text=label,
+                    sources=[
+                        self.row_source(anchor)
+                        if anchor is not None
+                        else self.source(
+                            grid.evidence.locator.xpath,
+                            grid.evidence.locator.line,
+                            label,
+                        )
+                    ],
+                )
+            )
+        return RequirementNode(
+            id=root_id,
+            kind="all",
+            role="curriculum",
+            label=grid.section[-1] if grid.section else "",
+            children=terms,
+            hours_text=grid.total_hours,
+            source_text=grid.evidence.text,
+            sources=[
+                self.source(
+                    grid.evidence.locator.xpath,
+                    grid.evidence.locator.line,
+                    grid.evidence.text,
+                )
+            ],
+            interpretation=Interpretation.PARTIAL,
+            notes=[NOTE_PLAN],
+        )
+
+
+def interpret_plan(grid: PlanGrid) -> RequirementNode:
+    return settle(_PlanReader(grid).root())
 
 
 def _last_row(table: CourseListTable) -> TableRow | None:
@@ -833,7 +1183,13 @@ def walk(tree: RequirementTree):
 
 
 def interpret_program(program: ProgramPage) -> RequirementTree:
-    return RequirementTree(
-        program_url=program.url,
-        roots=[interpret_table(table) for table in program.tables],
-    )
+    """Every requirement table's tree; when a program publishes no requirement
+    table, its plan grids stand in as curriculum roots."""
+    roots = [interpret_table(table) for table in program.tables]
+    if not any(root.role == "requirement" for root in roots):
+        roots += [
+            interpret_plan(grid)
+            for grid in program.plans
+            if section_role(grid.tab, grid.section) == "requirement"
+        ]
+    return RequirementTree(program_url=program.url, roots=roots)
