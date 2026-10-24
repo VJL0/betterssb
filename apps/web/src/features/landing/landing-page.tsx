@@ -219,7 +219,7 @@ export function LandingPage() {
         <Logo />
         <nav
           aria-label="Landing"
-          className="order-last flex basis-full flex-wrap gap-1 sm:order-none sm:flex-1 sm:basis-auto"
+          className="order-last flex basis-full flex-wrap gap-1 sm:order-0 sm:flex-1 sm:basis-auto"
         >
           {[
             ["#tour", "Features"],
@@ -249,7 +249,7 @@ export function LandingPage() {
           </span>
           <h1
             id="hero-heading"
-            className="max-w-3xl text-[clamp(2.25rem,6vw,3.75rem)] leading-[1.05] font-semibold tracking-tighter text-balance"
+            className="max-w-3xl text-[clamp(2.25rem,6vw,3.75rem)] leading-none font-semibold tracking-tighter text-balance"
           >
             The registration tool Banner should have shipped.
           </h1>
@@ -271,7 +271,7 @@ export function LandingPage() {
               </ButtonLink>
             )}
           </div>
-          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[13px] text-muted-foreground">
+          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-compact text-muted-foreground">
             <li className="flex items-center gap-1.5">
               <UserRoundXIcon aria-hidden className="size-3.5" />
               No account needed
@@ -317,7 +317,7 @@ export function LandingPage() {
                   <FeatureCopy feature={f} />
                   <PreviewFrame
                     label={f.previewLabel}
-                    className="min-w-0 flex-[999_1_32rem]"
+                    className="min-w-0 grow-999 basis-128"
                   >
                     {f.preview}
                   </PreviewFrame>
@@ -435,7 +435,7 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-4 pt-12 pb-10 text-[13px] text-muted-foreground sm:px-8">
+      <footer className="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-4 pt-12 pb-10 text-compact text-muted-foreground sm:px-8">
         <span>
           BetterSSB is an independent student project, not affiliated with
           Ellucian or Temple University.
@@ -455,14 +455,12 @@ function FeatureCopy({ feature }: { feature: Feature }) {
   const need = NEED_BADGE[feature.need];
   const path = pagePath(feature.pageId);
   return (
-    <div className="flex min-w-0 flex-[1_1_18rem] flex-col gap-3.5 pt-2">
+    <div className="flex min-w-0 grow basis-72 flex-col gap-3.5 pt-2">
       <Badge variant={need.variant} className="h-6 self-start px-2.5">
         {need.label}
       </Badge>
       <h3 className="text-2xl font-semibold tracking-tight">{feature.title}</h3>
-      <p className="text-[15px] leading-6 text-muted-foreground">
-        {feature.body}
-      </p>
+      <p className="text-base text-muted-foreground">{feature.body}</p>
       <CheckList items={feature.points} />
       {path && (
         <Link

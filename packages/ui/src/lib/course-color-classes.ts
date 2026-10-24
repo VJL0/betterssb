@@ -14,7 +14,7 @@ const COURSE_BG = [
 
 /** Diagonal stripes over the fill, for courses past the eighth. */
 export const COURSE_HATCH_CLASS =
-  "bg-[image:repeating-linear-gradient(135deg,transparent_0_6px,rgb(255_255_255/0.18)_6px_8px)]";
+  "bg-[repeating-linear-gradient(135deg,transparent_0_6px,rgb(255_255_255/0.18)_6px_8px)]";
 
 /** Background class for a course's solid color. */
 export function courseBackgroundClass(color: CourseColor): string {

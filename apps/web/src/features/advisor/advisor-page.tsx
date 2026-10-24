@@ -166,7 +166,7 @@ export function AdvisorPage() {
   );
 
   return (
-    <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="mx-auto flex max-w-page flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight">AI advisor</h1>
@@ -195,7 +195,7 @@ export function AdvisorPage() {
 
         <Card
           aria-label="Chat"
-          className="min-h-[32rem] gap-4 p-4"
+          className="min-h-128 gap-4 p-4"
           render={<section />}
         >
           {advisor.loading ? (
@@ -425,7 +425,7 @@ function Conversation({
 
 function UserMessage({ text }: { text: string }) {
   return (
-    <div className="max-w-[80%] self-end rounded-2xl bg-primary px-3.5 py-2.5 whitespace-pre-wrap text-primary-foreground">
+    <div className="max-w-4/5 self-end rounded-2xl bg-primary px-3.5 py-2.5 whitespace-pre-wrap text-primary-foreground">
       <span className="sr-only">You: </span>
       {text}
     </div>

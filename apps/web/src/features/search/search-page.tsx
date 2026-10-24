@@ -97,7 +97,7 @@ export function SearchPage() {
   const search = useClassSearch(term?.code ?? null, input);
 
   return (
-    <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="mx-auto flex max-w-page flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
       {/* Only the query string waits for the browser. Suspending the whole
           page would hydrate it after the top bar, which may have loaded the
           terms by then and so render differently from the server. */}
@@ -115,10 +115,10 @@ export function SearchPage() {
         </div>
         <form
           role="search"
-          className="flex min-w-0 flex-[1_1_32rem] flex-wrap items-center justify-end gap-2"
+          className="flex min-w-0 grow basis-128 flex-wrap items-center justify-end gap-2"
           onSubmit={(e) => e.preventDefault()}
         >
-          <InputGroup className="h-9 max-w-xl flex-[1_1_22rem]">
+          <InputGroup className="h-9 max-w-xl grow basis-88">
             <InputGroupAddon>
               <SearchIcon aria-hidden />
             </InputGroupAddon>

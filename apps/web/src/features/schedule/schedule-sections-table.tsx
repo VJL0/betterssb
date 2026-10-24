@@ -66,7 +66,7 @@ export function ScheduleSectionsTable({
         ))}
       </ul>
       <div className="hidden overflow-x-auto px-3 sm:block">
-        <Table className="min-w-[45rem]">
+        <Table className="min-w-180">
           <TableHeader>
             <TableRow>
               <TableHead scope="col">Course</TableHead>

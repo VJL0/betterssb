@@ -137,7 +137,7 @@ export function TermCard({
                     )}
                   </span>
                   {entry.code && (
-                    <span className="text-[13px] leading-[18px] text-muted-foreground">
+                    <span className="text-compact text-muted-foreground">
                       {entry.title}
                     </span>
                   )}

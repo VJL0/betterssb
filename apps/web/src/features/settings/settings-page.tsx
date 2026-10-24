@@ -84,7 +84,7 @@ export function SettingsPage() {
       <div className="flex flex-wrap items-start gap-8">
         <nav
           aria-label="Settings sections"
-          className="min-w-0 flex-[1_1_11rem] md:sticky md:top-24"
+          className="min-w-0 grow basis-44 md:sticky md:top-24"
         >
           <ul className="flex flex-wrap gap-0.5 md:flex-col">
             {SECTIONS.map((s) => (
@@ -99,7 +99,7 @@ export function SettingsPage() {
             ))}
           </ul>
         </nav>
-        <div className="flex min-w-0 flex-[999_1_35rem] flex-col gap-5">
+        <div className="flex min-w-0 grow-999 basis-140 flex-col gap-5">
           <AccountSection />
           <TermSection />
           <BannerSection />
@@ -378,7 +378,7 @@ function DataRow({
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-      <span className="flex min-w-0 flex-[1_1_16rem] flex-col">
+      <span className="flex min-w-0 grow basis-64 flex-col">
         <span className="font-medium">{title}</span>
         <span className="text-muted-foreground">{description}</span>
       </span>

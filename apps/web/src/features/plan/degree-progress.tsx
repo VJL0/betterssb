@@ -12,7 +12,7 @@ import { ButtonLink } from "@/components/button-link";
 
 // Planned credits are striped: counted toward the degree, but not taken yet.
 const PLANNED_FILL =
-  "bg-[image:repeating-linear-gradient(135deg,color-mix(in_oklch,var(--primary)_35%,transparent)_0_4px,color-mix(in_oklch,var(--primary)_15%,transparent)_4px_8px)]";
+  "bg-[repeating-linear-gradient(135deg,color-mix(in_oklch,var(--primary)_35%,transparent)_0_4px,color-mix(in_oklch,var(--primary)_15%,transparent)_4px_8px)]";
 
 const CARD_CLASS = "flex-row flex-wrap items-center gap-6 p-5";
 
@@ -52,7 +52,7 @@ export function DegreeProgress({
       aria-label="Degree progress"
       className={CARD_CLASS}
     >
-      <div className="flex min-w-0 flex-[999_1_32rem] flex-col gap-2.5">
+      <div className="flex min-w-0 grow-999 basis-128 flex-col gap-2.5">
         <div className="flex items-baseline justify-between gap-2">
           <span className="font-medium">
             Toward {formatCredits(totals.total)} credits
@@ -87,14 +87,14 @@ export function DegreeProgress({
             <li key={item.label} className="flex items-center gap-1.5">
               <span
                 aria-hidden
-                className={`size-2.5 rounded-[3px] ${item.swatch}`}
+                className={`size-2.5 rounded-xs ${item.swatch}`}
               />
               {item.label} {formatCredits(item.value)}
             </li>
           ))}
         </ul>
       </div>
-      <div className="flex flex-[1_1_16rem] items-center gap-3 rounded-2xl bg-sidebar px-4 py-3 ring-1 ring-border ring-inset">
+      <div className="flex grow basis-64 items-center gap-3 rounded-2xl bg-sidebar px-4 py-3 ring-1 ring-border ring-inset">
         <span
           className={
             onTrack

@@ -122,7 +122,7 @@ export function RowOverlay({
               {...row.seats}
               size="inline"
               // The bar only where the column has room for it beside the word.
-              className="[&_[data-slot=progress-track]]:hidden @[7.5rem]:[&_[data-slot=progress-track]]:flex"
+              className="@[7.5rem]:**:data-[slot=progress-track]:flex [&_[data-slot=progress-track]]:hidden"
             />
           </div>,
           row.seatSlot,
