@@ -32,6 +32,7 @@ dev = [
     "ruff>=0.17.0",
 ]
 ingest = [
+    "pdfminer-six>=20260107",
     "pdfplumber>=0.11.10",
 ]
 

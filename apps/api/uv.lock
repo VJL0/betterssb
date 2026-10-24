@@ -138,6 +138,7 @@ dev = [
     { name = "ruff" },
 ]
 ingest = [
+    { name = "pdfminer-six" },
     { name = "pdfplumber" },
 ]
 
@@ -170,7 +171,10 @@ dev = [
     { name = "pytest-cov", specifier = ">=6.0" },
     { name = "ruff", specifier = ">=0.17.0" },
 ]
-ingest = [{ name = "pdfplumber", specifier = ">=0.11.10" }]
+ingest = [
+    { name = "pdfminer-six", specifier = ">=20260107" },
+    { name = "pdfplumber", specifier = ">=0.11.10" },
+]
 
 [[package]]
 name = "cbor2"
