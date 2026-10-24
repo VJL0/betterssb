@@ -206,3 +206,116 @@ def test_edition_run_records_unreadable_pdfs(tmp_path: Path) -> None:
     issues = (tmp_path / "out" / "issues.jsonl").read_text()
     assert '"code":"pdf_unreadable"' in issues
     assert "damaged.pdf" in issues
+
+
+def _page_characters() -> dict[str, dict]:
+    import gzip
+    import json
+
+    with gzip.open(FIXTURES / "page-characters.json.gz") as handle:
+        pages = json.load(handle)["pages"]
+    return {page["label"]: page for page in pages}
+
+
+@pytest.mark.parametrize(
+    ("label", "expected"),
+    [
+        # The graduate volume prints two columns with a gutter at x 297-315.
+        ("graduate-2024-2025-p953", 305.5),
+        # Requirement tables: the gap before the hours column runs past the
+        # central zone, so it isn't a gutter.
+        ("undergraduate-2026-2027-p1398", None),
+        # The programs chart's column gaps are narrow and off centre.
+        ("undergraduate-2026-2027-p2925", None),
+    ],
+)
+def test_gutters_only_on_two_column_pages(label: str, expected: float | None) -> None:
+    page = _page_characters()[label]
+    chars = [
+        {"x0": x0, "x1": x1, "top": top, "text": text}
+        for x0, x1, top, text in page["chars"]
+    ]
+    assert pdf.gutter_x(chars, page["width"]) == expected
+
+
+def _line(
+    page: int, top: float, text: str, column: int = 0, bold: bool = False
+) -> pdf.Line:
+    words, x = [], 43.2 + column * 270
+    for word in text.split():
+        words.append(
+            pdf.Word(
+                text=word,
+                x0=x,
+                x1=x + 4 * len(word),
+                top=top,
+                bottom=top + 8,
+                size=8.0,
+                bold=bold,
+                italic=False,
+            )
+        )
+        x += 4 * len(word) + 2
+    return pdf.Line(page=page, words=words, size=8.0, column=column)
+
+
+def test_columns_are_read_in_turn_not_joined(monkeypatch) -> None:
+    # The left column's last line is lower on the page than the right
+    # column's first: they're separate passages, not one paragraph.
+    lines = [
+        _line(1, 700.0, "the end of the left column."),
+        _line(1, 80.0, "The right column starts here.", column=1),
+    ]
+    text = pdf.PdfText(lines=lines, body_size=8.0, links=[], gutters={1: 306.0})
+    monkeypatch.setattr(pdf, "read_pdf", lambda _: text)
+    document = pdf.pdf_document(b"two columns", MINOR_URL, SHA)
+    assert [block.text for block in document.blocks] == [
+        "the end of the left column.",
+        "The right column starts here.",
+    ]
+    assert text.column_at(1, 320.0) == 1 and text.column_at(1, 100.0) == 0
+    assert text.column_at(2, 320.0) == 0
+
+
+def test_table_header_inside_a_list_item() -> None:
+    bullet = pdf.Word(
+        text=pdf.BULLET,
+        x0=43.2,
+        x1=46.0,
+        top=217.2,
+        bottom=225.2,
+        size=8.0,
+        bold=False,
+        italic=False,
+    )
+    header = _line(795, 218.2, "Code Title Credit", bold=True)
+    header.words.insert(0, bullet)
+    columns = pdf._table_header(header, None)
+    assert columns is not None and columns.code_x == header.words[1].x0
+    plain = _line(795, 230.0, "Code Title Credit")
+    assert pdf._table_header(plain, None) is None
+
+
+def test_links_point_at_the_block_they_sit_in() -> None:
+    document = pdf.pdf_document(body("computer-science-bs.pdf"), CS_BS_URL, SHA)
+    blocks = {block.index: block for block in document.blocks}
+    placed = [link for link in document.links if link.block_index is not None]
+    assert placed and len(placed) == len(document.links)
+    texts = {link.text for link in placed}
+    assert "Department of Computer and Information Sciences" in texts
+    for link in placed:
+        assert link.text
+        block_text = blocks[link.block_index].text.replace(" ", "")
+        assert link.text.replace(" ", "")[:20] in block_text
+
+
+def test_courses_in_lines_is_what_pdf_courses_reads(cis_courses) -> None:
+    lines = pdf._content(pdf.read_pdf(body("graduate-cis-courses.pdf")).lines)
+    courses, unparsed = pdf.courses_in_lines(lines, CIS_URL, SHA)
+    assert [c.code for c in courses] == [c.code for c in cis_courses[0]]
+    assert not unparsed
+    # Lines cut before a course's title leave the earlier courses whole.
+    starts = pdf.course_starts(lines)
+    first, _ = pdf.courses_in_lines(lines[: starts[2]], CIS_URL, SHA)
+    assert [c.code for c in first] == [c.code for c in cis_courses[0][:2]]
+    assert first[1].description == cis_courses[0][1].description

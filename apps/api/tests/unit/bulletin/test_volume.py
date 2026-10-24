@@ -37,10 +37,11 @@ TOPICAL_STUDIES = ("Course Descriptions (Undergraduate)", "Topical Studies (TS)"
 REQUIREMENT_ROLES = {"requirement", "curriculum"}
 
 
-def _line(page: int, size: float, words: list[list]) -> pdf.Line:
+def _line(page: int, size: float, column: int, words: list[list]) -> pdf.Line:
     return pdf.Line(
         page=page,
         size=size,
+        column=column,
         words=[
             pdf.Word(
                 text=text,
@@ -67,7 +68,14 @@ def fixture() -> dict:
 @pytest.fixture(scope="module")
 def text(fixture) -> pdf.PdfText:
     lines = [_line(*line) for line in fixture["lines"]]
-    return pdf.PdfText(lines=lines, body_size=fixture["body_size"], links=[])
+    links = [
+        pdf.PdfLink(page=page, bbox=tuple(bbox), url=url, text=text)
+        for page, bbox, url, text in fixture["links"]
+    ]
+    gutters = {int(page): x for page, x in fixture["gutters"].items()}
+    return pdf.PdfText(
+        lines=lines, body_size=fixture["body_size"], links=links, gutters=gutters
+    )
 
 
 @pytest.fixture(scope="module")
@@ -218,9 +226,15 @@ def test_evidence_points_into_the_volume(result) -> None:
         assert entry.course.evidence.url == VOLUME_URL
         assert entry.course.evidence.sha256 == VOLUME_SHA
         assert entry.course.evidence.locator.page == 2893
+    assert cs.source_url == VOLUME_URL
+    assert all(fact.evidence.url == VOLUME_URL for fact in cs.facts)
     blocks = page(
         result, "/undergraduate/science-technology/computer-science-bs/"
     ).document
+    # The page is the Bulletin's; what it cites is the volume it was read from.
+    assert blocks.url != VOLUME_URL and blocks.source_url == VOLUME_URL
+    assert {blocks.evidence(block).url for block in blocks.blocks} == {VOLUME_URL}
+    assert all(p.document.source_url == VOLUME_URL for p in result.pages)
     assert all(b.locator.page and b.locator.bbox for b in blocks.blocks)
     # The running header (page number, volume title) isn't the page's content.
     assert not any(
@@ -279,3 +293,98 @@ def test_pages_holding_programs_are_units(result) -> None:
     assert page(result, "/undergraduate/courses/ts/").kind is PageKind.COURSE_LISTING
     cs = page(result, "/undergraduate/science-technology/computer-science-bs/").document
     assert [c.text for c in cs.breadcrumbs] == ["Home", "Undergraduate", *CS_BS]
+
+
+def test_sections_keep_their_links(result, text) -> None:
+    linked = [p for p in result.pages if p.document.links]
+    assert linked
+    for page_ in linked:
+        blocks = {block.index: block for block in page_.document.blocks}
+        for link in page_.document.links:
+            block = blocks[link.block_index]
+            assert link.text
+            assert link.text.replace(" ", "")[:15] in block.text.replace(" ", "")
+    printed = {(link.url, link.text) for link in text.links}
+    kept = {(link.url, link.text) for p in result.pages for link in p.document.links}
+    assert kept <= printed
+
+
+GRADUATE_URL = "https://bulletin.temple.edu/archives/2024-2025/pdf/2024_2025_Graduate_Professional_Temple_final.pdf"
+GRADUATE_SHA = "3c94714cbb998dcfbc8c906a9453ab977a9907a71ba5f044e916fc688249c701"
+QARA_CERTIFICATE = "/graduate/scd/pharmacy/advanced-regulatory-affairs-quality-assurance-postmasters-certificate/"
+CIS_PHD = "/graduate/scd/cst/computer-information-science-phd/"
+
+
+@pytest.fixture(scope="module")
+def graduate() -> dict:
+    """Two-column pages of the 2024-2025 graduate/professional volume."""
+    with gzip.open(FIXTURES / "volume" / "graduate-2024-2025.json.gz") as handle:
+        return json.load(handle)
+
+
+@pytest.fixture()
+def graduate_result(monkeypatch, graduate) -> EditionExtraction:
+    text = pdf.PdfText(
+        lines=[_line(*line) for line in graduate["lines"]],
+        body_size=graduate["body_size"],
+        links=[
+            pdf.PdfLink(page=page, bbox=tuple(bbox), url=url, text=text)
+            for page, bbox, url, text in graduate["links"]
+        ],
+        gutters={int(page): x for page, x in graduate["gutters"].items()},
+    )
+    outline = [
+        volume.OutlineEntry.model_validate(entry) for entry in graduate["outline"]
+    ]
+    references = {tuple(key): frozenset(paths) for key, paths in graduate["references"]}
+    monkeypatch.setattr(pdf, "read_pdf", lambda _: text)
+    monkeypatch.setattr(volume, "read_outline", lambda _: outline)
+    return volume.extract_volume(
+        b"graduate fixture",
+        GRADUATE_URL,
+        GRADUATE_SHA,
+        "2024-2025",
+        references,
+        graduate["tabs"],
+    )
+
+
+def graduate_program(result: EditionExtraction, path: str) -> ProgramPage:
+    return next(p for p in result.programs if p.url.endswith(path))
+
+
+@pytest.mark.parametrize("path", [CIS_PHD, QARA_CERTIFICATE])
+def test_two_column_programs_read_like_their_html_pages(
+    graduate, graduate_result, path
+) -> None:
+    html = next(
+        ProgramPage.model_validate(p)
+        for p in graduate["html_programs"]
+        if p["url"].endswith(path)
+    )
+    from_volume = graduate_program(graduate_result, path)
+    assert len(from_volume.tables) == len(html.tables)
+    assert requirement_courses(from_volume) == requirement_courses(html)
+    assert from_volume.fact("Program Code") == html.fact("Program Code")
+
+
+def test_a_table_continues_into_the_right_column(graduate, graduate_result) -> None:
+    [table] = graduate_program(graduate_result, QARA_CERTIFICATE).tables
+    rows = {row.code_text: row for row in table.rows if row.code_text}
+    gutter = graduate["gutters"]["814"]
+    left, right = rows["QARA 5000"], rows["QARA 5512"]
+    assert left.locator.bbox[0] < gutter < right.locator.bbox[0]
+    # Read against the column it's printed in, not the header's.
+    assert right.indent == left.indent
+    assert right.kind == left.kind == "course"
+
+
+def test_sections_start_where_their_bookmark_points(graduate_result) -> None:
+    # The PhD's bookmark is in the right column of page 952, below the end
+    # of the previous program in the left column.
+    phd = next(
+        p for p in graduate_result.pages if p.document.url.endswith(CIS_PHD)
+    ).document
+    assert phd.blocks[0].text == "Computer and Information Science PhD"
+    assert phd.blocks[0].locator.page == 952
+    assert phd.source_url == GRADUATE_URL

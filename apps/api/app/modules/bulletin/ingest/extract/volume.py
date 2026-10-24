@@ -15,9 +15,9 @@ Page URLs: the volume prints its pages' content but not their URLs, so a
 section's URL comes from another edition's page with the same title path (its
 breadcrumbs), from the subject code for course listings, or from an explicit
 override. The URL is the page's identity in this edition; the bytes are the
-volume's, so every record carries the volume's SHA-256 and every passage its
-page and bounding box (course, table and footnote evidence also keeps the
-volume's URL). A section no rule maps keeps the volume URL with a
+volume's, so pages and programs name the volume as their `source_url`, every
+record carries its SHA-256, and every passage cites the volume with its page
+and bounding box. A section no rule maps keeps the volume URL with a
 `#page=N&top=T` fragment and is reported, never guessed.
 """
 
@@ -44,10 +44,6 @@ from app.modules.bulletin.ingest.extract.classify import (
     classify_page,
     edition_path,
 )
-from app.modules.bulletin.ingest.extract.courses import (
-    CourseRecord,
-    UnparsedCourseBlock,
-)
 from app.modules.bulletin.ingest.extract.programs import LabeledFact, ProgramPage
 from app.modules.bulletin.ingest.extract.run import (
     CourseEntry,
@@ -59,6 +55,7 @@ from app.modules.bulletin.ingest.records import (
     Block,
     Crumb,
     Evidence,
+    Link,
     Locator,
     PageDocument,
     Record,
@@ -90,18 +87,21 @@ INTRODUCTORY_TABS = frozenset({"textcontainer"})
 
 UrlBasis = Literal["reference", "course_code", "override", "volume_page"]
 TitlePath = tuple[str, ...]
-Position = tuple[int, float]
+# (page, column, top): reading order, columns of a two-column page in turn.
+Position = tuple[int, int, float]
+Gutters = Mapping[int, float]
 References = Mapping[TitlePath, frozenset[str]]
 
 
 class OutlineEntry(Record):
     """One bookmark: its depth, title and where it points (1-based page,
-    points from the page top)."""
+    points from the page's top and left)."""
 
     level: int
     title: str
     page: int
     top: float
+    left: float = 0.0
 
 
 class VolumeSection(Record):
@@ -110,6 +110,7 @@ class VolumeSection(Record):
     titles: list[str]
     page: int
     top: float
+    left: float = 0.0
     url: str
     # The page's path within an edition, when one of the rules found it.
     path: str | None
@@ -163,12 +164,15 @@ def read_outline(body: bytes) -> list[OutlineEntry]:
         page, height = pages.get(target[0].objid, (None, 0.0))
         if page is None:
             continue
-        top = 0.0
+        top = left = 0.0
         fit = target[1] if len(target) > 1 else None
         if isinstance(fit, PSLiteral) and fit.name == "XYZ" and len(target) > 3:
-            y = resolve1(target[3])
+            x, y = resolve1(target[2]), resolve1(target[3])
+            left = float(x) if x is not None else 0.0
             top = height - float(y) if y is not None else 0.0
-        entries.append(OutlineEntry(level=level, title=title, page=page, top=top))
+        entries.append(
+            OutlineEntry(level=level, title=title, page=page, top=top, left=left)
+        )
     return entries
 
 
@@ -292,6 +296,7 @@ def split_volume(
                 titles=titles,
                 page=entry.page,
                 top=entry.top,
+                left=entry.left,
                 url=edition_url(edition, path) if path else volume_page_url(url, entry),
                 path=path,
                 basis=basis,
@@ -303,36 +308,44 @@ def split_volume(
 # Positions
 
 
-def _position(locator: Locator) -> Position:
-    return (locator.page or 0, locator.bbox[1] if locator.bbox else 0.0)
+def _column(gutters: Gutters, page: int, x: float) -> int:
+    gutter = gutters.get(page)
+    return int(gutter is not None and x >= gutter)
+
+
+def _position(locator: Locator, gutters: Gutters) -> Position:
+    page = locator.page or 0
+    x0, top = (locator.bbox[0], locator.bbox[1]) if locator.bbox else (0.0, 0.0)
+    return (page, _column(gutters, page, x0), top)
 
 
 def _line_position(line: pdf.Line) -> Position:
     # Rounded as locators' bounding boxes are, so a block and its first line
     # compare equal.
-    return (line.page, round(line.top, 2))
+    return (line.page, line.column, round(line.top, 2))
 
 
 def _anchor(
-    section: VolumeSection, lines: list[pdf.Line], body_size: float
+    section: VolumeSection, lines: list[pdf.Line], body_size: float, gutters: Gutters
 ) -> Position:
     """Where the section's title is printed: the heading line(s) above the
-    bookmark that read the same (long titles wrap onto two or three lines),
-    else the bookmark itself."""
+    bookmark, in its column, that read the same (long titles wrap onto two or
+    three lines), else the bookmark itself."""
     wanted = normalized_title(section.titles[-1])
-    page = [line for line in lines if line.page == section.page]
-    for start, line in enumerate(page):
+    column = _column(gutters, section.page, section.left)
+    frame = [line for line in lines if line.frame == (section.page, column)]
+    for start, line in enumerate(frame):
         if line.size <= body_size or not (
             section.top - ANCHOR_WINDOW <= line.top <= section.top + ANCHOR_SLACK
         ):
             continue
-        run = page[start : start + MAX_TITLE_LINES]
+        run = frame[start : start + MAX_TITLE_LINES]
         for count in range(1, len(run) + 1):
             if run[count - 1].size != line.size:
                 break
             if normalized_title(" ".join(l.text for l in run[:count])) == wanted:
                 return _line_position(line)
-    return (section.page, round(section.top, 2))
+    return (section.page, column, round(section.top, 2))
 
 
 class _Partition:
@@ -356,11 +369,23 @@ class _Content:
     blocks: list[Block] = field(default_factory=list)
     lines: list[pdf.Line] = field(default_factory=list)
     tables: list[CourseListTable] = field(default_factory=list)
+    # Links on the section's blocks, by the volume's block index.
+    links: list[Link] = field(default_factory=list)
 
     def extend(self, other: _Content) -> None:
         self.blocks += other.blocks
         self.lines += other.lines
         self.tables += other.tables
+        self.links += other.links
+
+    def section_links(self) -> list[Link]:
+        """The links with block indexes renumbered as the section's blocks are."""
+        renumbered = {block.index: index for index, block in enumerate(self.blocks)}
+        return [
+            link.model_copy(update={"block_index": renumbered[link.block_index]})
+            for link in self.links
+            if link.block_index in renumbered
+        ]
 
 
 def _contents(
@@ -370,48 +395,29 @@ def _contents(
     tables: list[CourseListTable],
 ) -> list[_Content]:
     lines = pdf._content(text.lines)
-    partition = _Partition([_anchor(s, lines, text.body_size) for s in sections])
+    gutters = text.gutters
+    partition = _Partition(
+        [_anchor(s, lines, text.body_size, gutters) for s in sections]
+    )
     contents = [_Content() for _ in sections]
+    section_of_block: dict[int, int] = {}
     for block in document.blocks:
-        index = partition.of(_position(block.locator))
+        index = partition.of(_position(block.locator, gutters))
         if index is not None and block.kind != RUNNING_HEADER_KIND:
             contents[index].blocks.append(block)
+            section_of_block[block.index] = index
+    for link in document.links:
+        if (index := section_of_block.get(link.block_index)) is not None:
+            contents[index].links.append(link)
     for line in lines:
         index = partition.of(_line_position(line))
         if index is not None:
             contents[index].lines.append(line)
     for table in tables:
-        index = partition.of(_position(table.evidence.locator))
+        index = partition.of(_position(table.evidence.locator, gutters))
         if index is not None:
             contents[index].tables.append(table)
     return contents
-
-
-def _course_starts(lines: list[pdf.Line]) -> list[int]:
-    return [i for i in range(len(lines)) if pdf._title_at(lines, i)]
-
-
-def _courses(
-    lines: list[pdf.Line], url: str, sha256: str
-) -> tuple[list[CourseRecord], list[UnparsedCourseBlock]]:
-    """A listing's courses. Split within the section, so the last course
-    doesn't run on into the next listing's heading and introduction."""
-    starts = _course_starts(lines)
-    ends = [*starts[1:], len(lines)]
-    courses = [
-        pdf._course(lines[s:e], url, sha256) for s, e in zip(starts, ends, strict=True)
-    ]
-    unparsed = [
-        UnparsedCourseBlock(
-            reason=f"title line not understood: {line.text!r}",
-            evidence=pdf._evidence(url, sha256, [line], line.text),
-        )
-        for index, line in enumerate(lines)
-        if line.bold
-        and pdf.COURSE_TITLE_START.match(line.body_text)
-        and not any(s <= index < s + pdf.MAX_TITLE_LINES for s in starts)
-    ]
-    return courses, unparsed
 
 
 def _prints_program_code(blocks: Iterable[Block]) -> bool:
@@ -422,7 +428,7 @@ def _has_records(content: _Content) -> bool:
     """Whether the section holds what needs a page identity to load."""
     return (
         bool(content.tables)
-        or bool(_course_starts(content.lines))
+        or bool(pdf.course_starts(content.lines))
         or _prints_program_code(content.blocks)
     )
 
@@ -498,7 +504,7 @@ def _tab_level(blocks: list[Block], title: str) -> int | None:
 
 
 def _section_blocks(
-    blocks: list[Block], title: str, vocabulary: Mapping[str, str]
+    blocks: list[Block], title: str, vocabulary: Mapping[str, str], gutters: Gutters
 ) -> tuple[list[Block], _Tabs]:
     """Blocks renumbered, each with its tab and the headings above it below
     the title and tab, as the site's blocks have."""
@@ -516,7 +522,9 @@ def _section_blocks(
         )
         if tab_id is not None:
             current = tab_id
-            tabs.switch(_position(block.locator), Tab(id=tab_id, label=block.text))
+            tabs.switch(
+                _position(block.locator, gutters), Tab(id=tab_id, label=block.text)
+            )
             headings = []
         elif (
             level is not None and not is_title and _ends_tab(current, level, tab_level)
@@ -525,7 +533,7 @@ def _section_blocks(
             # labelled tab may be another tab's ("Overview" followed by
             # requirement tables under "Summary of Requirements").
             current = None
-            tabs.switch(_position(block.locator), None)
+            tabs.switch(_position(block.locator, gutters), None)
         if tab_id is None and level is not None and not is_title:
             headings = [(lvl, text) for lvl, text in headings if lvl < level]
         result.append(
@@ -543,7 +551,7 @@ def _section_blocks(
 
 
 def _section_tables(
-    tables: list[CourseListTable], title: str, tabs: _Tabs
+    tables: list[CourseListTable], title: str, tabs: _Tabs, gutters: Gutters
 ) -> list[CourseListTable]:
     """Tables renumbered, in their tab, with heading paths below the title
     and tab."""
@@ -556,7 +564,7 @@ def _section_tables(
             section = section[titles.index(wanted) + 1 :]
         if section and normalized_title(section[0]) in tabs.labels:
             section = section[1:]
-        tab = tabs.at(_position(table.evidence.locator))
+        tab = tabs.at(_position(table.evidence.locator, gutters))
         result.append(
             table.model_copy(
                 update={
@@ -577,10 +585,10 @@ def _section_tables(
 
 
 def _facts(
-    lines: list[pdf.Line], blocks: list[Block], url: str, sha256: str
+    lines: list[pdf.Line], blocks: list[Block], url: str, sha256: str, gutters: Gutters
 ) -> list[LabeledFact]:
     """Overview facts: a block whose first line opens with a bold label."""
-    starts = {_position(block.locator): block for block in blocks}
+    starts = {_position(block.locator, gutters): block for block in blocks}
     facts = []
     for line in lines:
         block = starts.get(_line_position(line))
@@ -641,6 +649,7 @@ class _Page:
     tabs: _Tabs
     signals: PageSignals
     kind: PageKind
+    gutters: Gutters
 
 
 def _page(
@@ -649,14 +658,17 @@ def _page(
     content: _Content,
     root: VolumeSection | None,
     vocabulary: Mapping[str, str],
+    gutters: Gutters,
+    url: str,
     sha256: str,
     edition: str,
 ) -> _Page:
     section = sections[index]
     title = section.titles[-1]
-    blocks, tabs = _section_blocks(content.blocks, title, vocabulary)
+    blocks, tabs = _section_blocks(content.blocks, title, vocabulary, gutters)
     document = PageDocument(
         url=section.url,
+        source_url=url,
         sha256=sha256,
         title=title,
         heading=title,
@@ -664,17 +676,18 @@ def _page(
         breadcrumbs=_crumbs(sections, index, root),
         tabs=tabs.tabs,
         blocks=blocks,
+        links=content.section_links(),
     )
     signals = PageSignals(
         path=edition_path(section.url),
         tab_ids=frozenset(),
-        has_course_blocks=bool(_course_starts(content.lines)),
+        has_course_blocks=bool(pdf.course_starts(content.lines)),
         has_course_lists=bool(content.tables),
         has_plan_grids=_has_plan_grid(content.lines),
         prints_program_code=_prints_program_code(document.blocks),
     )
     kind = classify_page(section.url, signals) if section.path else PageKind.INFORMATION
-    return _Page(index, document, content, tabs, signals, kind)
+    return _Page(index, document, content, tabs, signals, kind, gutters)
 
 
 def _mark_units(sections: list[VolumeSection], pages: list[_Page]) -> None:
@@ -698,12 +711,15 @@ def _program_page(page: _Page, url: str, sha256: str) -> ProgramPage:
     parts = [part for part in edition_path(document.url).split("/") if part]
     return ProgramPage(
         url=document.url,
+        source_url=document.source_url,
         sha256=document.sha256,
         name=document.heading,
         level="graduate" if "graduate" in parts else "undergraduate",
         units=[crumb.text for crumb in document.breadcrumbs[1:-1]],
-        facts=_facts(page.content.lines, document.blocks, url, sha256),
-        tables=_section_tables(page.content.tables, document.heading, page.tabs),
+        facts=_facts(page.content.lines, document.blocks, url, sha256, page.gutters),
+        tables=_section_tables(
+            page.content.tables, document.heading, page.tabs, page.gutters
+        ),
         plans=[],
     )
 
@@ -711,7 +727,9 @@ def _program_page(page: _Page, url: str, sha256: str) -> ProgramPage:
 def _add_courses(result: EditionExtraction, page: _Page, url: str, sha256: str) -> None:
     """A listing's courses. A level listing's are recorded as printed on it,
     which is how the interpreter learns their level."""
-    courses, unparsed = _courses(page.content.lines, url, sha256)
+    # Split within the section, so a listing's last course doesn't run on into
+    # the next listing's heading and introduction.
+    courses, unparsed = pdf.courses_in_lines(page.content.lines, url, sha256)
     page_url = page.document.url
     for block in unparsed:
         result.issue("course_block_unparsed", "error", page_url, block.reason)
@@ -760,7 +778,17 @@ def assemble_volume(
     _merge_subheadings(sections, contents, result)
     root = _level_root(sections)
     pages = [
-        _page(sections, index, contents[index], root, vocabulary or {}, sha256, edition)
+        _page(
+            sections,
+            index,
+            contents[index],
+            root,
+            vocabulary or {},
+            text.gutters,
+            url,
+            sha256,
+            edition,
+        )
         for index, section in enumerate(sections)
         if section.merged_into is None
     ]

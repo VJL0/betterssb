@@ -104,6 +104,15 @@ MAX_TITLE_LINES = 3
 WRAPPED_HYPHEN = re.compile(r"(?:[a-z]|[A-Z]{2,})[-/]$")
 # Extractors of one document share a parse; a few documents is enough.
 PARSE_CACHE_SIZE = 4
+# Two-column pages (the graduate volume) leave an empty gutter down the middle:
+# at least this wide, and wholly inside this central share of the page. A
+# single-column table's gap before its hours column runs past it.
+GUTTER_MIN_WIDTH = 12
+GUTTER_ZONE = (0.45, 0.55)
+# Each column needs this much text for the page to count as two columns.
+MIN_COLUMN_CHARACTERS = 20
+# Slack, in points, when finding the text line a link sits on.
+LINK_SLACK = 2.0
 
 
 @dataclass(slots=True)
@@ -124,6 +133,8 @@ class Line:
     page: int
     words: list[Word]
     size: float
+    # 0, or 1 for the right column of a two-column page.
+    column: int = 0
     top: float = field(init=False)
     bottom: float = field(init=False)
     x0: float = field(init=False)
@@ -138,6 +149,11 @@ class Line:
     @property
     def text(self) -> str:
         return " ".join(w.text for w in self.words)
+
+    @property
+    def frame(self) -> tuple[int, int]:
+        """The page and column: lines in one frame read top to bottom."""
+        return (self.page, self.column)
 
     @property
     def body_words(self) -> list[Word]:
@@ -215,56 +231,141 @@ def _words(chars: list[dict], body_size: float) -> list[Word]:
 
 
 @dataclass(frozen=True, slots=True)
+class PdfLink:
+    """A web link and where it's printed (1-based page, top-left points)."""
+
+    page: int
+    bbox: tuple[float, float, float, float]
+    url: str
+    text: str
+
+
+@dataclass(frozen=True, slots=True)
 class PdfText:
-    """One parse of a PDF: its lines, body font size and links."""
+    """One parse of a PDF: its lines in reading order, body font size, links,
+    and the gutter x of each two-column page."""
 
     lines: list[Line]
     body_size: float
-    links: list[Link]
+    links: list[PdfLink]
+    gutters: dict[int, float] = field(default_factory=dict)
+
+    def column_at(self, page: int, x: float) -> int:
+        gutter = self.gutters.get(page)
+        return int(gutter is not None and x >= gutter)
 
 
-def _page_links(page) -> list[Link]:
+def _page_links(page, number: int) -> list[PdfLink]:
     links = []
     for link in page.hyperlinks:
         if not link.get("uri"):
             continue
         box = _clamped((link["x0"], link["top"], link["x1"], link["bottom"]), page)
-        words = page.within_bbox(box).extract_text() or ""
-        links.append(Link(url=link["uri"], text=clean_text(words)))
+        # Link boxes are a little smaller than the characters they cover, so
+        # the text is what overlaps the box, not what fits inside it.
+        words = page.crop(box).extract_text() or ""
+        bbox = tuple(round(value, 2) for value in box)
+        links.append(
+            PdfLink(page=number, bbox=bbox, url=link["uri"], text=clean_text(words))
+        )
     return links
+
+
+def gutter_x(chars: Iterable[dict], width: float) -> float | None:
+    """The x of a two-column page's gutter: an empty band at least
+    `GUTTER_MIN_WIDTH` wide, wholly inside the central `GUTTER_ZONE`, with
+    text on both sides. None for single-column pages."""
+    covered = bytearray(int(width) + 2)
+    left = right = 0
+    visible = [c for c in chars if c["top"] > HEADER_BOTTOM and not c["text"].isspace()]
+    for char in visible:
+        for x in range(max(int(char["x0"]), 0), min(int(char["x1"]) + 1, len(covered))):
+            covered[x] = 1
+    zone_start, zone_end = (int(width * share) for share in GUTTER_ZONE)
+    best: tuple[int, int] | None = None
+    start: int | None = None
+    for x in range(zone_start, zone_end + 1):
+        if not covered[x] and start is None:
+            start = x
+        elif covered[x] and start is not None:
+            # A band open at the zone's start isn't bounded by a left column.
+            bounded = start > zone_start and x - start >= GUTTER_MIN_WIDTH
+            if bounded and (best is None or x - start > best[1] - best[0]):
+                best = (start, x)
+            start = None
+    if best is None:
+        return None
+    middle = (best[0] + best[1]) / 2
+    for char in visible:
+        if char["x1"] <= middle:
+            left += 1
+        elif char["x0"] >= middle:
+            right += 1
+    if min(left, right) < MIN_COLUMN_CHARACTERS:
+        return None
+    return middle
+
+
+def _regions(page, gutter: float | None) -> list[tuple[object, int]]:
+    """The parts of a page to read in order, with their column: the whole
+    page, or the running header and then each column."""
+    if gutter is None:
+        return [(page, 0)]
+    width, height = page.width, page.height
+    return [
+        (page.crop((0, 0, width, HEADER_BOTTOM)), 0),
+        (page.crop((0, HEADER_BOTTOM, gutter, height)), 0),
+        (page.crop((gutter, HEADER_BOTTOM, width, height)), 1),
+    ]
 
 
 @lru_cache(maxsize=PARSE_CACHE_SIZE)
 def read_pdf(body: bytes) -> PdfText:
     """Every text line in reading order, the body font size, and the links.
 
-    Cached on the bytes, so a document's extractors share one parse."""
+    A two-column page is read column by column (pdfplumber's text lines run
+    across the gutter). Cached on the bytes, so a document's extractors share
+    one parse."""
     lines: list[Line] = []
-    links: list[Link] = []
+    links: list[PdfLink] = []
+    gutters: dict[int, float] = {}
     with pdfplumber.open(io.BytesIO(body)) as pdf:
         for number, page in enumerate(pdf.pages, start=1):
-            for text_line in page.extract_text_lines(return_chars=True, strip=False):
-                chars = text_line["chars"]
-                visible = [c for c in chars if not c["text"].isspace()]
-                if not visible:
-                    continue
-                sizes = Counter(round(c["size"], 1) for c in visible)
-                size = sizes.most_common(1)[0][0]
-                lines.append(Line(page=number, words=_words(chars, size), size=size))
-            links.extend(_page_links(page))
+            gutter = gutter_x(page.chars, page.width)
+            if gutter is not None:
+                gutters[number] = gutter
+            for region, column in _regions(page, gutter):
+                for text_line in region.extract_text_lines(
+                    return_chars=True, strip=False
+                ):
+                    chars = text_line["chars"]
+                    visible = [c for c in chars if not c["text"].isspace()]
+                    if not visible:
+                        continue
+                    sizes = Counter(round(c["size"], 1) for c in visible)
+                    size = sizes.most_common(1)[0][0]
+                    lines.append(
+                        Line(
+                            page=number,
+                            words=_words(chars, size),
+                            size=size,
+                            column=column,
+                        )
+                    )
+            links.extend(_page_links(page, number))
             # Full volumes run to thousands of pages; keep only what was read.
             page.close()
     text_by_size: Counter[float] = Counter()
     for line in lines:
         text_by_size[line.size] += len(line.text)
     body_size = text_by_size.most_common(1)[0][0] if text_by_size else 0.0
-    return PdfText(lines=lines, body_size=body_size, links=links)
+    return PdfText(lines=lines, body_size=body_size, links=links, gutters=gutters)
 
 
 def _locator(lines: list[Line]) -> Locator:
     """The first page's lines' bounding box; a passage that continues onto
     the next page is located by where it starts."""
-    first = [line for line in lines if line.page == lines[0].page]
+    first = [line for line in lines if line.frame == lines[0].frame]
     return Locator(
         page=lines[0].page,
         bbox=(
@@ -311,7 +412,7 @@ def _block_kind(line: Line, levels: dict[float, int]) -> BlockKind:
 
 def _continues(previous: Line, line: Line, body_size: float, kind: BlockKind) -> bool:
     """Whether `line` carries on the block `previous` ends."""
-    if kind == "text" or line.page != previous.page or line.size != previous.size:
+    if kind == "text" or line.frame != previous.frame or line.size != previous.size:
         return False
     if line.text.startswith(BULLET) or line.is_running_header:
         return False
@@ -347,7 +448,9 @@ def pdf_document(body: bytes, url: str, sha256: str) -> PageDocument:
     levels = _heading_levels(lines, body_size)
     blocks: list[Block] = []
     headings: list[tuple[int, str]] = []
+    line_blocks: list[tuple[Line, int]] = []
     for kind, group in _grouped(lines, body_size, levels):
+        line_blocks.extend((line, len(blocks)) for line in group)
         text = _join(group)
         level = levels.get(group[0].size) if kind == "heading" else None
         if level is not None:
@@ -373,8 +476,33 @@ def pdf_document(body: bytes, url: str, sha256: str) -> PageDocument:
         heading=title,
         edition_label=f"{edition[1]}-{edition[2]}" if edition else None,
         blocks=blocks,
-        links=parsed.links,
+        links=_block_links(parsed.links, line_blocks),
     )
+
+
+def _block_links(
+    links: list[PdfLink], line_blocks: list[tuple[Line, int]]
+) -> list[Link]:
+    """Links with the block printed under them."""
+    by_page: dict[int, list[tuple[Line, int]]] = {}
+    for line, index in line_blocks:
+        by_page.setdefault(line.page, []).append((line, index))
+    result = []
+    for link in links:
+        x0, top, x1, bottom = link.bbox
+        middle = (top + bottom) / 2
+        block_index = next(
+            (
+                index
+                for line, index in by_page.get(link.page, [])
+                if line.top - LINK_SLACK <= middle <= line.bottom + LINK_SLACK
+                and x0 < line.x1
+                and x1 > line.x0
+            ),
+            None,
+        )
+        result.append(Link(url=link.url, text=link.text, block_index=block_index))
+    return result
 
 
 def _clamped(
@@ -413,10 +541,22 @@ def _starts_part(line: Line) -> str | None:
 def pdf_courses(
     body: bytes, url: str, sha256: str
 ) -> tuple[list[CourseRecord], list[UnparsedCourseBlock]]:
-    lines = _content(read_pdf(body).lines)
+    return courses_in_lines(_content(read_pdf(body).lines), url, sha256)
+
+
+def course_starts(lines: list[Line]) -> list[int]:
+    """Where each course entry's title line is."""
+    return [i for i in range(len(lines)) if _title_at(lines, i)]
+
+
+def courses_in_lines(
+    lines: list[Line], url: str, sha256: str
+) -> tuple[list[CourseRecord], list[UnparsedCourseBlock]]:
+    """The course entries in these lines (a document's, or one listing's in a
+    full volume), each running to the next entry's title."""
     courses: list[CourseRecord] = []
     unparsed: list[UnparsedCourseBlock] = []
-    starts = [i for i in range(len(lines)) if _title_at(lines, i)]
+    starts = course_starts(lines)
     # Bold lines that look like a title but don't parse are reported, not dropped.
     for index, line in enumerate(lines):
         if (
@@ -493,11 +633,35 @@ class _Columns:
     # Hours are right-aligned under "Credit Hours".
     hours_right: float
 
+    def shifted(self, dx: float) -> _Columns:
+        """The same columns, `dx` points to the right (a table continuing
+        into the other column of a two-column page)."""
+        if not dx:
+            return self
+        return _Columns(
+            self.code_x + dx,
+            self.title_x + dx,
+            self.hours_x + dx,
+            self.hours_right + dx,
+        )
+
+
+def _column_origins(lines: list[Line]) -> dict[int, float]:
+    """Each column's left margin across the document: where most of its
+    lines start (the leftmost line is often an outlier)."""
+    starts: dict[int, Counter[int]] = {}
+    for line in lines:
+        starts.setdefault(line.column, Counter())[round(line.x0)] += 1
+    return {column: counts.most_common(1)[0][0] for column, counts in starts.items()}
+
 
 def _table_header(line: Line, next_line: Line | None) -> _Columns | None:
     words = line.body_words
+    # A table inside a list item prints its header after the (plain) bullet.
+    if words and words[0].text == BULLET:
+        words = words[1:]
     texts = [w.text for w in words]
-    if texts[:3] != list(TABLE_HEADER) or not line.bold:
+    if texts[:3] != list(TABLE_HEADER) or not all(w.bold for w in words):
         return None
     return _Columns(
         code_x=words[0].x0,
@@ -528,7 +692,7 @@ def _is_wrapped_hours(line: Line, previous: Line | None, columns: _Columns) -> b
     words = line.body_words
     return (
         previous is not None
-        and line.page == previous.page
+        and line.frame == previous.frame
         and line.top - previous.top < WRAPPED_LINE_GAP
         and bool(words)
         and all(_in_hours_column(w, columns) for w in words)
@@ -724,6 +888,7 @@ def pdf_requirement_tables(body: bytes, url: str, sha256: str) -> list[CourseLis
     lines, body_size = parsed.lines, parsed.body_size
     levels = _heading_levels(lines, body_size)
     content = _content(lines)
+    origins = _column_origins(content)
     tables: list[CourseListTable] = []
     headings: list[tuple[int, str]] = []
     position = 0
@@ -733,8 +898,8 @@ def pdf_requirement_tables(body: bytes, url: str, sha256: str) -> list[CourseLis
             level = levels[line.size]
             headings = [h for h in headings if h[0] < level] + [(level, line.text)]
         following = content[position + 1] if position + 1 < len(content) else None
-        columns = _table_header(line, following)
-        if columns is None:
+        header = _table_header(line, following)
+        if header is None:
             position += 1
             continue
         position += 1
@@ -746,6 +911,7 @@ def pdf_requirement_tables(body: bytes, url: str, sha256: str) -> list[CourseLis
         previous: Line | None = None
         while position < len(content):
             row_line = content[position]
+            columns = header.shifted(origins[row_line.column] - origins[line.column])
             if rows and _is_orphan_marker(row_line, body_size):
                 # A footnote marker that wrapped below its row's title.
                 markers = [w.text for w in row_line.words]
@@ -770,14 +936,14 @@ def pdf_requirement_tables(body: bytes, url: str, sha256: str) -> list[CourseLis
             # only course") is printed after a gap wider than any row's.
             if (
                 previous is not None
-                and row_line.page == previous.page
+                and row_line.frame == previous.frame
                 and row_line.top - previous.bottom > body_size * TABLE_GAP_RATIO
             ):
                 break
             wrapped = (
                 previous is not None
                 and rows
-                and row_line.page == previous.page
+                and row_line.frame == previous.frame
                 and row_line.top - previous.top < WRAPPED_LINE_GAP
                 and row_line.x0 >= columns.title_x - POSITION_TOLERANCE
                 and not _codes(_split_row(row_line, columns)[0])[0]
