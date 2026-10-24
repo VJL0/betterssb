@@ -31,6 +31,9 @@ dev = [
     "aiosqlite>=0.21.0",
     "ruff>=0.17.0",
 ]
+ingest = [
+    "pdfplumber>=0.11.10",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
