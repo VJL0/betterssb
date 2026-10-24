@@ -187,7 +187,7 @@ function WeekCalendar({
                 key={hour}
                 className={cn(
                   "absolute -translate-y-2",
-                  compact ? "right-1 text-2xs" : "right-2",
+                  compact ? "right-1 text-xs" : "right-2",
                 )}
                 style={{ top: i * pixelsPerHour }}
               >
@@ -452,7 +452,7 @@ function BlockContent({
         )}
       </span>
       {lines >= 3 && (
-        <span className="truncate text-compact font-medium">{block.title}</span>
+        <span className="truncate text-sm font-medium">{block.title}</span>
       )}
       {lines >= 2 && (
         <span className={cn("truncate tabular-nums", detailClass)}>

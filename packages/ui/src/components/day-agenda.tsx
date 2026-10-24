@@ -89,7 +89,7 @@ function DayAgenda({ blocks, days, className, ...props }: DayAgendaProps) {
             className="h-13 flex-col gap-0 rounded-3xl bg-muted text-foreground data-active:bg-primary data-active:text-primary-foreground"
           >
             <span>{DAY_NAMES[d].slice(0, DAY_SHORT_LENGTH)}</span>
-            <span className="text-2xs opacity-80">{classCount(blocks, d)}</span>
+            <span className="text-xs opacity-80">{classCount(blocks, d)}</span>
           </TabsTrigger>
         ))}
       </TabsList>

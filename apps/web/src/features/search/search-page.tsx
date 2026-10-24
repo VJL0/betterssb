@@ -97,7 +97,7 @@ export function SearchPage() {
   const search = useClassSearch(term?.code ?? null, input);
 
   return (
-    <div className="mx-auto flex max-w-page flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
       {/* Only the query string waits for the browser. Suspending the whole
           page would hydrate it after the top bar, which may have loaded the
           terms by then and so render differently from the server. */}

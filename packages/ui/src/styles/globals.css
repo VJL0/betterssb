@@ -7,15 +7,6 @@
 @source "../../../components/**/*.{ts,tsx}";
 @source "../**/*.{ts,tsx}";
 
-/* Sizes the scale doesn't have, used across pages: max-w-page, text-2xs, text-compact. */
-@theme {
-  --container-page: 90rem;
-  --text-2xs: 0.6875rem;
-  --text-2xs--line-height: 0.875rem;
-  --text-compact: 0.8125rem;
-  --text-compact--line-height: 1.125rem;
-}
-
 @theme inline {
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);

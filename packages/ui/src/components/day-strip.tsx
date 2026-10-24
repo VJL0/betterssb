@@ -33,7 +33,7 @@ function DayStrip({ days, className, ...props }: DayStripProps) {
         <span
           key={day}
           className={cn(
-            "grid size-5 place-items-center rounded-md text-2xs font-medium",
+            "grid size-5 place-items-center rounded-md text-xs font-medium",
             meets.includes(day)
               ? "bg-primary text-primary-foreground"
               : // muted-foreground on bg-muted is under 4.5:1, so off days use dimmed foreground.

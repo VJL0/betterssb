@@ -135,7 +135,7 @@ export function AuditPage() {
   );
 
   return (
-    <div className="mx-auto flex max-w-page flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
       {/* Opened by "Upload DARS file"; hidden from tab order and screen readers. */}
       <input
         ref={fileInput}

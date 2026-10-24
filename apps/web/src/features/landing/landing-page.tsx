@@ -271,7 +271,7 @@ export function LandingPage() {
               </ButtonLink>
             )}
           </div>
-          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-compact text-muted-foreground">
+          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
             <li className="flex items-center gap-1.5">
               <UserRoundXIcon aria-hidden className="size-3.5" />
               No account needed
@@ -435,7 +435,7 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-4 pt-12 pb-10 text-compact text-muted-foreground sm:px-8">
+      <footer className="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-4 pt-12 pb-10 text-sm text-muted-foreground sm:px-8">
         <span>
           BetterSSB is an independent student project, not affiliated with
           Ellucian or Temple University.
