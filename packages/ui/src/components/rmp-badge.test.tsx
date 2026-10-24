@@ -56,7 +56,7 @@ describe("RmpBadge", () => {
   });
 
   it.each([
-    [4.6, "bg-primary"],
+    [4.6, "bg-success/10"],
     [3.1, "bg-secondary"],
     [2.4, "bg-destructive/10"],
   ])("tints a %s rating with %s", (overallRating, cls) => {
@@ -68,7 +68,7 @@ describe("RmpBadge", () => {
     render(<RmpBadge rating={rating({ rmpUrl: "" })} />);
     expect(screen.queryByRole("link")).toBeNull();
     expect(screen.getByText("4.6 · diff 3.2").className).toContain(
-      "bg-primary",
+      "bg-success/10",
     );
   });
 

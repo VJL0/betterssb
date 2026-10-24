@@ -173,7 +173,7 @@ export function QueueCard({
         <>
           {sources}
           <div className="overflow-x-auto">
-            <Table className="min-w-[40rem]">
+            <Table className="min-w-160">
               <TableHeader>
                 <TableRow>
                   <TableHead scope="col">#</TableHead>

@@ -191,7 +191,7 @@ export function CourseCard({
       </header>
 
       <div className="hidden overflow-x-auto px-3 md:block">
-        <table className="w-full min-w-[46rem] text-left text-sm">
+        <table className="w-full min-w-184 text-left text-sm">
           <thead>
             <tr className="border-b border-border">
               <th scope="col" className="h-10 w-24 px-2 font-medium">

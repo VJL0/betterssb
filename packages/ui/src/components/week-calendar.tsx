@@ -160,7 +160,7 @@ function WeekCalendar({
             "grid gap-x-1.5",
             !compact &&
               shownDays.length >= MIN_DAYS_FOR_FIXED_WIDTH &&
-              "min-w-[640px]",
+              "min-w-160",
           )}
           style={{
             gridTemplateColumns: `${compact ? COMPACT_AXIS_PX : AXIS_PX}px repeat(${shownDays.length}, minmax(0, 1fr))`,
@@ -187,7 +187,7 @@ function WeekCalendar({
                 key={hour}
                 className={cn(
                   "absolute -translate-y-2",
-                  compact ? "right-1 text-[10px]" : "right-2",
+                  compact ? "right-1 text-xs" : "right-2",
                 )}
                 style={{ top: i * pixelsPerHour }}
               >
@@ -452,7 +452,7 @@ function BlockContent({
         )}
       </span>
       {lines >= 3 && (
-        <span className="truncate text-[13px] font-medium">{block.title}</span>
+        <span className="truncate text-sm font-medium">{block.title}</span>
       )}
       {lines >= 2 && (
         <span className={cn("truncate tabular-nums", detailClass)}>

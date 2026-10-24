@@ -66,7 +66,7 @@ function Thumbnail({
                 <span
                   key={i}
                   className={cn(
-                    "absolute inset-x-px rounded-[2px]",
+                    "absolute inset-x-px rounded-xs",
                     color ? courseBackgroundClass(color) : "bg-foreground/40",
                   )}
                   style={{

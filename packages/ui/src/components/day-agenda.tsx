@@ -76,7 +76,7 @@ function DayAgenda({ blocks, days, className, ...props }: DayAgendaProps) {
     >
       <TabsList
         aria-label="Day"
-        className="grid h-auto! w-full gap-1.5 bg-transparent p-0"
+        className="grid w-full gap-1.5 bg-transparent p-0 group-data-horizontal/tabs:h-auto"
         style={{
           gridTemplateColumns: `repeat(${days.length}, minmax(0, 1fr))`,
         }}
@@ -89,9 +89,7 @@ function DayAgenda({ blocks, days, className, ...props }: DayAgendaProps) {
             className="h-13 flex-col gap-0 rounded-3xl bg-muted text-foreground data-active:bg-primary data-active:text-primary-foreground"
           >
             <span>{DAY_NAMES[d].slice(0, DAY_SHORT_LENGTH)}</span>
-            <span className="text-[11px] leading-3.5 opacity-80">
-              {classCount(blocks, d)}
-            </span>
+            <span className="text-xs opacity-80">{classCount(blocks, d)}</span>
           </TabsTrigger>
         ))}
       </TabsList>
@@ -141,7 +139,7 @@ function DayAgenda({ blocks, days, className, ...props }: DayAgendaProps) {
                         </span>
                       </span>
                     ) : (
-                      <span className="rounded-2xl bg-[image:repeating-linear-gradient(135deg,var(--muted)_0_6px,var(--background)_6px_12px)] px-3 py-2.5 font-medium text-muted-foreground ring-1 ring-border ring-inset">
+                      <span className="rounded-2xl bg-[repeating-linear-gradient(135deg,var(--muted)_0_6px,var(--background)_6px_12px)] px-3 py-2.5 font-medium text-muted-foreground ring-1 ring-border ring-inset">
                         {formatDuration(item.end - item.start)} free
                       </span>
                     )}

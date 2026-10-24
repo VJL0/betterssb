@@ -98,7 +98,7 @@ export function PlanDock({
                   )}
                 />
                 <span className="flex min-w-0 flex-col">
-                  <span className="text-[13px]/[18px] font-medium">
+                  <span className="text-sm font-medium">
                     {section.courseCode} · {section.section}
                   </span>
                   <span className="truncate text-xs text-muted-foreground tabular-nums">
@@ -112,7 +112,7 @@ export function PlanDock({
         {pageClashes.map((page) => (
           <p
             key={page.crn}
-            className="mx-2 my-1 flex gap-2 rounded-2xl border px-3 py-2.5 text-[13px]/[18px] text-destructive"
+            className="mx-2 my-1 flex gap-2 rounded-2xl border px-3 py-2.5 text-sm text-destructive"
           >
             <CircleXIcon aria-hidden className="mt-0.5 size-4 shrink-0" />
             <span>

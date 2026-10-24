@@ -86,7 +86,7 @@ export function RegisterPage() {
   const auto = useAutoRegister(banner.extensionInstalled);
 
   return (
-    <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
       {!banner.extensionInstalled ? (
         <>
           <PageHeading subtitle="Registers you the second your window opens" />

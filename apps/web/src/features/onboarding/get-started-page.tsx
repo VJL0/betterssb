@@ -115,7 +115,7 @@ function GetStarted({ step }: { step: StepId }) {
       </header>
 
       <main className="mx-auto flex max-w-5xl flex-wrap items-start gap-6 px-4 pt-6 pb-16 sm:px-8">
-        <div className="flex min-w-0 flex-[999_1_30rem] flex-col gap-4">
+        <div className="flex min-w-0 grow-999 basis-120 flex-col gap-4">
           <ol aria-label="Setup steps" className="grid grid-cols-2 gap-1.5">
             {STEPS.map((s, i) => (
               <li
@@ -460,7 +460,7 @@ function SetupSummary({
   return (
     <aside
       aria-labelledby="setup-heading"
-      className="flex min-w-0 flex-[1_1_17.5rem] flex-col gap-4 pt-5"
+      className="flex min-w-0 grow basis-70 flex-col gap-4 pt-5"
     >
       <Card className="gap-1 px-2 pt-4 pb-2" render={<section />}>
         <h2 id="setup-heading" className="px-3 pb-1.5 font-medium">

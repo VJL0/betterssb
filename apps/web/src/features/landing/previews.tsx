@@ -185,10 +185,10 @@ export function RegisterPreview() {
 export function AdvisorPreview() {
   return (
     <div className="flex flex-col gap-3 text-sm">
-      <p className="ml-auto max-w-[80%] rounded-2xl bg-primary px-3 py-2 text-primary-foreground">
+      <p className="ml-auto max-w-4/5 rounded-2xl bg-primary px-3 py-2 text-primary-foreground">
         Which CIS electives fit a machine learning focus?
       </p>
-      <p className="max-w-[85%] rounded-2xl bg-muted px-3 py-2">
+      <p className="max-w-5/6 rounded-2xl bg-muted px-3 py-2">
         Your audit shows three CIS electives at 3000 or above still needed.
         Principles of Data Science is the usual starting point; check its
         prerequisites against your plan before adding it.
@@ -201,7 +201,7 @@ export function BannerPreview() {
   const [first, second] = SAMPLE_COURSE.sections;
   return (
     <div className="overflow-x-auto text-sm">
-      <table className="w-full min-w-[520px] text-left">
+      <table className="w-full min-w-130 text-left">
         <thead className="text-xs text-muted-foreground">
           <tr>
             <th className="py-2 font-medium">Course</th>

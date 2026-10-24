@@ -82,7 +82,7 @@ function plural(count: number, one: string, many = `${one}s`): string {
 export function SchedulePage() {
   const { term, status } = useCurrentTerm();
   return (
-    <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
       {status === "error" ? (
         <>
           <PageHeading subtitle="Banner terms didn't load" />
@@ -430,7 +430,7 @@ function MainState({
       <div role="status" className="flex flex-col gap-4">
         <span className="sr-only">Loading sections from Banner…</span>
         <Skeleton className="h-24 rounded-3xl" />
-        <Skeleton className="h-[30rem] rounded-3xl" />
+        <Skeleton className="h-120 rounded-3xl" />
       </div>
     );
   }

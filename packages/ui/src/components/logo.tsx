@@ -6,7 +6,7 @@ export function LogoMark({ className }: { className?: string }) {
     <svg
       viewBox="0 0 34 14"
       aria-hidden="true"
-      className={cn("h-3 w-7 shrink-0", className)}
+      className={cn("h-3 w-7 shrink-0 text-primary", className)}
     >
       <line
         x1="7"
