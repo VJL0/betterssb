@@ -143,6 +143,20 @@ def cmd_extract(args: argparse.Namespace) -> None:
         state.close()
 
 
+def cmd_extract_pdf(args: argparse.Namespace) -> None:
+    # Needs the `ingest` dependency group (pdfplumber).
+    from app.modules.bulletin.ingest.extract.pdf import extract_edition_pdfs
+
+    state = open_state()
+    try:
+        for edition in args.edition:
+            directory = paths.extracted_dir() / edition / "pdf"
+            counts = extract_edition_pdfs(state, open_store(), edition, directory)
+            logger.info("Extracted %s PDFs: %s", edition, counts)
+    finally:
+        state.close()
+
+
 def cmd_relink(_: argparse.Namespace) -> None:
     state = open_state()
     try:
@@ -313,6 +327,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     extract.add_argument("--edition", action="append", required=True)
 
+    extract_pdf = commands.add_parser(
+        "extract-pdf",
+        help="parse an edition's PDFs into typed JSONL (offline; --group ingest)",
+    )
+    extract_pdf.add_argument("--edition", action="append", required=True)
+
     commands.add_parser(
         "relink",
         help="re-apply scope rules; rebuild links and discovery methods offline",
@@ -386,6 +406,8 @@ def main() -> None:
             cmd_manifest(args)
         case "extract":
             cmd_extract(args)
+        case "extract-pdf":
+            cmd_extract_pdf(args)
         case "relink":
             cmd_relink(args)
         case "status":

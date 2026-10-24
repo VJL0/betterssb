@@ -164,3 +164,45 @@ def test_text_without_a_course_title_gives_no_courses() -> None:
 )
 def test_code_cell_tokens(tokens: list[str], expected) -> None:
     assert pdf._codes(tokens) == expected
+
+
+def test_wrapped_letter_grade_keeps_its_space() -> None:
+    def line(text: str) -> pdf.Line:
+        word = pdf.Word(text, 0, 1, 0, 1, 8.0, False, False)
+        return pdf.Line(page=1, words=[word], size=8.0)
+
+    assert (
+        pdf._join([line("ENGR 3003 (D-"), line("or higher)")])
+        == "ENGR 3003 (D- or higher)"
+    )
+    assert pdf._join([line("African-"), line("centered")]) == "African-centered"
+
+
+def test_edition_run_records_unreadable_pdfs(tmp_path: Path) -> None:
+    from app.modules.bulletin.ingest.captures import import_file
+    from app.modules.bulletin.ingest.crawl_state import CrawlState
+    from app.modules.bulletin.ingest.store import ObjectStore
+
+    archive = "https://bulletin.temple.edu/archives/2024-2025/undergraduate"
+    damaged = tmp_path / "damaged.pdf"
+    damaged.write_bytes(b"%PDF-1.4\nnot really a PDF")
+    state = CrawlState(tmp_path / "crawl.sqlite3")
+    store = ObjectStore(tmp_path / "objects")
+    try:
+        import_file(
+            state,
+            store,
+            FIXTURES / "data-science-computational-analytics-minor.pdf",
+            f"{archive}/science-technology/data-science-computational-analytics-minor/"
+            "data-science-computational-analytics-minor.pdf",
+        )
+        import_file(state, store, damaged, f"{archive}/damaged/damaged.pdf")
+        counts = pdf.extract_edition_pdfs(state, store, "2024-2025", tmp_path / "out")
+    finally:
+        state.close()
+    assert counts["pdfs"] == 2
+    assert counts["documents"] == 1
+    assert counts["tables"] >= 1
+    issues = (tmp_path / "out" / "issues.jsonl").read_text()
+    assert '"code":"pdf_unreadable"' in issues
+    assert "damaged.pdf" in issues

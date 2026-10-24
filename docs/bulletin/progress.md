@@ -44,8 +44,13 @@ session; robots.txt could not be rechecked here.
   the generated TypeScript client regenerated.
 - **Degree evaluator** (`evaluate.py`): pure, conservative evaluation of a tree
   against completed courses, with property tests over real programs.
-- **PDF extraction:** pdfplumber in an ingest-only dependency group; see the PDF
-  status below.
+- **PDF extraction** (`extract-pdf`, pdfplumber in an ingest-only dependency
+  group): text blocks, courses and requirement-table rows with page and bbox
+  locators. Against all 1,672 retained 2024–2025 page PDFs with HTML twins:
+  25,984 of 25,984 courses matched with identical titles, credits and
+  prerequisites, 99.88% of requirement rows, 100% of characters kept. PDF
+  records don't yet feed `interpret`; a volume-to-pages bridge is being
+  validated on the 2026–2027 undergraduate volume.
 
 ### Measured results (local disposable Postgres 16.15, not production)
 

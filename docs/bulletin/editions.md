@@ -31,10 +31,13 @@ it does not mean academically reviewed (see `progress.md`).
 - **Legacy layouts.** The 2000–2014 editions use different page structures from
   CourseLeaf; the current extractors classify them as `legacy` and do not parse
   them. They need their own extractors once fetched.
-- **PDF-only editions.** PDF extraction with page and bounding-box evidence
-  (pdfplumber, in the ingest-only dependency group; see `technology.md`) is being
-  validated against the 2024–2025 per-page PDFs, which have HTML counterparts.
-  A full-volume 2025–2026 PDF has not been available to run it on.
+- **PDF-only editions.** `extract-pdf` (pdfplumber, ingest-only dependency
+  group) reads CourseLeaf PDFs with page and bounding-box evidence. On all 1,672
+  retained 2024–2025 page PDFs it matched every one of 25,984 courses and 99.88%
+  of requirement rows from the HTML (see `technology.md`). A 2025–2026 volume
+  has not been available to run it on; once recorded with `import-file`, its
+  output still needs an interpreter path from PDF records (the HTML interpreter
+  reads `ProgramPage` records, which PDF volumes don't yet produce).
 
 ## Adding an edition
 

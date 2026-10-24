@@ -24,11 +24,16 @@ import io
 import re
 from collections import Counter
 from collections.abc import Iterable, Iterator
+from contextlib import ExitStack
 from dataclasses import dataclass, field
 from functools import lru_cache
+from pathlib import Path
 
 import pdfplumber
+from pydantic import BaseModel
 
+from app.modules.bulletin.ingest.captures import PDF_CONTENT_TYPE
+from app.modules.bulletin.ingest.crawl_state import CrawlState
 from app.modules.bulletin.ingest.extract.courses import (
     ATTRIBUTE_SEPARATOR,
     ATTRIBUTES_LABEL,
@@ -40,6 +45,7 @@ from app.modules.bulletin.ingest.extract.courses import (
     parse_credits,
 )
 from app.modules.bulletin.ingest.extract.document import EDITION_LABEL, clean_text
+from app.modules.bulletin.ingest.extract.run import ExtractionIssue
 from app.modules.bulletin.ingest.extract.tables import (
     CourseListTable,
     Footnote,
@@ -54,6 +60,7 @@ from app.modules.bulletin.ingest.records import (
     Locator,
     PageDocument,
 )
+from app.modules.bulletin.ingest.store import ObjectStore
 
 # The running header (page title, page number) sits above this line.
 HEADER_BOTTOM = 54.0
@@ -72,13 +79,17 @@ TABLE_GAP_RATIO = 1.5
 INDENT_STEP = 10.0
 BULLET = "•"
 TABLE_HEADER = ("Code", "Title", "Credit")
-TOTAL_ROW = re.compile(r"^Total Credit Hours\b")
+# CourseLeaf's table total (`tr.listsum`); worded subtotals ("Total Credit
+# Hours of Preclinical Coursework: 69") are ordinary rows.
+TOTAL_ROW = "Total Credit Hours"
 HOURS = re.compile(r"^(?:\d*\.)?\d+(?:-(?:\d*\.)?\d+)?$")
 # Hours printed in words: "1 to 4", "6 TO 12", "0 or 3", "2 minimum".
 HOURS_WORD = re.compile(r"^(?:to|TO|or|minimum)$")
-# A plan grid's first year ("Year 1"); CourseLeaf prints plan grids under the
-# same "Code Title Credit Hours" header as requirement tables.
+# A plan grid starts "Year 1" then "Fall Credit Hours"; CourseLeaf prints plan
+# grids under the same "Code Title Credit Hours" header as requirement tables,
+# and some requirement tables (Podiatric Medicine) also group rows by year.
 PLAN_YEAR = re.compile(r"^Year \d+$")
+PLAN_TERM = re.compile(r"^(?:Fall|Spring|Summer)\b.*\bCredit Hours$")
 FOOTNOTE_MARKER = re.compile(r"^(?:\d+|[*†‡§a-z])$")
 # A subject ("CIS", "GUS/ENST") or a number ("1068", "M010", "3507/3597").
 COURSE_NUMBER = r"(?:[0-9][0-9A-Z]{3,4}|[A-Z][0-9]{3,4})"
@@ -89,7 +100,8 @@ NUMBER_TOKEN = re.compile(rf"^{COURSE_NUMBER}(?:/{COURSE_NUMBER})*$")
 PART_LABEL = re.compile(r"^(?P<label>[A-Z][A-Za-z -]+):$")
 COURSE_TITLE_START = re.compile(r"^[A-Z]{2,5} [0-9A-Z]{4,5}\.")
 MAX_TITLE_LINES = 3
-WRAPPED_HYPHEN = re.compile(r"[A-Za-z][-/]$")
+# A word, not a letter grade ("D-" / "or higher"), wrapped at a hyphen or slash.
+WRAPPED_HYPHEN = re.compile(r"(?:[a-z]|[A-Z]{2,})[-/]$")
 # Extractors of one document share a parse; a few documents is enough.
 PARSE_CACHE_SIZE = 4
 
@@ -501,6 +513,17 @@ def _is_orphan_marker(line: Line, body_size: float) -> bool:
     )
 
 
+def _starts_plan_grid(lines: list[Line], position: int) -> bool:
+    line = lines[position]
+    following = lines[position + 1] if position + 1 < len(lines) else None
+    return (
+        line.bold
+        and PLAN_YEAR.match(line.body_text) is not None
+        and following is not None
+        and PLAN_TERM.match(following.body_text) is not None
+    )
+
+
 def _is_wrapped_hours(line: Line, previous: Line | None, columns: _Columns) -> bool:
     words = line.body_words
     return (
@@ -599,7 +622,7 @@ def _row(line: Line, index: int, columns: _Columns) -> TableRow:
     title = clean_text(" ".join(title_words))
     courses, joiner = _codes(code)
     kind: RowKind
-    if TOTAL_ROW.match(line.body_text):
+    if not code and title == TOTAL_ROW:
         kind = "total"
     elif courses and code[0] == "or":
         kind = "alternative"
@@ -763,7 +786,7 @@ def pdf_requirement_tables(body: bytes, url: str, sha256: str) -> list[CourseLis
                 rows[-1] = _pair(rows[-1], row_line, columns)
             elif wrapped:
                 rows[-1] = _extend(rows[-1], row_line)
-            elif row_line.bold and PLAN_YEAR.match(row_line.body_text):
+            elif _starts_plan_grid(content, position):
                 # The plan grid isn't a requirement table; its lines stay in
                 # `pdf_document`.
                 break
@@ -908,3 +931,71 @@ def compare_with_html(
             ("pdf_only", " / ".join(key[0]), f"{key[1]} ×{count}")
         )
     return agreement
+
+
+PDF_OUTPUTS = ("documents", "courses", "tables", "issues")
+
+
+def extract_edition_pdfs(
+    state: CrawlState, store: ObjectStore, edition: str, directory: Path
+) -> dict[str, int]:
+    """Parse every stored PDF of an edition into `<directory>/*.jsonl`.
+
+    A PDF that can't be read becomes an issue rather than stopping the run, so
+    one damaged download doesn't hide the rest of a volume.
+    """
+    rows = [
+        row
+        for row in state.fetched(edition)
+        if (row["content_type"] or "").startswith(PDF_CONTENT_TYPE)
+    ]
+    directory.mkdir(parents=True, exist_ok=True)
+    counts: Counter[str] = Counter()
+    with ExitStack() as stack:
+        files = {
+            name: stack.enter_context((directory / f"{name}.jsonl").open("w"))
+            for name in PDF_OUTPUTS
+        }
+
+        def write(name: str, records: Iterable[BaseModel]) -> None:
+            for record in records:
+                files[name].write(record.model_dump_json() + "\n")
+                counts[name] += 1
+
+        for row in rows:
+            url, sha256 = row["url"], row["sha256"]
+            body = store.get(sha256)
+            try:
+                document = pdf_document(body, url, sha256)
+                courses, unparsed = pdf_courses(body, url, sha256)
+                tables = pdf_requirement_tables(body, url, sha256)
+            # pdfminer raises many unrelated types for malformed files.
+            except Exception as error:  # noqa: BLE001
+                write(
+                    "issues",
+                    [
+                        ExtractionIssue(
+                            code="pdf_unreadable",
+                            severity="error",
+                            url=url,
+                            detail=repr(error),
+                        )
+                    ],
+                )
+                continue
+            write("documents", [document])
+            write("courses", courses)
+            write("tables", tables)
+            write(
+                "issues",
+                (
+                    ExtractionIssue(
+                        code="course_block_unparsed",
+                        severity="error",
+                        url=url,
+                        detail=u.reason,
+                    )
+                    for u in unparsed
+                ),
+            )
+    return {"pdfs": len(rows), **{name: counts[name] for name in PDF_OUTPUTS}}

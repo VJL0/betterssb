@@ -29,6 +29,7 @@ Code lives in `apps/api/app/modules/bulletin/`: `ingest/` is the offline tool,
 | Manual sources | `import-capture <dir>`, `import-file <path> --url <official URL>` | — | crawl state, object store |
 | Inventory | `manifest`, `status`, `relink` | — | `manifests/urls.{jsonl,csv}` |
 | Extract | `extract --edition E` | — | `extracted/E/` (pages, courses, programs, program index, issues) |
+| Extract PDFs | `extract-pdf --edition E` (needs `--group ingest`) | — | `extracted/E/pdf/` (documents, courses, requirement tables, issues) with page and bbox locators |
 | Validate extracts | `validate-extracts` | — | report on stdout |
 | Interpret | `interpret --edition E` | — | `interpreted/E/` (courses with requisites, programs with requirement trees and plans, units, policy sections, designations, issues, fingerprinted summary) |
 | Import | `import --edition E --database-url URL [--publish] [--dry-run]` | Postgres | a staged batch (idempotent) |
