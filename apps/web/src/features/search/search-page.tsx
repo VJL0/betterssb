@@ -115,7 +115,7 @@ export function SearchPage() {
         </div>
         <form
           role="search"
-          className="flex min-w-0 grow basis-128 flex-wrap items-center justify-end gap-2"
+          className="flex min-w-0 grow basis-lg flex-wrap items-center justify-end gap-2"
           onSubmit={(e) => e.preventDefault()}
         >
           <InputGroup className="h-9 max-w-xl grow basis-88">

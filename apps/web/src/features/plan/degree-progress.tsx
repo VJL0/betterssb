@@ -52,7 +52,7 @@ export function DegreeProgress({
       aria-label="Degree progress"
       className={CARD_CLASS}
     >
-      <div className="flex min-w-0 grow-999 basis-128 flex-col gap-2.5">
+      <div className="flex min-w-0 grow-999 basis-lg flex-col gap-2.5">
         <div className="flex items-baseline justify-between gap-2">
           <span className="font-medium">
             Toward {formatCredits(totals.total)} credits

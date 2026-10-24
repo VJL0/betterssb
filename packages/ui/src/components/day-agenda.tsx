@@ -76,7 +76,7 @@ function DayAgenda({ blocks, days, className, ...props }: DayAgendaProps) {
     >
       <TabsList
         aria-label="Day"
-        className="grid h-auto! w-full gap-1.5 bg-transparent p-0"
+        className="grid w-full gap-1.5 bg-transparent p-0 group-data-horizontal/tabs:h-auto"
         style={{
           gridTemplateColumns: `repeat(${days.length}, minmax(0, 1fr))`,
         }}

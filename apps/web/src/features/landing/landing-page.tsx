@@ -317,7 +317,7 @@ export function LandingPage() {
                   <FeatureCopy feature={f} />
                   <PreviewFrame
                     label={f.previewLabel}
-                    className="min-w-0 grow-999 basis-128"
+                    className="min-w-0 grow-999 basis-lg"
                   >
                     {f.preview}
                   </PreviewFrame>
@@ -532,7 +532,7 @@ function Tier({
       <div className="flex-1">
         <CheckList items={items} />
       </div>
-      {action && <div className="[&>*]:w-full">{action}</div>}
+      {action && <div className="*:w-full">{action}</div>}
     </Card>
   );
 }
