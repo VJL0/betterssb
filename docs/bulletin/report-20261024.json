@@ -1,0 +1,477 @@
+{
+  "academic_validation": "not_asserted",
+  "crawl": {
+    "by_edition": {
+      "2000-2001": {
+        "graduate:pending": 1
+      },
+      "2001-2002": {
+        "graduate:pending": 1
+      },
+      "2002-2003": {
+        "graduate:pending": 1
+      },
+      "2003-2005": {
+        "graduate:pending": 1
+      },
+      "2004-2005": {
+        "undergraduate:pending": 1
+      },
+      "2005-2006": {
+        "graduate:pending": 1,
+        "undergraduate:pending": 1
+      },
+      "2006-2007": {
+        "graduate:pending": 1,
+        "undergraduate:pending": 1
+      },
+      "2007-2008": {
+        "graduate:pending": 1,
+        "undergraduate:pending": 1
+      },
+      "2008-2009": {
+        "graduate:pending": 1,
+        "undergraduate:pending": 1
+      },
+      "2009-2010": {
+        "graduate:pending": 1,
+        "undergraduate:pending": 1
+      },
+      "2010-2011": {
+        "graduate:pending": 1,
+        "undergraduate:pending": 1
+      },
+      "2011-2012": {
+        "graduate:pending": 1,
+        "undergraduate:pending": 1
+      },
+      "2012-2013": {
+        "graduate:pending": 1,
+        "undergraduate:pending": 1
+      },
+      "2013-2014": {
+        "graduate:pending": 1,
+        "undergraduate:pending": 1
+      },
+      "2014-2015": {
+        "graduate:excluded": 1,
+        "undergraduate:excluded": 2
+      },
+      "2015-2016": {
+        "graduate:excluded": 1,
+        "undergraduate:excluded": 1
+      },
+      "2016-2017": {
+        "graduate:excluded": 1,
+        "undergraduate:excluded": 1
+      },
+      "2017-2018": {
+        "graduate:excluded": 1,
+        "undergraduate:excluded": 1
+      },
+      "2024-2025": {
+        "all:excluded": 53,
+        "all:imported": 521,
+        "graduate:imported": 1308,
+        "undergraduate:failed": 2,
+        "undergraduate:imported": 1522
+      },
+      "2026-2027": {
+        "all:blocked_robots": 2,
+        "all:excluded": 8657,
+        "all:failed": 1,
+        "all:fetched": 255,
+        "all:imported": 1,
+        "graduate:excluded": 660,
+        "graduate:failed": 5,
+        "graduate:fetched": 662,
+        "undergraduate:excluded": 768,
+        "undergraduate:fetched": 770
+      }
+    },
+    "by_scope_status": {
+      "archive:excluded": 62,
+      "archive:failed": 2,
+      "archive:imported": 3351,
+      "current:blocked_robots": 2,
+      "current:excluded": 10085,
+      "current:failed": 6,
+      "current:fetched": 1687,
+      "current:imported": 1,
+      "external:excluded": 1868,
+      "external:failed": 5,
+      "external:imported": 43,
+      "legacy:pending": 23
+    },
+    "excluded_reasons": {
+      "archived edition; robots.txt disallows <path>": 62,
+      "course search result; its content is on <path>; robots.txt disallows <path>": 8402,
+      "external link, recorded not crawled": 1868,
+      "full-volume PDF; robots.txt disallows <path>": 1,
+      "print export duplicating an HTML page": 1682
+    },
+    "unresolved_urls": [
+      {
+        "edition": "2026-2027",
+        "error": "robots.txt disallows or is unreadable",
+        "status": "blocked_robots",
+        "url": "https://bulletin.temple.edu/archives/"
+      },
+      {
+        "edition": "2024-2025",
+        "error": "HTTP 404 in capture",
+        "status": "failed",
+        "url": "https://bulletin.temple.edu/archives/2024-2025/undergraduate/about-temple-university/special-programs/noncredit-programs/"
+      },
+      {
+        "edition": "2024-2025",
+        "error": "HTTP 404 in capture",
+        "status": "failed",
+        "url": "https://bulletin.temple.edu/archives/2024-2025/undergraduate/science-technology/accelerated-programs/34-podiatry/"
+      },
+      {
+        "edition": "2026-2027",
+        "error": "robots.txt disallows or is unreadable",
+        "status": "blocked_robots",
+        "url": "https://bulletin.temple.edu/azindex/"
+      },
+      {
+        "edition": "2026-2027",
+        "error": null,
+        "status": "failed",
+        "url": "https://bulletin.temple.edu/graduate/scd/cph/social-behavioral-sciences-mph/cph@temple.edu"
+      },
+      {
+        "edition": "2026-2027",
+        "error": null,
+        "status": "failed",
+        "url": "https://bulletin.temple.edu/graduate/scd/cph/social-behavioral-sciences-mph/cph@temple.edu."
+      },
+      {
+        "edition": "2026-2027",
+        "error": null,
+        "status": "failed",
+        "url": "https://bulletin.temple.edu/graduate/scd/education/adult-learning-training-organizational-development-med/"
+      },
+      {
+        "edition": "2026-2027",
+        "error": null,
+        "status": "failed",
+        "url": "https://bulletin.temple.edu/graduate/scd/education/education-special-education-phd/dowdy@temple.edu"
+      },
+      {
+        "edition": "2026-2027",
+        "error": null,
+        "status": "failed",
+        "url": "https://bulletin.temple.edu/graduate/scd/tyler/transportation-planning-certificate/"
+      },
+      {
+        "edition": "2026-2027",
+        "error": null,
+        "status": "failed",
+        "url": "https://bulletin.temple.edu/toc_test22.html"
+      },
+      {
+        "edition": null,
+        "error": "HTTP 404 in capture",
+        "status": "failed",
+        "url": "https://grad.temple.edu/sites/grad/files/GRADUATE_APPLICATION_A05112021.pdf"
+      },
+      {
+        "edition": null,
+        "error": "HTTP 404 in capture",
+        "status": "failed",
+        "url": "https://grad.temple.edu/sites/grad/files/Web_GRAD_REFERENCE_REPORT.pdf"
+      },
+      {
+        "edition": null,
+        "error": "HTTP 404 in capture",
+        "status": "failed",
+        "url": "https://tfma.temple.edu/sites/tfma/files/site-pdfs/DAEP-Certificate-Application_update_ADA.pdf"
+      },
+      {
+        "edition": null,
+        "error": "HTTP 404 in capture",
+        "status": "failed",
+        "url": "https://www.ahta.org/assets/docs/Professional_Registration/2020_AHTA_Prof_Reg_ApplicantPoliciesandProcedures.pdf"
+      },
+      {
+        "edition": "2004-2005",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2004/"
+      },
+      {
+        "edition": "2005-2006",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2005/"
+      },
+      {
+        "edition": "2006-2007",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2006/"
+      },
+      {
+        "edition": "2007-2008",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2007/"
+      },
+      {
+        "edition": "2008-2009",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2008/"
+      },
+      {
+        "edition": "2009-2010",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2009/"
+      },
+      {
+        "edition": "2010-2011",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2010/"
+      },
+      {
+        "edition": "2011-2012",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2011/"
+      },
+      {
+        "edition": "2012-2013",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2012/"
+      },
+      {
+        "edition": "2013-2014",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/bulletin/archive/webarchive/bulletin2013/"
+      },
+      {
+        "edition": "2000-2001",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/00_01/bulletin/index.html"
+      },
+      {
+        "edition": "2001-2002",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/01_02/bulletin.asp"
+      },
+      {
+        "edition": "2002-2003",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/02_03/bulletin.asp"
+      },
+      {
+        "edition": "2003-2005",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/03-05/"
+      },
+      {
+        "edition": "2005-2006",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/05-06/gradbulletin/"
+      },
+      {
+        "edition": "2006-2007",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/06-07/"
+      },
+      {
+        "edition": "2007-2008",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/07-08/"
+      },
+      {
+        "edition": "2008-2009",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/08-09/"
+      },
+      {
+        "edition": "2009-2010",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/09-10/"
+      },
+      {
+        "edition": "2010-2011",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/10-11/"
+      },
+      {
+        "edition": "2011-2012",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/11-12/"
+      },
+      {
+        "edition": "2012-2013",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/12-13/"
+      },
+      {
+        "edition": "2013-2014",
+        "error": null,
+        "status": "pending",
+        "url": "https://www.temple.edu/gradarchives/13-14/"
+      },
+      {
+        "edition": null,
+        "error": "HTTP 403 in capture",
+        "status": "failed",
+        "url": "https://www2.ed.gov/about/offices/list/ope/pol/bteachershortageareasreport201718.pdf"
+      }
+    ],
+    "urls_total": 17135
+  },
+  "published_editions": {
+    "2024-2025": {
+      "batch": 2,
+      "counts": {
+        "courses": 12995,
+        "designations": 468,
+        "plans": 413,
+        "policy_sections": 1286,
+        "programs": 904,
+        "units": 31
+      },
+      "fingerprint": "abb1aa32a500fbb7d1e6c6d6b9f7f25640e7e5ad994b9b50b5076ae62a1d5ef1",
+      "issues": {
+        "warning:interpret:requirement_check_failed": 5
+      },
+      "programs_by_credential": {
+        "accelerated": 5,
+        "certificate": 92,
+        "concentration": 78,
+        "degree": 321,
+        "graduate_certificate": 106,
+        "major": 172,
+        "minor": 110,
+        "other": 5,
+        "post_masters_certificate": 15
+      },
+      "programs_by_level": {
+        "graduate": 414,
+        "professional": 28,
+        "undergraduate": 462
+      },
+      "published_at": "2026-10-24T18:52:35.891027+00:00",
+      "requirement_courses_not_listed": 88,
+      "requirement_nodes_by_interpretation": {
+        "interpreted": 31485,
+        "partial": 2629,
+        "uninterpreted": 1700
+      },
+      "requirement_nodes_by_kind": {
+        "all": 4793,
+        "any": 2339,
+        "choose": 1607,
+        "course": 25150,
+        "course_filter": 217,
+        "milestone": 8,
+        "text": 1700
+      },
+      "requirement_nodes_by_validation": {
+        "failed": 5,
+        "structurally_checked": 23510,
+        "unverified": 12299
+      },
+      "requisite_courses_not_listed": 211,
+      "requisites_by_interpretation": {
+        "corequisite:interpreted": 144,
+        "corequisite:partial": 37,
+        "prerequisite:interpreted": 3479,
+        "prerequisite:partial": 10,
+        "prerequisite:uninterpreted": 7
+      },
+      "versions": {
+        "extractor": "3",
+        "interpreter": "1",
+        "rules": "1"
+      }
+    },
+    "2026-2027": {
+      "batch": 1,
+      "counts": {
+        "courses": 12831,
+        "designations": 463,
+        "plans": 430,
+        "policy_sections": 1290,
+        "programs": 917,
+        "units": 33
+      },
+      "fingerprint": "3bc5e6cfa0fd06cf6fcf2bded6532bb7f0b00060d5e2ff4e298ba51cf7c27dda",
+      "issues": {
+        "warning:interpret:requirement_check_failed": 6
+      },
+      "programs_by_credential": {
+        "accelerated": 6,
+        "certificate": 87,
+        "concentration": 78,
+        "degree": 315,
+        "graduate_certificate": 121,
+        "major": 169,
+        "minor": 121,
+        "other": 4,
+        "post_masters_certificate": 16
+      },
+      "programs_by_level": {
+        "graduate": 424,
+        "professional": 28,
+        "undergraduate": 465
+      },
+      "published_at": "2026-10-24T18:52:29.019884+00:00",
+      "requirement_courses_not_listed": 98,
+      "requirement_nodes_by_interpretation": {
+        "interpreted": 29239,
+        "partial": 2654,
+        "uninterpreted": 1629
+      },
+      "requirement_nodes_by_kind": {
+        "all": 4750,
+        "any": 1767,
+        "choose": 1661,
+        "course": 23472,
+        "course_filter": 235,
+        "milestone": 8,
+        "text": 1629
+      },
+      "requirement_nodes_by_validation": {
+        "failed": 6,
+        "structurally_checked": 21526,
+        "unverified": 11990
+      },
+      "requisite_courses_not_listed": 207,
+      "requisites_by_interpretation": {
+        "corequisite:interpreted": 142,
+        "corequisite:partial": 34,
+        "prerequisite:interpreted": 3516,
+        "prerequisite:partial": 9,
+        "prerequisite:uninterpreted": 2
+      },
+      "versions": {
+        "extractor": "3",
+        "interpreter": "1",
+        "rules": "1"
+      }
+    }
+  }
+}

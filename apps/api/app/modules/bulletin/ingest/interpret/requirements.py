@@ -188,9 +188,10 @@ HOURS = re.compile(r"^\s*" + CREDIT_RANGE + r"\s*$")
 
 Credits = tuple[Decimal, Decimal]
 
-# "CIS 4X9X", "BIOL 4XXX": any course whose number fits the pattern.
+# "CIS 4X9X", "BIOL 4XXX": any course whose number fits the pattern. Wildcards
+# start with a digit; "JUDO X419" is a real course.
 WILDCARD_CODE = re.compile(
-    r"^\s*(?P<subject>[A-Z]{2,5})\s+(?P<number>(?=[0-9X]*X)(?=[0-9X]*[0-9])[0-9X]{4})\s*$"
+    r"^\s*(?P<subject>[A-Z]{2,5})\s+(?P<number>[0-9](?=[0-9X]*X)[0-9X]{3})\s*$"
 )
 # Conditions a row's title states beside the course ("cannot be taken in
 # addition to PDMD P331", "must be completed at Temple", "taken six times").

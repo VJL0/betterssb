@@ -26,6 +26,8 @@ from app.modules.bulletin.rules import (
             ["BIOL 3091", "CHEM 3091", "EES 3091", "PHYS 3091"],
         ),
         ("MATH 1041 ", ["MATH 1041"]),
+        ("JUDO X419", ["JUDO X419"]),
+        ("PDMD P331", ["PDMD P331"]),
     ],
 )
 def test_cross_listed_codes_expand(printed: str, codes: list[str]) -> None:

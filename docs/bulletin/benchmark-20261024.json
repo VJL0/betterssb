@@ -1,0 +1,175 @@
+{
+  "runs": 50,
+  "queries": {
+    "course_by_code": {
+      "cold_ms": 28.16,
+      "p50": 3.88,
+      "p95": 5.59,
+      "max": 24.85
+    },
+    "search_title_words": {
+      "cold_ms": 20.85,
+      "p50": 6.89,
+      "p95": 7.79,
+      "max": 12.63
+    },
+    "search_typo_trigram": {
+      "cold_ms": 21.21,
+      "p50": 6.14,
+      "p95": 6.93,
+      "max": 8.9
+    },
+    "search_code_prefix": {
+      "cold_ms": 20.47,
+      "p50": 4.15,
+      "p95": 5.12,
+      "max": 7.78
+    },
+    "filter_subject_credits": {
+      "cold_ms": 18.23,
+      "p50": 2.61,
+      "p95": 3.73,
+      "max": 5.69
+    },
+    "filter_attribute_level": {
+      "cold_ms": 25.33,
+      "p50": 3.65,
+      "p95": 4.31,
+      "max": 10.89
+    },
+    "majors_in_college": {
+      "cold_ms": 14.94,
+      "p50": 1.2,
+      "p95": 1.52,
+      "max": 3.01
+    },
+    "program_search": {
+      "cold_ms": 14.09,
+      "p50": 2.7,
+      "p95": 3.64,
+      "max": 5.59
+    },
+    "program_requirement_tree": {
+      "cold_ms": 12.86,
+      "p50": 2.93,
+      "p95": 3.2,
+      "max": 5.55
+    },
+    "course_history": {
+      "cold_ms": 13.87,
+      "p50": 0.97,
+      "p95": 1.57,
+      "max": 3.24
+    },
+    "program_history": {
+      "cold_ms": 12.65,
+      "p50": 0.74,
+      "p95": 0.97,
+      "max": 2.23
+    },
+    "policy_search": {
+      "cold_ms": 21.12,
+      "p50": 3.35,
+      "p95": 5.72,
+      "max": 10.16
+    },
+    "compare_program_editions": {
+      "cold_ms": 14.39,
+      "p50": 6.49,
+      "p95": 8.82,
+      "max": 47.32
+    }
+  },
+  "sizes": {
+    "course_version": {
+      "total": 92381184,
+      "heap": 46792704,
+      "indexes": 16334848
+    },
+    "program_version": {
+      "total": 13991936,
+      "heap": 1712128,
+      "indexes": 2015232
+    },
+    "policy_section": {
+      "total": 13066240,
+      "heap": 4096000,
+      "indexes": 5062656
+    },
+    "requirement_node": {
+      "total": 12124160,
+      "heap": 8241152,
+      "indexes": 3842048
+    },
+    "course_requisite": {
+      "total": 3727360,
+      "heap": 3186688,
+      "indexes": 499712
+    },
+    "academic_plan": {
+      "total": 3407872,
+      "heap": 1220608,
+      "indexes": 81920
+    },
+    "course_reference": {
+      "total": 2564096,
+      "heap": 1236992,
+      "indexes": 1294336
+    },
+    "course": {
+      "total": 1605632,
+      "heap": 737280,
+      "indexes": 835584
+    },
+    "source_document": {
+      "total": 1466368,
+      "heap": 614400,
+      "indexes": 811008
+    },
+    "course_designation": {
+      "total": 516096,
+      "heap": 368640,
+      "indexes": 106496
+    },
+    "course_attribute": {
+      "total": 475136,
+      "heap": 212992,
+      "indexes": 221184
+    },
+    "program": {
+      "total": 278528,
+      "heap": 98304,
+      "indexes": 139264
+    },
+    "academic_unit": {
+      "total": 90112,
+      "heap": 16384,
+      "indexes": 32768
+    },
+    "quality_issue": {
+      "total": 81920,
+      "heap": 8192,
+      "indexes": 32768
+    },
+    "edition": {
+      "total": 81920,
+      "heap": 8192,
+      "indexes": 32768
+    },
+    "import_batch": {
+      "total": 81920,
+      "heap": 8192,
+      "indexes": 32768
+    },
+    "release": {
+      "total": 73728,
+      "heap": 8192,
+      "indexes": 32768
+    },
+    "release_event": {
+      "total": 57344,
+      "heap": 8192,
+      "indexes": 16384
+    }
+  }
+}

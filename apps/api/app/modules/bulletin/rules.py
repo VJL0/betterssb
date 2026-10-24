@@ -31,8 +31,9 @@ RULES_VERSION = "1"
 COURSE_CODE = re.compile(r"[A-Z]{2,5} [0-9A-Z]{4,5}")
 SUBJECT = re.compile(r"[A-Z]{2,5}")
 COURSE_NUMBER = re.compile(r"[0-9A-Z]{4,5}")
-# "CIS 4X9X", "BIOL 4XXX": a range of numbers, not a course.
-WILDCARD_NUMBER = re.compile(r"\b(?=[0-9X]*\d)(?=[0-9X]*X)[0-9X]{4}\b")
+# "CIS 4X9X", "BIOL 4XXX": a range of numbers, not a course. Real numbers can
+# start with a letter ("JUDO X419"), wildcards start with a digit.
+WILDCARD_NUMBER = re.compile(r"\b\d(?=[0-9X]*X)[0-9X]{3}\b")
 
 
 def expand_course_code(text: str) -> list[str]:
