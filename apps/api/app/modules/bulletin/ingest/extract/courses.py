@@ -18,7 +18,7 @@ from decimal import Decimal
 from lxml import html
 from pydantic import Field
 
-from app.modules.bulletin.ingest.extract.document import clean_text
+from app.modules.bulletin.ingest.extract.document import clean_text, readable_text
 from app.modules.bulletin.ingest.records import Evidence, Locator, Record
 
 TITLE_LINE = re.compile(
@@ -101,10 +101,10 @@ def _description(block: html.HtmlElement) -> str:
     for node in container.xpath(
         './/*[contains(@class,"courseblockheaddiv")] | ./text()'
     ):
-        pieces.append(node if isinstance(node, str) else node.text_content())
+        pieces.append(node if isinstance(node, str) else readable_text(node))
     if not pieces:
         pieces = [
-            child.text_content()
+            readable_text(child)
             for child in container
             if "courseblockpart" not in (child.get("class") or "")
             and "courseblocktitle" not in (child.get("class") or "")
@@ -122,11 +122,11 @@ def parse_course_block(
             url=url,
             sha256=sha256,
             locator=Locator(xpath=tree.getpath(element), line=element.sourceline),
-            text=clean_text(element.text_content()),
+            text=readable_text(element),
         )
 
     titles = block.xpath('.//*[contains(@class,"courseblocktitle")]')
-    title_line = clean_text(titles[0].text_content()) if titles else ""
+    title_line = readable_text(titles[0]) if titles else ""
     match = TITLE_LINE.match(title_line)
     if match is None:
         return UnparsedCourseBlock(
@@ -137,7 +137,7 @@ def parse_course_block(
     for part in block.xpath('.//*[contains(@class,"courseblockpart")]'):
         labels = part.xpath("./strong")
         label = clean_text(labels[0].text_content()).rstrip(":") if labels else ""
-        text = clean_text(part.text_content())
+        text = readable_text(part)
         if label and text.startswith(label):
             text = text[len(label) :].lstrip(": ").strip()
         parts.append(CoursePart(label=label, text=text, evidence=evidence(part)))

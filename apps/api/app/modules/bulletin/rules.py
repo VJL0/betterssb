@@ -31,6 +31,8 @@ RULES_VERSION = "1"
 COURSE_CODE = re.compile(r"[A-Z]{2,5} [0-9A-Z]{4,5}")
 SUBJECT = re.compile(r"[A-Z]{2,5}")
 COURSE_NUMBER = re.compile(r"[0-9A-Z]{4,5}")
+# "CIS 4X9X", "BIOL 4XXX": a range of numbers, not a course.
+WILDCARD_NUMBER = re.compile(r"\b(?=[0-9X]*\d)(?=[0-9X]*X)[0-9X]{4}\b")
 
 
 def expand_course_code(text: str) -> list[str]:
@@ -43,6 +45,8 @@ def expand_course_code(text: str) -> list[str]:
     codes: list[str] = []
     pending_subjects: list[str] = []
     for part in (piece.strip() for piece in text.strip().split("/")):
+        if WILDCARD_NUMBER.search(part):
+            return []
         if COURSE_CODE.fullmatch(part):
             subject, number = part.split(" ")
             codes += [f"{s} {number}" for s in [*pending_subjects, subject]]
@@ -147,6 +151,19 @@ NodeKind = Literal[
 ]
 
 
+# What a root table is for. Only `requirement` and `curriculum` roots are
+# degree requirements; the others are published beside them.
+RootRole = Literal[
+    "requirement",
+    # A required sequence printed only as a semester grid (DMD, DPT).
+    "curriculum",
+    "admission",
+    "academic_plan",
+    "accelerated",
+    "other",
+]
+
+
 class RequirementNode(RuleModel):
     """One node of a program's requirement tree."""
 
@@ -155,6 +172,8 @@ class RequirementNode(RuleModel):
     id: str
     kind: NodeKind
     label: str = ""
+    # Set on roots: what the table is for.
+    role: RootRole = "requirement"
     children: list[RequirementNode] = Field(default_factory=list)
 
     # Leaves.

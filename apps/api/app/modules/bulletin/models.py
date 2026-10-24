@@ -338,8 +338,12 @@ class RequirementNodeRow(Base):
     kind: Mapped[str] = mapped_column(String(14))
     label: Mapped[str] = mapped_column(Text, default="")
     course_id: Mapped[int | None] = mapped_column(_fk("course"))
+    # Roots only: "requirement", "curriculum", "admission", "academic_plan"…
+    role: Mapped[str | None] = mapped_column(String(20))
     min_courses: Mapped[int | None] = mapped_column(Integer)
+    max_courses: Mapped[int | None] = mapped_column(Integer)
     min_credits: Mapped[Decimal | None] = mapped_column(Numeric(6, 2))
+    max_credits: Mapped[Decimal | None] = mapped_column(Numeric(6, 2))
     interpretation: Mapped[str] = mapped_column(String(14))
     validation: Mapped[str] = mapped_column(String(22))
 

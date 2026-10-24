@@ -61,3 +61,33 @@ def test_page_title_wins_over_headings_in_the_content() -> None:
     )
     url = f"{BULLETIN}/graduate/scd/cla/public-policy-mpp/"
     assert page_document(body, url, "0" * 64).heading == "Public Policy MPP"
+
+
+def test_course_text_keeps_word_breaks_between_blocks() -> None:
+    from app.modules.bulletin.ingest.extract.courses import parse_course_listing
+    from app.modules.bulletin.ingest.extract.document import parse_html
+
+    # CIS 1056, 2026-2027: paragraphs inside the description, no whitespace.
+    body = (
+        b'<html><body><div class="courseblock"><p class="courseblocktitle"><strong>'
+        b"CIS 1056.  Advanced Web Technology and Programming.  4   Credit Hours."
+        b'</strong></p><div class="courseblockdesc"><div class="courseblockheaddiv">'
+        b"This course is typically offered in Fall.<p>It accesses a database.</p>"
+        b"<p>For any CIS prerequisite course taken prior to Spring 2012 a grade of C"
+        b' or better is required.</p></div><p class="courseblockpart"><strong>'
+        b"Pre-requisites:</strong> POLS 1301<br>OR POLS 1931</p></div></div>"
+        b"</body></html>"
+    )
+    url = f"{BULLETIN}/courses/cis/"
+    [course], unparsed = parse_course_listing(parse_html(body), url, "0" * 64)
+    assert not unparsed
+    assert "a database. For any CIS" in course.description
+    assert "offered in Fall. It accesses" in course.description
+    assert course.parts[0].text == "POLS 1301 OR POLS 1931"
+
+
+def test_about_courses_is_information_not_an_index() -> None:
+    url = f"{BULLETIN}/about-courses/"
+    assert classify_page(url, signals(url)) is PageKind.INFORMATION
+    listing = f"{BULLETIN}/undergraduate/courses/"
+    assert classify_page(listing, signals(listing)) is PageKind.COURSE_INDEX

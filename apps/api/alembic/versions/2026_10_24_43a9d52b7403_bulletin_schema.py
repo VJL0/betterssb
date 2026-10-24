@@ -476,8 +476,11 @@ def upgrade() -> None:
         sa.Column("kind", sa.String(length=14), nullable=False),
         sa.Column("label", sa.Text(), nullable=False),
         sa.Column("course_id", sa.Integer(), nullable=True),
+        sa.Column("role", sa.String(length=20), nullable=True),
         sa.Column("min_courses", sa.Integer(), nullable=True),
+        sa.Column("max_courses", sa.Integer(), nullable=True),
         sa.Column("min_credits", sa.Numeric(precision=6, scale=2), nullable=True),
+        sa.Column("max_credits", sa.Numeric(precision=6, scale=2), nullable=True),
         sa.Column("interpretation", sa.String(length=14), nullable=False),
         sa.Column("validation", sa.String(length=22), nullable=False),
         sa.ForeignKeyConstraint(

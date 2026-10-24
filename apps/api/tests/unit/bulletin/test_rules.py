@@ -84,3 +84,8 @@ def test_excluded_reasons_group_by_pattern() -> None:
     assert REASON_PATH.sub("<path>", reason) == (
         "course search result; its content is on <path>; robots.txt disallows <path>"
     )
+
+
+@pytest.mark.parametrize("printed", ["CIS 4X9X", "BIOL 4XXX", "GUS/ENST 08XX"])
+def test_wildcard_numbers_are_not_courses(printed: str) -> None:
+    assert expand_course_code(printed) == []

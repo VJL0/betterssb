@@ -62,6 +62,31 @@ def clean_text(text: str) -> str:
     return WHITESPACE.sub(" ", text.replace("\xa0", " ")).strip()
 
 
+# Elements whose boundaries separate words even when the markup has no space.
+WORD_BREAK_TAGS = BLOCK_LEVEL_TAGS | {"br", "td", "th", "tr"}
+
+
+def readable_text(element: html.HtmlElement) -> str:
+    """Like `text_content()`, but a `<br>` or block boundary separates words:
+    "database.<br>For" reads "database. For", not "database.For"."""
+    parts: list[str] = []
+
+    def collect(node: html.HtmlElement) -> None:
+        breaks = node.tag in WORD_BREAK_TAGS
+        if breaks:
+            parts.append(" ")
+        parts.append(node.text or "")
+        for child in node:
+            if isinstance(child.tag, str):
+                collect(child)
+            parts.append(child.tail or "")
+        if breaks:
+            parts.append(" ")
+
+    collect(element)
+    return clean_text("".join(parts))
+
+
 def own_text(element: html.HtmlElement) -> str:
     """The element's text without the text of block-level descendants."""
     parts = [element.text or ""]

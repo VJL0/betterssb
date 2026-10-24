@@ -65,8 +65,10 @@ PROGRAM_LIST_PATHS = frozenset(
         "/graduate/scd/",
     }
 )
+# `/about-courses/` explains course numbering and credit; it's information,
+# kept as policy sections, not an index.
 COURSE_INDEX_PATHS = frozenset(
-    {"/courses/", "/undergraduate/courses/", "/graduate/courses/", "/about-courses/"}
+    {"/courses/", "/undergraduate/courses/", "/graduate/courses/"}
 )
 
 
