@@ -81,7 +81,7 @@ archive checksum and full restored checkpoint verification both passed (5,086
 files, 686,344,343 payload bytes). GitHub reports archive asset 672950464 as
 `uploaded`, size 217,105,396 bytes, with the same SHA-256 recorded above.
 
-[Draft release](https://github.com/VJL0/betterssb/releases/tag/untagged-9339984c61372c62b896)
+[Draft release](https://github.com/VJL0/betterssb/releases)
 requires authenticated access. Retrieve by the logical tag
 `bulletin-checkpoint-20261024` using the CLI, even while GitHub displays an
 `untagged-…` URL for the draft.
