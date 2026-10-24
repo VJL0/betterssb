@@ -34,6 +34,7 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -64,42 +65,66 @@
 /* :host gives the tokens to the extension's shadow-root UI on Banner pages. */
 :root,
 :host {
+  /* Temple University's digital palette: the hex codes and names from
+     temple.edu's root stylesheet (--color__*). The brand guide says to use
+     these hex codes on screen. Ochre fails 4.5:1 as text, so the warning
+     text color is Ochre darkened in its own hue. */
+  --temple-cherry: oklch(0.47 0.168 18.1); /* #a41e35 */
+  --temple-cherry-dark: oklch(0.437 0.155 17.8); /* #941b30 */
+  --temple-charcoal: oklch(0.252 0 0); /* #222222 */
+  --temple-eggshell: oklch(0.951 0.009 78.3); /* #f2eee8 */
+  --temple-eggshell-dark: oklch(0.88 0.009 84.6); /* #dad7d1 */
+  --temple-taupe: oklch(0.736 0.052 77.8); /* #bca685 */
+  --temple-icy-blue: oklch(0.925 0.036 225.8); /* #ceecf9 */
+  --temple-steel-blue: oklch(0.56 0.068 249.1); /* #55789b */
+  --temple-lime: oklch(0.84 0.176 115.3); /* #c7d733 */
+  --temple-ochre: oklch(0.824 0.167 81.2); /* #fcb813 */
+  --temple-geranium-dark: oklch(0.549 0.21 28.2); /* #d01d1b */
+  --temple-dark-blue: oklch(0.342 0.134 279.3); /* #2e297b */
+
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: var(--temple-charcoal);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: var(--temple-charcoal);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  /* Rhea's 0.708 is 2.6:1 on white; 0.556 is 4.7:1, so keyboard focus passes 3:1. */
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --popover-foreground: var(--temple-charcoal);
+  --primary: var(--temple-cherry);
+  --primary-foreground: oklch(1 0 0);
+  --primary-hover: var(--temple-cherry-dark);
+  --secondary: var(--temple-eggshell);
+  --secondary-foreground: var(--temple-charcoal);
+  --muted: var(--temple-eggshell);
+  /* temple.edu's gray for dates and secondary text (#666666), not a named
+     color: 5.7:1 on white, 5:1 on Eggshell. */
+  --muted-foreground: oklch(0.51 0 0);
+  --accent: var(--temple-eggshell);
+  --accent-foreground: var(--temple-charcoal);
+  /* Geranium's dark shade: 5.4:1 on white, where Geranium is 4.5:1. */
+  --destructive: var(--temple-geranium-dark);
+  --border: var(--temple-eggshell-dark);
+  --input: var(--temple-eggshell-dark);
+  /* Cherry is 7.5:1 on white, so keyboard focus passes 3:1. */
+  --ring: var(--temple-cherry);
+  --chart-1: var(--temple-cherry);
+  --chart-2: var(--temple-dark-blue);
+  --chart-3: var(--temple-ochre);
+  --chart-4: var(--temple-taupe);
+  --chart-5: var(--temple-steel-blue);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0.004 78);
+  --sidebar-foreground: var(--temple-charcoal);
+  --sidebar-primary: var(--temple-cherry);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: var(--temple-eggshell);
+  --sidebar-accent-foreground: var(--temple-charcoal);
+  --sidebar-border: var(--temple-eggshell-dark);
+  --sidebar-ring: var(--temple-cherry);
+  /* Not Lime: darkened enough for text, it sits too close to Ochre's hue,
+     and seat meters put the two side by side. */
   --success: oklch(0.508 0.118 165.612);
-  --warning: oklch(0.555 0.163 48.998);
-  --info: oklch(0.488 0.243 264.376);
+  /* Ochre darkened: 5.4:1 on white. */
+  --warning: oklch(0.53 0.115 70);
+  --info: var(--temple-dark-blue);
   /* Course identity colors, assigned in cart order per term. Never used for status. */
   --course-1: oklch(0.516 0.188 261);
   --course-2: oklch(0.553 0.174 38.4);
@@ -112,40 +137,45 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  /* Cherry and Geranium lightened to 6:1 on the dark background; the
+     swatches are 2.5:1 and 3.3:1. */
+  --dark-cherry: oklch(0.72 0.13 18);
+
+  --background: var(--temple-charcoal);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.29 0.003 78);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.29 0.003 78);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --primary: var(--dark-cherry);
+  --primary-foreground: var(--temple-charcoal);
+  --primary-hover: oklch(0.66 0.13 18);
+  --secondary: oklch(0.33 0.006 78);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --muted: oklch(0.33 0.006 78);
+  --muted-foreground: oklch(0.8 0.015 78);
+  --accent: oklch(0.33 0.006 78);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(0.72 0.17 27.5);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
+  --ring: var(--dark-cherry);
+  --chart-1: var(--dark-cherry);
+  --chart-2: var(--temple-icy-blue);
+  --chart-3: var(--temple-ochre);
+  --chart-4: var(--temple-taupe);
+  --chart-5: var(--temple-lime);
+  --sidebar: oklch(0.29 0.003 78);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-primary: var(--dark-cherry);
+  --sidebar-primary-foreground: var(--temple-charcoal);
+  --sidebar-accent: oklch(0.33 0.006 78);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: var(--dark-cherry);
   --success: oklch(0.765 0.177 163.223);
-  --warning: oklch(0.828 0.189 84.429);
-  --info: oklch(0.707 0.165 254.624);
+  --warning: var(--temple-ochre);
+  --info: var(--temple-icy-blue);
 }
 
 @layer base {
