@@ -138,7 +138,7 @@ export function NoAuditProgress() {
       <span className="grid size-9 place-items-center rounded-xl bg-muted">
         <GraduationCapIcon aria-hidden className="size-4" />
       </span>
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <span className="flex min-w-0 grow basis-48 flex-col gap-0.5">
         <span className="font-medium">
           See your progress toward your degree
         </span>
