@@ -16,8 +16,9 @@ import {
 } from "@workspace/ui/components/hover-card";
 import type { RmpRating } from "@workspace/api-client";
 
+// High isn't "default": the primary color is Temple Cherry, which would read as the low band's red.
 const BAND_VARIANT = {
-  high: "default",
+  high: "success",
   mid: "secondary",
   low: "destructive",
   none: "outline",

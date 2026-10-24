@@ -18,18 +18,18 @@ const TONE_LABEL: Record<SeatTone, string> = {
 
 // Progress renders its own indicator, so the tone is set from the root.
 const TONE_INDICATOR: Record<SeatTone, string> = {
-  success: "[&_[data-slot=progress-indicator]]:bg-success",
-  warning: "[&_[data-slot=progress-indicator]]:bg-warning",
-  destructive: "[&_[data-slot=progress-indicator]]:bg-destructive",
-  muted: "[&_[data-slot=progress-indicator]]:bg-muted-foreground",
+  success: "**:data-[slot=progress-indicator]:bg-success",
+  warning: "**:data-[slot=progress-indicator]:bg-warning",
+  destructive: "**:data-[slot=progress-indicator]:bg-destructive",
+  muted: "**:data-[slot=progress-indicator]:bg-muted-foreground",
 };
 
 const SIZE_CLASSES = {
   default: "gap-y-1.5",
-  sm: "gap-y-0.5 text-xs [&_[data-slot=progress-track]]:h-1",
+  sm: "gap-y-0.5 text-xs **:data-[slot=progress-track]:h-1",
   // One 16 px line, bar first: under Banner's own seat text, which has the counts.
   inline:
-    "flex-nowrap items-center gap-x-1.5 text-xs [&_[data-slot=progress-track]]:order-first [&_[data-slot=progress-track]]:h-1.5 [&_[data-slot=progress-track]]:w-14 [&_[data-slot=progress-track]]:shrink-0",
+    "flex-nowrap items-center gap-x-1.5 text-xs **:data-[slot=progress-track]:order-first **:data-[slot=progress-track]:h-1.5 **:data-[slot=progress-track]:w-14 **:data-[slot=progress-track]:shrink-0",
 } as const;
 
 interface SeatMeterProps extends SeatCounts {

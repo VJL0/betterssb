@@ -15,7 +15,7 @@ import { NavLink } from "./nav-link";
 import { PRIMARY_PAGES, SECONDARY_PAGES, readyPages } from "./pages";
 
 const TAB_CLASS =
-  "flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none aria-[current=page]:bg-muted aria-[current=page]:text-foreground";
+  "flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl text-xs font-medium text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none aria-[current=page]:bg-muted aria-[current=page]:text-foreground";
 
 const SHEET_ROW_CLASS =
   "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none";
