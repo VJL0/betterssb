@@ -1,4 +1,5 @@
 import pytest
+
 from app.modules.bulletin.ingest.__main__ import main
 
 

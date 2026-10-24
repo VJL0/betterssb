@@ -15,9 +15,8 @@ from __future__ import annotations
 import hashlib
 import os
 import tempfile
-from pathlib import Path
-
 from compression import zstd
+from pathlib import Path
 
 ZSTD_LEVEL = 10
 OBJECT_SUFFIX = ".zst"

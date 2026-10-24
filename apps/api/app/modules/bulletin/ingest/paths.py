@@ -41,6 +41,10 @@ def extracted_dir() -> Path:
     return data_dir() / "extracted"
 
 
+def interpreted_dir() -> Path:
+    return data_dir() / "interpreted"
+
+
 def reports_dir() -> Path:
     return data_dir() / "reports"
 

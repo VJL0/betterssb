@@ -1,0 +1,960 @@
+{
+ "facts": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 433,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[5]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Time Limit for Degree Completion: In accordance with the Faculty Regulations, students must complete the academic requirements necessary for the degree within 6 years. Those taking an authorized leave of absence for active military duty may exceed 6 years.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Time Limit for Degree Completion",
+   "value": "In accordance with the Faculty Regulations, students must complete the academic requirements necessary for the degree within 6 years. Those taking an authorized leave of absence for active military duty may exceed 6 years."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 434,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[6]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Campus Location: Main",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Campus Location",
+   "value": "Main"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 435,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[7]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Full-Time/Part-Time Status: The program may be completed on a full- or part-time basis.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Full-Time/Part-Time Status",
+   "value": "The program may be completed on a full- or part-time basis."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 436,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[8]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Job Prospects: Graduate employment outcome reports submitted to the American Bar Association (ABA\u00ae) and National Association for Legal Support Professionals (NALS) for the previous three years are posted annually on the Beasley School of Law website. These reports contain details about the employment outcomes of graduates at ten months post-graduation.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Job Prospects",
+   "value": "Graduate employment outcome reports submitted to the American Bar Association (ABA\u00ae) and National Association for Legal Support Professionals (NALS) for the previous three years are posted annually on the Beasley School of Law website. These reports contain details about the employment outcomes of graduates at ten months post-graduation."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 437,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[9]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Financing Opportunities: Students may contact the Temple Law Financial Aid Office via e-mail (lwfinaid@temple.edu) or phone (215-204-8943 or 800-560-1428) for information about financial aid.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Financing Opportunities",
+   "value": "Students may contact the Temple Law Financial Aid Office via e-mail (lwfinaid@temple.edu) or phone (215-204-8943 or 800-560-1428) for information about financial aid."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 441,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[1]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Application Deadline: March 1",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Application Deadline",
+   "value": "March 1"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 444,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[4]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Application Fee and Waiver: The application fee is $65. Payment may be made by credit card if the application is submitted electronically. For applications submitted by mail, a check or money order should be made payable to Temple University and must be drawn on a U.S. bank. The application fee is nonrefundable and cannot be credited toward any charges if an applicant subsequently registers as a student.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Application Fee and Waiver",
+   "value": "The application fee is $65. Payment may be made by credit card if the application is submitted electronically. For applications submitted by mail, a check or money order should be made payable to Temple University and must be drawn on a U.S. bank. The application fee is nonrefundable and cannot be credited toward any charges if an applicant subsequently registers as a student."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 447,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[6]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Letters of Reference: Number Required: 4 maximum",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Letters of Reference",
+   "value": "Number Required: 4 maximum"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 452,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[10]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Degree Required for Admission Consideration: All matriculants to the JD program must have earned a baccalaureate degree from an institution approved by one of the regional accrediting associations of the United States. If an applicant presents a degree from an institution situated outside the United States (other than a Canadian affiliate), the academic work required by the awarding institution must be the equivalent of a baccalaureate degree from an accredited institution situated within the United States.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Degree Required for Admission Consideration",
+   "value": "All matriculants to the JD program must have earned a baccalaureate degree from an institution approved by one of the regional accrediting associations of the United States. If an applicant presents a degree from an institution situated outside the United States (other than a Canadian affiliate), the academic work required by the awarding institution must be the equivalent of a baccalaureate degree from an accredited institution situated within the United States."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 454,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[12]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Personal Statement: All applicants must submit a personal statement with the application form. The personal statement provides an opportunity for applicants to present themselves, their background, their experiences and their ideas to the Admissions Committee. Applicants may want to write about intellectual interests, career goals, achievements, family background or involvement in the community.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Personal Statement",
+   "value": "All applicants must submit a personal statement with the application form. The personal statement provides an opportunity for applicants to present themselves, their background, their experiences and their ideas to the Admissions Committee. Applicants may want to write about intellectual interests, career goals, achievements, family background or involvement in the community."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 455,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[13]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Law School Admission Test (LSAT): All applicants are required to have taken the LSAT within five years of applying for admission and are required to have their scores reported to Temple Law School as part of an LSAC\u00ae's CAS Law School Report. The Beasley School of Law registration code number is 2906.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Law School Admission Test (LSAT)",
+   "value": "All applicants are required to have taken the LSAT within five years of applying for admission and are required to have their scores reported to Temple Law School as part of an LSAC\u00ae's CAS Law School Report. The Beasley School of Law registration code number is 2906."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 456,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[14]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Law School Credential Assembly Service (CAS): All applicants must register with LSAC\u00ae's CAS for the academic year during which application is made. It is the applicant's responsibility to have a transcript from each college or university attended sent directly to LSAC\u00ae.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Law School Credential Assembly Service (CAS)",
+   "value": "All applicants must register with LSAC\u00ae's CAS for the academic year during which application is made. It is the applicant's responsibility to have a transcript from each college or university attended sent directly to LSAC\u00ae."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 459,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[17]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Resume: While a resume is not required, applicants are encouraged to submit one as part of their application materials. The resume need not be limited to one page. Applicants are asked to include work history even if they think it is not relevant to the legal field.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Resume",
+   "value": "While a resume is not required, applicants are encouraged to submit one as part of their application materials. The resume need not be limited to one page. Applicants are asked to include work history even if they think it is not relevant to the legal field."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 460,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[18]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Application Processing and Notification of Decision: Applicants are notified via e-mail when the application and fee have been received and processed. The e-mail also provides login information for the Temple Law Admissions Office's Online Status Check, which allows applicants to check on receipt of letters of recommendation by the Admissions Office and to review their application and decision statuses.",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Application Processing and Notification of Decision",
+   "value": "Applicants are notified via e-mail when the application and fee have been received and processed. The e-mail also provides login information for the Temple Law Admissions Office's Online Status Check, which allows applicants to check on receipt of letters of recommendation by the Admissions Office and to review their application and decision statuses."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 466,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/p[1]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "General Program Requirements: Number of Credits Required to Earn the Degree: 88",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "General Program Requirements",
+   "value": "Number of Credits Required to Earn the Degree: 88"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 467,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/p[3]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Cumulative GPA Required to be Awarded the Degree: 2.0 minimum",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "label": "Cumulative GPA Required to be Awarded the Degree",
+   "value": "2.0 minimum"
+  }
+ ],
+ "level": "graduate",
+ "name": "Law JD",
+ "plans": [],
+ "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+ "tables": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 466,
+     "page": null,
+     "tab": "programrequirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Course List Code Title Credit Hours Mandated First-Year Curriculum 1 JUDO 0402Civil Procedure I2-4 JUDO 0404Constitutional Law4 JUDO 0406Contracts4 JUDO 0410Criminal Law I3 JUDO 0414Legal Research and Writing I (LRW I) 22-3 JUDO 0414Legal Research and Writing I (LRW II) 22-3 JUDO 0418Property4 JUDO 0420Torts4 JUDO 0437Introduction to Transactional Skills1-2 Elective Menu Course 31-6 First-Year Credit Hours32",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "footnotes": [
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 466,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl[1]/dd[1]"
+      },
+      "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+      "text": "All students must successfully complete all courses in their program's required first-year curriculum. Unless otherwise provided, successful completion means attaining a grade of \"D\" or better in a letter-graded course and \"S-\" or better in a non-letter-graded course. Students who fail to successfully complete a course in the mandated first-year curriculum must retake the course at the next possible opportunity, as determined by the Assistant Dean for Students. Note that required first-year courses are subject to change based on a full faculty vote.",
+      "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+     },
+     "marker": "1",
+     "text": "All students must successfully complete all courses in their program's required first-year curriculum. Unless otherwise provided, successful completion means attaining a grade of \"D\" or better in a letter-graded course and \"S-\" or better in a non-letter-graded course. Students who fail to successfully complete a course in the mandated first-year curriculum must retake the course at the next possible opportunity, as determined by the Assistant Dean for Students. Note that required first-year courses are subject to change based on a full faculty vote."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 466,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl[1]/dd[2]"
+      },
+      "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+      "text": "All students must take Legal Research & Writing II (LRW II) in the Spring term immediately following the Fall term in which Legal Research & Writing I (LRW I) was taken. However, any student who receives a grade of \"F\" or \"FA\" in LRW I may not take LRW II in sequence but, instead, must take both courses the following year. Further, any student who receives a grade of \"F\" or \"FA\" in LRW II must, in the following year, retake both LRW I and LRW II if that student received a grade below \"C\" in LRW I or only retake LRW II if that student received a grade of \"C\" or better in LRW I.",
+      "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+     },
+     "marker": "2",
+     "text": "All students must take Legal Research & Writing II (LRW II) in the Spring term immediately following the Fall term in which Legal Research & Writing I (LRW I) was taken. However, any student who receives a grade of \"F\" or \"FA\" in LRW I may not take LRW II in sequence but, instead, must take both courses the following year. Further, any student who receives a grade of \"F\" or \"FA\" in LRW II must, in the following year, retake both LRW I and LRW II if that student received a grade below \"C\" in LRW I or only retake LRW II if that student received a grade of \"C\" or better in LRW I."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 466,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl[1]/dd[3]"
+      },
+      "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+      "text": "Students choose from the available courses in the Elective Menu during the Fall term.",
+      "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+     },
+     "marker": "3",
+     "text": "Students choose from the available courses in the Elective Menu during the Fall term."
+    }
+   ],
+   "index": 0,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "areaheader",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "Mandated First-Year Curriculum",
+     "courses": [],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "JUDO 0402",
+     "comment": "",
+     "courses": [
+      "JUDO 0402"
+     ],
+     "footnotes": [],
+     "hours": "2-4",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[2]"
+     },
+     "title": "Civil Procedure I"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "JUDO 0404",
+     "comment": "",
+     "courses": [
+      "JUDO 0404"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[3]"
+     },
+     "title": "Constitutional Law"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "JUDO 0406",
+     "comment": "",
+     "courses": [
+      "JUDO 0406"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[4]"
+     },
+     "title": "Contracts"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "JUDO 0410",
+     "comment": "",
+     "courses": [
+      "JUDO 0410"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 4,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[5]"
+     },
+     "title": "Criminal Law I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "JUDO 0414",
+     "comment": "",
+     "courses": [
+      "JUDO 0414"
+     ],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "2-3",
+     "indent": 0,
+     "index": 5,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[6]"
+     },
+     "title": "Legal Research and Writing I (LRW I)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "JUDO 0414",
+     "comment": "",
+     "courses": [
+      "JUDO 0414"
+     ],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "2-3",
+     "indent": 0,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[7]"
+     },
+     "title": "Legal Research and Writing I (LRW II)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "JUDO 0418",
+     "comment": "",
+     "courses": [
+      "JUDO 0418"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 7,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[8]"
+     },
+     "title": "Property"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "JUDO 0420",
+     "comment": "",
+     "courses": [
+      "JUDO 0420"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 8,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[9]"
+     },
+     "title": "Torts"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "JUDO 0437",
+     "comment": "",
+     "courses": [
+      "JUDO 0437"
+     ],
+     "footnotes": [],
+     "hours": "1-2",
+     "indent": 0,
+     "index": 9,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[10]"
+     },
+     "title": "Introduction to Transactional Skills"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Elective Menu Course",
+     "courses": [],
+     "footnotes": [
+      "3"
+     ],
+     "hours": "1-6",
+     "indent": 0,
+     "index": 10,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[11]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader",
+      "lastrow"
+     ],
+     "code_text": "",
+     "comment": "First-Year Credit Hours",
+     "courses": [],
+     "footnotes": [],
+     "hours": "32",
+     "indent": 0,
+     "index": 11,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[1]/tbody/tr[12]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Program Requirements"
+   ],
+   "tab": "programrequirementstextcontainer"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 466,
+     "page": null,
+     "tab": "programrequirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]"
+    },
+    "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+    "text": "Course List Code Title Credit Hours Requirements After the First Year 1 Professional Responsibility course 2 Two upper-level writing courses 3 Serial Paper Research Paper Upper-level Experiential/Professional Skills courses 4 Bias in the Law course 5 Upper-level electives Post-First Year Credit Hours56",
+    "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+   },
+   "footnotes": [
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 466,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl[2]/dd[1]"
+      },
+      "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+      "text": "To learn more about Beasley School of Law's upper-level course offerings, review the Course Selection site (https://law.temple.edu/academics/course-selection/).",
+      "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+     },
+     "marker": "1",
+     "text": "To learn more about Beasley School of Law's upper-level course offerings, review the Course Selection site (https://law.temple.edu/academics/course-selection/)."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 466,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl[2]/dd[2]"
+      },
+      "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+      "text": "Requiring this course reflects Temple's commitment to the development of lawyers with high ethical standards. Students must meet this requirement by attaining a grade of \u201cC\u201d or better in a Professional Responsibility course. In the event that the student receives less than a \u201cC\u201d the first time taking the course, the student must: take a Professional Responsibility course again; attain a grade of \u201cC\u201d or better in that course; earn sufficient credits above the 88 credits normally required for graduation in order to make up for the credits that were received for the first Professional Responsibility course that was not successfully completed; and consult the Office of Student Services for more information.",
+      "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+     },
+     "marker": "2",
+     "text": "Requiring this course reflects Temple's commitment to the development of lawyers with high ethical standards. Students must meet this requirement by attaining a grade of \u201cC\u201d or better in a Professional Responsibility course. In the event that the student receives less than a \u201cC\u201d the first time taking the course, the student must: take a Professional Responsibility course again; attain a grade of \u201cC\u201d or better in that course; earn sufficient credits above the 88 credits normally required for graduation in order to make up for the credits that were received for the first Professional Responsibility course that was not successfully completed; and consult the Office of Student Services for more information."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 466,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl[2]/dd[3]"
+      },
+      "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+      "text": "Students fulfill the upper-level writing requirement by attaining a grade of \u201cC\u201d or better in a 2- or 3-credit Writing Seminar or Guided Research project that meets the standards for the Serial Paper component and, for the Research Paper component, by completing: a Note or Comment for one of the two law school journals, or a brief in a moot court or Jessup competition, which the supervising full-time faculty member certifies meets Research Paper standards and would have received a grade of \u201cC\u201d or better if it had been letter graded.",
+      "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+     },
+     "marker": "3",
+     "text": "Students fulfill the upper-level writing requirement by attaining a grade of \u201cC\u201d or better in a 2- or 3-credit Writing Seminar or Guided Research project that meets the standards for the Serial Paper component and, for the Research Paper component, by completing: a Note or Comment for one of the two law school journals, or a brief in a moot court or Jessup competition, which the supervising full-time faculty member certifies meets Research Paper standards and would have received a grade of \u201cC\u201d or better if it had been letter graded."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 466,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl[2]/dd[4]"
+      },
+      "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+      "text": "All students who matriculated prior to Fall 2016 must successfully complete a course designated as a Professional Skills course. All students who matriculated in or after Fall 2016 must successfully complete one or more Experiential courses totaling at least 6 credits. Students may take Experiential/Professional Skills courses at any time, provided they have completed the mandated First-Year Curriculum and any other applicable prerequisite courses. For this purpose, successful completion means a grade of \"C\" or better in a letter-graded course and \"S\" or better in a non-letter-graded course. Courses that satisfy the Experiential/Professional Skills requirement include those designated as Clinical courses (both Internal Clinics and External Clinics), Externships, Practicums and designated Simulation courses. Writing courses taken to fulfill the Experiential/Professional Skills requirement cannot also fulfill the upper-level writing requirement.",
+      "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+     },
+     "marker": "4",
+     "text": "All students who matriculated prior to Fall 2016 must successfully complete a course designated as a Professional Skills course. All students who matriculated in or after Fall 2016 must successfully complete one or more Experiential courses totaling at least 6 credits. Students may take Experiential/Professional Skills courses at any time, provided they have completed the mandated First-Year Curriculum and any other applicable prerequisite courses. For this purpose, successful completion means a grade of \"C\" or better in a letter-graded course and \"S\" or better in a non-letter-graded course. Courses that satisfy the Experiential/Professional Skills requirement include those designated as Clinical courses (both Internal Clinics and External Clinics), Externships, Practicums and designated Simulation courses. Writing courses taken to fulfill the Experiential/Professional Skills requirement cannot also fulfill the upper-level writing requirement."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 466,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/dl[2]/dd[5]"
+      },
+      "sha256": "0a85ec04bd8a0cc13fd4178dea51b611e7582420606e634f7fcddb4989399430",
+      "text": "All students who matriculated into the JD program on or after July 1, 2021 must successfully complete at least one course from a menu of courses that explore bias in the law. For this purpose, successful completion means a grade of \"C\" or better in a letter-graded course and \"S\" or better in a non-letter-graded course. The decision on what courses satisfy this graduation requirement is made by the Associate Dean for Academic Affairs.",
+      "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+     },
+     "marker": "5",
+     "text": "All students who matriculated into the JD program on or after July 1, 2021 must successfully complete at least one course from a menu of courses that explore bias in the law. For this purpose, successful completion means a grade of \"C\" or better in a letter-graded course and \"S\" or better in a non-letter-graded course. The decision on what courses satisfy this graduation requirement is made by the Associate Dean for Academic Affairs."
+    }
+   ],
+   "index": 1,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "areaheader",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "Requirements After the First Year",
+     "courses": [],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Professional Responsibility course",
+     "courses": [],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]/tbody/tr[2]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Two upper-level writing courses",
+     "courses": [],
+     "footnotes": [
+      "3"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]/tbody/tr[3]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Serial Paper",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 3,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]/tbody/tr[4]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Research Paper",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 4,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]/tbody/tr[5]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Upper-level Experiential/Professional Skills courses",
+     "courses": [],
+     "footnotes": [
+      "4"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 5,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]/tbody/tr[6]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Bias in the Law course",
+     "courses": [],
+     "footnotes": [
+      "5"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 6,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]/tbody/tr[7]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Upper-level electives",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 7,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]/tbody/tr[8]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader",
+      "lastrow"
+     ],
+     "code_text": "",
+     "comment": "Post-First Year Credit Hours",
+     "courses": [],
+     "footnotes": [],
+     "hours": "56",
+     "indent": 0,
+     "index": 8,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table[2]/tbody/tr[9]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Program Requirements"
+   ],
+   "tab": "programrequirementstextcontainer"
+  }
+ ],
+ "units": [
+  "Graduate and Professional",
+  "Schools and Colleges",
+  "Beasley School of Law"
+ ],
+ "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/"
+}

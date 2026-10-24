@@ -214,7 +214,9 @@ def _tabs(document: html.HtmlElement) -> list[Tab]:
 
 
 def _heading(document: html.HtmlElement, crumbs: list[Crumb], title: str) -> str:
-    for xpath in ('//*[@id="contentarea"]//h1', "//h1[contains(@class,'page-title')]"):
+    # CourseLeaf's page title first: content can carry its own h1s
+    # ("Admissions Criteria" on the Public Policy MPP page).
+    for xpath in ("//h1[contains(@class,'page-title')]", '//*[@id="contentarea"]//h1'):
         if found := document.xpath(xpath):
             return clean_text(found[0].text_content())
     if crumbs:

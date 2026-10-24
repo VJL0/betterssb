@@ -1,6 +1,7 @@
 import json
 
 import pytest
+
 from app.modules.bulletin.ingest.crawl_state import CrawlState
 from app.modules.bulletin.ingest.validate import evidence_references, validate_extracts
 

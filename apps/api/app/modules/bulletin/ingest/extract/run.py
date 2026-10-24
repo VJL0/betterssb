@@ -43,7 +43,7 @@ from app.modules.bulletin.ingest.store import ObjectStore
 
 logger = logging.getLogger(__name__)
 
-EXTRACTOR_VERSION = "1"
+EXTRACTOR_VERSION = "2"
 COURSE_FIELDS_COMPARED = ("title", "credits", "description", "attributes")
 
 

@@ -4,7 +4,8 @@
 
 Commands run in pipeline order; each reads what the previous one wrote under
 data/bulletin (or $BULLETIN_DATA_DIR). Only `discover` and `fetch` touch the
-network, and both honour robots.txt.
+network, and both honour robots.txt. `import`, `publish`, `prune` and `report`
+write to or read from Postgres, always at an explicit `--database-url`.
 """
 
 from __future__ import annotations
@@ -14,8 +15,12 @@ import asyncio
 import json
 import logging
 import os
+from collections.abc import Awaitable, Callable
 from pathlib import Path
 
+import asyncpg
+
+from app.core.config import to_asyncpg_url
 from app.modules.bulletin.ingest import paths
 from app.modules.bulletin.ingest.captures import import_capture, import_file
 from app.modules.bulletin.ingest.checkpoint import create_checkpoint, verify_checkpoint
@@ -38,6 +43,11 @@ HOSTS_BY_TARGET = {
     "legacy": frozenset({LEGACY_HOST}),
     "all": frozenset({BULLETIN_HOST, LEGACY_HOST}),
 }
+
+
+def to_asyncpg_dsn(url: str) -> str:
+    """asyncpg takes plain `postgresql://` URLs, not SQLAlchemy's driver form."""
+    return to_asyncpg_url(url).replace("postgresql+asyncpg://", "postgresql://", 1)
 
 
 def open_state() -> CrawlState:
@@ -151,6 +161,108 @@ def cmd_status(_: argparse.Namespace) -> None:
         state.close()
 
 
+def cmd_interpret(args: argparse.Namespace) -> None:
+    from app.modules.bulletin.ingest.interpret.run import interpret_edition
+
+    state = open_state()
+    try:
+        for edition in args.edition:
+            summary = interpret_edition(
+                state,
+                paths.extracted_dir() / edition,
+                paths.interpreted_dir() / edition,
+            )
+            logger.info("Interpreted %s: %s", edition, summary.counts)
+    finally:
+        state.close()
+
+
+async def with_database[T](
+    url: str, action: Callable[[asyncpg.Connection], Awaitable[T]]
+) -> T:
+    connection = await asyncpg.connect(to_asyncpg_dsn(url))
+    try:
+        return await action(connection)
+    finally:
+        await connection.close()
+
+
+def cmd_import(args: argparse.Namespace) -> None:
+    from app.modules.bulletin.ingest.load import import_edition, publish_batch
+
+    state = open_state()
+
+    async def run(connection: asyncpg.Connection) -> None:
+        for edition in args.edition:
+            directory = paths.interpreted_dir() / edition
+            if args.dry_run:
+                logger.info("Would import %s from %s", edition, directory)
+                continue
+            result = await import_edition(connection, state, directory)
+            logger.info(
+                "%s batch %d (%s): %s",
+                edition,
+                result.batch_id,
+                "new" if result.created else "already imported",
+                result.counts,
+            )
+            if args.publish:
+                logger.info(
+                    "Published: %s", await publish_batch(connection, result.batch_id)
+                )
+
+    try:
+        asyncio.run(with_database(args.database_url, run))
+    finally:
+        state.close()
+
+
+def cmd_publish(args: argparse.Namespace) -> None:
+    from app.modules.bulletin.ingest.load import publish_batch
+
+    async def run(connection: asyncpg.Connection) -> None:
+        result = await publish_batch(connection, args.batch, dry_run=args.dry_run)
+        logger.info("Publish: %s", result)
+
+    asyncio.run(with_database(args.database_url, run))
+
+
+def cmd_prune(args: argparse.Namespace) -> None:
+    from app.modules.bulletin.ingest.load import prune_batch
+
+    async def run(connection: asyncpg.Connection) -> None:
+        await prune_batch(connection, args.batch)
+        logger.info("Pruned batch %d", args.batch)
+
+    asyncio.run(with_database(args.database_url, run))
+
+
+def cmd_report(args: argparse.Namespace) -> None:
+    from app.modules.bulletin.ingest.report import build_report
+
+    state = open_state()
+    try:
+        report = asyncio.run(
+            with_database(args.database_url, lambda c: build_report(c, state))
+        )
+    finally:
+        state.close()
+    text = json.dumps(report, indent=2, sort_keys=True, default=str)
+    if args.output:
+        args.output.write_text(text + "\n")
+        logger.info("Wrote %s", args.output)
+    else:
+        print(text)
+
+
+def add_database_option(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--database-url",
+        required=True,
+        help="Postgres URL to write to; the app's DATABASE_URL is never used",
+    )
+
+
 def add_crawl_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--target", choices=sorted(HOSTS_BY_TARGET), default="current")
     parser.add_argument("--url", action="append", help="also fetch this URL")
@@ -213,6 +325,32 @@ def build_parser() -> argparse.ArgumentParser:
     commands.add_parser(
         "validate-extracts", help="check retained records and provenance offline"
     )
+    interpret = commands.add_parser(
+        "interpret",
+        help="turn an edition's extracts into requirement trees and records (offline)",
+    )
+    interpret.add_argument("--edition", action="append", required=True)
+    load = commands.add_parser(
+        "import", help="load interpreted editions into Postgres as staged batches"
+    )
+    load.add_argument("--edition", action="append", required=True)
+    load.add_argument("--publish", action="store_true", help="publish if gates pass")
+    load.add_argument("--dry-run", action="store_true")
+    add_database_option(load)
+    publish = commands.add_parser(
+        "publish", help="publish a batch (an older batch rolls the edition back)"
+    )
+    publish.add_argument("batch", type=int)
+    publish.add_argument("--dry-run", action="store_true", help="only run the gates")
+    add_database_option(publish)
+    prune = commands.add_parser("prune", help="delete a never-published batch")
+    prune.add_argument("batch", type=int)
+    add_database_option(prune)
+    report = commands.add_parser(
+        "report", help="coverage and quality report from the crawl and database"
+    )
+    report.add_argument("--output", type=Path)
+    add_database_option(report)
     return parser
 
 
@@ -252,6 +390,16 @@ def main() -> None:
             cmd_relink(args)
         case "status":
             cmd_status(args)
+        case "interpret":
+            cmd_interpret(args)
+        case "import":
+            cmd_import(args)
+        case "publish":
+            cmd_publish(args)
+        case "prune":
+            cmd_prune(args)
+        case "report":
+            cmd_report(args)
 
 
 if __name__ == "__main__":

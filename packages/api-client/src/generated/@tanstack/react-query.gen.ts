@@ -11,16 +11,25 @@ import { client } from "../client.gen";
 import {
   checkPrerequisites,
   generateSchedules,
+  getCourse,
+  getCourseHistory,
   getMe,
+  getProgram,
+  getProgramHistory,
   listAttributes,
+  listEditions,
   listSubjects,
   listTerms,
+  listUnits,
   logout,
   type Options,
   parseAudit,
   parseBulletin,
   parseTranscript,
+  searchCourses,
+  searchPolicies,
   searchProfessors,
+  searchPrograms,
   searchSections,
 } from "../sdk.gen";
 import type {
@@ -30,18 +39,36 @@ import type {
   GenerateSchedulesData,
   GenerateSchedulesError,
   GenerateSchedulesResponse,
+  GetCourseData,
+  GetCourseError,
+  GetCourseHistoryData,
+  GetCourseHistoryError,
+  GetCourseHistoryResponse,
+  GetCourseResponse,
   GetMeData,
   GetMeError,
   GetMeResponse,
+  GetProgramData,
+  GetProgramError,
+  GetProgramHistoryData,
+  GetProgramHistoryError,
+  GetProgramHistoryResponse,
+  GetProgramResponse,
   ListAttributesData,
   ListAttributesError,
   ListAttributesResponse,
+  ListEditionsData,
+  ListEditionsError,
+  ListEditionsResponse,
   ListSubjectsData,
   ListSubjectsError,
   ListSubjectsResponse,
   ListTermsData,
   ListTermsError,
   ListTermsResponse,
+  ListUnitsData,
+  ListUnitsError,
+  ListUnitsResponse,
   LogoutData,
   LogoutError,
   LogoutResponse,
@@ -54,9 +81,18 @@ import type {
   ParseTranscriptData,
   ParseTranscriptError,
   ParseTranscriptResponse,
+  SearchCoursesData,
+  SearchCoursesError,
+  SearchCoursesResponse,
+  SearchPoliciesData,
+  SearchPoliciesError,
+  SearchPoliciesResponse,
   SearchProfessorsData,
   SearchProfessorsError,
   SearchProfessorsResponse,
+  SearchProgramsData,
+  SearchProgramsError,
+  SearchProgramsResponse,
   SearchSectionsData,
   SearchSectionsError,
   SearchSectionsResponse,
@@ -154,6 +190,452 @@ export const getMeOptions = (options?: Options<GetMeData>) =>
     queryKey: getMeQueryKey(options),
   });
 
+export const getCourseHistoryQueryKey = (
+  options: Options<GetCourseHistoryData>,
+) => createQueryKey("getCourseHistory", options);
+
+/**
+ * Get Course History
+ *
+ * The course code in every published edition that lists it.
+ */
+export const getCourseHistoryOptions = (
+  options: Options<GetCourseHistoryData>,
+) =>
+  queryOptions<
+    GetCourseHistoryResponse,
+    GetCourseHistoryError,
+    GetCourseHistoryResponse,
+    ReturnType<typeof getCourseHistoryQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getCourseHistory({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getCourseHistoryQueryKey(options),
+  });
+
+export const listEditionsQueryKey = (options?: Options<ListEditionsData>) =>
+  createQueryKey("listEditions", options);
+
+/**
+ * List Editions
+ *
+ * Published Bulletin editions, newest first.
+ */
+export const listEditionsOptions = (options?: Options<ListEditionsData>) =>
+  queryOptions<
+    ListEditionsResponse,
+    ListEditionsError,
+    ListEditionsResponse,
+    ReturnType<typeof listEditionsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listEditions({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listEditionsQueryKey(options),
+  });
+
+export const getProgramHistoryQueryKey = (
+  options: Options<GetProgramHistoryData>,
+) => createQueryKey("getProgramHistory", options);
+
+/**
+ * Get Program History
+ *
+ * The published editions that include the program.
+ */
+export const getProgramHistoryOptions = (
+  options: Options<GetProgramHistoryData>,
+) =>
+  queryOptions<
+    GetProgramHistoryResponse,
+    GetProgramHistoryError,
+    GetProgramHistoryResponse,
+    ReturnType<typeof getProgramHistoryQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getProgramHistory({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getProgramHistoryQueryKey(options),
+  });
+
+export const searchCoursesQueryKey = (options: Options<SearchCoursesData>) =>
+  createQueryKey("searchCourses", options);
+
+/**
+ * Search Courses
+ *
+ * Courses by code, title or description, with optional filters.
+ */
+export const searchCoursesOptions = (options: Options<SearchCoursesData>) =>
+  queryOptions<
+    SearchCoursesResponse,
+    SearchCoursesError,
+    SearchCoursesResponse,
+    ReturnType<typeof searchCoursesQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await searchCourses({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: searchCoursesQueryKey(options),
+  });
+
+const createInfiniteParams = <
+  K extends Pick<QueryKey<Options>[0], "body" | "headers" | "path" | "query">,
+>(
+  queryKey: QueryKey<Options>,
+  page: K,
+) => {
+  const params = { ...queryKey[0] };
+  if (page.body) {
+    params.body = {
+      ...(queryKey[0].body as any),
+      ...(page.body as any),
+    };
+  }
+  if (page.headers) {
+    params.headers = {
+      ...queryKey[0].headers,
+      ...page.headers,
+    };
+  }
+  if (page.path) {
+    params.path = {
+      ...(queryKey[0].path as any),
+      ...(page.path as any),
+    };
+  }
+  if (page.query) {
+    params.query = {
+      ...(queryKey[0].query as any),
+      ...(page.query as any),
+    };
+  }
+  return params as unknown as typeof page;
+};
+
+export const searchCoursesInfiniteQueryKey = (
+  options: Options<SearchCoursesData>,
+): QueryKey<Options<SearchCoursesData>> =>
+  createQueryKey("searchCourses", options, true);
+
+/**
+ * Search Courses
+ *
+ * Courses by code, title or description, with optional filters.
+ */
+export const searchCoursesInfiniteOptions = (
+  options: Options<SearchCoursesData>,
+) => {
+  const opts = infiniteQueryOptions<
+    SearchCoursesResponse,
+    SearchCoursesError,
+    InfiniteData<SearchCoursesResponse>,
+    QueryKey<Options<SearchCoursesData>>,
+    | number
+    | Pick<
+        QueryKey<Options<SearchCoursesData>>[0],
+        "body" | "headers" | "path" | "query"
+      >
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<
+          QueryKey<Options<SearchCoursesData>>[0],
+          "body" | "headers" | "path" | "query"
+        > =
+          typeof pageParam === "object"
+            ? pageParam
+            : {
+                query: {
+                  offset: pageParam,
+                },
+              };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await searchCourses({
+          ...options,
+          ...params,
+          signal,
+          throwOnError: true,
+        });
+        return data;
+      },
+      queryKey: searchCoursesInfiniteQueryKey(options),
+    },
+  );
+  return opts as Omit<typeof opts, "initialData">;
+};
+
+export const getCourseQueryKey = (options: Options<GetCourseData>) =>
+  createQueryKey("getCourse", options);
+
+/**
+ * Get Course
+ *
+ * A course as the edition lists it, with its requisites, the courses that
+ * require it and the programs that name it.
+ */
+export const getCourseOptions = (options: Options<GetCourseData>) =>
+  queryOptions<
+    GetCourseResponse,
+    GetCourseError,
+    GetCourseResponse,
+    ReturnType<typeof getCourseQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getCourse({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getCourseQueryKey(options),
+  });
+
+export const searchPoliciesQueryKey = (options: Options<SearchPoliciesData>) =>
+  createQueryKey("searchPolicies", options);
+
+/**
+ * Search Policies
+ *
+ * Policy, General Education and college sections, verbatim.
+ */
+export const searchPoliciesOptions = (options: Options<SearchPoliciesData>) =>
+  queryOptions<
+    SearchPoliciesResponse,
+    SearchPoliciesError,
+    SearchPoliciesResponse,
+    ReturnType<typeof searchPoliciesQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await searchPolicies({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: searchPoliciesQueryKey(options),
+  });
+
+export const searchPoliciesInfiniteQueryKey = (
+  options: Options<SearchPoliciesData>,
+): QueryKey<Options<SearchPoliciesData>> =>
+  createQueryKey("searchPolicies", options, true);
+
+/**
+ * Search Policies
+ *
+ * Policy, General Education and college sections, verbatim.
+ */
+export const searchPoliciesInfiniteOptions = (
+  options: Options<SearchPoliciesData>,
+) => {
+  const opts = infiniteQueryOptions<
+    SearchPoliciesResponse,
+    SearchPoliciesError,
+    InfiniteData<SearchPoliciesResponse>,
+    QueryKey<Options<SearchPoliciesData>>,
+    | number
+    | Pick<
+        QueryKey<Options<SearchPoliciesData>>[0],
+        "body" | "headers" | "path" | "query"
+      >
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<
+          QueryKey<Options<SearchPoliciesData>>[0],
+          "body" | "headers" | "path" | "query"
+        > =
+          typeof pageParam === "object"
+            ? pageParam
+            : {
+                query: {
+                  offset: pageParam,
+                },
+              };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await searchPolicies({
+          ...options,
+          ...params,
+          signal,
+          throwOnError: true,
+        });
+        return data;
+      },
+      queryKey: searchPoliciesInfiniteQueryKey(options),
+    },
+  );
+  return opts as Omit<typeof opts, "initialData">;
+};
+
+export const searchProgramsQueryKey = (options: Options<SearchProgramsData>) =>
+  createQueryKey("searchPrograms", options);
+
+/**
+ * Search Programs
+ *
+ * Majors, minors, certificates and graduate and professional programs.
+ */
+export const searchProgramsOptions = (options: Options<SearchProgramsData>) =>
+  queryOptions<
+    SearchProgramsResponse,
+    SearchProgramsError,
+    SearchProgramsResponse,
+    ReturnType<typeof searchProgramsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await searchPrograms({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: searchProgramsQueryKey(options),
+  });
+
+export const searchProgramsInfiniteQueryKey = (
+  options: Options<SearchProgramsData>,
+): QueryKey<Options<SearchProgramsData>> =>
+  createQueryKey("searchPrograms", options, true);
+
+/**
+ * Search Programs
+ *
+ * Majors, minors, certificates and graduate and professional programs.
+ */
+export const searchProgramsInfiniteOptions = (
+  options: Options<SearchProgramsData>,
+) => {
+  const opts = infiniteQueryOptions<
+    SearchProgramsResponse,
+    SearchProgramsError,
+    InfiniteData<SearchProgramsResponse>,
+    QueryKey<Options<SearchProgramsData>>,
+    | number
+    | Pick<
+        QueryKey<Options<SearchProgramsData>>[0],
+        "body" | "headers" | "path" | "query"
+      >
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<
+          QueryKey<Options<SearchProgramsData>>[0],
+          "body" | "headers" | "path" | "query"
+        > =
+          typeof pageParam === "object"
+            ? pageParam
+            : {
+                query: {
+                  offset: pageParam,
+                },
+              };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await searchPrograms({
+          ...options,
+          ...params,
+          signal,
+          throwOnError: true,
+        });
+        return data;
+      },
+      queryKey: searchProgramsInfiniteQueryKey(options),
+    },
+  );
+  return opts as Omit<typeof opts, "initialData">;
+};
+
+export const getProgramQueryKey = (options: Options<GetProgramData>) =>
+  createQueryKey("getProgram", options);
+
+/**
+ * Get Program
+ *
+ * A program's requirement tree, with sources, and its suggested plans.
+ */
+export const getProgramOptions = (options: Options<GetProgramData>) =>
+  queryOptions<
+    GetProgramResponse,
+    GetProgramError,
+    GetProgramResponse,
+    ReturnType<typeof getProgramQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getProgram({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getProgramQueryKey(options),
+  });
+
+export const listUnitsQueryKey = (options: Options<ListUnitsData>) =>
+  createQueryKey("listUnits", options);
+
+/**
+ * List Units
+ *
+ * Schools, colleges and departments the edition names.
+ */
+export const listUnitsOptions = (options: Options<ListUnitsData>) =>
+  queryOptions<
+    ListUnitsResponse,
+    ListUnitsError,
+    ListUnitsResponse,
+    ReturnType<typeof listUnitsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listUnits({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listUnitsQueryKey(options),
+  });
+
 export const listAttributesQueryKey = (options: Options<ListAttributesData>) =>
   createQueryKey("listAttributes", options);
 
@@ -209,40 +691,6 @@ export const searchSectionsOptions = (options: Options<SearchSectionsData>) =>
     },
     queryKey: searchSectionsQueryKey(options),
   });
-
-const createInfiniteParams = <
-  K extends Pick<QueryKey<Options>[0], "body" | "headers" | "path" | "query">,
->(
-  queryKey: QueryKey<Options>,
-  page: K,
-) => {
-  const params = { ...queryKey[0] };
-  if (page.body) {
-    params.body = {
-      ...(queryKey[0].body as any),
-      ...(page.body as any),
-    };
-  }
-  if (page.headers) {
-    params.headers = {
-      ...queryKey[0].headers,
-      ...page.headers,
-    };
-  }
-  if (page.path) {
-    params.path = {
-      ...(queryKey[0].path as any),
-      ...(page.path as any),
-    };
-  }
-  if (page.query) {
-    params.query = {
-      ...(queryKey[0].query as any),
-      ...(page.query as any),
-    };
-  }
-  return params as unknown as typeof page;
-};
 
 export const searchSectionsInfiniteQueryKey = (
   options: Options<SearchSectionsData>,

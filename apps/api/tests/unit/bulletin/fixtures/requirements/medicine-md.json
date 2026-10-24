@@ -1,0 +1,1548 @@
+{
+ "facts": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 431,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[6]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Time Limit for Degree Completion: 6 years",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Time Limit for Degree Completion",
+   "value": "6 years"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 432,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[7]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Campus Location: Health Sciences Center of Temple University in Philadelphia, PA and St. Luke's University Health Network Regional Campus in Bethlehem, PA",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Campus Location",
+   "value": "Health Sciences Center of Temple University in Philadelphia, PA and St. Luke's University Health Network Regional Campus in Bethlehem, PA"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 433,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[8]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Full-Time/Part-Time Status: The MD program must be completed on a full-time basis.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Full-Time/Part-Time Status",
+   "value": "The MD program must be completed on a full-time basis."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 434,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[9]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Ranking: In 2023, U.S. News & World Report ranked the Lewis Katz School of Medicine at Temple University number 68 in Research and among the Best Medical Schools.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Ranking",
+   "value": "In 2023, U.S. News & World Report ranked the Lewis Katz School of Medicine at Temple University number 68 in Research and among the Best Medical Schools."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 435,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[10]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Job Prospects: Graduates of the MD program typically continue their training in Accreditation Council for Graduate Medical Education (ACGME) accredited residencies and fellowships in all disciplines of medicine throughout the United States. Following residency, graduates enter careers in academic medicine, private practice, research and industry.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Job Prospects",
+   "value": "Graduates of the MD program typically continue their training in Accreditation Council for Graduate Medical Education (ACGME) accredited residencies and fellowships in all disciplines of medicine throughout the United States. Following residency, graduates enter careers in academic medicine, private practice, research and industry."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 436,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[11]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Non-Matriculated Student Policy: All students must be full-time matriculants.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Non-Matriculated Student Policy",
+   "value": "All students must be full-time matriculants."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 437,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[12]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Financing Opportunities: Financial support opportunities include scholarships, loans and federal work study.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Financing Opportunities",
+   "value": "Financial support opportunities include scholarships, loans and federal work study."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 441,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[1]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Application Deadline:",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Application Deadline",
+   "value": ""
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 448,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[6]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Letters of Reference: LKSOM participates in the AMCAS\u00ae Letter Service. Letters can be sent to AMCAS\u00ae through the AMCAS\u00ae Letter Writer Application or Interfolio. All letters should be on letterhead and contain the letter writer's signature.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Letters of Reference",
+   "value": "LKSOM participates in the AMCAS\u00ae Letter Service. Letters can be sent to AMCAS\u00ae through the AMCAS\u00ae Letter Writer Application or Interfolio. All letters should be on letterhead and contain the letter writer's signature."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 453,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[10]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Coursework Required for Admission Consideration: Applicants should demonstrate preparation for the rigors of medical school and achievement in the sciences through completion of a broad range of science coursework and the MCAT\u00ae exam. While there are no absolute course requirements, LKSOM recommends that students complete coursework in Biology, Chemistry (both general and organic), Biochemistry, Physics, Psychology and Sociology. In addition, students should have a broad humanities education and strong writing skills. The Office of Admissions will only evaluate courses completed at a U.S. or Canadian university.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Coursework Required for Admission Consideration",
+   "value": "Applicants should demonstrate preparation for the rigors of medical school and achievement in the sciences through completion of a broad range of science coursework and the MCAT\u00ae exam. While there are no absolute course requirements, LKSOM recommends that students complete coursework in Biology, Chemistry (both general and organic), Biochemistry, Physics, Psychology and Sociology. In addition, students should have a broad humanities education and strong writing skills. The Office of Admissions will only evaluate courses completed at a U.S. or Canadian university."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 456,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[13]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Master's Degree in Discipline/Related Discipline: A master's degree is not required.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Master's Degree in Discipline/Related Discipline",
+   "value": "A master's degree is not required."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 457,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[14]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Bachelor's Degree in Discipline/Related Discipline: A baccalaureate degree is required for matriculation. Students who matriculate through the Temple University Pre-Med Health Scholar program will earn their bachelor's degree after the first year of medical school.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Bachelor's Degree in Discipline/Related Discipline",
+   "value": "A baccalaureate degree is required for matriculation. Students who matriculate through the Temple University Pre-Med Health Scholar program will earn their bachelor's degree after the first year of medical school."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 460,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[17]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Statement of Goals: Applicants must submit a personal statement with their AMCAS\u00ae application.",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Statement of Goals",
+   "value": "Applicants must submit a personal statement with their AMCAS\u00ae application."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 461,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[18]"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Standardized Test Scores: MCAT\u00ae: Required. Applicants must submit Medical College Admission Test (MCAT\u00ae) scores taken within three years of matriculation, and no later than September of the year in which the candidate applies. Applications are considered with the most recent MCAT\u00ae results (sections scores and total score).",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "label": "Standardized Test Scores",
+   "value": "MCAT\u00ae: Required. Applicants must submit Medical College Admission Test (MCAT\u00ae) scores taken within three years of matriculation, and no later than September of the year in which the candidate applies. Applications are considered with the most recent MCAT\u00ae results (sections scores and total score)."
+  }
+ ],
+ "level": "graduate",
+ "name": "Medicine MD",
+ "plans": [],
+ "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+ "tables": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 466,
+     "page": null,
+     "tab": "programrequirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table"
+    },
+    "sha256": "b25638830d2f2a2033d20f8832d36b0f0d35f45d368bf6769da35c224b4a0cfb",
+    "text": "Course List Code Title Credit Hours Phase 1 - Year 1 MEDS M010Transition to Medical School0 MEDS M107Doctoring 1: Introduction to the Culture and Practice of Medicine0 MEDS M011Fundamentals 1: Human Structure0 MEDS M012Fundamentals 2: Cellular Function0 MEDS M013Fundamentals 3: Host Defenses and Threats0 MEDS M014Fundamentals 4: Basis of Disease and Treatment0 MEDS M015Systems 1: Neuroscience and Psychiatry0 MEDS M016Systems 2: Cardiovascular Medicine0 MEDS M007Systems 3: Nephrology (Systems 3: ",
+    "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+   },
+   "footnotes": [],
+   "index": 0,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "areaheader",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "Phase 1 - Year 1",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M010",
+     "comment": "",
+     "courses": [
+      "MEDS M010"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[2]"
+     },
+     "title": "Transition to Medical School"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M107",
+     "comment": "",
+     "courses": [
+      "MEDS M107"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[3]"
+     },
+     "title": "Doctoring 1: Introduction to the Culture and Practice of Medicine"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M011",
+     "comment": "",
+     "courses": [
+      "MEDS M011"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[4]"
+     },
+     "title": "Fundamentals 1: Human Structure"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M012",
+     "comment": "",
+     "courses": [
+      "MEDS M012"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 4,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[5]"
+     },
+     "title": "Fundamentals 2: Cellular Function"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M013",
+     "comment": "",
+     "courses": [
+      "MEDS M013"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 5,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[6]"
+     },
+     "title": "Fundamentals 3: Host Defenses and Threats"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M014",
+     "comment": "",
+     "courses": [
+      "MEDS M014"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[7]"
+     },
+     "title": "Fundamentals 4: Basis of Disease and Treatment"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M015",
+     "comment": "",
+     "courses": [
+      "MEDS M015"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 7,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[8]"
+     },
+     "title": "Systems 1: Neuroscience and Psychiatry"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M016",
+     "comment": "",
+     "courses": [
+      "MEDS M016"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 8,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[9]"
+     },
+     "title": "Systems 2: Cardiovascular Medicine"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M007",
+     "comment": "",
+     "courses": [
+      "MEDS M007"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 9,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[10]"
+     },
+     "title": "Systems 3: Nephrology (Systems 3: Renal)"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Phase 1 - Year 2",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 10,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[11]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M217",
+     "comment": "",
+     "courses": [
+      "MEDS M217"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 11,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[12]"
+     },
+     "title": "Doctoring 2: The Culture and Practice of Medicine"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M024",
+     "comment": "",
+     "courses": [
+      "MEDS M024"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 12,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[13]"
+     },
+     "title": "Systems 4: Pulmonary (Systems 4: Pulmonary)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M022",
+     "comment": "",
+     "courses": [
+      "MEDS M022"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 13,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[14]"
+     },
+     "title": "Systems 5: Endocrine and Reproductive"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M021",
+     "comment": "",
+     "courses": [
+      "MEDS M021"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 14,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[15]"
+     },
+     "title": "Systems 6: Gastroenterology and Nutrition"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M023",
+     "comment": "",
+     "courses": [
+      "MEDS M023"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 15,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[16]"
+     },
+     "title": "Systems 7: Multi-Organ"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Phase 2 - Year 3",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 16,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[17]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M337",
+     "comment": "",
+     "courses": [
+      "MEDS M337"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 17,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[18]"
+     },
+     "title": "Transition to Phase 2"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M316",
+     "comment": "",
+     "courses": [
+      "MEDS M316"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 18,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[19]"
+     },
+     "title": "Intersession: Black (Psychiatry and Neurology)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M317",
+     "comment": "",
+     "courses": [
+      "MEDS M317"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 19,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[20]"
+     },
+     "title": "Intersession: White (Internal Medicine and Pediatrics)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M318",
+     "comment": "",
+     "courses": [
+      "MEDS M318"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 20,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[21]"
+     },
+     "title": "Intersession: Silver (Family Medicine and Faculty Mentored Scholarly Experience)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MEDS M319",
+     "comment": "",
+     "courses": [
+      "MEDS M319"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 21,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[22]"
+     },
+     "title": "Intersession: Red (Surgery and Obstetrics and Gynecology)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M306",
+     "comment": "",
+     "courses": [
+      "MEDS M306"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 22,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[23]"
+     },
+     "title": "Faculty Mentored Scholarly Experience 2"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "INTM M301",
+     "comment": "",
+     "courses": [
+      "INTM M301"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 23,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[24]"
+     },
+     "title": "Medicine"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "OBGY M320",
+     "comment": "",
+     "courses": [
+      "OBGY M320"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 24,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[25]"
+     },
+     "title": "Obstetrics/Gynecology"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PEDI M330",
+     "comment": "",
+     "courses": [
+      "PEDI M330"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 25,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[26]"
+     },
+     "title": "Pediatrics"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PSYM M340",
+     "comment": "",
+     "courses": [
+      "PSYM M340"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 26,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[27]"
+     },
+     "title": "Psychiatry"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "SURG M350",
+     "comment": "",
+     "courses": [
+      "SURG M350"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 27,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[28]"
+     },
+     "title": "Surgery"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "FAMP M360",
+     "comment": "",
+     "courses": [
+      "FAMP M360"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 28,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[29]"
+     },
+     "title": "Family Medicine"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "NEUR M370",
+     "comment": "",
+     "courses": [
+      "NEUR M370"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 29,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[30]"
+     },
+     "title": "Neurology"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Elective (1 block): Students must complete 4-weeks of electives block during their third year. Choose one 4-week elective or two 2-week electives. Electives are offered in several specialties, including surgical and medical subspecialties.",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 30,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[31]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Phase 3 - Year 4",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 31,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[32]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M447",
+     "comment": "",
+     "courses": [
+      "MEDS M447"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 32,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[33]"
+     },
+     "title": "Transition to Phase 3 (TTP3)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "EMMD M403",
+     "comment": "",
+     "courses": [
+      "EMMD M403"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 33,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[34]"
+     },
+     "title": "Emergency Medicine"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MEDS M908",
+     "comment": "",
+     "courses": [
+      "MEDS M908"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 34,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[35]"
+     },
+     "title": "Faculty Mentored Scholarly Experience 3"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Select one from the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 35,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[36]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "NESU M811",
+     "comment": "",
+     "courses": [
+      "NESU M811"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 36,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[37]"
+     },
+     "title": "Neurosurgery Subinternship"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "ORTS M825",
+     "comment": "",
+     "courses": [
+      "ORTS M825"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 37,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[38]"
+     },
+     "title": "Orthopedic Surgery Sub-internship"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "INTM M850",
+     "comment": "",
+     "courses": [
+      "INTM M850"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 38,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[39]"
+     },
+     "title": "Medicine Subinternship"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PEDI M860",
+     "comment": "",
+     "courses": [
+      "PEDI M860"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 39,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[40]"
+     },
+     "title": "Pediatrics Subinternship"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "SURG M870",
+     "comment": "",
+     "courses": [
+      "SURG M870"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 40,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[41]"
+     },
+     "title": "Surgery Sub-Internship"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "FAMP M879",
+     "comment": "",
+     "courses": [
+      "FAMP M879"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 41,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[42]"
+     },
+     "title": "Family Medicine Subinternship"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "UROL M890",
+     "comment": "",
+     "courses": [
+      "UROL M890"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 42,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[43]"
+     },
+     "title": "Urology Sub-Internship"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "OBGY M895",
+     "comment": "",
+     "courses": [
+      "OBGY M895"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 43,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[44]"
+     },
+     "title": "OB/GYN Subinternship"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Select one from the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 44,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[45]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "INTM M476",
+     "comment": "",
+     "courses": [
+      "INTM M476"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 45,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[46]"
+     },
+     "title": "Cardia Critical Care-CCU"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "INTM M530",
+     "comment": "",
+     "courses": [
+      "INTM M530"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 46,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[47]"
+     },
+     "title": "Medical ICU (MICU) - Critical Care"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "NEUR M600",
+     "comment": "",
+     "courses": [
+      "NEUR M600"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 47,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[48]"
+     },
+     "title": "Neurological ICU (NICU) - Critical Care"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PEDI M685",
+     "comment": "",
+     "courses": [
+      "PEDI M685"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 48,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[49]"
+     },
+     "title": "Neonatal ICU (ICN) - Critical Care"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PEDI M690",
+     "comment": "",
+     "courses": [
+      "PEDI M690"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 49,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[50]"
+     },
+     "title": "Pediatric ICU (PICU) - Critical Care"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "SURG M769",
+     "comment": "",
+     "courses": [
+      "SURG M769"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 50,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[51]"
+     },
+     "title": "Surgical ICU (SICU) - Critical Care"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "SURG M789",
+     "comment": "",
+     "courses": [
+      "SURG M789"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 51,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[52]"
+     },
+     "title": "Cardiothoracic ICU (CT-ICU) - Critical Care"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Electives (5 blocks): Students must complete five 4-week elective blocks in their fourth year. Students may choose any elective offered, including clinical and non-clinical experiences. Electives give students the opportunity to learn more about the specific field and, in clinical rotations, to continue to participate in patient care and improve clinical skills.",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 52,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[53]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "lastrow"
+     ],
+     "code_text": "MEDS M667",
+     "comment": "",
+     "courses": [
+      "MEDS M667"
+     ],
+     "footnotes": [],
+     "hours": "0",
+     "indent": 0,
+     "index": 53,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 466,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[3]/table/tbody/tr[54]"
+     },
+     "title": "Transition to Residency"
+    }
+   ],
+   "section": [
+    "Program Requirements"
+   ],
+   "tab": "programrequirementstextcontainer"
+  }
+ ],
+ "units": [
+  "Graduate and Professional",
+  "Schools and Colleges",
+  "Lewis Katz School of Medicine"
+ ],
+ "url": "https://bulletin.temple.edu/graduate/scd/medicine/medicine-md/"
+}

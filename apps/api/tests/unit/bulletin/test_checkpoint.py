@@ -2,6 +2,7 @@ import sqlite3
 from pathlib import Path
 
 import pytest
+
 from app.modules.bulletin.ingest.checkpoint import create_checkpoint, verify_checkpoint
 from app.modules.bulletin.ingest.crawl_state import CrawlState
 from app.modules.bulletin.ingest.store import ObjectStore

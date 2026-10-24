@@ -1,0 +1,1497 @@
+{
+ "facts": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 459,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[4]"
+    },
+    "sha256": "63a2765b7a68ab95cc4ec62a90720bdfb680cb6df90987750cedd8bd6632910a",
+    "text": "Program Code: BC-COMP-BMUS",
+    "url": "https://bulletin.temple.edu/undergraduate/boyer-music-dance/composition-bm/"
+   },
+   "label": "Program Code",
+   "value": "BC-COMP-BMUS"
+  }
+ ],
+ "level": "undergraduate",
+ "name": "Composition BM",
+ "plans": [],
+ "sha256": "63a2765b7a68ab95cc4ec62a90720bdfb680cb6df90987750cedd8bd6632910a",
+ "tables": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 468,
+     "page": null,
+     "tab": "requirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table"
+    },
+    "sha256": "63a2765b7a68ab95cc4ec62a90720bdfb680cb6df90987750cedd8bd6632910a",
+    "text": "Course List Code Title Credit Hours General Education courses32 Music Theory MUST 1711Theory I4 or MUST 1911 Honors Theory I MUST 1712Theory II4 or MUST 1912 Honors Theory II MUST 2711Theory III4 or MUST 2911 Honors Theory III MUST 2712Theory IV4 or MUST 2912 Honors Theory IV MUST 3896Theory Seminar II3 Music History MUST 2703Music in History3 MUST 2704Music in History3 MUST 3696Music in History3 Counterpoint MUST 4717Counterpoint3 Orchestration MUST 3713Orchestration3 Composition MUST 1758Compo",
+    "url": "https://bulletin.temple.edu/undergraduate/boyer-music-dance/composition-bm/"
+   },
+   "footnotes": [],
+   "index": 0,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "General Education courses",
+     "courses": [],
+     "footnotes": [],
+     "hours": "32",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Music Theory",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[2]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 1711",
+     "comment": "",
+     "courses": [
+      "MUST 1711"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[3]"
+     },
+     "title": "Theory I"
+    },
+    {
+     "classes": [
+      "orclass",
+      "even"
+     ],
+     "code_text": "or MUST 1911",
+     "comment": "",
+     "courses": [
+      "MUST 1911"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 3,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[4]"
+     },
+     "title": "Honors Theory I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 1712",
+     "comment": "",
+     "courses": [
+      "MUST 1712"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 4,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[5]"
+     },
+     "title": "Theory II"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd"
+     ],
+     "code_text": "or MUST 1912",
+     "comment": "",
+     "courses": [
+      "MUST 1912"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 5,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[6]"
+     },
+     "title": "Honors Theory II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 2711",
+     "comment": "",
+     "courses": [
+      "MUST 2711"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[7]"
+     },
+     "title": "Theory III"
+    },
+    {
+     "classes": [
+      "orclass",
+      "even"
+     ],
+     "code_text": "or MUST 2911",
+     "comment": "",
+     "courses": [
+      "MUST 2911"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 7,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[8]"
+     },
+     "title": "Honors Theory III"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 2712",
+     "comment": "",
+     "courses": [
+      "MUST 2712"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 8,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[9]"
+     },
+     "title": "Theory IV"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd"
+     ],
+     "code_text": "or MUST 2912",
+     "comment": "",
+     "courses": [
+      "MUST 2912"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 9,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[10]"
+     },
+     "title": "Honors Theory IV"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 3896",
+     "comment": "",
+     "courses": [
+      "MUST 3896"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 10,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[11]"
+     },
+     "title": "Theory Seminar II"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Music History",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 11,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[12]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 2703",
+     "comment": "",
+     "courses": [
+      "MUST 2703"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 12,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[13]"
+     },
+     "title": "Music in History"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 2704",
+     "comment": "",
+     "courses": [
+      "MUST 2704"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 13,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[14]"
+     },
+     "title": "Music in History"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 3696",
+     "comment": "",
+     "courses": [
+      "MUST 3696"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 14,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[15]"
+     },
+     "title": "Music in History"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Counterpoint",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 15,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[16]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 4717",
+     "comment": "",
+     "courses": [
+      "MUST 4717"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 16,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[17]"
+     },
+     "title": "Counterpoint"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Orchestration",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 17,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[18]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 3713",
+     "comment": "",
+     "courses": [
+      "MUST 3713"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 18,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[19]"
+     },
+     "title": "Orchestration"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Composition",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 19,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[20]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 1758",
+     "comment": "",
+     "courses": [
+      "MUST 1758"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 20,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[21]"
+     },
+     "title": "Composition Lesson I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 1759",
+     "comment": "",
+     "courses": [
+      "MUST 1759"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 21,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[22]"
+     },
+     "title": "Composition Lesson II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 2758",
+     "comment": "",
+     "courses": [
+      "MUST 2758"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 22,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[23]"
+     },
+     "title": "Composition Lesson III"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 2759",
+     "comment": "",
+     "courses": [
+      "MUST 2759"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 23,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[24]"
+     },
+     "title": "Composition Lesson IV"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 3758",
+     "comment": "",
+     "courses": [
+      "MUST 3758"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 24,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[25]"
+     },
+     "title": "Composition Lesson V"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 3759",
+     "comment": "",
+     "courses": [
+      "MUST 3759"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 25,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[26]"
+     },
+     "title": "Composition Lesson VI"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 4758",
+     "comment": "",
+     "courses": [
+      "MUST 4758"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 26,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[27]"
+     },
+     "title": "Composition Lesson VII"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 4759",
+     "comment": "",
+     "courses": [
+      "MUST 4759"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 27,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[28]"
+     },
+     "title": "Composition Lesson VIII"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Intermediate Conducting",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 28,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[29]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUSC 2323",
+     "comment": "",
+     "courses": [
+      "MUSC 2323"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 29,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[30]"
+     },
+     "title": "Basic Conducting"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUSC 2324",
+     "comment": "",
+     "courses": [
+      "MUSC 2324"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 30,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[31]"
+     },
+     "title": "Conducting Intermediate"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Secondary Piano",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 31,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[32]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUSC 1405",
+     "comment": "",
+     "courses": [
+      "MUSC 1405"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 32,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[33]"
+     },
+     "title": "Secondary Piano for Music Majors"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUSC 1406",
+     "comment": "",
+     "courses": [
+      "MUSC 1406"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 33,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[34]"
+     },
+     "title": "Secondary Piano for Music Majors"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUSC 2405",
+     "comment": "",
+     "courses": [
+      "MUSC 2405"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 34,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[35]"
+     },
+     "title": "Secondary Piano for Music Majors"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUSC 2406",
+     "comment": "",
+     "courses": [
+      "MUSC 2406"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 35,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[36]"
+     },
+     "title": "Secondary Piano for Music Majors"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Music Technology",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 36,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[37]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 4712",
+     "comment": "",
+     "courses": [
+      "MUST 4712"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 37,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[38]"
+     },
+     "title": "Computer Synthesis of Music"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 4723",
+     "comment": "",
+     "courses": [
+      "MUST 4723"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 38,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[39]"
+     },
+     "title": "Score Reading"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 4724",
+     "comment": "",
+     "courses": [
+      "MUST 4724"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 39,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[40]"
+     },
+     "title": "Printing Music Scores and Parts"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUST 4727",
+     "comment": "",
+     "courses": [
+      "MUST 4727"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 40,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[41]"
+     },
+     "title": "Electronic Music Composition: Practice, History, Theory"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 4730",
+     "comment": "",
+     "courses": [
+      "MUST 4730"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 41,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[42]"
+     },
+     "title": "Electronic Music Ensemble"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Ensembles",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 42,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[43]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUST 4710",
+     "comment": "",
+     "courses": [
+      "MUST 4710"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 43,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[44]"
+     },
+     "title": "Early Music Ensemble"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Take any combination of the following eight courses for a total of 2 credits:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "2",
+     "indent": 0,
+     "index": 44,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[45]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUSC 1428",
+     "comment": "",
+     "courses": [
+      "MUSC 1428"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 45,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[46]"
+     },
+     "title": "Accompanying and Piano Ensemble"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUSC 1429",
+     "comment": "",
+     "courses": [
+      "MUSC 1429"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 46,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[47]"
+     },
+     "title": "Accompanying and Piano Ensemble"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUSC 3300",
+     "comment": "",
+     "courses": [
+      "MUSC 3300"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 47,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[48]"
+     },
+     "title": "Choral Ensemble"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUSC 4300",
+     "comment": "",
+     "courses": [
+      "MUSC 4300"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 48,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[49]"
+     },
+     "title": "Concert Choir"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUSC 4310",
+     "comment": "",
+     "courses": [
+      "MUSC 4310"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 49,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[50]"
+     },
+     "title": "Graduate Conductors Choir"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUSC 4500",
+     "comment": "",
+     "courses": [
+      "MUSC 4500"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 50,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[51]"
+     },
+     "title": "Instrumental Ensemble"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MUSC 4510",
+     "comment": "",
+     "courses": [
+      "MUSC 4510"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 51,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[52]"
+     },
+     "title": "Instrumental Ensemble"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MUSC 4520",
+     "comment": "",
+     "courses": [
+      "MUSC 4520"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 52,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[53]"
+     },
+     "title": "Ensemble"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Electives",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 53,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[54]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Take a total of three Music Studies elective credits from MUST 1000-4999",
+     "courses": [],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 54,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[55]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Take a total of three Music Elective credits within the following subject areas:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 55,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[56]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "MUSC 1000-4999",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 56,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[57]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "MUED 1000-4999",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 57,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[58]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "MUST 1000-4999",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 58,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[59]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "lastrow"
+     ],
+     "code_text": "",
+     "comment": "Free Electives",
+     "courses": [],
+     "footnotes": [],
+     "hours": "6",
+     "indent": 0,
+     "index": 59,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[60]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "listsum"
+     ],
+     "code_text": "",
+     "comment": "Total Credit Hours",
+     "courses": [],
+     "footnotes": [],
+     "hours": "124",
+     "indent": 0,
+     "index": 60,
+     "joiner": null,
+     "kind": "total",
+     "locator": {
+      "bbox": null,
+      "line": 468,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[61]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Summary of Requirements",
+    "Program Requirements"
+   ],
+   "tab": "requirementstextcontainer"
+  }
+ ],
+ "units": [
+  "Undergraduate",
+  "Schools, Colleges and Divisions",
+  "Boyer College of Music & Dance"
+ ],
+ "url": "https://bulletin.temple.edu/undergraduate/boyer-music-dance/composition-bm/"
+}

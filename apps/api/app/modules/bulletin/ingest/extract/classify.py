@@ -131,11 +131,19 @@ def classify_page(url: str, signals: PageSignals) -> PageKind:
         return PageKind.ACADEMIC_UNIT
     if signals.tab_ids & PROGRAM_TABS or signals.prints_program_code:
         return PageKind.PROGRAM
+    if _is_graduate_program_path(segments):
+        return PageKind.PROGRAM
     if _is_program_path(segments) and (
         signals.has_course_lists or signals.has_plan_grids
     ):
         return PageKind.PROGRAM
     return PageKind.INFORMATION
+
+
+def _is_graduate_program_path(segments: list[str]) -> bool:
+    """`/graduate/scd/<school>/<program>/` holds only program pages, including
+    stubs with no requirements ("open only to partner-institution students")."""
+    return segments[:2] == ["graduate", "scd"] and len(segments) == 4
 
 
 def _is_program_path(segments: list[str]) -> bool:

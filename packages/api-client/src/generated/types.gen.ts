@@ -5,6 +5,62 @@ export type ClientOptions = {
 };
 
 /**
+ * AcademicPlan
+ */
+export type AcademicPlan = {
+  /**
+   * Footnotes
+   */
+  footnotes: Array<{
+    [key: string]: unknown;
+  }>;
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Terms
+   */
+  terms: Array<{
+    [key: string]: unknown;
+  }>;
+  /**
+   * Totalhours
+   */
+  totalHours: string;
+};
+
+/**
+ * AcademicUnit
+ */
+export type AcademicUnit = {
+  /**
+   * Kind
+   */
+  kind: string;
+  /**
+   * Level
+   */
+  level: string;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Parentslug
+   */
+  parentSlug: string | null;
+  /**
+   * Slug
+   */
+  slug: string;
+  /**
+   * Url
+   */
+  url: string;
+};
+
+/**
  * Audit
  */
 export type Audit = {
@@ -265,6 +321,132 @@ export type CodeDescription = {
 };
 
 /**
+ * CourseDetail
+ */
+export type CourseDetail = {
+  /**
+   * Attributes
+   */
+  attributes: Array<string>;
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Creditoptions
+   */
+  creditOptions: Array<string>;
+  /**
+   * Credits
+   */
+  credits: string;
+  /**
+   * Creditsmax
+   */
+  creditsMax: string;
+  /**
+   * Creditsmin
+   */
+  creditsMin: string;
+  /**
+   * Description
+   */
+  description: string;
+  /**
+   * Edition
+   */
+  edition: string;
+  /**
+   * Levels
+   */
+  levels: Array<string>;
+  /**
+   * Number
+   */
+  number: string;
+  /**
+   * Parts
+   */
+  parts: Array<CoursePart>;
+  /**
+   * Programs
+   */
+  programs: Array<ProgramReference>;
+  /**
+   * Requiredby
+   */
+  requiredBy: Array<string>;
+  /**
+   * Requisites
+   */
+  requisites: Array<CourseRequisite>;
+  source: SourceRef;
+  /**
+   * Subject
+   */
+  subject: string;
+  /**
+   * Title
+   */
+  title: string;
+};
+
+/**
+ * CourseEdition
+ */
+export type CourseEdition = {
+  /**
+   * Credits
+   */
+  credits: string;
+  /**
+   * Description
+   */
+  description: string;
+  /**
+   * Edition
+   */
+  edition: string;
+  /**
+   * Title
+   */
+  title: string;
+};
+
+/**
+ * CourseFilter
+ *
+ * Courses picked by subject, number range, attribute or level rather than
+ * by name ("any MATH course numbered 1038 to 4999", "2000+ ARTH elective").
+ */
+export type CourseFilter = {
+  /**
+   * Attributes
+   */
+  attributes?: Array<string>;
+  /**
+   * Exclude Courses
+   */
+  exclude_courses?: Array<string>;
+  /**
+   * Level
+   */
+  level?: string | null;
+  /**
+   * Number Max
+   */
+  number_max?: string | null;
+  /**
+   * Number Min
+   */
+  number_min?: string | null;
+  /**
+   * Subjects
+   */
+  subjects?: Array<string>;
+};
+
+/**
  * CourseOption
  *
  * One choosable option within a requirement item.
@@ -281,6 +463,20 @@ export type CourseOption = {
    * Ishonorsvariant
    */
   isHonorsVariant: boolean;
+};
+
+/**
+ * CoursePart
+ */
+export type CoursePart = {
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Text
+   */
+  text: string;
 };
 
 /**
@@ -313,6 +509,71 @@ export type CourseRef = {
    * Writingintensive
    */
   writingIntensive: boolean;
+};
+
+/**
+ * CourseRequisite
+ */
+export type CourseRequisite = {
+  expression: RequisiteExpression | null;
+  /**
+   * Interpretation
+   */
+  interpretation: string;
+  /**
+   * Kind
+   */
+  kind: string;
+  /**
+   * Notes
+   */
+  notes: Array<string>;
+  /**
+   * Text
+   */
+  text: string;
+};
+
+/**
+ * CourseSummary
+ */
+export type CourseSummary = {
+  /**
+   * Attributes
+   */
+  attributes: Array<string>;
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Credits
+   */
+  credits: string;
+  /**
+   * Creditsmax
+   */
+  creditsMax: string;
+  /**
+   * Creditsmin
+   */
+  creditsMin: string;
+  /**
+   * Levels
+   */
+  levels: Array<string>;
+  /**
+   * Number
+   */
+  number: string;
+  /**
+   * Subject
+   */
+  subject: string;
+  /**
+   * Title
+   */
+  title: string;
 };
 
 /**
@@ -371,6 +632,32 @@ export type DegreeProgram = {
 };
 
 /**
+ * EditionSummary
+ */
+export type EditionSummary = {
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Courses
+   */
+  courses: number;
+  /**
+   * Programs
+   */
+  programs: number;
+  /**
+   * Publishedat
+   */
+  publishedAt: string;
+  /**
+   * Sourceurl
+   */
+  sourceUrl: string;
+};
+
+/**
  * Faculty
  */
 export type Faculty = {
@@ -424,6 +711,13 @@ export type GeneratedSchedule = {
    */
   warnings: Array<string>;
 };
+
+/**
+ * Interpretation
+ *
+ * How much of a passage the structured form captures.
+ */
+export type Interpretation = "interpreted" | "partial" | "uninterpreted";
 
 /**
  * LabScienceSequence
@@ -597,6 +891,36 @@ export type PlanYear = {
 };
 
 /**
+ * PolicySection
+ */
+export type PolicySection = {
+  /**
+   * Body
+   */
+  body: string;
+  /**
+   * Headings
+   */
+  headings: Array<string>;
+  /**
+   * Pagetitle
+   */
+  pageTitle: string;
+  /**
+   * Sources
+   */
+  sources: Array<SourceRef>;
+  /**
+   * Topic
+   */
+  topic: string;
+  /**
+   * Url
+   */
+  url: string;
+};
+
+/**
  * PrereqCheckRequest
  */
 export type PrereqCheckRequest = {
@@ -668,6 +992,145 @@ export type ProblemError = {
    * JSON Pointer into the body.
    */
   pointer?: string | null;
+};
+
+/**
+ * ProgramDetail
+ */
+export type ProgramDetail = {
+  /**
+   * Award
+   */
+  award: string;
+  /**
+   * Campuses
+   */
+  campuses: Array<string>;
+  /**
+   * Credential
+   */
+  credential: string;
+  /**
+   * Edition
+   */
+  edition: string;
+  /**
+   * Facts
+   */
+  facts: {
+    [key: string]: unknown;
+  };
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Level
+   */
+  level: string;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Plans
+   */
+  plans: Array<AcademicPlan>;
+  /**
+   * Programcode
+   */
+  programCode: string | null;
+  requirements: RequirementTree;
+  /**
+   * Unit
+   */
+  unit: string | null;
+  /**
+   * Url
+   */
+  url: string;
+};
+
+/**
+ * ProgramEdition
+ */
+export type ProgramEdition = {
+  /**
+   * Edition
+   */
+  edition: string;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Url
+   */
+  url: string;
+};
+
+/**
+ * ProgramReference
+ */
+export type ProgramReference = {
+  /**
+   * Award
+   */
+  award: string;
+  /**
+   * Credential
+   */
+  credential: string;
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Level
+   */
+  level: string;
+  /**
+   * Name
+   */
+  name: string;
+};
+
+/**
+ * ProgramSummary
+ */
+export type ProgramSummary = {
+  /**
+   * Award
+   */
+  award: string;
+  /**
+   * Campuses
+   */
+  campuses: Array<string>;
+  /**
+   * Credential
+   */
+  credential: string;
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Level
+   */
+  level: string;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Programcode
+   */
+  programCode: string | null;
+  /**
+   * Unit
+   */
+  unit: string | null;
 };
 
 /**
@@ -850,6 +1313,187 @@ export type RequirementItem = {
 };
 
 /**
+ * RequirementNode
+ *
+ * One node of a program's requirement tree.
+ */
+export type RequirementNode = {
+  /**
+   * Children
+   */
+  children?: Array<RequirementNode>;
+  /**
+   * Course
+   */
+  course?: string | null;
+  course_filter?: CourseFilter | null;
+  /**
+   * Footnotes
+   */
+  footnotes?: Array<string>;
+  /**
+   * Hours Text
+   */
+  hours_text?: string;
+  /**
+   * Id
+   */
+  id: string;
+  interpretation?: Interpretation;
+  /**
+   * Kind
+   */
+  kind:
+    | "all"
+    | "any"
+    | "choose"
+    | "course"
+    | "course_filter"
+    | "milestone"
+    | "text";
+  /**
+   * Label
+   */
+  label?: string;
+  /**
+   * Max Courses
+   */
+  max_courses?: number | null;
+  /**
+   * Max Credits
+   */
+  max_credits?: string | null;
+  /**
+   * Milestone
+   */
+  milestone?:
+    | "thesis"
+    | "dissertation"
+    | "examination"
+    | "candidacy"
+    | "clinical"
+    | "practicum"
+    | "internship"
+    | "residency"
+    | "recital"
+    | "portfolio"
+    | "project"
+    | "other"
+    | null;
+  /**
+   * Min Courses
+   */
+  min_courses?: number | null;
+  /**
+   * Min Credits
+   */
+  min_credits?: string | null;
+  /**
+   * Min Grade
+   */
+  min_grade?: string | null;
+  /**
+   * Notes
+   */
+  notes?: Array<string>;
+  /**
+   * Source Text
+   */
+  source_text?: string;
+  /**
+   * Sources
+   */
+  sources?: Array<SourceRef>;
+  validation?: Validation;
+};
+
+/**
+ * RequirementTree
+ *
+ * A program version's requirements: one root per requirement table, in page
+ * order, under the headings and tab the table sits in.
+ */
+export type RequirementTree = {
+  /**
+   * Program Url
+   */
+  program_url: string;
+  /**
+   * Prose
+   */
+  prose?: Array<RequirementNode>;
+  /**
+   * Roots
+   */
+  roots: Array<RequirementNode>;
+  /**
+   * Rules Version
+   */
+  rules_version?: string;
+};
+
+/**
+ * RequisiteExpression
+ *
+ * A course's prerequisite or corequisite condition.
+ */
+export type RequisiteExpression = {
+  /**
+   * Children
+   */
+  children?: Array<RequisiteExpression>;
+  /**
+   * Concurrent
+   */
+  concurrent?: boolean;
+  /**
+   * Course
+   */
+  course?: string | null;
+  course_filter?: CourseFilter | null;
+  /**
+   * Kind
+   */
+  kind:
+    | "all"
+    | "any"
+    | "choose"
+    | "course"
+    | "course_filter"
+    | "test"
+    | "condition"
+    | "text";
+  /**
+   * Min Count
+   */
+  min_count?: number | null;
+  /**
+   * Min Credits
+   */
+  min_credits?: string | null;
+  /**
+   * Min Gpa
+   */
+  min_gpa?: string | null;
+  /**
+   * Min Grade
+   */
+  min_grade?: string | null;
+  /**
+   * Score
+   */
+  score?: string | null;
+  /**
+   * Test
+   */
+  test?: string | null;
+  /**
+   * Text
+   */
+  text?: string;
+};
+
+/**
  * SchedulePreferences
  */
 export type SchedulePreferences = {
@@ -991,6 +1635,42 @@ export type SectionOutput = {
 export type SelectionType = "required" | "select_one" | "select_n";
 
 /**
+ * SourceRef
+ *
+ * A passage in a stored snapshot (see the ingester's `Evidence`).
+ */
+export type SourceRef = {
+  /**
+   * Line
+   */
+  line?: number | null;
+  /**
+   * Page
+   */
+  page?: number | null;
+  /**
+   * Sha256
+   */
+  sha256: string;
+  /**
+   * Tab
+   */
+  tab?: string | null;
+  /**
+   * Text
+   */
+  text: string;
+  /**
+   * Url
+   */
+  url: string;
+  /**
+   * Xpath
+   */
+  xpath?: string | null;
+};
+
+/**
  * SubRequirement
  */
 export type SubRequirement = {
@@ -1105,6 +1785,14 @@ export type UserResponse = {
   pictureUrl: string;
 };
 
+/**
+ * Validation
+ *
+ * What has checked the structured form against its source.
+ */
+export type Validation =
+  "unverified" | "structurally_checked" | "reviewed" | "failed";
+
 export type LogoutData = {
   body?: never;
   path?: never;
@@ -1162,6 +1850,434 @@ export type GetMeResponses = {
 };
 
 export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
+
+export type GetCourseHistoryData = {
+  body?: never;
+  path: {
+    /**
+     * Subject
+     */
+    subject: string;
+    /**
+     * Number
+     */
+    number: string;
+  };
+  query?: never;
+  url: "/api/bulletin/courses/{subject}/{number}/editions";
+};
+
+export type GetCourseHistoryErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetCourseHistoryError =
+  GetCourseHistoryErrors[keyof GetCourseHistoryErrors];
+
+export type GetCourseHistoryResponses = {
+  /**
+   * Response Get Course History
+   *
+   * Successful Response
+   */
+  200: Array<CourseEdition>;
+};
+
+export type GetCourseHistoryResponse =
+  GetCourseHistoryResponses[keyof GetCourseHistoryResponses];
+
+export type ListEditionsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/bulletin/editions";
+};
+
+export type ListEditionsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListEditionsError = ListEditionsErrors[keyof ListEditionsErrors];
+
+export type ListEditionsResponses = {
+  /**
+   * Response List Editions
+   *
+   * Successful Response
+   */
+  200: Array<EditionSummary>;
+};
+
+export type ListEditionsResponse =
+  ListEditionsResponses[keyof ListEditionsResponses];
+
+export type GetProgramHistoryData = {
+  body?: never;
+  path: {
+    /**
+     * Program Id
+     */
+    program_id: number;
+  };
+  query?: never;
+  url: "/api/bulletin/programs/{program_id}/editions";
+};
+
+export type GetProgramHistoryErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetProgramHistoryError =
+  GetProgramHistoryErrors[keyof GetProgramHistoryErrors];
+
+export type GetProgramHistoryResponses = {
+  /**
+   * Response Get Program History
+   *
+   * Successful Response
+   */
+  200: Array<ProgramEdition>;
+};
+
+export type GetProgramHistoryResponse =
+  GetProgramHistoryResponses[keyof GetProgramHistoryResponses];
+
+export type SearchCoursesData = {
+  body?: never;
+  path: {
+    /**
+     * Edition
+     *
+     * Bulletin year, e.g. 2026-2027
+     */
+    edition: string;
+  };
+  query?: {
+    /**
+     * Q
+     */
+    q?: string;
+    /**
+     * Subject
+     */
+    subject?: string | null;
+    /**
+     * Attribute
+     */
+    attribute?: string | null;
+    /**
+     * Level
+     */
+    level?: string | null;
+    /**
+     * Min Credits
+     */
+    min_credits?: number | string | null;
+    /**
+     * Max Credits
+     */
+    max_credits?: number | string | null;
+    /**
+     * Limit
+     */
+    limit?: number;
+    /**
+     * Offset
+     */
+    offset?: number;
+  };
+  url: "/api/bulletin/{edition}/courses";
+};
+
+export type SearchCoursesErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type SearchCoursesError = SearchCoursesErrors[keyof SearchCoursesErrors];
+
+export type SearchCoursesResponses = {
+  /**
+   * Response Search Courses
+   *
+   * Successful Response
+   */
+  200: Array<CourseSummary>;
+};
+
+export type SearchCoursesResponse =
+  SearchCoursesResponses[keyof SearchCoursesResponses];
+
+export type GetCourseData = {
+  body?: never;
+  path: {
+    /**
+     * Edition
+     *
+     * Bulletin year, e.g. 2026-2027
+     */
+    edition: string;
+    /**
+     * Subject
+     */
+    subject: string;
+    /**
+     * Number
+     */
+    number: string;
+  };
+  query?: never;
+  url: "/api/bulletin/{edition}/courses/{subject}/{number}";
+};
+
+export type GetCourseErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetCourseError = GetCourseErrors[keyof GetCourseErrors];
+
+export type GetCourseResponses = {
+  /**
+   * Successful Response
+   */
+  200: CourseDetail;
+};
+
+export type GetCourseResponse = GetCourseResponses[keyof GetCourseResponses];
+
+export type SearchPoliciesData = {
+  body?: never;
+  path: {
+    /**
+     * Edition
+     *
+     * Bulletin year, e.g. 2026-2027
+     */
+    edition: string;
+  };
+  query?: {
+    /**
+     * Q
+     */
+    q?: string;
+    /**
+     * Topic
+     */
+    topic?: string | null;
+    /**
+     * Limit
+     */
+    limit?: number;
+    /**
+     * Offset
+     */
+    offset?: number;
+  };
+  url: "/api/bulletin/{edition}/policies";
+};
+
+export type SearchPoliciesErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type SearchPoliciesError =
+  SearchPoliciesErrors[keyof SearchPoliciesErrors];
+
+export type SearchPoliciesResponses = {
+  /**
+   * Response Search Policies
+   *
+   * Successful Response
+   */
+  200: Array<PolicySection>;
+};
+
+export type SearchPoliciesResponse =
+  SearchPoliciesResponses[keyof SearchPoliciesResponses];
+
+export type SearchProgramsData = {
+  body?: never;
+  path: {
+    /**
+     * Edition
+     *
+     * Bulletin year, e.g. 2026-2027
+     */
+    edition: string;
+  };
+  query?: {
+    /**
+     * Q
+     */
+    q?: string;
+    /**
+     * Level
+     */
+    level?: string | null;
+    /**
+     * Credential
+     */
+    credential?: string | null;
+    /**
+     * Unit
+     */
+    unit?: string | null;
+    /**
+     * Limit
+     */
+    limit?: number;
+    /**
+     * Offset
+     */
+    offset?: number;
+  };
+  url: "/api/bulletin/{edition}/programs";
+};
+
+export type SearchProgramsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type SearchProgramsError =
+  SearchProgramsErrors[keyof SearchProgramsErrors];
+
+export type SearchProgramsResponses = {
+  /**
+   * Response Search Programs
+   *
+   * Successful Response
+   */
+  200: Array<ProgramSummary>;
+};
+
+export type SearchProgramsResponse =
+  SearchProgramsResponses[keyof SearchProgramsResponses];
+
+export type GetProgramData = {
+  body?: never;
+  path: {
+    /**
+     * Edition
+     *
+     * Bulletin year, e.g. 2026-2027
+     */
+    edition: string;
+    /**
+     * Program Id
+     */
+    program_id: number;
+  };
+  query?: never;
+  url: "/api/bulletin/{edition}/programs/{program_id}";
+};
+
+export type GetProgramErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetProgramError = GetProgramErrors[keyof GetProgramErrors];
+
+export type GetProgramResponses = {
+  /**
+   * Successful Response
+   */
+  200: ProgramDetail;
+};
+
+export type GetProgramResponse = GetProgramResponses[keyof GetProgramResponses];
+
+export type ListUnitsData = {
+  body?: never;
+  path: {
+    /**
+     * Edition
+     *
+     * Bulletin year, e.g. 2026-2027
+     */
+    edition: string;
+  };
+  query?: never;
+  url: "/api/bulletin/{edition}/units";
+};
+
+export type ListUnitsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListUnitsError = ListUnitsErrors[keyof ListUnitsErrors];
+
+export type ListUnitsResponses = {
+  /**
+   * Response List Units
+   *
+   * Successful Response
+   */
+  200: Array<AcademicUnit>;
+};
+
+export type ListUnitsResponse = ListUnitsResponses[keyof ListUnitsResponses];
 
 export type ChatData = {
   body: ChatRequest;

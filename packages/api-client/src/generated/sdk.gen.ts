@@ -19,18 +19,36 @@ import type {
   GenerateSchedulesData,
   GenerateSchedulesErrors,
   GenerateSchedulesResponses,
+  GetCourseData,
+  GetCourseErrors,
+  GetCourseHistoryData,
+  GetCourseHistoryErrors,
+  GetCourseHistoryResponses,
+  GetCourseResponses,
   GetMeData,
   GetMeErrors,
   GetMeResponses,
+  GetProgramData,
+  GetProgramErrors,
+  GetProgramHistoryData,
+  GetProgramHistoryErrors,
+  GetProgramHistoryResponses,
+  GetProgramResponses,
   ListAttributesData,
   ListAttributesErrors,
   ListAttributesResponses,
+  ListEditionsData,
+  ListEditionsErrors,
+  ListEditionsResponses,
   ListSubjectsData,
   ListSubjectsErrors,
   ListSubjectsResponses,
   ListTermsData,
   ListTermsErrors,
   ListTermsResponses,
+  ListUnitsData,
+  ListUnitsErrors,
+  ListUnitsResponses,
   LogoutData,
   LogoutErrors,
   LogoutResponses,
@@ -43,9 +61,18 @@ import type {
   ParseTranscriptData,
   ParseTranscriptErrors,
   ParseTranscriptResponses,
+  SearchCoursesData,
+  SearchCoursesErrors,
+  SearchCoursesResponses,
+  SearchPoliciesData,
+  SearchPoliciesErrors,
+  SearchPoliciesResponses,
   SearchProfessorsData,
   SearchProfessorsErrors,
   SearchProfessorsResponses,
+  SearchProgramsData,
+  SearchProgramsErrors,
+  SearchProgramsResponses,
   SearchSectionsData,
   SearchSectionsErrors,
   SearchSectionsResponses,
@@ -93,6 +120,141 @@ export const getMe = <ThrowOnError extends boolean = true>(
     url: "/api/auth/me",
     ...options,
   });
+
+/**
+ * Get Course History
+ *
+ * The course code in every published edition that lists it.
+ */
+export const getCourseHistory = <ThrowOnError extends boolean = true>(
+  options: Options<GetCourseHistoryData, ThrowOnError>,
+): RequestResult<
+  GetCourseHistoryResponses,
+  GetCourseHistoryErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetCourseHistoryResponses,
+    GetCourseHistoryErrors,
+    ThrowOnError
+  >({ url: "/api/bulletin/courses/{subject}/{number}/editions", ...options });
+
+/**
+ * List Editions
+ *
+ * Published Bulletin editions, newest first.
+ */
+export const listEditions = <ThrowOnError extends boolean = true>(
+  options?: Options<ListEditionsData, ThrowOnError>,
+): RequestResult<ListEditionsResponses, ListEditionsErrors, ThrowOnError> =>
+  (options?.client ?? client).get<
+    ListEditionsResponses,
+    ListEditionsErrors,
+    ThrowOnError
+  >({ url: "/api/bulletin/editions", ...options });
+
+/**
+ * Get Program History
+ *
+ * The published editions that include the program.
+ */
+export const getProgramHistory = <ThrowOnError extends boolean = true>(
+  options: Options<GetProgramHistoryData, ThrowOnError>,
+): RequestResult<
+  GetProgramHistoryResponses,
+  GetProgramHistoryErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetProgramHistoryResponses,
+    GetProgramHistoryErrors,
+    ThrowOnError
+  >({ url: "/api/bulletin/programs/{program_id}/editions", ...options });
+
+/**
+ * Search Courses
+ *
+ * Courses by code, title or description, with optional filters.
+ */
+export const searchCourses = <ThrowOnError extends boolean = true>(
+  options: Options<SearchCoursesData, ThrowOnError>,
+): RequestResult<SearchCoursesResponses, SearchCoursesErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    SearchCoursesResponses,
+    SearchCoursesErrors,
+    ThrowOnError
+  >({ url: "/api/bulletin/{edition}/courses", ...options });
+
+/**
+ * Get Course
+ *
+ * A course as the edition lists it, with its requisites, the courses that
+ * require it and the programs that name it.
+ */
+export const getCourse = <ThrowOnError extends boolean = true>(
+  options: Options<GetCourseData, ThrowOnError>,
+): RequestResult<GetCourseResponses, GetCourseErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    GetCourseResponses,
+    GetCourseErrors,
+    ThrowOnError
+  >({ url: "/api/bulletin/{edition}/courses/{subject}/{number}", ...options });
+
+/**
+ * Search Policies
+ *
+ * Policy, General Education and college sections, verbatim.
+ */
+export const searchPolicies = <ThrowOnError extends boolean = true>(
+  options: Options<SearchPoliciesData, ThrowOnError>,
+): RequestResult<SearchPoliciesResponses, SearchPoliciesErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    SearchPoliciesResponses,
+    SearchPoliciesErrors,
+    ThrowOnError
+  >({ url: "/api/bulletin/{edition}/policies", ...options });
+
+/**
+ * Search Programs
+ *
+ * Majors, minors, certificates and graduate and professional programs.
+ */
+export const searchPrograms = <ThrowOnError extends boolean = true>(
+  options: Options<SearchProgramsData, ThrowOnError>,
+): RequestResult<SearchProgramsResponses, SearchProgramsErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    SearchProgramsResponses,
+    SearchProgramsErrors,
+    ThrowOnError
+  >({ url: "/api/bulletin/{edition}/programs", ...options });
+
+/**
+ * Get Program
+ *
+ * A program's requirement tree, with sources, and its suggested plans.
+ */
+export const getProgram = <ThrowOnError extends boolean = true>(
+  options: Options<GetProgramData, ThrowOnError>,
+): RequestResult<GetProgramResponses, GetProgramErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    GetProgramResponses,
+    GetProgramErrors,
+    ThrowOnError
+  >({ url: "/api/bulletin/{edition}/programs/{program_id}", ...options });
+
+/**
+ * List Units
+ *
+ * Schools, colleges and departments the edition names.
+ */
+export const listUnits = <ThrowOnError extends boolean = true>(
+  options: Options<ListUnitsData, ThrowOnError>,
+): RequestResult<ListUnitsResponses, ListUnitsErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    ListUnitsResponses,
+    ListUnitsErrors,
+    ThrowOnError
+  >({ url: "/api/bulletin/{edition}/units", ...options });
 
 /**
  * Chat

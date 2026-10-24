@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import httpx
 import pytest
+
 from app.modules.bulletin.ingest.captures import import_file
 from app.modules.bulletin.ingest.crawl_state import CrawlState, UrlStatus
 from app.modules.bulletin.ingest.crawler import Crawler

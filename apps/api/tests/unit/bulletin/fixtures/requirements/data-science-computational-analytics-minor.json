@@ -1,0 +1,733 @@
+{
+ "facts": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 494,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[2]"
+    },
+    "sha256": "82599d7f546387e68c23264d97d361a9ff0b33a618b0cb3b1e21abcacb59c3f6",
+    "text": "Campus Location: Main",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/data-science-computational-analytics-minor/"
+   },
+   "label": "Campus Location",
+   "value": "Main"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 508,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[3]"
+    },
+    "sha256": "82599d7f546387e68c23264d97d361a9ff0b33a618b0cb3b1e21abcacb59c3f6",
+    "text": "Residency Requirements: At least 3 courses required for the minor must be completed at Temple. At least 3 CIS courses must be completed at Temple.",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/data-science-computational-analytics-minor/"
+   },
+   "label": "Residency Requirements",
+   "value": "At least 3 courses required for the minor must be completed at Temple. At least 3 CIS courses must be completed at Temple."
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 509,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/p[4]"
+    },
+    "sha256": "82599d7f546387e68c23264d97d361a9ff0b33a618b0cb3b1e21abcacb59c3f6",
+    "text": "Distinct Course Rule: At least seven credits or three courses of the minor must not be credited towards a CST major, additional CST minor, or CST certificate.",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/data-science-computational-analytics-minor/"
+   },
+   "label": "Distinct Course Rule",
+   "value": "At least seven credits or three courses of the minor must not be credited towards a CST major, additional CST minor, or CST certificate."
+  }
+ ],
+ "level": "undergraduate",
+ "name": "Data Science: Computational Analytics Minor",
+ "plans": [],
+ "sha256": "82599d7f546387e68c23264d97d361a9ff0b33a618b0cb3b1e21abcacb59c3f6",
+ "tables": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 508,
+     "page": null,
+     "tab": "requirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]"
+    },
+    "sha256": "82599d7f546387e68c23264d97d361a9ff0b33a618b0cb3b1e21abcacb59c3f6",
+    "text": "Course List Code Title Credit Hours CIS 1068Program Design and Abstraction4 or CIS 1968 Honors Program Design and Abstraction CIS 1166Mathematical Concepts in Computing I4 or CIS 1966 Honors Mathematical Concepts in Computing I MATH 1041Calculus I4 or MATH 1941 Honors Calculus I MATH 1042Calculus II4 or MATH 1942 Honors Calculus II Total Credit Hours16",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/data-science-computational-analytics-minor/"
+   },
+   "footnotes": [],
+   "index": 0,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "firstrow"
+     ],
+     "code_text": "CIS 1068",
+     "comment": "",
+     "courses": [
+      "CIS 1068"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]/tbody/tr[1]"
+     },
+     "title": "Program Design and Abstraction"
+    },
+    {
+     "classes": [
+      "orclass",
+      "even",
+      "firstrow"
+     ],
+     "code_text": "or CIS 1968",
+     "comment": "",
+     "courses": [
+      "CIS 1968"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]/tbody/tr[2]"
+     },
+     "title": "Honors Program Design and Abstraction"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 1166",
+     "comment": "",
+     "courses": [
+      "CIS 1166"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]/tbody/tr[3]"
+     },
+     "title": "Mathematical Concepts in Computing I"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd"
+     ],
+     "code_text": "or CIS 1966",
+     "comment": "",
+     "courses": [
+      "CIS 1966"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 3,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]/tbody/tr[4]"
+     },
+     "title": "Honors Mathematical Concepts in Computing I"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MATH 1041",
+     "comment": "",
+     "courses": [
+      "MATH 1041"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 4,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]/tbody/tr[5]"
+     },
+     "title": "Calculus I"
+    },
+    {
+     "classes": [
+      "orclass",
+      "even"
+     ],
+     "code_text": "or MATH 1941",
+     "comment": "",
+     "courses": [
+      "MATH 1941"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 5,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]/tbody/tr[6]"
+     },
+     "title": "Honors Calculus I"
+    },
+    {
+     "classes": [
+      "odd",
+      "lastrow"
+     ],
+     "code_text": "MATH 1042",
+     "comment": "",
+     "courses": [
+      "MATH 1042"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]/tbody/tr[7]"
+     },
+     "title": "Calculus II"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd",
+      "lastrow"
+     ],
+     "code_text": "or MATH 1942",
+     "comment": "",
+     "courses": [
+      "MATH 1942"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 7,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]/tbody/tr[8]"
+     },
+     "title": "Honors Calculus II"
+    },
+    {
+     "classes": [
+      "listsum"
+     ],
+     "code_text": "",
+     "comment": "Total Credit Hours",
+     "courses": [],
+     "footnotes": [],
+     "hours": "16",
+     "indent": 0,
+     "index": 8,
+     "joiner": null,
+     "kind": "total",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[1]/tbody/tr[9]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Minor Requirements",
+    "Prerequisites"
+   ],
+   "tab": "requirementstextcontainer"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 508,
+     "page": null,
+     "tab": "requirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]"
+    },
+    "sha256": "82599d7f546387e68c23264d97d361a9ff0b33a618b0cb3b1e21abcacb59c3f6",
+    "text": "Course List Code Title Credit Hours Select one of the following:3-4 CIS 2033Computational Probability and Statistics MATH 3031Probability Theory STAT 2103Statistical Business Analytics BIOL 3312Biostatistics (F) Select one of the following:3-4 CIS 2166Mathematical Concepts in Computing II MATH 2101Linear Algebra MATH 2103Linear Algebra with Computer Lab (F) CIS 2168Data Structures4 CIS 3715Principles of Data Science (S)4 CIS 4526Foundations of Machine Learning (F)3 CIS 4517Data-Intensive and Clo",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/data-science-computational-analytics-minor/"
+   },
+   "footnotes": [],
+   "index": 1,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "Select one of the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "3-4",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 2033",
+     "comment": "",
+     "courses": [
+      "CIS 2033"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 1,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[2]"
+     },
+     "title": "Computational Probability and Statistics"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MATH 3031",
+     "comment": "",
+     "courses": [
+      "MATH 3031"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[3]"
+     },
+     "title": "Probability Theory"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "STAT 2103",
+     "comment": "",
+     "courses": [
+      "STAT 2103"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[4]"
+     },
+     "title": "Statistical Business Analytics"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "BIOL 3312",
+     "comment": "",
+     "courses": [
+      "BIOL 3312"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 4,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[5]"
+     },
+     "title": "Biostatistics (F)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "",
+     "comment": "Select one of the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "3-4",
+     "indent": 0,
+     "index": 5,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[6]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 2166",
+     "comment": "",
+     "courses": [
+      "CIS 2166"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[7]"
+     },
+     "title": "Mathematical Concepts in Computing II"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MATH 2101",
+     "comment": "",
+     "courses": [
+      "MATH 2101"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 7,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[8]"
+     },
+     "title": "Linear Algebra"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MATH 2103",
+     "comment": "",
+     "courses": [
+      "MATH 2103"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 8,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[9]"
+     },
+     "title": "Linear Algebra with Computer Lab (F)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 2168",
+     "comment": "",
+     "courses": [
+      "CIS 2168"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 9,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[10]"
+     },
+     "title": "Data Structures"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3715",
+     "comment": "",
+     "courses": [
+      "CIS 3715"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 10,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[11]"
+     },
+     "title": "Principles of Data Science (S)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4526",
+     "comment": "",
+     "courses": [
+      "CIS 4526"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 11,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[12]"
+     },
+     "title": "Foundations of Machine Learning (F)"
+    },
+    {
+     "classes": [
+      "even",
+      "lastrow"
+     ],
+     "code_text": "CIS 4517",
+     "comment": "",
+     "courses": [
+      "CIS 4517"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 12,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[13]"
+     },
+     "title": "Data-Intensive and Cloud Computing (S)"
+    },
+    {
+     "classes": [
+      "listsum"
+     ],
+     "code_text": "",
+     "comment": "Total Credit Hours",
+     "courses": [],
+     "footnotes": [],
+     "hours": "20-22",
+     "indent": 0,
+     "index": 13,
+     "joiner": null,
+     "kind": "total",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[2]/tbody/tr[14]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Minor Requirements",
+    "Required Courses"
+   ],
+   "tab": "requirementstextcontainer"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 508,
+     "page": null,
+     "tab": "requirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[3]"
+    },
+    "sha256": "82599d7f546387e68c23264d97d361a9ff0b33a618b0cb3b1e21abcacb59c3f6",
+    "text": "Course List Code Title Credit Hours (F) - Fall only course (S) - Spring only course",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/data-science-computational-analytics-minor/"
+   },
+   "footnotes": [],
+   "index": 2,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "(F) - Fall only course",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[3]/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "lastrow"
+     ],
+     "code_text": "",
+     "comment": "(S) - Spring only course",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 508,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table[3]/tbody/tr[2]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Minor Requirements",
+    "Required Courses"
+   ],
+   "tab": "requirementstextcontainer"
+  }
+ ],
+ "units": [
+  "Undergraduate",
+  "Schools, Colleges and Divisions",
+  "College of Science and Technology"
+ ],
+ "url": "https://bulletin.temple.edu/undergraduate/science-technology/data-science-computational-analytics-minor/"
+}

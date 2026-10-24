@@ -1,0 +1,215 @@
+{
+ "listings": [
+  {
+   "area": "Biomedical Sciences (Cancer Biology and Genetics*, General Biomedical Sciences^, Infectious Disease and Immunity*, Molecular and Cellular Biosciences*, Neuroscience*, Organ Systems and Translational Medicine*)",
+   "level": "graduate",
+   "credential": "MS *,",
+   "label": "MS (thesis)*,",
+   "notes": [
+    "thesis"
+   ],
+   "has_options": true,
+   "url": "https://bulletin.temple.edu/graduate/scd/medicine/biomedical-sciences-ms/",
+   "unit_code": "ME",
+   "evidence": {
+    "url": "https://bulletin.temple.edu/academic-programs/",
+    "sha256": "a1f8b05a2fc6ea3f9df448c74090c5f01bcf8d57ba45afc0391e1c1df53fe15a",
+    "locator": {
+     "xpath": "/html/body/div[1]/div[2]/div/main/div/div/table/tbody/tr[66]",
+     "line": 353,
+     "tab": null,
+     "page": null,
+     "bbox": null
+    },
+    "text": "Biomedical Sciences (Cancer Biology and Genetics*, General Biomedical Sciences^, Infectious Disease and Immunity*, Molecular and Cellular Biosciences*, Neuroscience*, Organ Systems and Translational Medicine*) MS (thesis)*, MS (non-thesis)^, PhD* ME"
+   }
+  },
+  {
+   "area": "Biomedical Sciences (Cancer Biology and Genetics*, General Biomedical Sciences^, Infectious Disease and Immunity*, Molecular and Cellular Biosciences*, Neuroscience*, Organ Systems and Translational Medicine*)",
+   "level": "graduate",
+   "credential": "MS ^,",
+   "label": "MS (non-thesis)^,",
+   "notes": [
+    "non-thesis"
+   ],
+   "has_options": true,
+   "url": "https://bulletin.temple.edu/graduate/scd/medicine/biomedical-sciences-ms/",
+   "unit_code": "ME",
+   "evidence": {
+    "url": "https://bulletin.temple.edu/academic-programs/",
+    "sha256": "a1f8b05a2fc6ea3f9df448c74090c5f01bcf8d57ba45afc0391e1c1df53fe15a",
+    "locator": {
+     "xpath": "/html/body/div[1]/div[2]/div/main/div/div/table/tbody/tr[66]",
+     "line": 353,
+     "tab": null,
+     "page": null,
+     "bbox": null
+    },
+    "text": "Biomedical Sciences (Cancer Biology and Genetics*, General Biomedical Sciences^, Infectious Disease and Immunity*, Molecular and Cellular Biosciences*, Neuroscience*, Organ Systems and Translational Medicine*) MS (thesis)*, MS (non-thesis)^, PhD* ME"
+   }
+  },
+  {
+   "area": "Biomedical Sciences (Cancer Biology and Genetics*, General Biomedical Sciences^, Infectious Disease and Immunity*, Molecular and Cellular Biosciences*, Neuroscience*, Organ Systems and Translational Medicine*)",
+   "level": "graduate",
+   "credential": "PhD",
+   "label": "PhD*",
+   "notes": [],
+   "has_options": true,
+   "url": "https://bulletin.temple.edu/graduate/scd/medicine/biomedical-sciences-phd/",
+   "unit_code": "ME",
+   "evidence": {
+    "url": "https://bulletin.temple.edu/academic-programs/",
+    "sha256": "a1f8b05a2fc6ea3f9df448c74090c5f01bcf8d57ba45afc0391e1c1df53fe15a",
+    "locator": {
+     "xpath": "/html/body/div[1]/div[2]/div/main/div/div/table/tbody/tr[66]",
+     "line": 353,
+     "tab": null,
+     "page": null,
+     "bbox": null
+    },
+    "text": "Biomedical Sciences (Cancer Biology and Genetics*, General Biomedical Sciences^, Infectious Disease and Immunity*, Molecular and Cellular Biosciences*, Neuroscience*, Organ Systems and Translational Medicine*) MS (thesis)*, MS (non-thesis)^, PhD* ME"
+   }
+  },
+  {
+   "area": "Computer Science",
+   "level": "undergraduate",
+   "credential": "BS,",
+   "label": "BS,",
+   "notes": [],
+   "has_options": false,
+   "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/",
+   "unit_code": "ST",
+   "evidence": {
+    "url": "https://bulletin.temple.edu/academic-programs/",
+    "sha256": "a1f8b05a2fc6ea3f9df448c74090c5f01bcf8d57ba45afc0391e1c1df53fe15a",
+    "locator": {
+     "xpath": "/html/body/div[1]/div[2]/div/main/div/div/table/tbody/tr[136]",
+     "line": 353,
+     "tab": null,
+     "page": null,
+     "bbox": null
+    },
+    "text": "Computer Science BA, BS, Minor MS, Cert. ST"
+   }
+  },
+  {
+   "area": "Law",
+   "level": "professional",
+   "credential": "JD,",
+   "label": "JD,",
+   "notes": [],
+   "has_options": false,
+   "url": "https://bulletin.temple.edu/graduate/scd/law/law-jd/",
+   "unit_code": "LW",
+   "evidence": {
+    "url": "https://bulletin.temple.edu/academic-programs/",
+    "sha256": "a1f8b05a2fc6ea3f9df448c74090c5f01bcf8d57ba45afc0391e1c1df53fe15a",
+    "locator": {
+     "xpath": "/html/body/div[1]/div[2]/div/main/div/div/table/tbody/tr[356]",
+     "line": 353,
+     "tab": null,
+     "page": null,
+     "bbox": null
+    },
+    "text": "Law JD, SJD LW"
+   }
+  }
+ ],
+ "unit_names": {
+  "BC": "Esther Boyer College of Music & Dance in the Center for the Performing & Cinematic Arts",
+  "BU": "Fox School of Business & Management",
+  "CA": "School of Theater, Film & Media Arts in the Center for the Performing & Cinematic Arts",
+  "CO": "Lew Klein College of Media & Communication",
+  "DN": "Maurice H. Kornberg School of Dentistry",
+  "ED": "College of Education & Human Development",
+  "EN": "College of Engineering",
+  "GS": "Graduate School",
+  "HP": "College of Public Health",
+  "LA": "College of Liberal Arts",
+  "LW": "Beasley School of Law",
+  "ME": "Lewis Katz School of Medicine",
+  "PH": "School of Pharmacy",
+  "PM": "School of Podiatric Medicine",
+  "ST": "College of Science & Technology",
+  "SW": "School of Social Work",
+  "TA": "Tyler School of Art & Architecture",
+  "TH": "School of Sport, Tourism & Hospitality Management",
+  "UC": "University College",
+  "US": "University Studies"
+ },
+ "credential_names": {
+  "AA": "Associate in Arts",
+  "AS": "Associate in Science",
+  "BA": "Bachelor of Arts",
+  "BBA": "Bachelor of Business Administration",
+  "BFA": "Bachelor of Fine Arts",
+  "BGS": "Bachelor of General Studies",
+  "BM": "Bachelor of Music",
+  "BS": "Bachelor of Science",
+  "BSArch": "Bachelor of Science in Architecture",
+  "BSBioe": "Bachelor of Science in Bioengineering",
+  "BSCE": "Bachelor of Science in Civil Engineering",
+  "BSCET": "Bachelor of Science in Construction Engineering Technology",
+  "BSECE": "Bachelor of Science in Electrical and Computer Engineering",
+  "BSEng": "Bachelor of Science in Engineering",
+  "BSEd": "Bachelor of Science in Education",
+  "BSEnvE": "Bachelor of Science in Environmental Engineering",
+  "BSEE": "Bachelor of Science in Electrical Engineering",
+  "BSET": "Bachelor of Science in Engineering Technology",
+  "BSHIM": "Bachelor of Science in Health Information Management",
+  "BSISE": "Bachelor of Science in Industrial and Systems Engineering",
+  "BSME": "Bachelor of Science in Mechanical Engineering",
+  "BSMET": "Bachelor of Science in Mechanical Engineering Technology",
+  "BSN": "Bachelor of Science in Nursing",
+  "BSW": "Bachelor of Science in Social Work",
+  "DAT": "Doctor of Athletic Training",
+  "DBA": "Doctor of Business Administration",
+  "DMA": "Doctor of Musical Arts",
+  "DMD": "Doctor of Dental Medicine",
+  "DMSc": "Doctor of Medical Science",
+  "DNP": "Doctor of Nursing Practice",
+  "DPM": "Doctor of Podiatric Medicine",
+  "DPT": "Doctor of Physical Therapy",
+  "DS": "Doctor of Science",
+  "EdD": "Doctor of Education",
+  "EdS": "Education Specialist",
+  "JD": "Juris Doctor (first professional degree for law)",
+  "LLM": "Master of Laws (further specialization after J.D. degree)",
+  "MA": "Master of Arts",
+  "MAcc": "Master of Accountancy",
+  "MArch": "Master of Architecture",
+  "MBA": "Master of Business Administration",
+  "MD": "Doctor of Medicine",
+  "MEd": "Master of Education",
+  "MEng": "Master of Engineering",
+  "METM": "Master of Engineering Technology Management",
+  "MFA": "Master of Fine Arts",
+  "MHA": "Master of Health Administration",
+  "MiM": "Master in Management",
+  "MJ": "Master of Journalism",
+  "MLA": "Master of Liberal Arts",
+  "MLArch": "Master of Landscape Architecture",
+  "MM": "Master of Music",
+  "MMS": "Master of Medical Science",
+  "MMT": "Master of Music Therapy",
+  "MOT": "Master of Occupational Therapy",
+  "MPH": "Master of Public Health",
+  "MPP": "Master of Public Policy",
+  "MS": "Master of Science",
+  "MSAT": "Master of Science in Athletic Training",
+  "MSBioe": "Master of Science in Bioengineering",
+  "MSCE": "Master of Science in Civil Engineering",
+  "MSECE": "Master of Science in Electrical and Computer Engineering",
+  "MSEd": "Master of Science in Education",
+  "MSEE": "Master of Science in Electrical Engineering",
+  "MSEnvE": "Master of Science in Environmental Engineering",
+  "MSME": "Master of Science in Mechanical Engineering",
+  "MSW": "Master of Social Work",
+  "MTHM": "Master of Tourism and Hospitality Management",
+  "OTD": "Clinical Doctorate in Occupational Therapy",
+  "PhD": "Doctor of Philosophy",
+  "PharmD": "Doctor of Pharmacy",
+  "PSM": "Professional Science Master's",
+  "SJD": "Doctor of Juridical Science"
+ }
+}

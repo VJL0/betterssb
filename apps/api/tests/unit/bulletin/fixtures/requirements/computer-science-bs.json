@@ -1,0 +1,2946 @@
+{
+ "facts": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 499,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[3]"
+    },
+    "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+    "text": "Campus Locations: Main, Japan",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+   },
+   "label": "Campus Locations",
+   "value": "Main, Japan"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 500,
+     "page": null,
+     "tab": null,
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[1]/p[4]"
+    },
+    "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+    "text": "Program Code: ST-CSCI-BS",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+   },
+   "label": "Program Code",
+   "value": "ST-CSCI-BS"
+  }
+ ],
+ "level": "undergraduate",
+ "name": "Computer Science BS",
+ "plans": [],
+ "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+ "tables": [
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 524,
+     "page": null,
+     "tab": "requirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[1]/ul/li[2]/table"
+    },
+    "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+    "text": "Course List Code Title Credit Hours All students MUST take: CIS 3296Software Design (WI)4 Second writing-intensive course can be chosen from: CIS 4397Independent Research in Computer Science (WI)3 CIS 4398Projects in Computer Science (WI)3",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+   },
+   "footnotes": [],
+   "index": 0,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "All students MUST take:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[1]/ul/li[2]/table/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3296",
+     "comment": "",
+     "courses": [
+      "CIS 3296"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[1]/ul/li[2]/table/tbody/tr[2]"
+     },
+     "title": "Software Design (WI)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Second writing-intensive course can be chosen from:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[1]/ul/li[2]/table/tbody/tr[3]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4397",
+     "comment": "",
+     "courses": [
+      "CIS 4397"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[1]/ul/li[2]/table/tbody/tr[4]"
+     },
+     "title": "Independent Research in Computer Science (WI)"
+    },
+    {
+     "classes": [
+      "even",
+      "lastrow"
+     ],
+     "code_text": "CIS 4398",
+     "comment": "",
+     "courses": [
+      "CIS 4398"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 4,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[1]/ul/li[2]/table/tbody/tr[5]"
+     },
+     "title": "Projects in Computer Science (WI)"
+    }
+   ],
+   "section": [
+    "Bachelor of Science Requirements",
+    "Summary of Requirements for the Degree"
+   ],
+   "tab": "requirementstextcontainer"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 524,
+     "page": null,
+     "tab": "requirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table"
+    },
+    "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+    "text": "Course List Code Title Credit Hours Computer & Information Science courses CIS 1001Introduction to Academics in Computer Science1 Select one of the following:4 CIS 1051Introduction to Problem Solving and Programming in Python or CIS 1951 Honors Introduction to Problem Solving and Programming in Python CIS 1057Computer Programming in C CIS 1068Program Design and Abstraction4 or CIS 1968 Honors Program Design and Abstraction CIS 1166Mathematical Concepts in Computing I4 or CIS 1966 Honors Mathemat",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+   },
+   "footnotes": [
+    {
+     "courses": [
+      "CIS 4397"
+     ],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 524,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/dl/dd[1]"
+      },
+      "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+      "text": "GPA and other requirements are needed to register for CIS 4397.",
+      "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+     },
+     "marker": "1",
+     "text": "GPA and other requirements are needed to register for CIS 4397."
+    },
+    {
+     "courses": [
+      "MATH 2101",
+      "MATH 2103",
+      "MATH 2043"
+     ],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 524,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/dl/dd[2]"
+      },
+      "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+      "text": "Students can count one of the following as a CS elective course: MATH 2101 Linear Algebra, MATH 2103 Linear Algebra with Computer Lab, MATH 2043 Calculus III.",
+      "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+     },
+     "marker": "2",
+     "text": "Students can count one of the following as a CS elective course: MATH 2101 Linear Algebra, MATH 2103 Linear Algebra with Computer Lab, MATH 2043 Calculus III."
+    },
+    {
+     "courses": [
+      "CIS 4203",
+      "CIS 4526"
+     ],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 524,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/dl/dd[3]"
+      },
+      "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+      "text": "Prerequisite is CIS 4203 Artificial General Intelligence or CIS 4526 Foundations of Machine Learning.",
+      "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+     },
+     "marker": "3",
+     "text": "Prerequisite is CIS 4203 Artificial General Intelligence or CIS 4526 Foundations of Machine Learning."
+    },
+    {
+     "courses": [
+      "CIS 3381",
+      "CIS 4282"
+     ],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 524,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/dl/dd[4]"
+      },
+      "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+      "text": "A maximum of eight (8) credits may be taken from CIS 3381 and/or CIS 4282 to fulfill Computer Science elective requirements. In addition, a maximum of four (4) credits may be taken from CIS 3381 to fulfill Computer Science elective requirements.",
+      "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+     },
+     "marker": "4",
+     "text": "A maximum of eight (8) credits may be taken from CIS 3381 and/or CIS 4282 to fulfill Computer Science elective requirements. In addition, a maximum of four (4) credits may be taken from CIS 3381 to fulfill Computer Science elective requirements."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 524,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/dl/dd[5]"
+      },
+      "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+      "text": "Must select one Lab Science Sequence from the options listed below. Lab Science A and Lab Science B must be taken from the same department.",
+      "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+     },
+     "marker": "5",
+     "text": "Must select one Lab Science Sequence from the options listed below. Lab Science A and Lab Science B must be taken from the same department."
+    }
+   ],
+   "index": 1,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "areaheader",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "Computer & Information Science courses",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 1001",
+     "comment": "",
+     "courses": [
+      "CIS 1001"
+     ],
+     "footnotes": [],
+     "hours": "1",
+     "indent": 0,
+     "index": 1,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[2]"
+     },
+     "title": "Introduction to Academics in Computer Science"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Select one of the following:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 2,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[3]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 1051",
+     "comment": "",
+     "courses": [
+      "CIS 1051"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[4]"
+     },
+     "title": "Introduction to Problem Solving and Programming in Python"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd"
+     ],
+     "code_text": "or CIS 1951",
+     "comment": "",
+     "courses": [
+      "CIS 1951"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 4,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[5]"
+     },
+     "title": "Honors Introduction to Problem Solving and Programming in Python"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 1057",
+     "comment": "",
+     "courses": [
+      "CIS 1057"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 5,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[6]"
+     },
+     "title": "Computer Programming in C"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 1068",
+     "comment": "",
+     "courses": [
+      "CIS 1068"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[7]"
+     },
+     "title": "Program Design and Abstraction"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd"
+     ],
+     "code_text": "or CIS 1968",
+     "comment": "",
+     "courses": [
+      "CIS 1968"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 7,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[8]"
+     },
+     "title": "Honors Program Design and Abstraction"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 1166",
+     "comment": "",
+     "courses": [
+      "CIS 1166"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 8,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[9]"
+     },
+     "title": "Mathematical Concepts in Computing I"
+    },
+    {
+     "classes": [
+      "orclass",
+      "even"
+     ],
+     "code_text": "or CIS 1966",
+     "comment": "",
+     "courses": [
+      "CIS 1966"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 9,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[10]"
+     },
+     "title": "Honors Mathematical Concepts in Computing I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 2033",
+     "comment": "",
+     "courses": [
+      "CIS 2033"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 10,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[11]"
+     },
+     "title": "Computational Probability and Statistics"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 2107",
+     "comment": "",
+     "courses": [
+      "CIS 2107"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 11,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[12]"
+     },
+     "title": "Computer Systems and Low-Level Programming"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 2166",
+     "comment": "",
+     "courses": [
+      "CIS 2166"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 12,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[13]"
+     },
+     "title": "Mathematical Concepts in Computing II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 2168",
+     "comment": "",
+     "courses": [
+      "CIS 2168"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 13,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[14]"
+     },
+     "title": "Data Structures"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3207",
+     "comment": "",
+     "courses": [
+      "CIS 3207"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 14,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[15]"
+     },
+     "title": "Introduction to Systems Programming and Operating Systems"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3223",
+     "comment": "",
+     "courses": [
+      "CIS 3223"
+     ],
+     "footnotes": [],
+     "hours": "3",
+     "indent": 0,
+     "index": 15,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[16]"
+     },
+     "title": "Data Structures and Algorithms"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3296",
+     "comment": "",
+     "courses": [
+      "CIS 3296"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 16,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[17]"
+     },
+     "title": "Software Design (WI)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4398",
+     "comment": "",
+     "courses": [
+      "CIS 4398"
+     ],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "3",
+     "indent": 0,
+     "index": 17,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[18]"
+     },
+     "title": "Projects in Computer Science (WI)"
+    },
+    {
+     "classes": [
+      "orclass",
+      "even"
+     ],
+     "code_text": "or CIS 4397",
+     "comment": "",
+     "courses": [
+      "CIS 4397"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 18,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[19]"
+     },
+     "title": "Independent Research in Computer Science"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Computer Science Electives",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 19,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[20]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "",
+     "comment": "Select 15-16 credits from the following CS elective courses:",
+     "courses": [],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "15-16",
+     "indent": 0,
+     "index": 20,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[21]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3100",
+     "comment": "",
+     "courses": [
+      "CIS 3100"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 21,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[22]"
+     },
+     "title": "Special Topics in CIS"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3203",
+     "comment": "",
+     "courses": [
+      "CIS 3203"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 22,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[23]"
+     },
+     "title": "Introduction to Artificial Intelligence"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3211",
+     "comment": "",
+     "courses": [
+      "CIS 3211"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 23,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[24]"
+     },
+     "title": "Automata, Computability, and Languages"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3217",
+     "comment": "",
+     "courses": [
+      "CIS 3217"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 24,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[25]"
+     },
+     "title": "Computer Architecture"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3308",
+     "comment": "",
+     "courses": [
+      "CIS 3308"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 25,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[26]"
+     },
+     "title": "Web Application Programming"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3319",
+     "comment": "",
+     "courses": [
+      "CIS 3319"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 26,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[27]"
+     },
+     "title": "Wireless Networks and Security"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3374",
+     "comment": "",
+     "courses": [
+      "CIS 3374"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 27,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[28]"
+     },
+     "title": "Quality Assurance & Testing"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3381",
+     "comment": "",
+     "courses": [
+      "CIS 3381"
+     ],
+     "footnotes": [
+      "3"
+     ],
+     "hours": "",
+     "indent": 1,
+     "index": 28,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[29]"
+     },
+     "title": "Cooperative Education Experience in Computer Science"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3441",
+     "comment": "",
+     "courses": [
+      "CIS 3441"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 29,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[30]"
+     },
+     "title": "Software Security"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3515",
+     "comment": "",
+     "courses": [
+      "CIS 3515"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 30,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[31]"
+     },
+     "title": "Introduction to Mobile Application Development"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3523",
+     "comment": "",
+     "courses": [
+      "CIS 3523"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 31,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[32]"
+     },
+     "title": "Microservice Architecture"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3603",
+     "comment": "",
+     "courses": [
+      "CIS 3603"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 32,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[33]"
+     },
+     "title": "User Experience Design"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3605",
+     "comment": "",
+     "courses": [
+      "CIS 3605"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 33,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[34]"
+     },
+     "title": "Introduction to Digital Forensics"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3655",
+     "comment": "",
+     "courses": [
+      "CIS 3655"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 34,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[35]"
+     },
+     "title": "Human and Artificial Intelligence Interaction"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 3715",
+     "comment": "",
+     "courses": [
+      "CIS 3715"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 35,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[36]"
+     },
+     "title": "Principles of Data Science"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 3755",
+     "comment": "",
+     "courses": [
+      "CIS 3755"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 36,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[37]"
+     },
+     "title": "Introduction to Information Visualization"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4203",
+     "comment": "",
+     "courses": [
+      "CIS 4203"
+     ],
+     "footnotes": [
+      "3"
+     ],
+     "hours": "",
+     "indent": 1,
+     "index": 37,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[38]"
+     },
+     "title": "Artificial General Intelligence"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4282",
+     "comment": "",
+     "courses": [
+      "CIS 4282"
+     ],
+     "footnotes": [
+      "4"
+     ],
+     "hours": "",
+     "indent": 1,
+     "index": 38,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[39]"
+     },
+     "title": "Independent Study"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4307",
+     "comment": "",
+     "courses": [
+      "CIS 4307"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 39,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[40]"
+     },
+     "title": "Introduction to Distributed Systems and Networks (Not offered every year)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4319",
+     "comment": "",
+     "courses": [
+      "CIS 4319"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 40,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[41]"
+     },
+     "title": "Computer Networks and Communications"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4324",
+     "comment": "",
+     "courses": [
+      "CIS 4324"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 41,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[42]"
+     },
+     "title": "Compiler Design (Not offered every year)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4429",
+     "comment": "",
+     "courses": [
+      "CIS 4429"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 42,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[43]"
+     },
+     "title": "Security in Mobile and Embedded Systems"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4331",
+     "comment": "",
+     "courses": [
+      "CIS 4331"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 43,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[44]"
+     },
+     "title": "Principles of Database Systems"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4345",
+     "comment": "",
+     "courses": [
+      "CIS 4345"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 44,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[45]"
+     },
+     "title": "Introduction to Cloud Computing"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4350",
+     "comment": "",
+     "courses": [
+      "CIS 4350"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 45,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[46]"
+     },
+     "title": "Seminar on Topics in Computer Science"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4360",
+     "comment": "",
+     "courses": [
+      "CIS 4360"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 46,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[47]"
+     },
+     "title": "Seminar on Topics in Computer Science"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4397",
+     "comment": "",
+     "courses": [
+      "CIS 4397"
+     ],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "",
+     "indent": 1,
+     "index": 47,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[48]"
+     },
+     "title": "Independent Research in Computer Science (if not taken as capstone requirement)"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd"
+     ],
+     "code_text": "or CIS 4398",
+     "comment": "",
+     "courses": [
+      "CIS 4398"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 48,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[49]"
+     },
+     "title": "Projects in Computer Science"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4419",
+     "comment": "",
+     "courses": [
+      "CIS 4419"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 49,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[50]"
+     },
+     "title": "Securing the Internet of Things"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4515",
+     "comment": "",
+     "courses": [
+      "CIS 4515"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 50,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[51]"
+     },
+     "title": "Advanced Mobile Application Development"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4517",
+     "comment": "",
+     "courses": [
+      "CIS 4517"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 51,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[52]"
+     },
+     "title": "Data-Intensive and Cloud Computing"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4523",
+     "comment": "",
+     "courses": [
+      "CIS 4523"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 52,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[53]"
+     },
+     "title": "Knowledge Discovery and Data Mining"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4524",
+     "comment": "",
+     "courses": [
+      "CIS 4524"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 53,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[54]"
+     },
+     "title": "Analysis and Modeling of Social and Information Networks"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4526",
+     "comment": "",
+     "courses": [
+      "CIS 4526"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 54,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[55]"
+     },
+     "title": "Foundations of Machine Learning"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CIS 4626",
+     "comment": "",
+     "courses": [
+      "CIS 4626"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 55,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[56]"
+     },
+     "title": "Introduction to Deep Learning and Large Language Models"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CIS 4696",
+     "comment": "",
+     "courses": [
+      "CIS 4696"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 56,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[57]"
+     },
+     "title": "Ethical Hacking and Intrusion Forensics (WI)"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Mathematics",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 57,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[58]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "MATH 1041",
+     "comment": "",
+     "courses": [
+      "MATH 1041"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 58,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[59]"
+     },
+     "title": "Calculus I"
+    },
+    {
+     "classes": [
+      "orclass",
+      "odd"
+     ],
+     "code_text": "or MATH 1941",
+     "comment": "",
+     "courses": [
+      "MATH 1941"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 59,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[60]"
+     },
+     "title": "Honors Calculus I"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "MATH 1042",
+     "comment": "",
+     "courses": [
+      "MATH 1042"
+     ],
+     "footnotes": [],
+     "hours": "4",
+     "indent": 0,
+     "index": 60,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[61]"
+     },
+     "title": "Calculus II"
+    },
+    {
+     "classes": [
+      "orclass",
+      "even"
+     ],
+     "code_text": "or MATH 1942",
+     "comment": "",
+     "courses": [
+      "MATH 1942"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 61,
+     "joiner": null,
+     "kind": "alternative",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[62]"
+     },
+     "title": "Honors Calculus II"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Laboratory Science courses",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 62,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[63]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even",
+      "lastrow"
+     ],
+     "code_text": "",
+     "comment": "Two (2) laboratory science courses",
+     "courses": [],
+     "footnotes": [
+      "5"
+     ],
+     "hours": "8",
+     "indent": 0,
+     "index": 63,
+     "joiner": null,
+     "kind": "comment",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[64]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "listsum"
+     ],
+     "code_text": "",
+     "comment": "Total Credit Hours",
+     "courses": [],
+     "footnotes": [],
+     "hours": "73-74",
+     "indent": 0,
+     "index": 64,
+     "joiner": null,
+     "kind": "total",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/ol/li[3]/table/tbody/tr[65]"
+     },
+     "title": ""
+    }
+   ],
+   "section": [
+    "Bachelor of Science Requirements",
+    "Summary of Requirements for the Degree"
+   ],
+   "tab": "requirementstextcontainer"
+  },
+  {
+   "evidence": {
+    "locator": {
+     "bbox": null,
+     "line": 524,
+     "page": null,
+     "tab": "requirementstextcontainer",
+     "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table"
+    },
+    "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+    "text": "Course List Code Title Credit Hours Biology Sequence Select one Biology Lab Science A: BIOL 1011General Biology I BIOL 1111Introduction to Organismal Biology BIOL 1911Honors Introduction to Organismal Biology Select one Biology Lab Science B: BIOL 1012General Biology II BIOL 1112Introduction to Biomolecules, Cells and Genomes BIOL 1912Honors Introduction to Biomolecules, Cells and Genomes BIOL 2112Introduction to Cellular and Molecular Biology BIOL 2912Honors Introduction to Cellular and Molecul",
+    "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+   },
+   "footnotes": [
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 524,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/dl/dd[1]"
+      },
+      "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+      "text": "Students can choose to mix-and-match the Chemistry Sequence A and B courses. However, they must take at least 1 course from Chemistry Sequence A and 1 from Chemistry Sequence B. Note: Chemistry courses consist of a three-credit lecture plus a one-credit lab.",
+      "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+     },
+     "marker": "1",
+     "text": "Students can choose to mix-and-match the Chemistry Sequence A and B courses. However, they must take at least 1 course from Chemistry Sequence A and 1 from Chemistry Sequence B. Note: Chemistry courses consist of a three-credit lecture plus a one-credit lab."
+    },
+    {
+     "courses": [
+      "CHEM 1031",
+      "EES 2021"
+     ],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 524,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/dl/dd[2]"
+      },
+      "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+      "text": "For the EES Sequence, two of the three Lab Science B options require students to take CHEM 1031 as a prerequisite, but EES 2021 does not.",
+      "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+     },
+     "marker": "2",
+     "text": "For the EES Sequence, two of the three Lab Science B options require students to take CHEM 1031 as a prerequisite, but EES 2021 does not."
+    },
+    {
+     "courses": [],
+     "evidence": {
+      "locator": {
+       "bbox": null,
+       "line": 524,
+       "page": null,
+       "tab": null,
+       "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/dl/dd[3]"
+      },
+      "sha256": "79266bf0a89b579091c2efccd885d45ae8e48b2f07538865277f8b67b1b63c5a",
+      "text": "Students can choose to mix-and-match the Physics Sequence A and B courses. However, they must take at least 1 course from Physics Sequence A and 1 from Physics Sequence B.",
+      "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+     },
+     "marker": "3",
+     "text": "Students can choose to mix-and-match the Physics Sequence A and B courses. However, they must take at least 1 course from Physics Sequence A and 1 from Physics Sequence B."
+    }
+   ],
+   "index": 2,
+   "rows": [
+    {
+     "classes": [
+      "even",
+      "areaheader",
+      "firstrow"
+     ],
+     "code_text": "",
+     "comment": "Biology Sequence",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 0,
+     "index": 0,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[1]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Select one Biology Lab Science A:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 1,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[2]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "BIOL 1011",
+     "comment": "",
+     "courses": [
+      "BIOL 1011"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 2,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[3]"
+     },
+     "title": "General Biology I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "BIOL 1111",
+     "comment": "",
+     "courses": [
+      "BIOL 1111"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 3,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[4]"
+     },
+     "title": "Introduction to Organismal Biology"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "BIOL 1911",
+     "comment": "",
+     "courses": [
+      "BIOL 1911"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 4,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[5]"
+     },
+     "title": "Honors Introduction to Organismal Biology"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Select one Biology Lab Science B:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 5,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[6]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "BIOL 1012",
+     "comment": "",
+     "courses": [
+      "BIOL 1012"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 6,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[7]"
+     },
+     "title": "General Biology II"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "BIOL 1112",
+     "comment": "",
+     "courses": [
+      "BIOL 1112"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 7,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[8]"
+     },
+     "title": "Introduction to Biomolecules, Cells and Genomes"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "BIOL 1912",
+     "comment": "",
+     "courses": [
+      "BIOL 1912"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 8,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[9]"
+     },
+     "title": "Honors Introduction to Biomolecules, Cells and Genomes"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "BIOL 2112",
+     "comment": "",
+     "courses": [
+      "BIOL 2112"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 9,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[10]"
+     },
+     "title": "Introduction to Cellular and Molecular Biology"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "BIOL 2912",
+     "comment": "",
+     "courses": [
+      "BIOL 2912"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 10,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[11]"
+     },
+     "title": "Honors Introduction to Cellular and Molecular Biology"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Chemistry Sequence",
+     "courses": [],
+     "footnotes": [
+      "1"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 11,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[12]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Select one Chemistry Lab Science A:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 12,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[13]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CHEM 1021 & CHEM 1023",
+     "comment": "",
+     "courses": [
+      "CHEM 1021",
+      "CHEM 1023"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 13,
+     "joiner": "and",
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[14]"
+     },
+     "title": "Introduction to Chemistry I and Introduction to Chemistry Laboratory I"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CHEM 1031 & CHEM 1033",
+     "comment": "",
+     "courses": [
+      "CHEM 1031",
+      "CHEM 1033"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 14,
+     "joiner": "and",
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[15]"
+     },
+     "title": "General Chemistry I and General Chemistry Laboratory I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CHEM 1951 & CHEM 1953",
+     "comment": "",
+     "courses": [
+      "CHEM 1951",
+      "CHEM 1953"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 15,
+     "joiner": "and",
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[16]"
+     },
+     "title": "Honors General Chemical Science I and Honors Chemical Science Laboratory I"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Select one Chemistry Lab Science B:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 16,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[17]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CHEM 1022 & CHEM 1024",
+     "comment": "",
+     "courses": [
+      "CHEM 1022",
+      "CHEM 1024"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 17,
+     "joiner": "and",
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[18]"
+     },
+     "title": "Introduction to Chemistry II and Introduction to Chemistry Laboratory II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "CHEM 1032 & CHEM 1034",
+     "comment": "",
+     "courses": [
+      "CHEM 1032",
+      "CHEM 1034"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 18,
+     "joiner": "and",
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[19]"
+     },
+     "title": "General Chemistry II and General Chemistry Laboratory II"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "CHEM 1952 & CHEM 1954",
+     "comment": "",
+     "courses": [
+      "CHEM 1952",
+      "CHEM 1954"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 19,
+     "joiner": "and",
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[20]"
+     },
+     "title": "Honors General Chemical Science II and Honors Chemical Science Laboratory II"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Earth & Environmental Science Sequence",
+     "courses": [],
+     "footnotes": [
+      "2"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 20,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[21]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Select this Lab Science A:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 21,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[22]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "EES 2001",
+     "comment": "",
+     "courses": [
+      "EES 2001"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 22,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[23]"
+     },
+     "title": "Physical Geology"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Select one Lab Science B:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 23,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[24]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "EES 2011",
+     "comment": "",
+     "courses": [
+      "EES 2011"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 24,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[25]"
+     },
+     "title": "Mineralogy I (with CHEM 1031 prerequisite)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "EES 2021",
+     "comment": "",
+     "courses": [
+      "EES 2021"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 25,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[26]"
+     },
+     "title": "Sedimentary Environments (no CHEM 1031 prerequisite)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "EES 2061",
+     "comment": "",
+     "courses": [
+      "EES 2061"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 26,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[27]"
+     },
+     "title": "Introduction to Geochemistry (with CHEM 1031 prerequisite)"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "EES 3051",
+     "comment": "",
+     "courses": [
+      "EES 3051"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 27,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[28]"
+     },
+     "title": "Natural Hazards (no CHEM 1031 prerequisite)"
+    },
+    {
+     "classes": [
+      "even",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Physics Sequence",
+     "courses": [],
+     "footnotes": [
+      "3"
+     ],
+     "hours": "",
+     "indent": 0,
+     "index": 28,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[29]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Select one Physics Lab Science A:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 29,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[30]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PHYS 1021",
+     "comment": "",
+     "courses": [
+      "PHYS 1021"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 30,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[31]"
+     },
+     "title": "Introduction to General Physics I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PHYS 1061",
+     "comment": "",
+     "courses": [
+      "PHYS 1061"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 31,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[32]"
+     },
+     "title": "Elementary Classical Physics I"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PHYS 1961",
+     "comment": "",
+     "courses": [
+      "PHYS 1961"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 32,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[33]"
+     },
+     "title": "Honors Elementary Classical Physics I"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PHYS 2021",
+     "comment": "",
+     "courses": [
+      "PHYS 2021"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 33,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[34]"
+     },
+     "title": "General Physics I (F)"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PHYS 2921",
+     "comment": "",
+     "courses": [
+      "PHYS 2921"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 34,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[35]"
+     },
+     "title": "Honors General Physics I (F)"
+    },
+    {
+     "classes": [
+      "odd",
+      "areaheader"
+     ],
+     "code_text": "",
+     "comment": "Select one Physics Lab Science B:",
+     "courses": [],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 35,
+     "joiner": null,
+     "kind": "area_header",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[36]"
+     },
+     "title": ""
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PHYS 1022",
+     "comment": "",
+     "courses": [
+      "PHYS 1022"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 36,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[37]"
+     },
+     "title": "Introduction to General Physics II"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PHYS 1062",
+     "comment": "",
+     "courses": [
+      "PHYS 1062"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 37,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[38]"
+     },
+     "title": "Elementary Classical Physics II"
+    },
+    {
+     "classes": [
+      "even"
+     ],
+     "code_text": "PHYS 1962",
+     "comment": "",
+     "courses": [
+      "PHYS 1962"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 38,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[39]"
+     },
+     "title": "Honors Elementary Classical Physics II"
+    },
+    {
+     "classes": [
+      "odd"
+     ],
+     "code_text": "PHYS 2022",
+     "comment": "",
+     "courses": [
+      "PHYS 2022"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 39,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[40]"
+     },
+     "title": "General Physics II (S)"
+    },
+    {
+     "classes": [
+      "even",
+      "lastrow"
+     ],
+     "code_text": "PHYS 2922",
+     "comment": "",
+     "courses": [
+      "PHYS 2922"
+     ],
+     "footnotes": [],
+     "hours": "",
+     "indent": 1,
+     "index": 40,
+     "joiner": null,
+     "kind": "course",
+     "locator": {
+      "bbox": null,
+      "line": 524,
+      "page": null,
+      "tab": null,
+      "xpath": "/html/body/div[1]/div[2]/div/main/div[2]/table/tbody/tr[41]"
+     },
+     "title": "Honors General Physics II (S)"
+    }
+   ],
+   "section": [
+    "Bachelor of Science Requirements",
+    "Summary of Requirements for the Degree",
+    "Sequenced Computer Science BS Laboratory Science Requirements"
+   ],
+   "tab": "requirementstextcontainer"
+  }
+ ],
+ "units": [
+  "Undergraduate",
+  "Schools, Colleges and Divisions",
+  "College of Science and Technology"
+ ],
+ "url": "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/"
+}
