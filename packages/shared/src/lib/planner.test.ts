@@ -3,11 +3,15 @@ import type { PlannedCourse, PlannedSection } from "../types/store";
 import { addCourse, addSection, emptyPlan } from "./plan";
 import {
   auditCourseKeys,
+  catalogCredits,
   entryCredits,
+  hasCourse,
+  moveEntry,
   placedRequirements,
   plannedCredits,
   projectedFinish,
   removeEntry,
+  retermPlan,
   termEntries,
 } from "./planner";
 import type { Audit } from "@workspace/api-client";
@@ -193,6 +197,77 @@ describe("removeEntry", () => {
       NOW,
     );
     expect(removeEntry(plan, "x", NOW).courses).toEqual([]);
+  });
+});
+
+describe("hasCourse", () => {
+  it("finds a course by code, with or without sections", () => {
+    let plan = emptyPlan("202703", "Spring 2027");
+    plan = addSection(plan, section("1", "CIS 2107"), NOW);
+    plan = addCourse(plan, course("a", "MATH 1041"), NOW);
+    expect(hasCourse(plan, "cis 2107")).toBe(true);
+    expect(hasCourse(plan, "MATH 1041")).toBe(true);
+    expect(hasCourse(plan, "CIS 3296")).toBe(false);
+  });
+});
+
+describe("catalogCredits", () => {
+  it("reads the fewest credits", () => {
+    expect(catalogCredits("3")).toBe(3);
+    expect(catalogCredits("1-4")).toBe(1);
+    expect(catalogCredits("1 or 2")).toBe(1);
+    expect(catalogCredits("0.5")).toBe(0.5);
+    expect(catalogCredits("")).toBeNull();
+  });
+});
+
+describe("moveEntry", () => {
+  const spring = emptyPlan("202703", "Spring 2027");
+  const fall = emptyPlan("202736", "Fall 2027");
+
+  it("moves a planned course with its requirement", () => {
+    const from = addCourse(
+      spring,
+      course("a", "CIS 4398", { requirement: "WI" }),
+      NOW,
+    );
+    const moved = moveEntry(from, fall, "CIS4398", NOW)!;
+    expect(moved.from.courses).toEqual([]);
+    expect(moved.to.courses).toEqual([
+      expect.objectContaining({ id: "a", code: "CIS 4398", requirement: "WI" }),
+    ]);
+  });
+
+  it("leaves sections behind and plans the course instead", () => {
+    const from = addSection(spring, section("1", "CIS 2107"), NOW);
+    const moved = moveEntry(from, fall, "CIS2107", NOW)!;
+    expect(moved.from.sections).toEqual([]);
+    expect(moved.to.sections).toEqual([]);
+    expect(moved.to.courses).toEqual([
+      expect.objectContaining({ code: "CIS 2107", credits: 4 }),
+    ]);
+  });
+
+  it("won't add a course the term already has", () => {
+    const from = addCourse(spring, course("a", "CIS 2107"), NOW);
+    const to = addCourse(fall, course("b", "CIS 2107"), NOW);
+    expect(moveEntry(from, to, "CIS2107", NOW)).toBeNull();
+    expect(moveEntry(from, fall, "CIS9999", NOW)).toBeNull();
+  });
+});
+
+describe("retermPlan", () => {
+  it("moves every course to the new term, keeping colors", () => {
+    let plan = emptyPlan("202703", "Spring 2027");
+    plan = addSection(plan, section("1", "CIS 2107"), NOW);
+    plan = addCourse(plan, course("a", "CIS 2107"), NOW);
+    plan = addCourse(plan, course("x", null), NOW);
+    const next = retermPlan(plan, "202803", "Spring 2028", NOW);
+    expect(next.term).toBe("202803");
+    expect(next.termDescription).toBe("Spring 2028");
+    expect(next.sections).toEqual([]);
+    expect(next.courses.map((c) => c.id)).toEqual(["a", "x"]);
+    expect(next.colorOrder).toEqual(plan.colorOrder);
   });
 });
 

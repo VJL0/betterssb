@@ -18,7 +18,7 @@ export function formatTermName(bannerDescription: string): string {
  * I, 26 Summer II, 36 Fall. Used to name and add terms Banner hasn't posted
  * yet in the planner.
  */
-const TEMPLE_SEASONS = [
+export const TEMPLE_SEASONS = [
   { code: "03", name: "Spring" },
   { code: "20", name: "Summer I" },
   { code: "26", name: "Summer II" },
@@ -26,11 +26,29 @@ const TEMPLE_SEASONS = [
 ] as const;
 const TERM_CODE = /^(\d{4})(\d{2})$/;
 
-/** "Fall 2027" for "202736", or null for a code outside Temple's scheme. */
-export function templeTermName(code: string): string | null {
+export type TempleSeasonCode = (typeof TEMPLE_SEASONS)[number]["code"];
+
+/** 2027 + "36" → "202736". */
+export function templeTermCode(year: number, season: TempleSeasonCode): string {
+  return `${year}${season}`;
+}
+
+/** The year and season of a Temple code, or null for a code outside the scheme. */
+export function splitTempleTerm(
+  code: string,
+): { year: number; season: TempleSeasonCode } | null {
   const match = TERM_CODE.exec(code);
   const season = TEMPLE_SEASONS.find((s) => s.code === match?.[2]);
-  return match && season ? `${season.name} ${match[1]}` : null;
+  return match && season
+    ? { year: Number(match[1]), season: season.code }
+    : null;
+}
+
+/** "Fall 2027" for "202736", or null for a code outside Temple's scheme. */
+export function templeTermName(code: string): string | null {
+  const term = splitTempleTerm(code);
+  const season = TEMPLE_SEASONS.find((s) => s.code === term?.season);
+  return term && season ? `${season.name} ${term.year}` : null;
 }
 
 /** The next `count` terms after `code`, summers included, as Temple codes. */
