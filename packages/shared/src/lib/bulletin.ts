@@ -53,3 +53,37 @@ export function startTermOptions(today: Date): StartTerm[] {
     }
   }
 }
+
+/** August, when Temple's academic year (and its Bulletin) turns over. */
+const ACADEMIC_YEAR_START_MONTH = 7;
+const FOUR_DIGIT_YEAR = /^\d{4}$/;
+
+function academicYear(firstYear: number): string {
+  return `${firstYear}-${firstYear + 1}`;
+}
+
+/**
+ * The Bulletin year to read courses from: the student's program's year, the
+ * one their start term suggests, their audit's catalog year ("2024"), or
+ * else the academic year `today` falls in.
+ */
+export function bulletinYearFor(
+  sources: {
+    programYear: string | null;
+    startTerm: string | null;
+    auditCatalogYear: string | null;
+  },
+  today: Date,
+): string {
+  const { programYear, startTerm, auditCatalogYear } = sources;
+  if (programYear) return programYear;
+  const suggested = startTerm ? suggestedBulletinYear(startTerm) : null;
+  if (suggested) return suggested;
+  if (auditCatalogYear && FOUR_DIGIT_YEAR.test(auditCatalogYear)) {
+    return academicYear(Number(auditCatalogYear));
+  }
+  const year = today.getFullYear();
+  return academicYear(
+    today.getMonth() >= ACADEMIC_YEAR_START_MONTH ? year : year - 1,
+  );
+}

@@ -1,4 +1,14 @@
-import { PlusIcon, XIcon } from "lucide-react";
+"use client";
+
+import { useState, type DragEvent } from "react";
+import {
+  EllipsisVerticalIcon,
+  GripVerticalIcon,
+  PencilIcon,
+  PlusIcon,
+  Trash2Icon,
+  XIcon,
+} from "lucide-react";
 import { planCourseColor } from "@workspace/shared/lib/plan";
 import {
   APPROVAL_ABOVE,
@@ -12,8 +22,20 @@ import type { TermPlan } from "@workspace/shared/types/store";
 import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
 import { courseBackgroundClass } from "@workspace/ui/lib/course-color-classes";
 import { cn } from "@workspace/ui/lib/utils";
+import {
+  isCourseDrag,
+  readCourseDrag,
+  startCourseDrag,
+  type CourseDrag,
+} from "./course-drag";
 
 export type TermStatus = "posted" | "past" | "planned";
 
@@ -30,8 +52,19 @@ interface TermCardProps {
   /** Absent when there's nothing to add to a term. */
   onTarget?: () => void;
   onRemove: (entry: TermEntry) => void;
+  /** A course dropped on the term, from the side panel or another term. */
+  onDrop: (drag: CourseDrag) => void;
+  /** Changes which term this is. */
+  onEdit: () => void;
+  /** Removes the term, or only empties it when it can't be removed. */
+  onDelete: { label: string; run: () => void } | null;
   /** A requirement's title by its audit code. */
   requirementTitle: (code: string) => string | null;
+}
+
+/** Whether the pointer left the element itself, not one of its children. */
+function leftElement(event: DragEvent<HTMLElement>): boolean {
+  return !event.currentTarget.contains(event.relatedTarget as Node | null);
 }
 
 function loadNote(
@@ -63,8 +96,12 @@ export function TermCard({
   isTarget,
   onTarget,
   onRemove,
+  onDrop,
+  onEdit,
+  onDelete,
   requirementTitle,
 }: TermCardProps) {
+  const [dropping, setDropping] = useState(false);
   const name = plan.termDescription;
   const entries = termEntries(plan);
   const credits = entryCredits(entries);
@@ -72,25 +109,78 @@ export function TermCard({
   const badge = STATUS_BADGE[status];
   const editable = status !== "past";
 
+  const dropHandlers = editable
+    ? {
+        onDragOver(event: DragEvent<HTMLElement>) {
+          if (!isCourseDrag(event)) return;
+          event.preventDefault();
+          setDropping(true);
+        },
+        onDragLeave(event: DragEvent<HTMLElement>) {
+          if (leftElement(event)) setDropping(false);
+        },
+        onDrop(event: DragEvent<HTMLElement>) {
+          setDropping(false);
+          const drag = readCourseDrag(event);
+          if (!drag) return;
+          event.preventDefault();
+          onDrop(drag);
+        },
+      }
+    : undefined;
+
   return (
     <Card
       render={<article />}
       aria-label={name}
+      {...dropHandlers}
       className={cn(
         "gap-2.5 pt-4 pb-3",
         isTarget && onTarget && "ring-2 ring-primary",
+        dropping && "bg-muted ring-2 ring-primary",
       )}
     >
       <header className="flex flex-col gap-1.5 px-4">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-base font-medium">{name}</h2>
-          <span
-            className={cn(
-              "font-medium tabular-nums",
-              credits > APPROVAL_ABOVE && "text-destructive",
-            )}
-          >
-            {formatCredits(credits)} cr
+          <span className="flex items-center gap-1">
+            <span
+              className={cn(
+                "font-medium tabular-nums",
+                credits > APPROVAL_ABOVE && "text-destructive",
+              )}
+            >
+              {formatCredits(credits)} cr
+            </span>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    aria-label={`${name} options`}
+                    className="-mr-2"
+                  />
+                }
+              >
+                <EllipsisVerticalIcon />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-auto">
+                <DropdownMenuItem onClick={onEdit}>
+                  <PencilIcon />
+                  Change term
+                </DropdownMenuItem>
+                {onDelete && (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={onDelete.run}
+                  >
+                    <Trash2Icon />
+                    {onDelete.label}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">
@@ -114,8 +204,25 @@ export function TermCard({
             return (
               <li
                 key={entry.key}
-                className="flex items-start gap-2.5 rounded-2xl p-2.5 ring-1 ring-border ring-inset"
+                draggable={editable}
+                onDragStart={(event) =>
+                  startCourseDrag(
+                    event,
+                    { kind: "entry", term: plan.term, key: entry.key },
+                    entry.code ?? entry.title,
+                  )
+                }
+                className={cn(
+                  "group/entry flex items-start gap-2.5 rounded-2xl bg-card p-2.5 ring-1 ring-border ring-inset",
+                  editable && "cursor-grab active:cursor-grabbing",
+                )}
               >
+                {editable && (
+                  <GripVerticalIcon
+                    aria-hidden
+                    className="-mr-1.5 size-3.5 shrink-0 self-center text-muted-foreground/50 group-hover/entry:text-muted-foreground"
+                  />
+                )}
                 <span
                   aria-hidden
                   className={cn(

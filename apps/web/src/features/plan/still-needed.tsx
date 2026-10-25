@@ -1,9 +1,10 @@
-import { Card } from "@workspace/ui/components/card";
-import { PlusIcon } from "lucide-react";
 import {
   formatCredits,
   type NeededRequirement,
 } from "@workspace/shared/lib/dars";
+import { splitCourseCode } from "@workspace/shared/lib/plan";
+import type { NewCourse } from "./course-drag";
+import { CourseRow } from "./course-row";
 
 /** How many course options to name under a requirement. */
 const OPTIONS_SHOWN = 3;
@@ -14,7 +15,7 @@ interface StillNeededProps {
   /** Whether the audit lists anything as still needed at all. */
   anyNeeded: boolean;
   targetName: string | null;
-  onAdd: (requirement: NeededRequirement) => void;
+  onAdd: (course: NewCourse) => void;
 }
 
 function optionsText(options: readonly string[]): string {
@@ -23,69 +24,55 @@ function optionsText(options: readonly string[]): string {
   return more > 0 ? `${shown} or ${more} more` : shown;
 }
 
-/** W2.3 aside: requirements from the audit that still need a term. */
+/** The course a requirement adds: its one course if DARS names exactly one. */
+function requirementCourse(requirement: NeededRequirement): NewCourse {
+  const only =
+    requirement.options.length === 1 ? requirement.options[0]! : null;
+  return {
+    code: only && splitCourseCode(only) ? only : null,
+    title: requirement.title,
+    credits: requirement.credits,
+    requirement: requirement.code,
+  };
+}
+
+/** W2.3 panel tab: requirements from the audit that still need a term. */
 export function StillNeeded({
   requirements,
   anyNeeded,
   targetName,
   onAdd,
 }: StillNeededProps) {
+  if (requirements.length === 0) {
+    return (
+      <p className="mx-2 rounded-2xl border border-dashed p-4 text-center text-muted-foreground">
+        {anyNeeded
+          ? "Every requirement has a term."
+          : "Your audit shows nothing left to plan."}
+      </p>
+    );
+  }
   return (
-    <Card
-      aria-labelledby="still-needed-heading"
-      className="gap-3 pt-4 pb-3"
-      render={<aside />}
-    >
-      <div className="flex flex-col gap-1 px-4">
-        <h2 id="still-needed-heading" className="text-base font-medium">
-          Still needed
-        </h2>
-        {requirements.length > 0 && targetName && (
-          <p className="text-muted-foreground">
-            Pick a requirement to add it to{" "}
-            <span className="font-medium text-foreground">{targetName}</span>.
-          </p>
-        )}
-      </div>
-
-      {requirements.length > 0 ? (
-        <ul className="flex flex-col px-2">
-          {requirements.map((requirement) => (
-            <li key={requirement.code}>
-              <button
-                type="button"
-                onClick={() => onAdd(requirement)}
-                disabled={!targetName}
-                aria-label={`Add ${requirement.title} to ${targetName ?? "a term"}`}
-                className="flex min-h-11 w-full items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-left outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
-              >
-                <span className="grid size-6 shrink-0 place-items-center rounded-full text-muted-foreground ring-1 ring-border ring-inset">
-                  <PlusIcon aria-hidden className="size-3.5" />
-                </span>
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="font-medium">{requirement.title}</span>
-                  {requirement.options.length > 0 && (
-                    <span className="text-xs text-muted-foreground">
-                      {optionsText(requirement.options)}
-                    </span>
-                  )}
-                </span>
-                {requirement.credits !== null && (
-                  <span className="text-muted-foreground tabular-nums">
-                    {formatCredits(requirement.credits)} cr
-                  </span>
-                )}
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="mx-4 rounded-2xl border border-dashed p-4 text-center text-muted-foreground">
-          {anyNeeded
-            ? "Every requirement has a term."
-            : "Your audit shows nothing left to plan."}
-        </p>
-      )}
-    </Card>
+    <ul aria-label="Still needed" className="flex flex-col">
+      {requirements.map((requirement) => {
+        const course = requirementCourse(requirement);
+        return (
+          <CourseRow
+            key={requirement.code}
+            course={course}
+            name={requirement.title}
+            subtitle={optionsText(requirement.options)}
+            credits={
+              requirement.credits === null
+                ? null
+                : `${formatCredits(requirement.credits)} cr`
+            }
+            status={null}
+            targetName={targetName}
+            onAdd={() => onAdd(course)}
+          />
+        );
+      })}
+    </ul>
   );
 }

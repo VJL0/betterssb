@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { startTermOptions, suggestedBulletinYear } from "./bulletin";
+import {
+  bulletinYearFor,
+  startTermOptions,
+  suggestedBulletinYear,
+} from "./bulletin";
 
 const YEAR = new Date().getFullYear();
 
@@ -44,5 +48,37 @@ describe("startTermOptions", () => {
     expect(startTermOptions(new Date(YEAR, 7, 2))[0]?.name).toBe(
       `Spring ${YEAR + 1}`,
     );
+  });
+});
+
+describe("bulletinYearFor", () => {
+  const none = { programYear: null, startTerm: null, auditCatalogYear: null };
+  const october = new Date(2026, 9, 25);
+
+  it("prefers the program's year, then the start term's, then the audit's", () => {
+    expect(
+      bulletinYearFor(
+        {
+          programYear: "2023-2024",
+          startTerm: "202436",
+          auditCatalogYear: "2022",
+        },
+        october,
+      ),
+    ).toBe("2023-2024");
+    expect(
+      bulletinYearFor(
+        { ...none, startTerm: "202436", auditCatalogYear: "2022" },
+        october,
+      ),
+    ).toBe("2024-2025");
+    expect(
+      bulletinYearFor({ ...none, auditCatalogYear: "2022" }, october),
+    ).toBe("2022-2023");
+  });
+
+  it("falls back to the academic year today is in", () => {
+    expect(bulletinYearFor(none, october)).toBe("2026-2027");
+    expect(bulletinYearFor(none, new Date(2027, 2, 1))).toBe("2026-2027");
   });
 });

@@ -2,8 +2,8 @@
  * The semester planner's view of term plans: one entry per course in a term,
  * and credit totals that don't count a course the audit already has.
  */
-import type { TermPlan } from "../types/store";
-import { courseKey, replaceSections } from "./plan";
+import type { PlannedCourse, TermPlan } from "../types/store";
+import { addCourse, courseKey, replaceSections } from "./plan";
 import type { Audit } from "@workspace/api-client";
 import type { CreditTotals } from "./dars";
 
@@ -59,6 +59,75 @@ export function termEntries(plan: TermPlan): TermEntry[] {
     });
   }
   return [...entries.values()];
+}
+
+/** Whether a term already has a course, planned or with sections. */
+export function hasCourse(plan: TermPlan, code: string): boolean {
+  const key = courseKey(code);
+  return termEntries(plan).some((e) => e.key === key);
+}
+
+/** The Bulletin's credits ("3", "1-4", "1 or 2") as the fewest a course can carry. */
+export function catalogCredits(credits: string): number | null {
+  const first = /\d+(?:\.\d+)?/.exec(credits);
+  return first ? Number(first[0]) : null;
+}
+
+/**
+ * An entry as a planned course: its own course entry when it has one, or one
+ * made from its sections, which belong to their term and can't move with it.
+ */
+function entryAsCourse(
+  plan: TermPlan,
+  entry: TermEntry,
+  now: string,
+): PlannedCourse {
+  const planned = plan.courses.find(
+    (c) => (c.code ? courseKey(c.code) : c.id) === entry.key,
+  );
+  return (
+    planned ?? {
+      id: crypto.randomUUID(),
+      code: entry.code,
+      title: entry.title,
+      credits: entry.credits,
+      requirement: entry.requirement,
+      addedAt: now,
+    }
+  );
+}
+
+/**
+ * Moves a course from one term to another. Its sections stay behind, since a
+ * CRN is only good for its own term. Null when the course isn't in `from` or
+ * `to` already has it.
+ */
+export function moveEntry(
+  from: TermPlan,
+  to: TermPlan,
+  key: string,
+  now: string,
+): { from: TermPlan; to: TermPlan } | null {
+  const entry = termEntries(from).find((e) => e.key === key);
+  if (!entry || termEntries(to).some((e) => e.key === key)) return null;
+  return {
+    from: removeEntry(from, key, now),
+    to: addCourse(to, entryAsCourse(from, entry, now), now),
+  };
+}
+
+/**
+ * The plan under another term, such as Fall 2027 moved to Spring 2028. Every
+ * course comes along as a planned course; sections stay behind with their term.
+ */
+export function retermPlan(
+  plan: TermPlan,
+  term: string,
+  termDescription: string,
+  now: string,
+): TermPlan {
+  const courses = termEntries(plan).map((e) => entryAsCourse(plan, e, now));
+  return replaceSections({ ...plan, term, termDescription, courses }, [], now);
 }
 
 export function entryCredits(entries: readonly TermEntry[]): number {
