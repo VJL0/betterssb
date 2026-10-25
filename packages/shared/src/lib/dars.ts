@@ -34,13 +34,28 @@ export function creditTotals(audit: Audit): CreditTotals | null {
   return { earned, inProgress, needed, total: earned + inProgress + needed };
 }
 
+/** One incomplete part of a requirement, such as "Four to five CIS electives". */
+export interface NeededPart {
+  title: string;
+  /** Credits still needed, when DARS says. */
+  credits: number | null;
+  /** Courses still needed, when DARS counts courses. */
+  courses: number | null;
+  /** Courses DARS lists as able to fill it; ranges like "CIS 2000-4999" too. */
+  options: string[];
+}
+
 export interface NeededRequirement {
   code: string;
   title: string;
   /** Credits still needed, when DARS says. */
   credits: number | null;
+  /** Courses still needed, when DARS counts courses. */
+  courses: number | null;
   /** Courses DARS lists as able to fill it. */
   options: string[];
+  /** Its incomplete parts; empty when DARS lists none. */
+  parts: NeededPart[];
 }
 
 /** Requirements still needed, in audit order, for placing in a plan. */
@@ -52,16 +67,22 @@ export function neededRequirements(audit: Audit): NeededRequirement[] {
         !isNoteOnly(r) &&
         r.category !== TOTAL_HOURS_CATEGORY,
     )
-    .map((r) => ({
-      code: r.code,
-      title: r.title || r.code,
-      credits: r.needs?.credits ?? null,
-      options: [
-        ...new Set(
-          r.subrequirements
-            .filter((s) => s.status === "incomplete")
-            .flatMap((s) => s.selectFrom),
-        ),
-      ],
-    }));
+    .map((r) => {
+      const incomplete = r.subrequirements.filter(
+        (s) => s.status === "incomplete",
+      );
+      return {
+        code: r.code,
+        title: r.title || r.code,
+        credits: r.needs?.credits ?? null,
+        courses: r.needs?.courses ?? null,
+        options: [...new Set(incomplete.flatMap((s) => s.selectFrom))],
+        parts: incomplete.map((s) => ({
+          title: s.title,
+          credits: s.needs?.credits ?? null,
+          courses: s.needs?.courses ?? null,
+          options: s.selectFrom,
+        })),
+      };
+    });
 }

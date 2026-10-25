@@ -16,6 +16,7 @@ import {
   planKey,
   withSettingDefaults,
 } from "./store";
+import { DEFAULT_PLAN_PREFERENCES } from "./plan-optimizer";
 
 function section(
   crn: string,
@@ -84,10 +85,14 @@ describe("withSettingDefaults", () => {
 });
 
 describe("isStoreKey", () => {
-  it.each(["settings", "audit", "transcript", "advisorThreads", "plan:202703"])(
-    "accepts %s",
-    (key) => expect(isStoreKey(key)).toBe(true),
-  );
+  it.each([
+    "settings",
+    "audit",
+    "transcript",
+    "advisorThreads",
+    "planPreferences",
+    "plan:202703",
+  ])("accepts %s", (key) => expect(isStoreKey(key)).toBe(true));
 
   it.each(["plan:", "plan:2027", "plan:202703x", "betterssb:school", 42, null])(
     "rejects %s",
@@ -100,6 +105,17 @@ describe("isStoreKey", () => {
 });
 
 describe("mergeDocuments", () => {
+  it("keeps the newer plan preferences", () => {
+    const older = {
+      ...DEFAULT_PLAN_PREFERENCES,
+      creditsPerTerm: 12,
+      updatedAt: "2026-10-01",
+    };
+    const newer = { ...older, creditsPerTerm: 18, updatedAt: "2026-10-02" };
+    expect(mergeDocuments("planPreferences", older, newer)).toBe(newer);
+    expect(mergeDocuments("planPreferences", newer, older)).toBe(newer);
+  });
+
   it("keeps every planned section and the existing colors", () => {
     const here = plan(
       [

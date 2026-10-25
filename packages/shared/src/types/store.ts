@@ -110,11 +110,28 @@ export interface AdvisorThread {
   effort?: ChatRequest["effort"];
 }
 
+/** How early the student wants a requirement planned, or "skip" to leave it out. */
+export type PlanPriority = "high" | "normal" | "low" | "skip";
+
+/** What "Optimize plan" remembers between runs. */
+export interface PlanPreferences {
+  /** By audit requirement code; a requirement without one is "normal". */
+  priorities: Record<string, PlanPriority>;
+  /** The course picked where the audit lists several, by requirement part key ("CISS.TBS#1"). */
+  choices: Record<string, string>;
+  /** The most credits to place in a term. */
+  creditsPerTerm: number;
+  /** Whether summer terms take courses too. */
+  includeSummers: boolean;
+  updatedAt: string;
+}
+
 export interface StoreDocuments {
   settings: UserSettings;
   audit: StoredAudit;
   transcript: StoredTranscript;
   advisorThreads: AdvisorThread[];
+  planPreferences: PlanPreferences;
   [key: `plan:${string}`]: TermPlan;
 }
 

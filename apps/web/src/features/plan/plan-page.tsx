@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronDownIcon, CircleXIcon, PlusIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  CircleXIcon,
+  PlusIcon,
+  SparklesIcon,
+} from "lucide-react";
 import { bulletinYearFor } from "@workspace/shared/lib/bulletin";
 import { creditTotals, neededRequirements } from "@workspace/shared/lib/dars";
 import {
@@ -36,8 +41,11 @@ import { usePlans } from "@/hooks/use-plans";
 import { useSettings } from "@/hooks/use-settings";
 import { useTerms } from "@/hooks/use-terms";
 import { useStoreDocument } from "@/lib/store/store-context";
+import type { CourseDrag } from "./course-drag";
 import { CoursePanel } from "./course-panel";
 import { DegreeProgress, NoAuditProgress } from "./degree-progress";
+import { OptimizeSheet } from "./optimize-sheet";
+import { PlannerDnd } from "./planner-dnd";
 import { TermCard, type TermStatus } from "./term-card";
 import { TermDialog } from "./term-dialog";
 import { usePlanEdits } from "./use-plan-edits";
@@ -104,6 +112,7 @@ export function PlanPage() {
     open: boolean;
     editing: TermPlan | null;
   }>({ open: false, editing: null });
+  const [optimizing, setOptimizing] = useState(false);
 
   const plans = useMemo(
     () => withCurrentTerm(savedPlans, currentTerm),
@@ -115,8 +124,10 @@ export function PlanPage() {
     () => (audit ? neededRequirements(audit) : []),
     [audit],
   );
-  const placed = placedRequirements(plans);
-  const unplaced = needed.filter((r) => !placed.has(r.code));
+  const unplaced = useMemo(() => {
+    const placed = placedRequirements(plans);
+    return needed.filter((r) => !placed.has(r.code));
+  }, [needed, plans]);
   const counted = useMemo(
     () => (audit ? auditCourseKeys(audit) : new Set<string>()),
     [audit],
@@ -148,6 +159,7 @@ export function PlanPage() {
   const editable = plans.filter((p) => termStatus(p.term) !== "past");
   const target =
     editable.find((p) => p.term === targetTerm) ?? editable.at(-1) ?? null;
+  const firstTerm = editable[0]?.term ?? currentTerm?.code ?? null;
   const latestCode = plans.at(-1)?.term ?? currentTerm?.code ?? null;
   const upcoming = latestCode
     ? nextTerms(latestCode, TERMS_OFFERED).flatMap((code) => {
@@ -193,6 +205,11 @@ export function PlanPage() {
     };
   }
 
+  function dropOn(term: string, drag: CourseDrag) {
+    const plan = plans.find((p) => p.term === term);
+    if (plan) edits.drop(plan, drag);
+  }
+
   const requirementTitle = (code: string) =>
     audit?.requirements.find((r) => r.code === code)?.title || null;
 
@@ -215,30 +232,58 @@ export function PlanPage() {
               : "Lay out your terms ahead. Everything stays on this device."}
           </p>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="outline" />}>
-            <PlusIcon data-icon="inline-start" />
-            Add term
-            <ChevronDownIcon data-icon="inline-end" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {upcoming
-              .filter((t) => !plans.some((p) => p.term === t.code))
-              .map((t) => (
-                <DropdownMenuItem
-                  key={t.code}
-                  onClick={() => void submitTerm(t.code, t.name)}
-                >
-                  {t.name}
-                </DropdownMenuItem>
-              ))}
-            {upcoming.length > 0 && <DropdownMenuSeparator />}
-            <DropdownMenuItem onClick={() => openTermDialog(null)}>
-              Another term…
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex flex-wrap gap-2">
+          {audit && firstTerm && (
+            <Button
+              variant="outline"
+              disabled={unplaced.length === 0}
+              onClick={() => setOptimizing(true)}
+            >
+              <SparklesIcon data-icon="inline-start" />
+              Optimize plan
+            </Button>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="outline" />}>
+              <PlusIcon data-icon="inline-start" />
+              Add term
+              <ChevronDownIcon data-icon="inline-end" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {upcoming
+                .filter((t) => !plans.some((p) => p.term === t.code))
+                .map((t) => (
+                  <DropdownMenuItem
+                    key={t.code}
+                    onClick={() => void submitTerm(t.code, t.name)}
+                  >
+                    {t.name}
+                  </DropdownMenuItem>
+                ))}
+              {upcoming.length > 0 && <DropdownMenuSeparator />}
+              <DropdownMenuItem onClick={() => openTermDialog(null)}>
+                Another term…
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
+
+      {firstTerm && (
+        <OptimizeSheet
+          open={optimizing}
+          onOpenChange={setOptimizing}
+          requirements={unplaced}
+          plans={plans}
+          firstTerm={firstTerm}
+          completed={counted}
+          bulletinYear={bulletinYear}
+          onApply={(result) => {
+            setOptimizing(false);
+            edits.applyOptimization(result);
+          }}
+        />
+      )}
 
       <TermDialog
         open={termDialog.open}
@@ -282,45 +327,46 @@ export function PlanPage() {
             !audit && <NoAuditProgress />
           )}
 
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <section
-              aria-label="Terms"
-              className="grid grid-cols-[repeat(auto-fill,minmax(min(15rem,100%),1fr))] items-start gap-4"
-            >
-              {plans.map((plan) => (
-                <TermCard
-                  key={plan.term}
-                  plan={plan}
-                  status={termStatus(plan.term)}
-                  isTarget={plan.term === target?.term}
-                  onTarget={() => setTargetTerm(plan.term)}
-                  onRemove={(entry) => edits.removeCourse(plan, entry)}
-                  onDrop={(drag) => edits.drop(plan, drag)}
-                  onEdit={() => openTermDialog(plan)}
-                  onDelete={deleteAction(plan)}
-                  requirementTitle={requirementTitle}
-                />
-              ))}
-              {plans.length === 0 && (
-                <p className="col-span-full rounded-3xl border border-dashed p-8 text-center text-muted-foreground">
-                  No terms yet. Add one to start planning.
-                </p>
-              )}
-            </section>
-            <CoursePanel
-              needed={
-                audit
-                  ? { requirements: unplaced, anyNeeded: needed.length > 0 }
-                  : null
-              }
-              programUrl={settings.program?.url ?? null}
-              bulletinYear={bulletinYear}
-              initialSubject={initialSubject}
-              statusOf={statusOf}
-              targetName={target?.termDescription ?? null}
-              onAdd={(course) => target && edits.addCourse(target, course)}
-            />
-          </div>
+          <PlannerDnd onDrop={dropOn}>
+            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+              <section
+                aria-label="Terms"
+                className="grid grid-cols-[repeat(auto-fill,minmax(min(15rem,100%),1fr))] items-start gap-4"
+              >
+                {plans.map((plan) => (
+                  <TermCard
+                    key={plan.term}
+                    plan={plan}
+                    status={termStatus(plan.term)}
+                    isTarget={plan.term === target?.term}
+                    onTarget={() => setTargetTerm(plan.term)}
+                    onRemove={(entry) => edits.removeCourse(plan, entry)}
+                    onEdit={() => openTermDialog(plan)}
+                    onDelete={deleteAction(plan)}
+                    requirementTitle={requirementTitle}
+                  />
+                ))}
+                {plans.length === 0 && (
+                  <p className="col-span-full rounded-3xl border border-dashed p-8 text-center text-muted-foreground">
+                    No terms yet. Add one to start planning.
+                  </p>
+                )}
+              </section>
+              <CoursePanel
+                needed={
+                  audit
+                    ? { requirements: unplaced, anyNeeded: needed.length > 0 }
+                    : null
+                }
+                programUrl={settings.program?.url ?? null}
+                bulletinYear={bulletinYear}
+                initialSubject={initialSubject}
+                statusOf={statusOf}
+                targetName={target?.termDescription ?? null}
+                onAdd={(course) => target && edits.addCourse(target, course)}
+              />
+            </div>
+          </PlannerDnd>
         </>
       )}
     </div>

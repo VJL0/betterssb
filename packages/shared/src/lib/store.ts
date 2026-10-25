@@ -14,6 +14,7 @@ const SINGLE_KEYS: ReadonlySet<string> = new Set([
   "audit",
   "transcript",
   "advisorThreads",
+  "planPreferences",
 ]);
 const TERM_CODE = /^\d{6}$/;
 
@@ -113,9 +114,10 @@ export function mergeDocuments<K extends StoreKey>(
         b as AdvisorThread[],
       ) as StoreDocuments[K];
     case "settings":
+    case "planPreferences":
       return newerOf(
-        a as StoreDocuments["settings"],
-        b as StoreDocuments["settings"],
+        a as { updatedAt: string },
+        b as { updatedAt: string },
         (d) => d.updatedAt,
       ) as StoreDocuments[K];
     case "audit":

@@ -77,6 +77,15 @@ describe("bulletinYearFor", () => {
     ).toBe("2022-2023");
   });
 
+  it("reads a catalog year written as a term", () => {
+    expect(
+      bulletinYearFor({ ...none, auditCatalogYear: "Fall 2024" }, october),
+    ).toBe("2024-2025");
+    expect(
+      bulletinYearFor({ ...none, auditCatalogYear: "Spring 2025" }, october),
+    ).toBe("2024-2025");
+  });
+
   it("falls back to the academic year today is in", () => {
     expect(bulletinYearFor(none, october)).toBe("2026-2027");
     expect(bulletinYearFor(none, new Date(2027, 2, 1))).toBe("2026-2027");

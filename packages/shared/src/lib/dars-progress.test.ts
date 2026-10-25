@@ -141,7 +141,16 @@ describe("neededRequirements", () => {
         code: "B",
         title: "Major electives",
         credits: 9,
+        courses: null,
         options: ["CIS 3715", "CIS 4526"],
+        parts: [
+          {
+            title: "",
+            credits: null,
+            courses: null,
+            options: ["CIS 3715", "CIS 4526"],
+          },
+        ],
       },
     ]);
   });

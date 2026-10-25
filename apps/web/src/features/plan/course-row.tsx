@@ -1,11 +1,12 @@
 "use client";
 
 import { useId, useState, type ReactNode } from "react";
-import { ChevronDownIcon, GripVerticalIcon, PlusIcon } from "lucide-react";
+import { ChevronDownIcon, PlusIcon } from "lucide-react";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
-import { startCourseDrag, type NewCourse } from "./course-drag";
+import { useCourseDrag, type NewCourse } from "./course-drag";
+import { DragHandle } from "./drag-handle";
 
 interface CourseRowProps {
   course: NewCourse;
@@ -37,19 +38,23 @@ export function CourseRow({
 }: CourseRowProps) {
   const detailsId = useId();
   const [open, setOpen] = useState(false);
+  const { setNodeRef, setActivatorNodeRef, attributes, listeners, isDragging } =
+    useCourseDrag({ kind: "course", course }, name);
 
   return (
     <li
-      draggable
-      onDragStart={(event) =>
-        startCourseDrag(event, { kind: "course", course }, name)
-      }
-      className="group/row flex flex-col rounded-xl hover:bg-muted"
+      ref={setNodeRef}
+      {...listeners}
+      className={cn(
+        "group/drag flex flex-col rounded-xl hover:bg-muted",
+        isDragging && "opacity-50",
+      )}
     >
       <div className="flex min-h-11 items-center gap-2 px-1.5 py-1.5">
-        <GripVerticalIcon
-          aria-hidden
-          className="size-3.5 shrink-0 cursor-grab text-muted-foreground/50 group-hover/row:text-muted-foreground"
+        <DragHandle
+          setActivatorNodeRef={setActivatorNodeRef}
+          attributes={attributes}
+          label={`Move ${name} to a term`}
         />
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="flex items-baseline justify-between gap-2">

@@ -49,3 +49,4 @@ catalog:
   "@ai-sdk/react": ^4.0.150
   ai: ^7.0.146
   "@sentry/nextjs": ^11.8.0
+  "@dnd-kit/core": ^6.3.1
