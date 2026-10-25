@@ -13,6 +13,7 @@ import {
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
 import { axeViolations } from "@workspace/ui/test/axe";
+import { sampleAudit } from "@workspace/shared/testing/audit";
 import { classSection } from "@workspace/shared/testing/class-section";
 import { renderPage } from "@/test/render";
 import { PlanPage } from "./plan-page";
@@ -161,6 +162,90 @@ async function renderPlanner({ withAudit = true } = {}) {
 }
 
 describe("PlanPage", () => {
+  it("toggles past terms while keeping plans in ascending order", async () => {
+    const user = userEvent.setup();
+    const { store } = await renderPlanner();
+    await act(async () => {
+      await store.set("plan:202736", emptyPlan("202736", "Fall 2027"));
+      await store.set("plan:202503", emptyPlan("202503", "Spring 2025"));
+    });
+    await screen.findByRole("article", { name: "Fall 2027" });
+    expect(screen.queryByRole("article", { name: "Spring 2025" })).toBeNull();
+    const toggle = screen.getByRole("switch", { name: "Show already taken" });
+    expect(toggle.getAttribute("aria-checked")).toBe("false");
+
+    await user.click(toggle);
+    const terms = screen.getByRole("region", { name: "Terms" });
+    expect(
+      within(terms)
+        .getAllByRole("article")
+        .map((term) => term.getAttribute("aria-label")),
+    ).toEqual(["Spring 2025", "Spring 2027", "Fall 2027"]);
+
+    await user.click(toggle);
+    expect(screen.queryByRole("article", { name: "Spring 2025" })).toBeNull();
+    expect(await store.get("plan:202503")).not.toBeNull();
+    expect(screen.getByRole("article", { name: "Spring 2027" })).toBeTruthy();
+    expect(screen.getByRole("article", { name: "Fall 2027" })).toBeTruthy();
+  });
+
+  it("populates read-only history from saved audit and transcript without saving plans", async () => {
+    const user = userEvent.setup();
+    const { store } = await renderPlanner();
+    await act(async () => {
+      await store.set("audit", { audit: sampleAudit(), storedAt: NOW });
+      await store.set("transcript", {
+        storedAt: NOW,
+        transcript: {
+          gpa: null,
+          courses: [
+            {
+              subject: "CIS",
+              courseNumber: "1051",
+              title: "Intro",
+              credits: 4,
+              grade: "A",
+              term: "Spring 2026",
+            },
+            {
+              subject: "ENG",
+              courseNumber: "0802",
+              title: "Writing",
+              credits: 4,
+              grade: "A",
+              term: "Fall 2025",
+            },
+          ],
+        },
+      });
+    });
+    const fall = await screen.findByRole("article", { name: "Fall 2026" });
+    expect(within(fall).getByText("CIS 3296")).toBeTruthy();
+    expect(within(fall).getByText("In progress")).toBeTruthy();
+    expect(within(fall).queryByRole("button")).toBeNull();
+    expect(screen.queryByRole("article", { name: "Spring 2026" })).toBeNull();
+    await user.click(
+      screen.getByRole("switch", { name: "Show already taken" }),
+    );
+    const spring = await screen.findByRole("article", { name: "Spring 2026" });
+    expect(within(spring).getAllByText("CIS 1051")).toHaveLength(1);
+    expect(within(spring).queryByRole("button")).toBeNull();
+    expect(
+      within(screen.getByRole("article", { name: "Fall 2025" })).getByText(
+        "ENG 0802",
+      ),
+    ).toBeTruthy();
+    expect(await store.get("plan:202603")).toBeNull();
+    expect(await store.get("plan:202536")).toBeNull();
+    await act(async () => {
+      await store.delete("transcript");
+    });
+    await waitFor(() =>
+      expect(screen.queryByRole("article", { name: "Fall 2025" })).toBeNull(),
+    );
+    expect(screen.getByRole("article", { name: "Spring 2026" })).toBeTruthy();
+  });
+
   it("points to the degree audit until one is saved", async () => {
     await renderPlanner({ withAudit: false });
     expect(
