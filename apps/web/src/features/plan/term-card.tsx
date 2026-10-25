@@ -31,10 +31,10 @@ import { cn } from "@workspace/ui/lib/utils";
 import { useCourseDrag, useTermDrop } from "./course-drag";
 import { DragHandle } from "./drag-handle";
 
-export type TermStatus = "posted" | "past" | "planned";
+export type TermStatus = "past" | "planned" | "in-progress";
 
 const STATUS_BADGE = {
-  posted: { label: "Schedule posted", variant: "info" },
+  "in-progress": { label: "In progress", variant: "info" },
   past: { label: "Past term", variant: "secondary" },
   planned: { label: "Planned", variant: "outline" },
 } as const satisfies Record<TermStatus, { label: string; variant: string }>;
@@ -43,6 +43,8 @@ interface TermCardProps {
   plan: TermPlan;
   status: TermStatus;
   isTarget: boolean;
+  /** Imported course history cannot be changed through the planner. */
+  readOnly?: boolean;
   /** Absent when there's nothing to add to a term. */
   onTarget?: () => void;
   onRemove: (entry: TermEntry) => void;
@@ -81,6 +83,7 @@ export function TermCard({
   plan,
   status,
   isTarget,
+  readOnly = false,
   onTarget,
   onRemove,
   onEdit,
@@ -92,7 +95,7 @@ export function TermCard({
   const credits = entryCredits(entries);
   const note = loadNote(credits, entries.length);
   const badge = STATUS_BADGE[status];
-  const editable = status !== "past";
+  const editable = !readOnly && status !== "past";
 
   const { setNodeRef, isOver } = useTermDrop(plan.term, name, !editable);
 
@@ -118,35 +121,37 @@ export function TermCard({
             >
               {formatCredits(credits)} cr
             </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    aria-label={`${name} options`}
-                    className="-mr-2"
-                  />
-                }
-              >
-                <EllipsisVerticalIcon />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-auto">
-                <DropdownMenuItem onClick={onEdit}>
-                  <PencilIcon />
-                  Change term
-                </DropdownMenuItem>
-                {onDelete && (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={onDelete.run}
-                  >
-                    <Trash2Icon />
-                    {onDelete.label}
+            {!readOnly && (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      aria-label={`${name} options`}
+                      className="-mr-2"
+                    />
+                  }
+                >
+                  <EllipsisVerticalIcon />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-auto">
+                  <DropdownMenuItem onClick={onEdit}>
+                    <PencilIcon />
+                    Change term
                   </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  {onDelete && (
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={onDelete.run}
+                    >
+                      <Trash2Icon />
+                      {onDelete.label}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </span>
         </div>
         <div className="flex items-center justify-between gap-2">

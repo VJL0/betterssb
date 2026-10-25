@@ -36,6 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { Switch } from "@workspace/ui/components/switch";
 import { useCurrentTerm } from "@/hooks/use-current-term";
 import { usePlans } from "@/hooks/use-plans";
 import { useSettings } from "@/hooks/use-settings";
@@ -48,6 +49,7 @@ import { OptimizeSheet } from "./optimize-sheet";
 import { PlannerDnd } from "./planner-dnd";
 import { TermCard, type TermStatus } from "./term-card";
 import { TermDialog } from "./term-dialog";
+import { takenTerms } from "./taken-terms";
 import { usePlanEdits } from "./use-plan-edits";
 
 /** How many upcoming terms "Add term" offers. */
@@ -106,6 +108,7 @@ export function PlanPage() {
   const { plans: savedPlans, status, save, remove } = usePlans();
   const { settings } = useSettings();
   const stored = useStoreDocument("audit");
+  const storedTranscript = useStoreDocument("transcript");
   const posted = useTerms();
   const [targetTerm, setTargetTerm] = useState<string | null>(null);
   const [termDialog, setTermDialog] = useState<{
@@ -113,12 +116,18 @@ export function PlanPage() {
     editing: TermPlan | null;
   }>({ open: false, editing: null });
   const [optimizing, setOptimizing] = useState(false);
+  const [showAlreadyTaken, setShowAlreadyTaken] = useState(false);
 
   const plans = useMemo(
     () => withCurrentTerm(savedPlans, currentTerm),
     [savedPlans, currentTerm],
   );
   const audit = stored.value?.audit ?? null;
+  const history = useMemo(
+    () => takenTerms(audit, storedTranscript.value?.transcript ?? null),
+    [audit, storedTranscript.value],
+  );
+  const historyByTerm = new Map(history.map((plan) => [plan.term, plan]));
   const totals = audit ? creditTotals(audit) : null;
   const needed = useMemo(
     () => (audit ? neededRequirements(audit) : []),
@@ -147,16 +156,35 @@ export function PlanPage() {
     ...needed.flatMap((r) => r.options),
   ]);
 
-  const postedCodes = new Set(posted.terms.map((t) => t.code));
   const earliestPosted = posted.terms.map((t) => t.code).sort()[0];
   const termStatus = (code: string): TermStatus =>
-    postedCodes.has(code)
-      ? "posted"
-      : earliestPosted && code < earliestPosted
-        ? "past"
-        : "planned";
+    earliestPosted && code < earliestPosted ? "past" : "planned";
 
-  const editable = plans.filter((p) => termStatus(p.term) !== "past");
+  const editable = plans.filter(
+    (p) => termStatus(p.term) !== "past" && !historyByTerm.has(p.term),
+  );
+  const visiblePlans = [
+    ...new Map([
+      ...plans.map((plan) => [plan.term, plan] as const),
+      ...history.map((past) => {
+        const saved = plans.find((plan) => plan.term === past.term);
+        return [
+          past.term,
+          saved
+            ? { ...saved, courses: [...past.courses, ...saved.courses] }
+            : past,
+        ] as const;
+      }),
+    ]).values(),
+  ]
+    .filter((plan) => {
+      const recorded = historyByTerm.get(plan.term);
+      return (
+        showAlreadyTaken ||
+        (recorded ? recorded.inProgress : termStatus(plan.term) !== "past")
+      );
+    })
+    .sort((a, b) => a.term.localeCompare(b.term));
   const target =
     editable.find((p) => p.term === targetTerm) ?? editable.at(-1) ?? null;
   const firstTerm = editable[0]?.term ?? currentTerm?.code ?? null;
@@ -185,8 +213,10 @@ export function PlanPage() {
     if (editing) {
       edits.changeTerm(editing, code, name);
       setTargetTerm(code);
+      if (termStatus(code) === "past") setShowAlreadyTaken(true);
     } else if (await edits.addTerm(code, name)) {
       setTargetTerm(code);
+      if (termStatus(code) === "past") setShowAlreadyTaken(true);
     }
   }
 
@@ -232,7 +262,15 @@ export function PlanPage() {
               : "Lay out your terms ahead. Everything stays on this device."}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-2 px-2">
+            <Switch
+              checked={showAlreadyTaken}
+              onCheckedChange={setShowAlreadyTaken}
+              size="sm"
+            />
+            Show already taken
+          </label>
           {audit && firstTerm && (
             <Button
               variant="outline"
@@ -333,11 +371,18 @@ export function PlanPage() {
                 aria-label="Terms"
                 className="grid grid-cols-[repeat(auto-fill,minmax(min(15rem,100%),1fr))] items-start gap-4"
               >
-                {plans.map((plan) => (
+                {visiblePlans.map((plan) => (
                   <TermCard
                     key={plan.term}
                     plan={plan}
-                    status={termStatus(plan.term)}
+                    status={
+                      historyByTerm.has(plan.term)
+                        ? historyByTerm.get(plan.term)!.inProgress
+                          ? "in-progress"
+                          : "past"
+                        : termStatus(plan.term)
+                    }
+                    readOnly={historyByTerm.has(plan.term)}
                     isTarget={plan.term === target?.term}
                     onTarget={() => setTargetTerm(plan.term)}
                     onRemove={(entry) => edits.removeCourse(plan, entry)}
@@ -346,7 +391,7 @@ export function PlanPage() {
                     requirementTitle={requirementTitle}
                   />
                 ))}
-                {plans.length === 0 && (
+                {visiblePlans.length === 0 && (
                   <p className="col-span-full rounded-3xl border border-dashed p-8 text-center text-muted-foreground">
                     No terms yet. Add one to start planning.
                   </p>
