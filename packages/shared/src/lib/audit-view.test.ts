@@ -13,7 +13,13 @@ import {
   requirementFor,
 } from "./audit-view";
 
-const credits = (n: number) => ({ credits: n, courses: null, gpa: null });
+const credits = (n: number) => ({
+  credits: n,
+  courses: null,
+  sets: null,
+  subrequirements: null,
+  gpa: null,
+});
 
 function course(code: string, inProgress = false): AuditCourse {
   return {
@@ -23,6 +29,14 @@ function course(code: string, inProgress = false): AuditCourse {
     credits: 4,
     grade: inProgress ? "RG" : "A",
     inProgress,
+    conditionCode: "",
+    notes: [],
+    transfer: false,
+    exception: false,
+    bannerTerm: "",
+    transferInstitution: "",
+    transferCourse: "",
+    satisfies: "",
   };
 }
 
@@ -30,7 +44,17 @@ function sub(overrides: Partial<SubRequirement>): SubRequirement {
   return {
     number: "1",
     title: "Line",
+    notes: [],
     status: "incomplete",
+    requiredCredits: null,
+    code: "",
+    aliases: [],
+    required: false,
+    requiredCount: null,
+    requiredGpa: null,
+    maxCredits: null,
+    choices: [],
+    notFrom: [],
     earned: null,
     inProgress: null,
     needs: null,
@@ -50,6 +74,11 @@ function requirement(overrides: Partial<Requirement>): Requirement {
     earned: null,
     inProgress: null,
     needs: null,
+    requiredCredits: null,
+    requiredGpa: null,
+    requiredSubrequirements: null,
+    requiredCount: null,
+    maxCredits: null,
     subrequirements: [],
     ...overrides,
   };
@@ -61,15 +90,25 @@ const audit: Audit = {
   programCode: "CS",
   catalogYear: "Fall 2024",
   preparedOn: "10/12/2026",
+  graduationDate: "",
+  analysisComplete: true,
+  degreeTotals: null,
+  categoryTotals: [],
   complete: false,
   requirements: [
     requirement({ code: "WARNING", title: "", notes: ["Not definitive"] }),
     requirement({
       code: "MAJOR",
+      requiredCredits: null,
+      requiredGpa: null,
+      requiredSubrequirements: null,
+      requiredCount: null,
+      maxCredits: null,
       subrequirements: [
         sub({
           number: "1",
           title: "Intro",
+          notes: [],
           status: "complete",
           courses: [course("CIS  1051")],
           earned: credits(4),
@@ -77,12 +116,14 @@ const audit: Audit = {
         sub({
           number: "2",
           title: "Software Design",
+          notes: [],
           status: "in_progress",
           courses: [course("CIS 3296", true)],
         }),
         sub({
           number: "3",
           title: "Writing intensive",
+          notes: [],
           status: "incomplete",
           selectFrom: ["CIS 4397", "CIS 4398", "CIS 3000-4999"],
           needs: credits(4),

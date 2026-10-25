@@ -135,10 +135,17 @@ function Line({
           <span className="flex flex-wrap gap-1">
             {line.courses.map((course) => (
               <Badge key={`${course.course}-${course.term}`} variant="outline">
-                {course.course}
-                <span className="font-normal text-muted-foreground">
-                  {course.inProgress ? "In progress" : course.grade}
-                </span>
+                {/* An advisor waiver or substitution, not a class. */}
+                {course.exception ? "Advisor exception" : course.course}
+                {!course.exception && (
+                  <span className="font-normal text-muted-foreground">
+                    {course.inProgress
+                      ? "In progress"
+                      : course.transfer
+                        ? "Transfer"
+                        : course.grade}
+                  </span>
+                )}
               </Badge>
             ))}
           </span>

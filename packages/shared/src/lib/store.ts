@@ -24,6 +24,8 @@ export const EXTENSION_STORE_PREFIX = "betterssb:store:";
 export const DEFAULT_SETTINGS: Omit<UserSettings, "updatedAt"> = {
   term: null,
   major: "",
+  startTerm: null,
+  program: null,
   keyboardShortcuts: true,
   bannerOverlay: true,
 };

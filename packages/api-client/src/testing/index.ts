@@ -7,5 +7,5 @@
  */
 export { http, HttpResponse } from "msw/http";
 export { server, recordRequests } from "./server";
-export { API, FETCHED_AT } from "./handlers";
+export { API, PROGRAM_URL, FETCHED_AT } from "./handlers";
 export { problemResponse } from "./problem";
