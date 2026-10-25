@@ -19,12 +19,21 @@ import type {
   GenerateSchedulesData,
   GenerateSchedulesErrors,
   GenerateSchedulesResponses,
+  GetCourseDescriptionData,
+  GetCourseDescriptionErrors,
+  GetCourseDescriptionResponses,
   GetMeData,
   GetMeErrors,
   GetMeResponses,
+  GetProgramRequirementsData,
+  GetProgramRequirementsErrors,
+  GetProgramRequirementsResponses,
   ListAttributesData,
   ListAttributesErrors,
   ListAttributesResponses,
+  ListBulletinProgramsData,
+  ListBulletinProgramsErrors,
+  ListBulletinProgramsResponses,
   ListSubjectsData,
   ListSubjectsErrors,
   ListSubjectsResponses,
@@ -191,6 +200,24 @@ export const parseAudit = <ThrowOnError extends boolean = true>(
   });
 
 /**
+ * Get Course Description
+ *
+ * A course's description, credits, attributes, prerequisites and restrictions from one year's Bulletin.
+ */
+export const getCourseDescription = <ThrowOnError extends boolean = true>(
+  options: Options<GetCourseDescriptionData, ThrowOnError>,
+): RequestResult<
+  GetCourseDescriptionResponses,
+  GetCourseDescriptionErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetCourseDescriptionResponses,
+    GetCourseDescriptionErrors,
+    ThrowOnError
+  >({ url: "/api/degree/courses", ...options });
+
+/**
  * Parse Bulletin
  *
  * Parse a Temple University Bulletin HTML page into structured degree requirements.
@@ -211,6 +238,42 @@ export const parseBulletin = <ThrowOnError extends boolean = true>(
       ...options.headers,
     },
   });
+
+/**
+ * List Bulletin Programs
+ *
+ * Every program in one year's Bulletin, from its academic programs index.
+ */
+export const listBulletinPrograms = <ThrowOnError extends boolean = true>(
+  options: Options<ListBulletinProgramsData, ThrowOnError>,
+): RequestResult<
+  ListBulletinProgramsResponses,
+  ListBulletinProgramsErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    ListBulletinProgramsResponses,
+    ListBulletinProgramsErrors,
+    ThrowOnError
+  >({ url: "/api/degree/programs", ...options });
+
+/**
+ * Get Program Requirements
+ *
+ * A program's degree requirements, parsed from its Bulletin page.
+ */
+export const getProgramRequirements = <ThrowOnError extends boolean = true>(
+  options: Options<GetProgramRequirementsData, ThrowOnError>,
+): RequestResult<
+  GetProgramRequirementsResponses,
+  GetProgramRequirementsErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetProgramRequirementsResponses,
+    GetProgramRequirementsErrors,
+    ThrowOnError
+  >({ url: "/api/degree/requirements", ...options });
 
 /**
  * Search Professors

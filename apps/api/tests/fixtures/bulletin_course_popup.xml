@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<courseinfo>
+<course code="CIS 3296">
+<![CDATA[
+<div class="courseblock">
+<p class="courseblocktitle"><strong>CIS&#160;3296.  Software Design.  4   Credit Hours.</strong></p>
+<div class="courseblockdesc">
+<div class='courseblockheaddiv'>This course provides direct experience in the design, development, documentation, testing and maintenance of medium size software projects, in the use of modern software problem solving abstractions and solution patterns, and in the use of software development environments. This course is the capstone of the programming course sequence. By its very nature, the capstone course is a method of summative evaluation of students' previous learning in computer science disciplines. It provides a forum that allows an instructor to assess the student's overall collegiate learning experience. Students are assumed to have gained adequate computer language (C and Java in particular) and programming skills in their early-year curriculum. As this is a writing-intensive course, students are required to submit written assignments that go through an iterative writing cycle: a student submits an assignment, the instructor gives feedback on the assignment, student revises and resubmits work, and the instructor assigns a grade for the revised version. Writing assignments in this course will be grounded in the expression of technical computer science concepts and are designed to help students to develop and practice skills in writing for the computer science discipline.</div><p class='courseblockpart'><strong>Course Attributes:</strong> WI</p><p class='courseblockpart'><strong>Repeatability:</strong> This course may not be repeated for additional credits.</p><p class='courseblockpart'><strong>Pre-requisites:</strong> Minimum grade of C- in CIS 2168 and (CIS 3203 or CIS 3207)</p></div>
+</div>
+]]>
+</course>
+</courseinfo>

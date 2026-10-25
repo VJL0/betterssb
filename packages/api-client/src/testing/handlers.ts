@@ -7,7 +7,10 @@ import { http, HttpResponse } from "msw/http";
 import type {
   CheckPrerequisitesResponse,
   GenerateSchedulesResponse,
+  GetCourseDescriptionResponse,
   GetMeResponse,
+  GetProgramRequirementsResponse,
+  ListBulletinProgramsResponse,
   ListAttributesResponse,
   ListSubjectsResponse,
   ListTermsResponse,
@@ -44,7 +47,11 @@ const AUDIT: ParseAuditResponse = {
   programTitle: "Computer Science, BS",
   catalogYear: "2025",
   preparedOn: FETCHED_AT,
+  graduationDate: "",
   complete: null,
+  analysisComplete: true,
+  degreeTotals: null,
+  categoryTotals: [],
   requirements: [],
 };
 
@@ -53,14 +60,92 @@ const BULLETIN: ParseBulletinResponse = {
   programCode: "CIS-BS",
   degreeType: "BS",
   college: "College of Science and Technology",
+  level: "Undergraduate",
+  breadcrumb: [],
+  campus: "Main",
   bulletinYear: "2025-2026",
   bulletinUrl: "https://bulletin.temple.edu/",
+  pdfUrl: "",
+  programPageUrl: "",
+  archiveNotice: "",
+  appliesTo: "",
   totalCredits: "123",
+  tabs: [],
+  overview: [],
+  facts: [],
   categories: [],
+  labScienceTitle: "",
   labScienceSequences: [],
+  suggestedPlan: null,
+  suggestedPlans: [],
   distinctionCriteria: [],
   footnotes: [],
-  suggestedPlan: null,
+  contacts: [],
+  acceleratedPrograms: [],
+  sections: [],
+};
+
+/** The Computer Science BS page, the program these tests pick. */
+export const PROGRAM_URL =
+  "https://bulletin.temple.edu/undergraduate/science-technology/computer-science-bs/";
+
+function bulletinPrograms(year: string): ListBulletinProgramsResponse {
+  return {
+    bulletinYear: year,
+    requestedYear: year,
+    sourceUrl: `https://bulletin.temple.edu/archives/${year}/academic-programs/`,
+    programs: [
+      {
+        name: "Computer Science",
+        degree: "BA",
+        note: "",
+        level: "undergraduate",
+        college: "ST",
+        collegeName: "College of Science & Technology",
+        degreeName: "Bachelor of Arts",
+        hasOptions: false,
+        url: PROGRAM_URL.replace("-bs/", "-ba/"),
+      },
+      {
+        name: "Computer Science",
+        degree: "BS",
+        note: "",
+        level: "undergraduate",
+        college: "ST",
+        collegeName: "College of Science & Technology",
+        degreeName: "Bachelor of Science",
+        hasOptions: false,
+        url: PROGRAM_URL,
+      },
+    ],
+    colleges: [{ code: "ST", name: "College of Science & Technology" }],
+    degrees: [],
+    programTypes: [],
+    introduction: [],
+    links: [],
+  };
+}
+
+const COURSE: GetCourseDescriptionResponse = {
+  code: "CIS 3296",
+  title: "Software Design",
+  credits: "4",
+  description: "",
+  attributes: ["WI"],
+  repeatability: "",
+  prerequisites: "Minimum grade of C- in CIS 2168",
+  corequisites: "",
+  prerequisiteCourses: ["CIS 2168"],
+  corequisiteCourses: [],
+  restrictions: [],
+  other: [],
+  bulletinUrl: "https://bulletin.temple.edu/search/?P=CIS%203296",
+};
+
+const REQUIREMENTS: GetProgramRequirementsResponse = {
+  ...BULLETIN,
+  name: "Computer Science BS",
+  bulletinUrl: PROGRAM_URL,
 };
 
 export const handlers = [
@@ -104,6 +189,21 @@ export const handlers = [
   http.post<never, never, ParseBulletinResponse>(
     `${API}/degree/parse-bulletin`,
     () => HttpResponse.json(BULLETIN),
+  ),
+  http.get<never, never, ListBulletinProgramsResponse>(
+    `${API}/degree/programs`,
+    ({ request }) =>
+      HttpResponse.json(
+        bulletinPrograms(new URL(request.url).searchParams.get("year") ?? ""),
+      ),
+  ),
+  http.get<never, never, GetCourseDescriptionResponse>(
+    `${API}/degree/courses`,
+    () => HttpResponse.json(COURSE),
+  ),
+  http.get<never, never, GetProgramRequirementsResponse>(
+    `${API}/degree/requirements`,
+    () => HttpResponse.json(REQUIREMENTS),
   ),
   http.get<never, never, SearchProfessorsResponse>(`${API}/rmp/search`, () =>
     HttpResponse.json([]),

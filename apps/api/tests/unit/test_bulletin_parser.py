@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
+from app.modules.degree.parser import BulletinParser
 from app.modules.degree.schemas import DegreeProgram, SelectionType
-from app.modules.degree.service import BulletinParser
 
 
 @pytest.fixture()
@@ -73,25 +73,28 @@ class TestCSCategories:
         names = [c.name for c in parsed_cs.categories]
         assert any("Major" in n for n in names)
 
-    def test_writing_intensive_present(self, parsed_cs):
-        names = [c.name for c in parsed_cs.categories]
-        assert any("Writing" in n for n in names)
+    def test_writing_intensive_list_is_introduced(self, parsed_cs):
+        assert any(
+            "writing-intensive" in c.description.lower() for c in parsed_cs.categories
+        )
 
     def test_groups_exist(self, parsed_cs):
         for cat in parsed_cs.categories:
             assert len(cat.groups) >= 1
 
-    def test_items_exist_in_groups(self, parsed_cs):
+    def test_groups_have_items_or_notes(self, parsed_cs):
         for cat in parsed_cs.categories:
             for group in cat.groups:
-                assert len(group.items) >= 1, f"Group '{group.name}' has no items"
+                assert group.items or group.constraints, (
+                    f"Group '{group.name}' is empty"
+                )
 
 
 class TestCSRequirementItems:
-    def test_required_items_have_options(self, parsed_cs):
+    def test_required_items_have_options_or_words(self, parsed_cs):
         for item in _all_items(parsed_cs):
             if item.selection_type == SelectionType.REQUIRED:
-                assert len(item.options) >= 1
+                assert item.options or item.description
 
     def test_select_one_items_have_multiple_options(self, parsed_cs):
         select_ones = [
@@ -105,10 +108,10 @@ class TestCSRequirementItems:
                 f"SELECT_ONE '{item.description}' should have >= 2 options"
             )
 
-    def test_options_have_courses(self, parsed_cs):
+    def test_options_have_courses_or_words(self, parsed_cs):
         for item in _all_items(parsed_cs):
             for opt in item.options:
-                assert len(opt.courses) >= 1
+                assert opt.courses or opt.description
 
     def test_course_refs_have_subject(self, parsed_cs):
         for item in _all_items(parsed_cs):
@@ -201,10 +204,12 @@ class TestCybrCategories:
         for cat in parsed_cybr.categories:
             assert len(cat.groups) >= 1
 
-    def test_items_exist_in_groups(self, parsed_cybr):
+    def test_groups_have_items_or_notes(self, parsed_cybr):
         for cat in parsed_cybr.categories:
             for group in cat.groups:
-                assert len(group.items) >= 1, f"Group '{group.name}' has no items"
+                assert group.items or group.constraints, (
+                    f"Group '{group.name}' is empty"
+                )
 
     def test_cybr_specific_groups(self, parsed_cybr):
         names = _group_names(parsed_cybr)
@@ -213,10 +218,10 @@ class TestCybrCategories:
 
 
 class TestCybrRequirementItems:
-    def test_required_items_have_options(self, parsed_cybr):
+    def test_required_items_have_options_or_words(self, parsed_cybr):
         for item in _all_items(parsed_cybr):
             if item.selection_type == SelectionType.REQUIRED:
-                assert len(item.options) >= 1
+                assert item.options or item.description
 
     def test_select_one_items_have_multiple_options(self, parsed_cybr):
         select_ones = [
@@ -230,10 +235,10 @@ class TestCybrRequirementItems:
                 f"SELECT_ONE '{item.description}' should have >= 2 options"
             )
 
-    def test_options_have_courses(self, parsed_cybr):
+    def test_options_have_courses_or_words(self, parsed_cybr):
         for item in _all_items(parsed_cybr):
             for opt in item.options:
-                assert len(opt.courses) >= 1
+                assert opt.courses or opt.description
 
     def test_course_refs_have_subject(self, parsed_cybr):
         for item in _all_items(parsed_cybr):

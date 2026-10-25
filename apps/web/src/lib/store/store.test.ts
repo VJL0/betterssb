@@ -10,6 +10,8 @@ import { openStore } from "./open-store";
 const SETTINGS: UserSettings = {
   term: "202703",
   major: "",
+  startTerm: null,
+  program: null,
   keyboardShortcuts: true,
   bannerOverlay: true,
   updatedAt: "2026-10-17T00:00:00.000Z",

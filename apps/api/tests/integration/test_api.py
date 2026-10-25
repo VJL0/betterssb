@@ -158,8 +158,11 @@ class TestDarsRoutes:
         assert [r["code"] for r in data["requirements"]] == [
             "WARNING",
             "GENED-GW",
+            "GENED-GB",
             "CISS.TBS",
             "CAS-ULS",
+            "FREECSBS",
+            "TRANSCRIP",
         ]
 
     async def test_parse_rejects_non_audit_html(self, client: AsyncClient):

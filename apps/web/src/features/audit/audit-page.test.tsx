@@ -76,6 +76,27 @@ describe("AuditPage", () => {
     ).toBe("/search?q=CIS%204397");
   });
 
+  it("labels transfer credit and advisor exceptions", async () => {
+    const audit = sampleAudit();
+    const [done] = audit.requirements[1]!.subrequirements;
+    done!.courses = [
+      { ...done!.courses[0]!, grade: "TR", transfer: true },
+      {
+        ...done!.courses[0]!,
+        term: "",
+        course: "MAJOR-1",
+        grade: "CP",
+        exception: true,
+      },
+    ];
+    const view = renderPage(<AuditPage />);
+    await view.store.set("audit", { audit, storedAt: NOW });
+
+    expect(await screen.findByText("Transfer")).toBeTruthy();
+    expect(screen.getByText("Advisor exception")).toBeTruthy();
+    expect(screen.queryByText("MAJOR-1")).toBeNull();
+  });
+
   it("filters to the lines still needed", async () => {
     const user = userEvent.setup();
     await renderWithAudit();
