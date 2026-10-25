@@ -2,18 +2,18 @@
 
 import { useId, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { CopyIcon } from "lucide-react";
 import { inspectTranscriptPdf, queryError } from "@workspace/api-client";
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
 import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { ButtonLink } from "@/components/button-link";
-
-const MAX_PDF_BYTES = 10 * 1024 * 1024;
+import { copyText } from "@/lib/clipboard";
+import { checkPdfSize, TranscriptPdfSteps } from "./transcript-pdf";
 
 async function inspect(file: File) {
-  if (file.size > MAX_PDF_BYTES)
-    throw new Error("Choose a PDF smaller than 10 MiB.");
+  checkPdfSize(file);
   const { data } = await inspectTranscriptPdf({
     body: file,
     meta: {
@@ -55,6 +55,7 @@ export function TranscriptDataPage() {
           if (file) read.mutate(file);
         }}
       >
+        <TranscriptPdfSteps />
         <Field>
           <FieldLabel htmlFor={inputId}>Transcript PDF</FieldLabel>
           <Input
@@ -106,24 +107,30 @@ export function TranscriptDataPage() {
               ))}
             </ul>
           )}
-          <div
-            className="flex flex-wrap gap-2"
-            role="group"
-            aria-label="JSON view"
-          >
-            <Button
-              variant={view === "data" ? "default" : "outline"}
-              aria-pressed={view === "data"}
-              onClick={() => setView("data")}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div
+              className="flex flex-wrap gap-2"
+              role="group"
+              aria-label="JSON view"
             >
-              Simple JSON
-            </Button>
-            <Button
-              variant={view === "details" ? "default" : "outline"}
-              aria-pressed={view === "details"}
-              onClick={() => setView("details")}
-            >
-              Detailed JSON
+              <Button
+                variant={view === "data" ? "default" : "outline"}
+                aria-pressed={view === "data"}
+                onClick={() => setView("data")}
+              >
+                Simple JSON
+              </Button>
+              <Button
+                variant={view === "details" ? "default" : "outline"}
+                aria-pressed={view === "details"}
+                onClick={() => setView("details")}
+              >
+                Detailed JSON
+              </Button>
+            </div>
+            <Button variant="outline" onClick={() => void copyText(json)}>
+              <CopyIcon data-icon="inline-start" />
+              Copy JSON
             </Button>
           </div>
           <pre

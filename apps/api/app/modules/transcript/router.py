@@ -4,18 +4,12 @@ from fastapi import APIRouter, Body, HTTPException
 
 from app.modules.transcript.pdf_schemas import AcademicTranscript, TranscriptInspection
 from app.modules.transcript.pdf_service import INCOMPLETE_MESSAGE, inspect_pdf
-from app.modules.transcript.schemas import PrereqCheckRequest, TranscriptData
+from app.modules.transcript.schemas import PrereqCheckRequest
 from app.modules.transcript.service import TranscriptService
 
 router = APIRouter(prefix="/transcript", tags=["transcript"])
 
 _service = TranscriptService()
-
-
-@router.post("/parse", response_model=TranscriptData)
-def parse_transcript(text: str = Body(..., media_type="text/plain")) -> TranscriptData:
-    """Parse a pasted transcript into structured course data."""
-    return _service.parse_transcript(text)
 
 
 @router.post("/check-prereqs", response_model=dict[str, bool])

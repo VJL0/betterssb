@@ -58,12 +58,9 @@ import type {
   ParseBulletinData,
   ParseBulletinErrors,
   ParseBulletinResponses,
-  ParseTranscriptData,
-  ParseTranscriptErrors,
   ParseTranscriptPdfData,
   ParseTranscriptPdfErrors,
   ParseTranscriptPdfResponses,
-  ParseTranscriptResponses,
   SearchProfessorsData,
   SearchProfessorsErrors,
   SearchProfessorsResponses,
@@ -390,32 +387,6 @@ export const checkPrerequisites = <ThrowOnError extends boolean = true>(
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-/**
- * Parse Transcript
- *
- * Parse a pasted transcript into structured course data.
- */
-export const parseTranscript = <ThrowOnError extends boolean = true>(
-  options: Options<ParseTranscriptData, ThrowOnError>,
-): RequestResult<
-  ParseTranscriptResponses,
-  ParseTranscriptErrors,
-  ThrowOnError
-> =>
-  (options.client ?? client).post<
-    ParseTranscriptResponses,
-    ParseTranscriptErrors,
-    ThrowOnError
-  >({
-    bodySerializer: null,
-    url: "/api/transcript/parse",
-    ...options,
-    headers: {
-      "Content-Type": "text/plain",
       ...options.headers,
     },
   });

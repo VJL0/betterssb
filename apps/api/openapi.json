@@ -3439,34 +3439,6 @@
         "title": "TranscriptCourse",
         "type": "object"
       },
-      "TranscriptData": {
-        "properties": {
-          "courses": {
-            "items": {
-              "$ref": "#/components/schemas/TranscriptCourse"
-            },
-            "title": "Courses",
-            "type": "array"
-          },
-          "gpa": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Gpa"
-          }
-        },
-        "required": [
-          "courses",
-          "gpa"
-        ],
-        "title": "TranscriptData",
-        "type": "object"
-      },
       "TranscriptDiagnostic": {
         "properties": {
           "code": {
@@ -4951,59 +4923,6 @@
           }
         },
         "summary": "Check Prerequisites",
-        "tags": [
-          "transcript"
-        ]
-      }
-    },
-    "/api/transcript/parse": {
-      "post": {
-        "description": "Parse a pasted transcript into structured course data.",
-        "operationId": "parse_transcript",
-        "requestBody": {
-          "content": {
-            "text/plain": {
-              "schema": {
-                "title": "Text",
-                "type": "string"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TranscriptData"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "Parse Transcript",
         "tags": [
           "transcript"
         ]

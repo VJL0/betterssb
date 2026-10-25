@@ -66,6 +66,31 @@ describe("TranscriptDataPage", () => {
     expect(screen.queryByLabelText("Detailed JSON")).toBeNull();
   });
 
+  it("copies the JSON that's shown", async () => {
+    server.use(
+      http.post(`${API}/transcript/parse-pdf/data`, () =>
+        HttpResponse.json(RESULT),
+      ),
+    );
+    // user-event replaces the clipboard with one the test can read back.
+    const user = userEvent.setup();
+    renderPage(<TranscriptDataPage />);
+    await user.upload(
+      screen.getByLabelText("Transcript PDF"),
+      new File(["%PDF-"], "transcript.pdf", { type: "application/pdf" }),
+    );
+    await user.click(screen.getByRole("button", { name: "View JSON" }));
+    await user.click(await screen.findByRole("button", { name: "Copy JSON" }));
+    expect(await navigator.clipboard.readText()).toBe(
+      JSON.stringify(RESULT.data, null, 2),
+    );
+    await user.click(screen.getByRole("button", { name: "Detailed JSON" }));
+    await user.click(screen.getByRole("button", { name: "Copy JSON" }));
+    expect(await navigator.clipboard.readText()).toBe(
+      JSON.stringify(RESULT.details, null, 2),
+    );
+  });
+
   it("shows a simple error when parsing fails", async () => {
     server.use(
       http.post(`${API}/transcript/parse-pdf/data`, () =>

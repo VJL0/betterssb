@@ -5,16 +5,17 @@ import { useMutation } from "@tanstack/react-query";
 import { CircleXIcon, FileTextIcon, ShieldCheckIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
-  parseTranscript,
+  parseTranscriptPdf,
   queryError,
   type Audit,
-  type TranscriptData,
 } from "@workspace/api-client";
 import { requirementFor } from "@workspace/shared/lib/audit-view";
 import { formatCredits } from "@workspace/shared/lib/dars";
 import { courseCode } from "@workspace/shared/lib/plan";
 import {
+  savedTranscript,
   transcriptTerms,
+  type TranscriptData,
   type TranscriptTerm,
 } from "@workspace/shared/lib/transcript";
 import {
@@ -25,11 +26,8 @@ import {
 import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
-import {
-  Field,
-  FieldDescription,
-  FieldLabel,
-} from "@workspace/ui/components/field";
+import { Field, FieldLabel } from "@workspace/ui/components/field";
+import { Input } from "@workspace/ui/components/input";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
 import {
@@ -40,23 +38,23 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { Textarea } from "@workspace/ui/components/textarea";
 import { isPageReady } from "@/components/shell/pages";
 import { ButtonLink } from "@/components/button-link";
 import { useStoreDocument } from "@/lib/store/store-context";
+import { checkPdfSize, TranscriptPdfSteps } from "./transcript-pdf";
 
 /** Terms shown before "Show earlier terms". */
 const RECENT_TERMS = 3;
-const NO_COURSES =
-  "We couldn't find any courses in that text. Copy the whole transcript page, including the course lines, and try again.";
-
-async function readTranscript(text: string): Promise<TranscriptData> {
-  const { data } = await parseTranscript({
-    body: text,
-    meta: { errorMessage: "Couldn't read that transcript." },
+async function readTranscript(file: File): Promise<TranscriptData> {
+  checkPdfSize(file);
+  const { data } = await parseTranscriptPdf({
+    body: file,
+    meta: {
+      errorMessage:
+        "Couldn't read that PDF. Try a valid, unprotected transcript PDF.",
+    },
   });
-  if (data.courses.length === 0) throw new Error(NO_COURSES);
-  return data;
+  return savedTranscript(data);
 }
 
 /** W3.2 · Transcript: courses by term, and what each counts toward. */
@@ -86,7 +84,7 @@ export function TranscriptPage() {
       ]
         .filter(Boolean)
         .join(" · ")
-    : "Your unofficial transcript, read into courses and grades";
+    : "Your transcript PDF, read into courses and grades";
 
   return (
     <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
@@ -109,10 +107,10 @@ export function TranscriptPage() {
       {stored.status === "loading" ? (
         <Skeleton className="h-80 rounded-3xl" />
       ) : showForm ? (
-        <PasteForm
+        <UploadForm
           pending={read.isPending}
           error={queryError(read.error)}
-          onRead={(text) => read.mutate(text)}
+          onRead={(file) => read.mutate(file)}
           onCancel={transcript ? () => setReplacing(false) : undefined}
         />
       ) : (
@@ -152,7 +150,7 @@ export function TranscriptPage() {
             <p className="flex gap-2 text-xs text-muted-foreground">
               <ShieldCheckIcon aria-hidden className="size-4 shrink-0" />
               Only course codes, titles, credits and grades are kept, on this
-              device. The pasted text isn't stored.
+              device. The PDF isn't stored.
             </p>
           </aside>
         </div>
@@ -161,7 +159,7 @@ export function TranscriptPage() {
   );
 }
 
-function PasteForm({
+function UploadForm({
   pending,
   error,
   onRead,
@@ -169,10 +167,10 @@ function PasteForm({
 }: {
   pending: boolean;
   error: Error | null;
-  onRead: (text: string) => void;
+  onRead: (file: File) => void;
   onCancel?: () => void;
 }) {
-  const [text, setText] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const id = useId();
   return (
     <Card
@@ -180,7 +178,7 @@ function PasteForm({
       render={<form />}
       onSubmit={(e) => {
         e.preventDefault();
-        if (text.trim()) onRead(text);
+        if (file) onRead(file);
       }}
     >
       {error && (
@@ -190,32 +188,28 @@ function PasteForm({
           <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       )}
+      <TranscriptPdfSteps />
       <Field>
-        <FieldLabel htmlFor={id}>Paste your unofficial transcript</FieldLabel>
-        <FieldDescription>
-          Open your unofficial transcript in TUportal, select everything on the
-          page, copy it and paste it here. Only the courses and grades are kept,
-          matched to your audit and available to the advisor if you turn it on.
-        </FieldDescription>
-        <Textarea
+        <FieldLabel htmlFor={id}>Transcript PDF</FieldLabel>
+        <Input
           id={id}
-          rows={10}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="CIS 1068 Program Design and Abstraction  A  4.00  Fall 2025"
-          className="font-mono text-xs"
+          type="file"
+          accept="application/pdf,.pdf"
+          disabled={pending}
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
         />
       </Field>
       <div className="flex flex-wrap items-center justify-end gap-3">
         <span className="mr-auto text-xs text-muted-foreground">
-          The pasted text isn't stored.
+          Only the courses and grades are kept, matched to your audit and
+          available to the advisor if you turn it on. The PDF isn't stored.
         </span>
         {onCancel && (
           <Button type="button" variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
         )}
-        <Button type="submit" disabled={pending || !text.trim()}>
+        <Button type="submit" disabled={pending || !file}>
           {pending && <Spinner data-icon="inline-start" aria-hidden />}
           {pending ? "Reading…" : "Read transcript"}
         </Button>

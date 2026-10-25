@@ -3,8 +3,8 @@ import type {
   BulletinProgram,
   ChatMessage,
   ChatRequest,
-  TranscriptData,
 } from "@workspace/api-client";
+import type { TranscriptData } from "../lib/transcript";
 /**
  * Documents in the local-first store. The web app keeps them in IndexedDB; with
  * the extension installed, both read and write the extension's

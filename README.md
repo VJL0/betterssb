@@ -12,7 +12,7 @@ Everything is saved on your device. There's no account yet; sign-in for sync is 
 | **Schedule builder** | Generates conflict-free schedules from the courses in your plan, by your days, hours and ranking. Save one to the plan, queue its CRNs for auto-register or export it as `.ics`. |
 | **Semester planner** | Your terms side by side, the credits planned, what your audit still needs and a projected finish.                                                                                |
 | **Degree audit**     | Runs your DARS audit through the extension (or reads an uploaded audit) and shows each requirement's progress.                                                                   |
-| **Transcript**       | Paste your unofficial transcript to see your courses by term, GPA and what each counts toward.                                                                                   |
+| **Transcript**       | Upload your transcript PDF to see your courses by term, GPA and what each counts toward.                                                                                         |
 | **AI advisor**       | Ask about your plan, audit and transcript. You choose which of them the advisor can see.                                                                                         |
 | **Auto-register**    | Queue CRNs, pick a time, arm it; the extension submits them in your Banner tab when registration opens.                                                                          |
 | **On Banner pages**  | Ratings before instructors, seat meters, "In your plan" and conflict tags, and a plan dock on Banner's class search. One setting turns it all off.                               |
@@ -161,10 +161,10 @@ Set these in the project's environment variables:
 
 Postgres uses two connection strings, which Neon's Vercel integration sets for you:
 
-| Variable                | Purpose                                                        |
-| ----------------------- | -------------------------------------------------------------- |
-| `DATABASE_URL`          | The FastAPI app's SQLAlchemy engine, through Neon's pooler     |
-| `DATABASE_URL_UNPOOLED` | Alembic migrations and database administration, direct         |
+| Variable                | Purpose                                                    |
+| ----------------------- | ---------------------------------------------------------- |
+| `DATABASE_URL`          | The FastAPI app's SQLAlchemy engine, through Neon's pooler |
+| `DATABASE_URL_UNPOOLED` | Alembic migrations and database administration, direct     |
 
 Neon's PgBouncer runs in transaction mode, which migration tools may not support, so Alembic uses the direct connection and falls back to `DATABASE_URL` when it's unset. Neon's `postgresql://…?sslmode=require&channel_binding=require` strings can be pasted as-is: the API switches them to asyncpg and maps `sslmode` to asyncpg's `ssl`. asyncpg has no channel binding, so that parameter is dropped.
 

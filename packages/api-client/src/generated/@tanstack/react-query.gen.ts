@@ -25,7 +25,6 @@ import {
   type Options,
   parseAudit,
   parseBulletin,
-  parseTranscript,
   parseTranscriptPdf,
   searchProfessors,
   searchSections,
@@ -76,12 +75,9 @@ import type {
   ParseBulletinData,
   ParseBulletinError,
   ParseBulletinResponse,
-  ParseTranscriptData,
-  ParseTranscriptError,
   ParseTranscriptPdfData,
   ParseTranscriptPdfError,
   ParseTranscriptPdfResponse,
-  ParseTranscriptResponse,
   SearchProfessorsData,
   SearchProfessorsError,
   SearchProfessorsResponse,
@@ -672,35 +668,6 @@ export const checkPrerequisitesMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await checkPrerequisites({
-        ...options,
-        ...fnOptions,
-        throwOnError: true,
-      });
-      return data;
-    },
-  };
-  return mutationOptions;
-};
-
-/**
- * Parse Transcript
- *
- * Parse a pasted transcript into structured course data.
- */
-export const parseTranscriptMutation = (
-  options?: Partial<Options<ParseTranscriptData>>,
-): UseMutationOptions<
-  ParseTranscriptResponse,
-  ParseTranscriptError,
-  Options<ParseTranscriptData>
-> => {
-  const mutationOptions: UseMutationOptions<
-    ParseTranscriptResponse,
-    ParseTranscriptError,
-    Options<ParseTranscriptData>
-  > = {
-    mutationFn: async (fnOptions) => {
-      const { data } = await parseTranscript({
         ...options,
         ...fnOptions,
         throwOnError: true,

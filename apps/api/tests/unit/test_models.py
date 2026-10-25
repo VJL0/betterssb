@@ -26,7 +26,6 @@ from app.modules.schedule.schemas import (
 from app.modules.transcript.schemas import (
     DegreeRequirement,
     TranscriptCourse,
-    TranscriptData,
 )
 
 
@@ -124,10 +123,6 @@ class TestTranscriptModels:
             term="Fall 2024",
         )
         assert tc.grade == "A"
-
-    def test_transcript_data_optional_gpa(self):
-        td = TranscriptData(courses=[])
-        assert td.gpa is None
 
     def test_degree_requirement(self):
         dr = DegreeRequirement(

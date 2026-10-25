@@ -2,7 +2,8 @@
  * The plain-text context the AI advisor gets with a question (W3.3). Each
  * part is built only from records the student chose to share.
  */
-import type { Audit, TranscriptData } from "@workspace/api-client";
+import type { Audit } from "@workspace/api-client";
+import type { TranscriptData } from "./transcript";
 import type { TermPlan } from "../types/store";
 import { auditGroups } from "./audit-view";
 import { creditTotals, formatCredits } from "./dars";

@@ -11,48 +11,6 @@ def service() -> TranscriptService:
     return TranscriptService()
 
 
-class TestParseTranscript:
-    def test_parses_standard_lines(self, service, transcript_text):
-        result = service.parse_transcript(transcript_text)
-        assert len(result.courses) == 4
-        assert result.gpa == 3.45
-
-    def test_course_fields(self, service, transcript_text):
-        result = service.parse_transcript(transcript_text)
-        cis = next(c for c in result.courses if c.subject == "CIS")
-        assert cis.course_number == "1068"
-        assert cis.title == "Program Design and Abstraction"
-        assert cis.grade == "A"
-        assert cis.credits == 4.0
-        assert cis.term == "Fall 2024"
-
-    def test_empty_input(self, service):
-        result = service.parse_transcript("")
-        assert result.courses == []
-        assert result.gpa is None
-
-    def test_no_gpa_line(self, service):
-        text = "CIS  1068 Program Design and Abstraction    A   4.00   Fall 2024\n"
-        result = service.parse_transcript(text)
-        assert len(result.courses) == 1
-        assert result.gpa is None
-
-    def test_various_grades(self, service):
-        lines = [
-            "CIS  1068 Course A    W    4.00   Fall 2024",
-            "MATH 1041 Course B    P    3.00   Fall 2024",
-            "ENGL 0802 Course C    B-   3.00   Spring 2025",
-        ]
-        result = service.parse_transcript("\n".join(lines))
-        grades = [c.grade for c in result.courses]
-        assert grades == ["W", "P", "B-"]
-
-    def test_cumulative_gpa_variant(self, service):
-        text = "CIS  1068 Some Course    A   4.00   Fall 2024\nCumulative GPA: 3.80\n"
-        result = service.parse_transcript(text)
-        assert result.gpa == 3.80
-
-
 class TestCheckPrerequisites:
     def test_all_met(self, service):
         completed = [

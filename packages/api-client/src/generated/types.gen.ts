@@ -1998,20 +1998,6 @@ export type TranscriptCourse = {
 };
 
 /**
- * TranscriptData
- */
-export type TranscriptData = {
-  /**
-   * Courses
-   */
-  courses: Array<TranscriptCourse>;
-  /**
-   * Gpa
-   */
-  gpa: number | null;
-};
-
-/**
  * TranscriptDiagnostic
  */
 export type TranscriptDiagnostic = {
@@ -2864,40 +2850,6 @@ export type CheckPrerequisitesResponses = {
 
 export type CheckPrerequisitesResponse =
   CheckPrerequisitesResponses[keyof CheckPrerequisitesResponses];
-
-export type ParseTranscriptData = {
-  /**
-   * Text
-   */
-  body: string;
-  path?: never;
-  query?: never;
-  url: "/api/transcript/parse";
-};
-
-export type ParseTranscriptErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type ParseTranscriptError =
-  ParseTranscriptErrors[keyof ParseTranscriptErrors];
-
-export type ParseTranscriptResponses = {
-  /**
-   * Successful Response
-   */
-  200: TranscriptData;
-};
-
-export type ParseTranscriptResponse =
-  ParseTranscriptResponses[keyof ParseTranscriptResponses];
 
 export type ParseTranscriptPdfData = {
   /**
