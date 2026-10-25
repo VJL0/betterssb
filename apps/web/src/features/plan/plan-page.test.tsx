@@ -1,4 +1,10 @@
-import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
@@ -14,29 +20,38 @@ import type { Audit } from "@workspace/api-client";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
-/** jsdom has no DataTransfer; this keeps what a drag sets for its drop to read. */
-function dataTransfer() {
-  const data = new Map<string, string>();
-  return {
-    effectAllowed: "all",
-    dropEffect: "none",
-    setData: (type: string, value: string) => data.set(type, value),
-    getData: (type: string) => data.get(type) ?? "",
-    get types() {
-      return [...data.keys()];
-    },
-  };
+/** jsdom lays nothing out; give an element a box so dnd-kit can measure it. */
+function placeAt(element: Element, box: DOMRectInit) {
+  vi.spyOn(element, "getBoundingClientRect").mockReturnValue(
+    DOMRect.fromRect(box),
+  );
 }
 
-function drag(from: Element, to: Element) {
-  const transfer = dataTransfer();
-  fireEvent.dragStart(from, { dataTransfer: transfer });
-  fireEvent.dragOver(to, { dataTransfer: transfer });
-  fireEvent.drop(to, { dataTransfer: transfer });
+/** Lets dnd-kit measure and react between pointer moves. */
+const wait = (ms: number) => act(() => new Promise((r) => setTimeout(r, ms)));
+const BETWEEN_MOVES_MS = 20;
+/** dnd-kit swallows clicks for 50ms after a drop, so the next click isn't eaten. */
+const AFTER_DROP_MS = 60;
+
+/**
+ * Drags a course row onto a term with dnd-kit's mouse sensor: presses it,
+ * moves past the activation distance, then over the term, and releases.
+ */
+async function drag(row: Element, term: Element) {
+  placeAt(row, { x: 600, y: 100, width: 200, height: 40 });
+  placeAt(term, { x: 0, y: 0, width: 300, height: 400 });
+  fireEvent.mouseDown(row, { clientX: 610, clientY: 110, button: 0 });
+  fireEvent.mouseMove(document, { clientX: 620, clientY: 110 });
+  await wait(BETWEEN_MOVES_MS);
+  fireEvent.mouseMove(document, { clientX: 100, clientY: 100 });
+  await wait(BETWEEN_MOVES_MS);
+  fireEvent.mouseUp(document, { clientX: 100, clientY: 100 });
+  await wait(AFTER_DROP_MS);
 }
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 const audit: Audit = {
@@ -290,7 +305,13 @@ describe("PlanPage", () => {
     await store.set("plan:202736", emptyPlan("202736", "Fall 2027"));
     const spring = await screen.findByRole("article", { name: "Spring 2027" });
     const fall = await screen.findByRole("article", { name: "Fall 2027" });
-    drag(within(spring).getByText("CIS 2168").closest("li")!, fall);
+    // The grip is the course's keyboard handle.
+    expect(
+      within(spring)
+        .getByRole("button", { name: "Move CIS 2168 to another term" })
+        .getAttribute("aria-roledescription"),
+    ).toBe("draggable");
+    await drag(within(spring).getByText("CIS 2168").closest("li")!, fall);
     await waitFor(async () => {
       expect((await store.get("plan:202703"))?.sections).toEqual([]);
       expect((await store.get("plan:202736"))?.courses).toEqual([
@@ -306,7 +327,7 @@ describe("PlanPage", () => {
     // The catalog opens on the subject most of the plan is in.
     const list = await screen.findByRole("list", { name: "CIS courses" });
     expect(within(list).queryByText("CIS 5015")).toBeNull();
-    drag(
+    await drag(
       within(list).getByText("CIS 3296").closest("li")!,
       screen.getByRole("article", { name: "Spring 2027" }),
     );
