@@ -28,6 +28,9 @@ import type {
   GetProgramRequirementsData,
   GetProgramRequirementsErrors,
   GetProgramRequirementsResponses,
+  InspectTranscriptPdfData,
+  InspectTranscriptPdfErrors,
+  InspectTranscriptPdfResponses,
   ListAttributesData,
   ListAttributesErrors,
   ListAttributesResponses,
@@ -57,6 +60,9 @@ import type {
   ParseBulletinResponses,
   ParseTranscriptData,
   ParseTranscriptErrors,
+  ParseTranscriptPdfData,
+  ParseTranscriptPdfErrors,
+  ParseTranscriptPdfResponses,
   ParseTranscriptResponses,
   SearchProfessorsData,
   SearchProfessorsErrors,
@@ -410,6 +416,58 @@ export const parseTranscript = <ThrowOnError extends boolean = true>(
     ...options,
     headers: {
       "Content-Type": "text/plain",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Parse Transcript Pdf
+ *
+ * Return academic data; report incomplete parsing through a simple error.
+ */
+export const parseTranscriptPdf = <ThrowOnError extends boolean = true>(
+  options: Options<ParseTranscriptPdfData, ThrowOnError>,
+): RequestResult<
+  ParseTranscriptPdfResponses,
+  ParseTranscriptPdfErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    ParseTranscriptPdfResponses,
+    ParseTranscriptPdfErrors,
+    ThrowOnError
+  >({
+    bodySerializer: null,
+    url: "/api/transcript/parse-pdf",
+    ...options,
+    headers: {
+      "Content-Type": "application/pdf",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Inspect Transcript Pdf
+ *
+ * Inspect simple and detailed JSON without storing the uploaded document.
+ */
+export const inspectTranscriptPdf = <ThrowOnError extends boolean = true>(
+  options: Options<InspectTranscriptPdfData, ThrowOnError>,
+): RequestResult<
+  InspectTranscriptPdfResponses,
+  InspectTranscriptPdfErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    InspectTranscriptPdfResponses,
+    InspectTranscriptPdfErrors,
+    ThrowOnError
+  >({
+    bodySerializer: null,
+    url: "/api/transcript/parse-pdf/data",
+    ...options,
+    headers: {
+      "Content-Type": "application/pdf",
       ...options.headers,
     },
   });

@@ -5,6 +5,140 @@ export type ClientOptions = {
 };
 
 /**
+ * AcademicCourse
+ */
+export type AcademicCourse = {
+  /**
+   * Category
+   */
+  category: "transfer" | "institution" | "in_progress";
+  /**
+   * Coursenumber
+   */
+  courseNumber: string;
+  /**
+   * Credits
+   */
+  credits: number;
+  /**
+   * Grade
+   */
+  grade: string;
+  /**
+   * Qualitypoints
+   */
+  qualityPoints: number | null;
+  /**
+   * Repeat
+   */
+  repeat: string | null;
+  /**
+   * Subject
+   */
+  subject: string;
+  /**
+   * Term
+   */
+  term: string;
+  /**
+   * Title
+   */
+  title: string;
+};
+
+/**
+ * AcademicDiagnostic
+ */
+export type AcademicDiagnostic = {
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Message
+   */
+  message: string;
+};
+
+/**
+ * AcademicPeriod
+ */
+export type AcademicPeriod = {
+  /**
+   * Category
+   */
+  category: "transfer" | "institution" | "in_progress";
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Sourceinstitution
+   */
+  sourceInstitution: string | null;
+  /**
+   * Totals
+   */
+  totals: Array<AcademicTotals>;
+};
+
+/**
+ * AcademicTotals
+ */
+export type AcademicTotals = {
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Level
+   */
+  level: string | null;
+  /**
+   * Values
+   */
+  values: {
+    [key: string]: string;
+  };
+};
+
+/**
+ * AcademicTranscript
+ */
+export type AcademicTranscript = {
+  /**
+   * Courses
+   */
+  courses: Array<AcademicCourse>;
+  /**
+   * Diagnostics
+   */
+  diagnostics: Array<AcademicDiagnostic>;
+  /**
+   * Gpa
+   */
+  gpa: number | null;
+  /**
+   * Institution
+   */
+  institution: string | null;
+  /**
+   * Periods
+   */
+  periods: Array<AcademicPeriod>;
+  /**
+   * Program
+   */
+  program: {
+    [key: string]: string;
+  };
+  /**
+   * Totals
+   */
+  totals: Array<AcademicTotals>;
+};
+
+/**
  * Audit
  */
 export type Audit = {
@@ -1086,6 +1220,126 @@ export type PageSection = {
 };
 
 /**
+ * PdfTranscriptCourse
+ */
+export type PdfTranscriptCourse = {
+  /**
+   * Campus
+   */
+  campus: string | null;
+  /**
+   * Category
+   */
+  category: "transfer" | "institution" | "in_progress";
+  /**
+   * Cells
+   */
+  cells: {
+    [key: string]: string;
+  };
+  /**
+   * Ceucontacthours
+   */
+  ceuContactHours: number | null;
+  /**
+   * Coursenumber
+   */
+  courseNumber: string;
+  /**
+   * Credits
+   */
+  credits: number;
+  /**
+   * Grade
+   */
+  grade: string;
+  /**
+   * Level
+   */
+  level: string | null;
+  /**
+   * Qualitypoints
+   */
+  qualityPoints: number | null;
+  /**
+   * Repeat
+   */
+  repeat: string | null;
+  /**
+   * Sourcelines
+   */
+  sourceLines: Array<number>;
+  /**
+   * Subject
+   */
+  subject: string;
+  /**
+   * Term
+   */
+  term: string;
+  /**
+   * Title
+   */
+  title: string;
+};
+
+/**
+ * PdfTranscriptData
+ */
+export type PdfTranscriptData = {
+  /**
+   * Courses
+   */
+  courses: Array<PdfTranscriptCourse>;
+  /**
+   * Diagnostics
+   */
+  diagnostics: Array<TranscriptDiagnostic>;
+  /**
+   * Gpa
+   */
+  gpa: number | null;
+  /**
+   * Institution
+   */
+  institution: string | null;
+  /**
+   * Lines
+   */
+  lines: Array<TranscriptLine>;
+  /**
+   * Metadata
+   */
+  metadata: {
+    [key: string]: string;
+  };
+  /**
+   * Notices
+   */
+  notices: Array<string>;
+  /**
+   * Pages
+   */
+  pages: Array<TranscriptPage>;
+  /**
+   * Periods
+   */
+  periods: Array<TranscriptPeriod>;
+  /**
+   * Student
+   */
+  student: Array<TranscriptField>;
+  /**
+   * Title
+   */
+  title: string | null;
+  /**
+   * Totals
+   */
+  totals: Array<TranscriptTotals>;
+};
+
+/**
  * PlanCourse
  *
  * A single slot in the suggested academic plan grid.
@@ -1755,6 +2009,198 @@ export type TranscriptData = {
    * Gpa
    */
   gpa: number | null;
+};
+
+/**
+ * TranscriptDiagnostic
+ */
+export type TranscriptDiagnostic = {
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Message
+   */
+  message: string;
+  /**
+   * Sourcelines
+   */
+  sourceLines: Array<number>;
+};
+
+/**
+ * TranscriptField
+ */
+export type TranscriptField = {
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Sourcelines
+   */
+  sourceLines: Array<number>;
+  /**
+   * Value
+   */
+  value: string;
+};
+
+/**
+ * TranscriptGlyph
+ */
+export type TranscriptGlyph = {
+  /**
+   * Bottom
+   */
+  bottom: number;
+  /**
+   * Font
+   */
+  font: string;
+  /**
+   * Size
+   */
+  size: number;
+  /**
+   * Text
+   */
+  text: string;
+  /**
+   * Top
+   */
+  top: number;
+  /**
+   * X0
+   */
+  x0: number;
+  /**
+   * X1
+   */
+  x1: number;
+};
+
+/**
+ * TranscriptInspection
+ */
+export type TranscriptInspection = {
+  data: AcademicTranscript;
+  details: PdfTranscriptData;
+  /**
+   * Valid
+   */
+  valid: boolean;
+};
+
+/**
+ * TranscriptLine
+ */
+export type TranscriptLine = {
+  /**
+   * Glyphs
+   */
+  glyphs: Array<TranscriptGlyph>;
+  /**
+   * Id
+   */
+  id: number;
+  /**
+   * Kind
+   */
+  kind: string;
+  /**
+   * Page
+   */
+  page: number;
+  /**
+   * Text
+   */
+  text: string;
+};
+
+/**
+ * TranscriptPage
+ */
+export type TranscriptPage = {
+  /**
+   * Charactercount
+   */
+  characterCount: number;
+  /**
+   * Height
+   */
+  height: number;
+  /**
+   * Imagecount
+   */
+  imageCount: number;
+  /**
+   * Number
+   */
+  number: number;
+  /**
+   * Text
+   */
+  text: string;
+  /**
+   * Width
+   */
+  width: number;
+};
+
+/**
+ * TranscriptPeriod
+ */
+export type TranscriptPeriod = {
+  /**
+   * Category
+   */
+  category: "transfer" | "institution" | "in_progress";
+  /**
+   * Fields
+   */
+  fields: Array<TranscriptField>;
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Sourceinstitution
+   */
+  sourceInstitution: string | null;
+  /**
+   * Sourcelines
+   */
+  sourceLines: Array<number>;
+  /**
+   * Totals
+   */
+  totals: Array<TranscriptTotals>;
+};
+
+/**
+ * TranscriptTotals
+ */
+export type TranscriptTotals = {
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Level
+   */
+  level: string | null;
+  /**
+   * Sourcelines
+   */
+  sourceLines: Array<number>;
+  /**
+   * Values
+   */
+  values: {
+    [key: string]: string;
+  };
 };
 
 /**
@@ -2452,3 +2898,71 @@ export type ParseTranscriptResponses = {
 
 export type ParseTranscriptResponse =
   ParseTranscriptResponses[keyof ParseTranscriptResponses];
+
+export type ParseTranscriptPdfData = {
+  /**
+   * Document
+   */
+  body: Blob | File;
+  path?: never;
+  query?: never;
+  url: "/api/transcript/parse-pdf";
+};
+
+export type ParseTranscriptPdfErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ParseTranscriptPdfError =
+  ParseTranscriptPdfErrors[keyof ParseTranscriptPdfErrors];
+
+export type ParseTranscriptPdfResponses = {
+  /**
+   * Successful Response
+   */
+  200: AcademicTranscript;
+};
+
+export type ParseTranscriptPdfResponse =
+  ParseTranscriptPdfResponses[keyof ParseTranscriptPdfResponses];
+
+export type InspectTranscriptPdfData = {
+  /**
+   * Document
+   */
+  body: Blob | File;
+  path?: never;
+  query?: never;
+  url: "/api/transcript/parse-pdf/data";
+};
+
+export type InspectTranscriptPdfErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type InspectTranscriptPdfError =
+  InspectTranscriptPdfErrors[keyof InspectTranscriptPdfErrors];
+
+export type InspectTranscriptPdfResponses = {
+  /**
+   * Successful Response
+   */
+  200: TranscriptInspection;
+};
+
+export type InspectTranscriptPdfResponse =
+  InspectTranscriptPdfResponses[keyof InspectTranscriptPdfResponses];

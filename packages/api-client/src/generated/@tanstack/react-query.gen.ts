@@ -14,6 +14,7 @@ import {
   getCourseDescription,
   getMe,
   getProgramRequirements,
+  inspectTranscriptPdf,
   listAttributes,
   listBulletinPrograms,
   listBulletinSubjects,
@@ -25,6 +26,7 @@ import {
   parseAudit,
   parseBulletin,
   parseTranscript,
+  parseTranscriptPdf,
   searchProfessors,
   searchSections,
 } from "../sdk.gen";
@@ -44,6 +46,9 @@ import type {
   GetProgramRequirementsData,
   GetProgramRequirementsError,
   GetProgramRequirementsResponse,
+  InspectTranscriptPdfData,
+  InspectTranscriptPdfError,
+  InspectTranscriptPdfResponse,
   ListAttributesData,
   ListAttributesError,
   ListAttributesResponse,
@@ -73,6 +78,9 @@ import type {
   ParseBulletinResponse,
   ParseTranscriptData,
   ParseTranscriptError,
+  ParseTranscriptPdfData,
+  ParseTranscriptPdfError,
+  ParseTranscriptPdfResponse,
   ParseTranscriptResponse,
   SearchProfessorsData,
   SearchProfessorsError,
@@ -693,6 +701,64 @@ export const parseTranscriptMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await parseTranscript({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Parse Transcript Pdf
+ *
+ * Return academic data; report incomplete parsing through a simple error.
+ */
+export const parseTranscriptPdfMutation = (
+  options?: Partial<Options<ParseTranscriptPdfData>>,
+): UseMutationOptions<
+  ParseTranscriptPdfResponse,
+  ParseTranscriptPdfError,
+  Options<ParseTranscriptPdfData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ParseTranscriptPdfResponse,
+    ParseTranscriptPdfError,
+    Options<ParseTranscriptPdfData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await parseTranscriptPdf({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Inspect Transcript Pdf
+ *
+ * Inspect simple and detailed JSON without storing the uploaded document.
+ */
+export const inspectTranscriptPdfMutation = (
+  options?: Partial<Options<InspectTranscriptPdfData>>,
+): UseMutationOptions<
+  InspectTranscriptPdfResponse,
+  InspectTranscriptPdfError,
+  Options<InspectTranscriptPdfData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    InspectTranscriptPdfResponse,
+    InspectTranscriptPdfError,
+    Options<InspectTranscriptPdfData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await inspectTranscriptPdf({
         ...options,
         ...fnOptions,
         throwOnError: true,

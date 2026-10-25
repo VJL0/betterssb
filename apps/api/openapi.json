@@ -1,6 +1,244 @@
 {
   "components": {
     "schemas": {
+      "AcademicCourse": {
+        "properties": {
+          "category": {
+            "enum": [
+              "transfer",
+              "institution",
+              "in_progress"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "courseNumber": {
+            "title": "Coursenumber",
+            "type": "string"
+          },
+          "credits": {
+            "title": "Credits",
+            "type": "number"
+          },
+          "grade": {
+            "title": "Grade",
+            "type": "string"
+          },
+          "qualityPoints": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qualitypoints"
+          },
+          "repeat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repeat"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "term": {
+            "title": "Term",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject",
+          "courseNumber",
+          "title",
+          "grade",
+          "credits",
+          "term",
+          "category",
+          "qualityPoints",
+          "repeat"
+        ],
+        "title": "AcademicCourse",
+        "type": "object"
+      },
+      "AcademicDiagnostic": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "AcademicDiagnostic",
+        "type": "object"
+      },
+      "AcademicPeriod": {
+        "properties": {
+          "category": {
+            "enum": [
+              "transfer",
+              "institution",
+              "in_progress"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "sourceInstitution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceinstitution"
+          },
+          "totals": {
+            "items": {
+              "$ref": "#/components/schemas/AcademicTotals"
+            },
+            "title": "Totals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "category",
+          "sourceInstitution",
+          "totals"
+        ],
+        "title": "AcademicPeriod",
+        "type": "object"
+      },
+      "AcademicTotals": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "values": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "label",
+          "level",
+          "values"
+        ],
+        "title": "AcademicTotals",
+        "type": "object"
+      },
+      "AcademicTranscript": {
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/AcademicCourse"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/AcademicDiagnostic"
+            },
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "gpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpa"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution"
+          },
+          "periods": {
+            "items": {
+              "$ref": "#/components/schemas/AcademicPeriod"
+            },
+            "title": "Periods",
+            "type": "array"
+          },
+          "program": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Program",
+            "type": "object"
+          },
+          "totals": {
+            "items": {
+              "$ref": "#/components/schemas/AcademicTotals"
+            },
+            "title": "Totals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "courses",
+          "gpa",
+          "institution",
+          "program",
+          "periods",
+          "totals",
+          "diagnostics"
+        ],
+        "title": "AcademicTranscript",
+        "type": "object"
+      },
       "Audit": {
         "properties": {
           "analysisComplete": {
@@ -1793,6 +2031,246 @@
         "title": "PageSection",
         "type": "object"
       },
+      "PdfTranscriptCourse": {
+        "properties": {
+          "campus": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Campus"
+          },
+          "category": {
+            "enum": [
+              "transfer",
+              "institution",
+              "in_progress"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "cells": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Cells",
+            "type": "object"
+          },
+          "ceuContactHours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ceucontacthours"
+          },
+          "courseNumber": {
+            "title": "Coursenumber",
+            "type": "string"
+          },
+          "credits": {
+            "title": "Credits",
+            "type": "number"
+          },
+          "grade": {
+            "title": "Grade",
+            "type": "string"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "qualityPoints": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qualitypoints"
+          },
+          "repeat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repeat"
+          },
+          "sourceLines": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Sourcelines",
+            "type": "array"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "term": {
+            "title": "Term",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject",
+          "courseNumber",
+          "title",
+          "grade",
+          "credits",
+          "term",
+          "category",
+          "campus",
+          "level",
+          "qualityPoints",
+          "repeat",
+          "ceuContactHours",
+          "cells",
+          "sourceLines"
+        ],
+        "title": "PdfTranscriptCourse",
+        "type": "object"
+      },
+      "PdfTranscriptData": {
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/PdfTranscriptCourse"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptDiagnostic"
+            },
+            "title": "Diagnostics",
+            "type": "array"
+          },
+          "gpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpa"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptLine"
+            },
+            "title": "Lines",
+            "type": "array"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Metadata",
+            "type": "object"
+          },
+          "notices": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notices",
+            "type": "array"
+          },
+          "pages": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptPage"
+            },
+            "title": "Pages",
+            "type": "array"
+          },
+          "periods": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptPeriod"
+            },
+            "title": "Periods",
+            "type": "array"
+          },
+          "student": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptField"
+            },
+            "title": "Student",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "totals": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptTotals"
+            },
+            "title": "Totals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "courses",
+          "gpa",
+          "institution",
+          "title",
+          "notices",
+          "student",
+          "periods",
+          "totals",
+          "metadata",
+          "pages",
+          "lines",
+          "diagnostics"
+        ],
+        "title": "PdfTranscriptData",
+        "type": "object"
+      },
       "PlanCourse": {
         "description": "A single slot in the suggested academic plan grid.",
         "properties": {
@@ -2987,6 +3465,297 @@
           "gpa"
         ],
         "title": "TranscriptData",
+        "type": "object"
+      },
+      "TranscriptDiagnostic": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "sourceLines": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Sourcelines",
+            "type": "array"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "sourceLines"
+        ],
+        "title": "TranscriptDiagnostic",
+        "type": "object"
+      },
+      "TranscriptField": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "sourceLines": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Sourcelines",
+            "type": "array"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "value",
+          "sourceLines"
+        ],
+        "title": "TranscriptField",
+        "type": "object"
+      },
+      "TranscriptGlyph": {
+        "properties": {
+          "bottom": {
+            "title": "Bottom",
+            "type": "number"
+          },
+          "font": {
+            "title": "Font",
+            "type": "string"
+          },
+          "size": {
+            "title": "Size",
+            "type": "number"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "top": {
+            "title": "Top",
+            "type": "number"
+          },
+          "x0": {
+            "title": "X0",
+            "type": "number"
+          },
+          "x1": {
+            "title": "X1",
+            "type": "number"
+          }
+        },
+        "required": [
+          "text",
+          "x0",
+          "x1",
+          "top",
+          "bottom",
+          "font",
+          "size"
+        ],
+        "title": "TranscriptGlyph",
+        "type": "object"
+      },
+      "TranscriptInspection": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AcademicTranscript"
+          },
+          "details": {
+            "$ref": "#/components/schemas/PdfTranscriptData"
+          },
+          "valid": {
+            "title": "Valid",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "valid",
+          "data",
+          "details"
+        ],
+        "title": "TranscriptInspection",
+        "type": "object"
+      },
+      "TranscriptLine": {
+        "properties": {
+          "glyphs": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptGlyph"
+            },
+            "title": "Glyphs",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "kind": {
+            "default": "unrecognized",
+            "title": "Kind",
+            "type": "string"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "page",
+          "text",
+          "glyphs",
+          "kind"
+        ],
+        "title": "TranscriptLine",
+        "type": "object"
+      },
+      "TranscriptPage": {
+        "properties": {
+          "characterCount": {
+            "title": "Charactercount",
+            "type": "integer"
+          },
+          "height": {
+            "title": "Height",
+            "type": "number"
+          },
+          "imageCount": {
+            "title": "Imagecount",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "width": {
+            "title": "Width",
+            "type": "number"
+          }
+        },
+        "required": [
+          "number",
+          "width",
+          "height",
+          "text",
+          "characterCount",
+          "imageCount"
+        ],
+        "title": "TranscriptPage",
+        "type": "object"
+      },
+      "TranscriptPeriod": {
+        "properties": {
+          "category": {
+            "enum": [
+              "transfer",
+              "institution",
+              "in_progress"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptField"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "sourceInstitution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceinstitution"
+          },
+          "sourceLines": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Sourcelines",
+            "type": "array"
+          },
+          "totals": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptTotals"
+            },
+            "title": "Totals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "category",
+          "sourceInstitution",
+          "fields",
+          "totals",
+          "sourceLines"
+        ],
+        "title": "TranscriptPeriod",
+        "type": "object"
+      },
+      "TranscriptTotals": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "sourceLines": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Sourcelines",
+            "type": "array"
+          },
+          "values": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "label",
+          "level",
+          "values",
+          "sourceLines"
+        ],
+        "title": "TranscriptTotals",
         "type": "object"
       },
       "UserResponse": {
@@ -4235,6 +5004,114 @@
           }
         },
         "summary": "Parse Transcript",
+        "tags": [
+          "transcript"
+        ]
+      }
+    },
+    "/api/transcript/parse-pdf": {
+      "post": {
+        "description": "Return academic data; report incomplete parsing through a simple error.",
+        "operationId": "parse_transcript_pdf",
+        "requestBody": {
+          "content": {
+            "application/pdf": {
+              "schema": {
+                "contentMediaType": "application/octet-stream",
+                "title": "Document",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcademicTranscript"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Parse Transcript Pdf",
+        "tags": [
+          "transcript"
+        ]
+      }
+    },
+    "/api/transcript/parse-pdf/data": {
+      "post": {
+        "description": "Inspect simple and detailed JSON without storing the uploaded document.",
+        "operationId": "inspect_transcript_pdf",
+        "requestBody": {
+          "content": {
+            "application/pdf": {
+              "schema": {
+                "contentMediaType": "application/octet-stream",
+                "title": "Document",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscriptInspection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Inspect Transcript Pdf",
         "tags": [
           "transcript"
         ]
