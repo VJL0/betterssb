@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
@@ -13,6 +13,27 @@ import { PlanPage } from "./plan-page";
 import type { Audit } from "@workspace/api-client";
 
 const NOW = "2026-10-17T12:00:00.000Z";
+
+/** jsdom has no DataTransfer; this keeps what a drag sets for its drop to read. */
+function dataTransfer() {
+  const data = new Map<string, string>();
+  return {
+    effectAllowed: "all",
+    dropEffect: "none",
+    setData: (type: string, value: string) => data.set(type, value),
+    getData: (type: string) => data.get(type) ?? "",
+    get types() {
+      return [...data.keys()];
+    },
+  };
+}
+
+function drag(from: Element, to: Element) {
+  const transfer = dataTransfer();
+  fireEvent.dragStart(from, { dataTransfer: transfer });
+  fireEvent.dragOver(to, { dataTransfer: transfer });
+  fireEvent.drop(to, { dataTransfer: transfer });
+}
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -188,6 +209,136 @@ describe("PlanPage", () => {
     expect(
       await screen.findByRole("article", { name: "Fall 2027" }),
     ).toBeTruthy();
+  });
+
+  it("adds any term from the dialog", async () => {
+    const user = userEvent.setup();
+    const { store } = await renderPlanner();
+    const fall = `Fall ${new Date().getFullYear()}`;
+    await user.click(await screen.findByRole("button", { name: "Add term" }));
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Another term…" }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: `Add ${fall}` }),
+    );
+    expect(await screen.findByRole("article", { name: fall })).toBeTruthy();
+    const keys = await store.keys();
+    expect(keys).toContain(`plan:${new Date().getFullYear()}36`);
+  });
+
+  it("moves a term to another one, its sections becoming planned courses", async () => {
+    const user = userEvent.setup();
+    const { store } = await renderPlanner();
+    await user.click(
+      await screen.findByRole("button", { name: "Spring 2027 options" }),
+    );
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Change term" }),
+    );
+    const dialog = await screen.findByRole("dialog");
+    expect(
+      within(dialog)
+        .getByRole("button", { name: "Move to Spring 2027" })
+        .hasAttribute("disabled"),
+    ).toBe(true);
+    await user.click(within(dialog).getByRole("combobox", { name: "Year" }));
+    await user.click(await screen.findByRole("option", { name: "2028" }));
+    await user.click(
+      within(dialog).getByRole("button", { name: "Move to Spring 2028" }),
+    );
+    await waitFor(async () => {
+      expect(await store.get("plan:202703")).toBeNull();
+      const moved = await store.get("plan:202803");
+      expect(moved?.sections).toEqual([]);
+      expect(moved?.courses).toEqual([
+        expect.objectContaining({ code: "CIS 2168" }),
+      ]);
+    });
+  });
+
+  it("removes a term, and only clears the current one", async () => {
+    const user = userEvent.setup();
+    const { store } = await renderPlanner();
+    await store.set("plan:202736", emptyPlan("202736", "Fall 2027"));
+    await user.click(
+      await screen.findByRole("button", { name: "Fall 2027 options" }),
+    );
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Remove term" }),
+    );
+    await waitFor(async () =>
+      expect(await store.get("plan:202736")).toBeNull(),
+    );
+    expect(screen.queryByRole("article", { name: "Fall 2027" })).toBeNull();
+
+    // Spring 2027 is the term the app is on, so it stays on screen.
+    await user.click(
+      await screen.findByRole("button", { name: "Spring 2027 options" }),
+    );
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Clear term" }),
+    );
+    await waitFor(async () =>
+      expect(await store.get("plan:202703")).toBeNull(),
+    );
+    expect(screen.getByRole("article", { name: "Spring 2027" })).toBeTruthy();
+  });
+
+  it("moves a course to another term by dragging it", async () => {
+    const { store } = await renderPlanner();
+    await store.set("plan:202736", emptyPlan("202736", "Fall 2027"));
+    const spring = await screen.findByRole("article", { name: "Spring 2027" });
+    const fall = await screen.findByRole("article", { name: "Fall 2027" });
+    drag(within(spring).getByText("CIS 2168").closest("li")!, fall);
+    await waitFor(async () => {
+      expect((await store.get("plan:202703"))?.sections).toEqual([]);
+      expect((await store.get("plan:202736"))?.courses).toEqual([
+        expect.objectContaining({ code: "CIS 2168" }),
+      ]);
+    });
+  });
+
+  it("drags a course from the Bulletin catalog onto a term", async () => {
+    const user = userEvent.setup();
+    const { store } = await renderPlanner();
+    await user.click(await screen.findByRole("tab", { name: "All courses" }));
+    // The catalog opens on the subject most of the plan is in.
+    const list = await screen.findByRole("list", { name: "CIS courses" });
+    expect(within(list).queryByText("CIS 5015")).toBeNull();
+    drag(
+      within(list).getByText("CIS 3296").closest("li")!,
+      screen.getByRole("article", { name: "Spring 2027" }),
+    );
+    await waitFor(async () =>
+      expect((await store.get("plan:202703"))?.courses).toEqual([
+        expect.objectContaining({
+          code: "CIS 3296",
+          title: "Software Design",
+          credits: 4,
+        }),
+      ]),
+    );
+    expect(await within(list).findByText("In Spring 2027")).toBeTruthy();
+  });
+
+  it("adds a catalog course to the chosen term with its button", async () => {
+    const user = userEvent.setup();
+    const { store } = await renderPlanner();
+    await user.click(await screen.findByRole("tab", { name: "All courses" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Show 1 graduate course" }),
+    );
+    await user.click(
+      await screen.findByRole("button", {
+        name: "Add CIS 5015 to Spring 2027",
+      }),
+    );
+    await waitFor(async () =>
+      expect((await store.get("plan:202703"))?.courses).toEqual([
+        expect.objectContaining({ code: "CIS 5015", credits: 3 }),
+      ]),
+    );
   });
 
   it("has no accessibility violations", async () => {

@@ -28,6 +28,7 @@ export function usePlans(): {
   plans: TermPlan[];
   status: DocumentStatus;
   save: (plan: TermPlan) => Promise<void>;
+  remove: (term: string) => Promise<void>;
 } {
   const state = useStoreState();
   const store = storeOf(state);
@@ -69,5 +70,19 @@ export function usePlans(): {
     [store],
   );
 
-  return { plans, status: state.status === "error" ? "error" : status, save };
+  const remove = useCallback(
+    async (term: string) => {
+      if (!store) throw new Error("Your saved data isn't open yet.");
+      setPlans((current) => current.filter((p) => p.term !== term));
+      await store.delete(planKey(term));
+    },
+    [store],
+  );
+
+  return {
+    plans,
+    status: state.status === "error" ? "error" : status,
+    save,
+    remove,
+  };
 }

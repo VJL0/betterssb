@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { formatTermName, isViewOnlyTerm, nextTerms } from "./terms";
+import {
+  formatTermName,
+  isViewOnlyTerm,
+  nextTerms,
+  splitTempleTerm,
+  templeTermCode,
+} from "./terms";
 
 describe("formatTermName", () => {
   it.each([
@@ -26,6 +32,12 @@ describe("Temple term codes", () => {
     expect(templeTermName("202736")).toBe("Fall 2027");
     expect(templeTermName("202803")).toBe("Spring 2028");
     expect(templeTermName("202799")).toBeNull();
+  });
+
+  it("splits and builds codes", () => {
+    expect(splitTempleTerm("202726")).toEqual({ year: 2027, season: "26" });
+    expect(splitTempleTerm("202799")).toBeNull();
+    expect(templeTermCode(2028, "03")).toBe("202803");
   });
 
   it("rolls over to the next year", () => {
