@@ -300,6 +300,25 @@ class CourseDescription(BaseSchema):
     bulletin_url: str = ""
 
 
+class BulletinSubjectIndex(BaseSchema):
+    """Every course subject in one Bulletin year, from its course descriptions index."""
+
+    bulletin_year: str
+    # The year asked for, when an earlier year stands in (see BulletinProgramIndex).
+    requested_year: str = ""
+    source_url: str
+    subjects: list[CodeName]
+
+
+class SubjectCourses(BaseSchema):
+    """Every course one subject lists in a Bulletin year, undergraduate and graduate."""
+
+    bulletin_year: str
+    subject: str
+    source_url: str
+    courses: list[CourseDescription]
+
+
 class DegreeProgram(BaseSchema):
     """Complete degree requirements scraped from a Temple Bulletin page.
 

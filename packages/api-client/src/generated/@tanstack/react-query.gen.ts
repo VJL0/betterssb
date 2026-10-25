@@ -16,6 +16,8 @@ import {
   getProgramRequirements,
   listAttributes,
   listBulletinPrograms,
+  listBulletinSubjects,
+  listSubjectCourses,
   listSubjects,
   listTerms,
   logout,
@@ -48,6 +50,12 @@ import type {
   ListBulletinProgramsData,
   ListBulletinProgramsError,
   ListBulletinProgramsResponse,
+  ListBulletinSubjectsData,
+  ListBulletinSubjectsError,
+  ListBulletinSubjectsResponse,
+  ListSubjectCoursesData,
+  ListSubjectCoursesError,
+  ListSubjectCoursesResponse,
   ListSubjectsData,
   ListSubjectsError,
   ListSubjectsResponse,
@@ -513,6 +521,66 @@ export const getProgramRequirementsOptions = (
       return data;
     },
     queryKey: getProgramRequirementsQueryKey(options),
+  });
+
+export const listBulletinSubjectsQueryKey = (
+  options: Options<ListBulletinSubjectsData>,
+) => createQueryKey("listBulletinSubjects", options);
+
+/**
+ * List Bulletin Subjects
+ *
+ * Every course subject in one year's Bulletin, or the closest earlier year online.
+ */
+export const listBulletinSubjectsOptions = (
+  options: Options<ListBulletinSubjectsData>,
+) =>
+  queryOptions<
+    ListBulletinSubjectsResponse,
+    ListBulletinSubjectsError,
+    ListBulletinSubjectsResponse,
+    ReturnType<typeof listBulletinSubjectsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listBulletinSubjects({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listBulletinSubjectsQueryKey(options),
+  });
+
+export const listSubjectCoursesQueryKey = (
+  options: Options<ListSubjectCoursesData>,
+) => createQueryKey("listSubjectCourses", options);
+
+/**
+ * List Subject Courses
+ *
+ * Every course one subject lists in a year's Bulletin, with descriptions and prerequisites.
+ */
+export const listSubjectCoursesOptions = (
+  options: Options<ListSubjectCoursesData>,
+) =>
+  queryOptions<
+    ListSubjectCoursesResponse,
+    ListSubjectCoursesError,
+    ListSubjectCoursesResponse,
+    ReturnType<typeof listSubjectCoursesQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listSubjectCourses({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listSubjectCoursesQueryKey(options),
   });
 
 export const searchProfessorsQueryKey = (
