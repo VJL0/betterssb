@@ -44,24 +44,18 @@ const PROGRAMS_SHOWN = 50;
 const NO_PROGRAMS: BulletinProgram[] = [];
 
 /** "Computer Science BS", as the Bulletin titles program pages. */
-function programLabel(
+export function programLabel(
   program: Pick<BulletinProgram, "name" | "degree">,
 ): string {
   return `${program.name} ${program.degree}`;
 }
 
 /**
- * Two steps: the term the student started at Temple suggests a Bulletin year,
- * and that year's programs fill a searchable list. The pick and its
- * requirements come straight from the Bulletin, linked for reference.
+ * The start term's Bulletin programs and the saved pick among them. A program
+ * saved from another year's Bulletin isn't picked here.
  */
-export function ProgramPicker() {
+export function useBulletinPrograms() {
   const { settings, update } = useSettings();
-  // The popup is only rendered once opened, so the prerendered page never shows this list.
-  const startTerms = useMemo(() => startTermOptions(new Date()), []);
-  const startTermId = useId();
-  const programId = useId();
-
   const year = settings.startTerm
     ? suggestedBulletinYear(settings.startTerm)
     : null;
@@ -87,6 +81,45 @@ export function ProgramPicker() {
   const selectedOption = selected
     ? (options.find((p) => p.url === selected.url) ?? null)
     : null;
+  return {
+    settings,
+    update,
+    year,
+    programs,
+    options,
+    shownYear,
+    standIn,
+    selected,
+    selectedOption,
+  };
+}
+
+/**
+ * Two steps: the term the student started at Temple suggests a Bulletin year,
+ * and that year's programs fill a searchable list. The pick and its
+ * requirements come straight from the Bulletin, linked for reference.
+ */
+export function ProgramPicker({
+  showRequirements = true,
+}: {
+  /** Onboarding leaves the requirements to the planner and audit. */
+  showRequirements?: boolean;
+}) {
+  const {
+    settings,
+    update,
+    year,
+    programs,
+    options,
+    shownYear,
+    standIn,
+    selected,
+    selectedOption,
+  } = useBulletinPrograms();
+  // The popup is only rendered once opened, so the prerendered page never shows this list.
+  const startTerms = useMemo(() => startTermOptions(new Date()), []);
+  const startTermId = useId();
+  const programId = useId();
 
   return (
     <div className="flex flex-col gap-4">
@@ -227,7 +260,9 @@ export function ProgramPicker() {
         </Alert>
       )}
 
-      {selected && <ProgramRequirements url={selected.url} />}
+      {showRequirements && selected && (
+        <ProgramRequirements url={selected.url} />
+      )}
     </div>
   );
 }
