@@ -1,6 +1,10 @@
 import { toast } from "sonner";
 import { addCourse, emptyPlan } from "@workspace/shared/lib/plan";
 import {
+  applyOptimization,
+  type OptimizeResult,
+} from "@workspace/shared/lib/plan-optimizer";
+import {
   hasCourse,
   moveEntry,
   removeEntry,
@@ -111,6 +115,21 @@ export function usePlanEdits({ plans, save, remove }: PlanStore) {
         { save: [moved], remove: [plan.term] },
         { save: [plan], remove: [code] },
         `Moved ${plan.termDescription} to ${name}`,
+      );
+    },
+
+    /** Saves an optimizer run's placements, with one undo for all of them. */
+    applyOptimization(result: OptimizeResult) {
+      const changed = applyOptimization(plans, result, now());
+      const before = plans.filter((p) =>
+        changed.some((c) => c.term === p.term),
+      );
+      const terms = new Set(result.placements.map((p) => p.term)).size;
+      const count = result.placements.length;
+      void commit(
+        { save: changed },
+        { save: before, remove: result.newTerms.map((t) => t.code) },
+        `Placed ${count} ${count === 1 ? "course" : "courses"} in ${terms} ${terms === 1 ? "term" : "terms"}`,
       );
     },
 
