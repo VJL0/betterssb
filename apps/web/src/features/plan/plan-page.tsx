@@ -41,9 +41,11 @@ import { usePlans } from "@/hooks/use-plans";
 import { useSettings } from "@/hooks/use-settings";
 import { useTerms } from "@/hooks/use-terms";
 import { useStoreDocument } from "@/lib/store/store-context";
+import type { CourseDrag } from "./course-drag";
 import { CoursePanel } from "./course-panel";
 import { DegreeProgress, NoAuditProgress } from "./degree-progress";
 import { OptimizeSheet } from "./optimize-sheet";
+import { PlannerDnd } from "./planner-dnd";
 import { TermCard, type TermStatus } from "./term-card";
 import { TermDialog } from "./term-dialog";
 import { usePlanEdits } from "./use-plan-edits";
@@ -203,6 +205,11 @@ export function PlanPage() {
     };
   }
 
+  function dropOn(term: string, drag: CourseDrag) {
+    const plan = plans.find((p) => p.term === term);
+    if (plan) edits.drop(plan, drag);
+  }
+
   const requirementTitle = (code: string) =>
     audit?.requirements.find((r) => r.code === code)?.title || null;
 
@@ -320,45 +327,46 @@ export function PlanPage() {
             !audit && <NoAuditProgress />
           )}
 
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <section
-              aria-label="Terms"
-              className="grid grid-cols-[repeat(auto-fill,minmax(min(15rem,100%),1fr))] items-start gap-4"
-            >
-              {plans.map((plan) => (
-                <TermCard
-                  key={plan.term}
-                  plan={plan}
-                  status={termStatus(plan.term)}
-                  isTarget={plan.term === target?.term}
-                  onTarget={() => setTargetTerm(plan.term)}
-                  onRemove={(entry) => edits.removeCourse(plan, entry)}
-                  onDrop={(drag) => edits.drop(plan, drag)}
-                  onEdit={() => openTermDialog(plan)}
-                  onDelete={deleteAction(plan)}
-                  requirementTitle={requirementTitle}
-                />
-              ))}
-              {plans.length === 0 && (
-                <p className="col-span-full rounded-3xl border border-dashed p-8 text-center text-muted-foreground">
-                  No terms yet. Add one to start planning.
-                </p>
-              )}
-            </section>
-            <CoursePanel
-              needed={
-                audit
-                  ? { requirements: unplaced, anyNeeded: needed.length > 0 }
-                  : null
-              }
-              programUrl={settings.program?.url ?? null}
-              bulletinYear={bulletinYear}
-              initialSubject={initialSubject}
-              statusOf={statusOf}
-              targetName={target?.termDescription ?? null}
-              onAdd={(course) => target && edits.addCourse(target, course)}
-            />
-          </div>
+          <PlannerDnd onDrop={dropOn}>
+            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+              <section
+                aria-label="Terms"
+                className="grid grid-cols-[repeat(auto-fill,minmax(min(15rem,100%),1fr))] items-start gap-4"
+              >
+                {plans.map((plan) => (
+                  <TermCard
+                    key={plan.term}
+                    plan={plan}
+                    status={termStatus(plan.term)}
+                    isTarget={plan.term === target?.term}
+                    onTarget={() => setTargetTerm(plan.term)}
+                    onRemove={(entry) => edits.removeCourse(plan, entry)}
+                    onEdit={() => openTermDialog(plan)}
+                    onDelete={deleteAction(plan)}
+                    requirementTitle={requirementTitle}
+                  />
+                ))}
+                {plans.length === 0 && (
+                  <p className="col-span-full rounded-3xl border border-dashed p-8 text-center text-muted-foreground">
+                    No terms yet. Add one to start planning.
+                  </p>
+                )}
+              </section>
+              <CoursePanel
+                needed={
+                  audit
+                    ? { requirements: unplaced, anyNeeded: needed.length > 0 }
+                    : null
+                }
+                programUrl={settings.program?.url ?? null}
+                bulletinYear={bulletinYear}
+                initialSubject={initialSubject}
+                statusOf={statusOf}
+                targetName={target?.termDescription ?? null}
+                onAdd={(course) => target && edits.addCourse(target, course)}
+              />
+            </div>
+          </PlannerDnd>
         </>
       )}
     </div>

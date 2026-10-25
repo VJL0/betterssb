@@ -1,8 +1,11 @@
-import type { DragEvent } from "react";
+import {
+  useDraggable,
+  useDroppable,
+  type Active,
+  type Over,
+} from "@dnd-kit/core";
+import { useId } from "react";
 import type { PlannedCourse } from "@workspace/shared/types/store";
-
-/** Only the planner's own drags carry this type, so dropped text or files are ignored. */
-const COURSE_DRAG_TYPE = "application/x-betterssb-course";
 
 /** A course to plan, before it has an id. */
 export type NewCourse = Pick<
@@ -15,27 +18,41 @@ export type CourseDrag =
   | { kind: "course"; course: NewCourse }
   | { kind: "entry"; term: string; key: string };
 
-export function startCourseDrag(
-  event: DragEvent,
+/** What a draggable course carries for the drop and for announcements. */
+interface CourseDragData {
+  drag: CourseDrag;
+  /** "CIS 3296", or a requirement's title. */
+  label: string;
+}
+
+/** What a term carries as a drop target. */
+interface TermDropData {
+  term: string;
+  name: string;
+}
+
+/** A draggable course: the row is its node, a grip button its keyboard handle. */
+export function useCourseDrag(
   drag: CourseDrag,
   label: string,
-): void {
-  event.dataTransfer.setData(COURSE_DRAG_TYPE, JSON.stringify(drag));
-  event.dataTransfer.setData("text/plain", label);
-  event.dataTransfer.effectAllowed = drag.kind === "entry" ? "move" : "copy";
+  disabled = false,
+) {
+  // The same course can be in the panel and in a term at once, so ids are per row.
+  const id = useId();
+  const data: CourseDragData = { drag, label };
+  return useDraggable({ id, data, disabled });
 }
 
-/** Whether a drag holds a course. Its data can only be read on drop. */
-export function isCourseDrag(event: DragEvent): boolean {
-  return event.dataTransfer.types.includes(COURSE_DRAG_TYPE);
+/** A term as a drop target; terms that can't take courses don't accept drops. */
+export function useTermDrop(term: string, name: string, disabled: boolean) {
+  const data: TermDropData = { term, name };
+  return useDroppable({ id: `term:${term}`, data, disabled });
 }
 
-export function readCourseDrag(event: DragEvent): CourseDrag | null {
-  const data = event.dataTransfer.getData(COURSE_DRAG_TYPE);
-  if (!data) return null;
-  try {
-    return JSON.parse(data) as CourseDrag;
-  } catch {
-    return null;
-  }
+export function dragOf(active: Active): CourseDragData | null {
+  return (active.data.current as CourseDragData | undefined) ?? null;
+}
+
+export function termOf(over: Over | null): TermDropData | null {
+  return (over?.data.current as TermDropData | undefined) ?? null;
 }
