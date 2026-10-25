@@ -18,7 +18,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { cn } from "@workspace/ui/lib/utils";
-import { PRIMARY_PAGES } from "@/components/shell/pages";
+import { readyPagePath } from "@/components/shell/pages";
 import { Logo } from "@workspace/ui/components/logo";
 import { EXTENSION_INSTALL_URL, SOURCE_CODE_URL } from "@/lib/config";
 import {
@@ -151,11 +151,6 @@ const NEED_BADGE: Record<Need, { label: string; variant: "success" | "info" }> =
     now: { label: "Works right away", variant: "success" },
     extension: { label: "Needs the Chrome extension", variant: "info" },
   };
-
-function pagePath(pageId: string | undefined): string | null {
-  const page = PRIMARY_PAGES.find((p) => p.id === pageId);
-  return page?.ready ? page.path : null;
-}
 
 function GetStartedButton({ size = "lg" }: { size?: "lg" | "default" }) {
   return (
@@ -453,7 +448,7 @@ export function LandingPage() {
 
 function FeatureCopy({ feature }: { feature: Feature }) {
   const need = NEED_BADGE[feature.need];
-  const path = pagePath(feature.pageId);
+  const path = readyPagePath(feature.pageId);
   return (
     <div className="flex min-w-0 grow basis-72 flex-col gap-3.5 pt-2">
       <Badge variant={need.variant} className="h-6 self-start px-2.5">
