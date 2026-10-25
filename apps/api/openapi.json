@@ -320,6 +320,39 @@
         "title": "BulletinProgramIndex",
         "type": "object"
       },
+      "BulletinSubjectIndex": {
+        "description": "Every course subject in one Bulletin year, from its course descriptions index.",
+        "properties": {
+          "bulletinYear": {
+            "title": "Bulletinyear",
+            "type": "string"
+          },
+          "requestedYear": {
+            "default": "",
+            "title": "Requestedyear",
+            "type": "string"
+          },
+          "sourceUrl": {
+            "title": "Sourceurl",
+            "type": "string"
+          },
+          "subjects": {
+            "items": {
+              "$ref": "#/components/schemas/CodeName"
+            },
+            "title": "Subjects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "bulletinYear",
+          "requestedYear",
+          "sourceUrl",
+          "subjects"
+        ],
+        "title": "BulletinSubjectIndex",
+        "type": "object"
+      },
       "ChatMessage": {
         "properties": {
           "content": {
@@ -2815,6 +2848,38 @@
         "title": "SubRequirement",
         "type": "object"
       },
+      "SubjectCourses": {
+        "description": "Every course one subject lists in a Bulletin year, undergraduate and graduate.",
+        "properties": {
+          "bulletinYear": {
+            "title": "Bulletinyear",
+            "type": "string"
+          },
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/CourseDescription"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "sourceUrl": {
+            "title": "Sourceurl",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bulletinYear",
+          "subject",
+          "sourceUrl",
+          "courses"
+        ],
+        "title": "SubjectCourses",
+        "type": "object"
+      },
       "SuggestedPlan": {
         "description": "A suggested academic plan grid from the bulletin.",
         "properties": {
@@ -3824,6 +3889,130 @@
           }
         },
         "summary": "Get Program Requirements",
+        "tags": [
+          "degree"
+        ]
+      }
+    },
+    "/api/degree/subjects": {
+      "get": {
+        "description": "Every course subject in one year's Bulletin, or the closest earlier year online.",
+        "operationId": "list_bulletin_subjects",
+        "parameters": [
+          {
+            "description": "Bulletin year, YYYY-YYYY",
+            "in": "query",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "description": "Bulletin year, YYYY-YYYY",
+              "pattern": "^\\d{4}-\\d{4}$",
+              "title": "Year",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulletinSubjectIndex"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Bulletin Subjects",
+        "tags": [
+          "degree"
+        ]
+      }
+    },
+    "/api/degree/subjects/{subject}/courses": {
+      "get": {
+        "description": "Every course one subject lists in a year's Bulletin, with descriptions and prerequisites.",
+        "operationId": "list_subject_courses",
+        "parameters": [
+          {
+            "description": "Subject code, \"CIS\"",
+            "in": "path",
+            "name": "subject",
+            "required": true,
+            "schema": {
+              "description": "Subject code, \"CIS\"",
+              "pattern": "^[A-Z]{2,5}$",
+              "title": "Subject",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bulletin year, YYYY-YYYY",
+            "in": "query",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "description": "Bulletin year, YYYY-YYYY",
+              "pattern": "^\\d{4}-\\d{4}$",
+              "title": "Year",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectCourses"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Subject Courses",
         "tags": [
           "degree"
         ]

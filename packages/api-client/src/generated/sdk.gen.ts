@@ -34,6 +34,12 @@ import type {
   ListBulletinProgramsData,
   ListBulletinProgramsErrors,
   ListBulletinProgramsResponses,
+  ListBulletinSubjectsData,
+  ListBulletinSubjectsErrors,
+  ListBulletinSubjectsResponses,
+  ListSubjectCoursesData,
+  ListSubjectCoursesErrors,
+  ListSubjectCoursesResponses,
   ListSubjectsData,
   ListSubjectsErrors,
   ListSubjectsResponses,
@@ -274,6 +280,42 @@ export const getProgramRequirements = <ThrowOnError extends boolean = true>(
     GetProgramRequirementsErrors,
     ThrowOnError
   >({ url: "/api/degree/requirements", ...options });
+
+/**
+ * List Bulletin Subjects
+ *
+ * Every course subject in one year's Bulletin, or the closest earlier year online.
+ */
+export const listBulletinSubjects = <ThrowOnError extends boolean = true>(
+  options: Options<ListBulletinSubjectsData, ThrowOnError>,
+): RequestResult<
+  ListBulletinSubjectsResponses,
+  ListBulletinSubjectsErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    ListBulletinSubjectsResponses,
+    ListBulletinSubjectsErrors,
+    ThrowOnError
+  >({ url: "/api/degree/subjects", ...options });
+
+/**
+ * List Subject Courses
+ *
+ * Every course one subject lists in a year's Bulletin, with descriptions and prerequisites.
+ */
+export const listSubjectCourses = <ThrowOnError extends boolean = true>(
+  options: Options<ListSubjectCoursesData, ThrowOnError>,
+): RequestResult<
+  ListSubjectCoursesResponses,
+  ListSubjectCoursesErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    ListSubjectCoursesResponses,
+    ListSubjectCoursesErrors,
+    ThrowOnError
+  >({ url: "/api/degree/subjects/{subject}/courses", ...options });
 
 /**
  * Search Professors

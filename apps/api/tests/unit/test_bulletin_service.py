@@ -26,6 +26,8 @@ ARCHIVED_INDEX_HTML = (FIXTURES_DIR / "bulletin_programs_archived.html").read_te
 CURRENT_INDEX_HTML = (FIXTURES_DIR / "bulletin_programs_current.html").read_text()
 PROGRAM_HTML = (FIXTURES_DIR / "bulletin_cs_bs.html").read_text()
 COURSE_POPUP_XML = (FIXTURES_DIR / "bulletin_course_popup.xml").read_text()
+SUBJECTS_HTML = (FIXTURES_DIR / "bulletin_course_subjects.html").read_text()
+SUBJECT_COURSES_HTML = (FIXTURES_DIR / "bulletin_courses_cis.html").read_text()
 COURSE_CODE = "CIS 3296"
 POPUP_PATH = "/ribbit/index.cgi"
 
@@ -43,6 +45,8 @@ PROGRAM_URL = next(
     if p.name == "Computer Science" and p.degree == "BS"
 )
 PROGRAM_PATH = urlsplit(PROGRAM_URL).path
+ARCHIVED_SUBJECTS_PATH = f"/archives/{ARCHIVED_YEAR}/courses/"
+ARCHIVED_CIS_PATH = f"{ARCHIVED_SUBJECTS_PATH}cis/"
 
 
 class FakeBulletin:
@@ -58,6 +62,8 @@ class FakeBulletin:
                 200, text=COURSE_POPUP_XML
             ),
             POPUP_PATH: httpx.Response(200, text=COURSE_POPUP_XML),
+            ARCHIVED_SUBJECTS_PATH: httpx.Response(200, text=SUBJECTS_HTML),
+            ARCHIVED_CIS_PATH: httpx.Response(200, text=SUBJECT_COURSES_HTML),
         }
 
     def handler(self, request: httpx.Request) -> httpx.Response:
@@ -306,5 +312,45 @@ class TestCourse:
         first = await bulletin.service(cache).course(COURSE_CODE, ARCHIVED_YEAR)
         requests = len(bulletin.requests)
         second = await bulletin.service(cache).course(COURSE_CODE, ARCHIVED_YEAR)
+        assert second == first
+        assert len(bulletin.requests) == requests
+
+
+class TestSubjects:
+    async def test_lists_every_subject_by_code(self):
+        index = await FakeBulletin().service().subjects(ARCHIVED_YEAR)
+        subjects = {s.code: s.name for s in index.subjects}
+        assert subjects["CIS"] == "Computer & Information Science"
+        # A name with its own parentheses keeps them.
+        assert subjects["ANAT"] == "Anatomy & Cell Biology (Medical School)"
+        assert index.source_url == f"{BASE_URL}{ARCHIVED_SUBJECTS_PATH}"
+
+    async def test_a_stand_in_year_says_which_year_it_is(self):
+        cache = MemoryCache()
+        index = await FakeBulletin().service(cache).subjects(GAP_YEAR)
+        assert (index.bulletin_year, index.requested_year) == (ARCHIVED_YEAR, GAP_YEAR)
+        key = next(k for k in cache.ttls if k.endswith(f"subjects:{GAP_YEAR}"))
+        assert cache.ttls[key] == FALLBACK_TTL_SECONDS
+
+
+class TestSubjectCourses:
+    async def test_lists_the_subjects_courses_with_archive_links(self):
+        result = await FakeBulletin().service().subject_courses("CIS", ARCHIVED_YEAR)
+        courses = {c.code: c for c in result.courses}
+        assert courses["CIS 3296"].title == "Software Design"
+        assert all(c.code.startswith("CIS ") for c in result.courses)
+        assert courses["CIS 3296"].bulletin_url == (
+            f"{BASE_URL}/archives/{ARCHIVED_YEAR}/search/?P=CIS%203296"
+        )
+
+    async def test_an_unknown_subject_is_not_found(self):
+        with pytest.raises(BulletinPageNotFound):
+            await FakeBulletin().service().subject_courses("ZZZ", ARCHIVED_YEAR)
+
+    async def test_caches_the_subject(self):
+        bulletin, cache = FakeBulletin(), MemoryCache()
+        first = await bulletin.service(cache).subject_courses("CIS", ARCHIVED_YEAR)
+        requests = len(bulletin.requests)
+        second = await bulletin.service(cache).subject_courses("CIS", ARCHIVED_YEAR)
         assert second == first
         assert len(bulletin.requests) == requests

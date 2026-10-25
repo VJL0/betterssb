@@ -138,3 +138,37 @@ class TestCoursesRoute:
         )
         assert resp.status_code == 404
         assert "CIS 9999" in resp.json()["detail"]
+
+
+class TestSubjectsRoute:
+    async def test_returns_the_subjects(self, client: AsyncClient, bulletin):
+        resp = await client.get("/api/degree/subjects", params={"year": ARCHIVED_YEAR})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["bulletinYear"] == ARCHIVED_YEAR
+        assert {"code": "CIS", "name": "Computer & Information Science"} in body[
+            "subjects"
+        ]
+
+    async def test_returns_a_subjects_courses(self, client: AsyncClient, bulletin):
+        resp = await client.get(
+            "/api/degree/subjects/CIS/courses", params={"year": ARCHIVED_YEAR}
+        )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["subject"] == "CIS"
+        assert any(c["code"] == COURSE_CODE for c in body["courses"])
+
+    @pytest.mark.parametrize("subject", ["cis", "C", "CIS1"])
+    async def test_rejects_bad_subjects(self, client: AsyncClient, bulletin, subject):
+        resp = await client.get(
+            f"/api/degree/subjects/{subject}/courses", params={"year": ARCHIVED_YEAR}
+        )
+        assert resp.status_code == 422
+
+    async def test_unknown_subjects_are_not_found(self, client: AsyncClient, bulletin):
+        resp = await client.get(
+            "/api/degree/subjects/ZZZ/courses", params={"year": ARCHIVED_YEAR}
+        )
+        assert resp.status_code == 404
+        assert "ZZZ" in resp.json()["detail"]

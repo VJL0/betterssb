@@ -11,7 +11,9 @@ import type {
   GetMeResponse,
   GetProgramRequirementsResponse,
   ListBulletinProgramsResponse,
+  ListBulletinSubjectsResponse,
   ListAttributesResponse,
+  ListSubjectCoursesResponse,
   ListSubjectsResponse,
   ListTermsResponse,
   ParseAuditResponse,
@@ -142,6 +144,49 @@ const COURSE: GetCourseDescriptionResponse = {
   bulletinUrl: "https://bulletin.temple.edu/search/?P=CIS%203296",
 };
 
+function bulletinSubjects(year: string): ListBulletinSubjectsResponse {
+  return {
+    bulletinYear: year,
+    requestedYear: year,
+    sourceUrl: `https://bulletin.temple.edu/archives/${year}/courses/`,
+    subjects: [
+      { code: "CIS", name: "Computer & Information Science" },
+      { code: "MATH", name: "Mathematics" },
+    ],
+  };
+}
+
+function subjectCourses(
+  subject: string,
+  year: string,
+): ListSubjectCoursesResponse {
+  const course = (number: string, title: string, credits: string) => ({
+    ...COURSE,
+    code: `${subject} ${number}`,
+    title,
+    credits,
+    attributes: [],
+    bulletinUrl: `https://bulletin.temple.edu/archives/${year}/search/?P=${subject}%20${number}`,
+  });
+  return {
+    bulletinYear: year,
+    subject,
+    sourceUrl: `https://bulletin.temple.edu/archives/${year}/courses/${subject.toLowerCase()}/`,
+    courses:
+      subject === "CIS"
+        ? [
+            course(
+              "1051",
+              "Introduction to Problem Solving and Programming in Python",
+              "4",
+            ),
+            course("3296", "Software Design", "4"),
+            course("5015", "Data Structures and Algorithms", "3"),
+          ]
+        : [course("1041", "Calculus I", "4")],
+  };
+}
+
 const REQUIREMENTS: GetProgramRequirementsResponse = {
   ...BULLETIN,
   name: "Computer Science BS",
@@ -195,6 +240,23 @@ export const handlers = [
     ({ request }) =>
       HttpResponse.json(
         bulletinPrograms(new URL(request.url).searchParams.get("year") ?? ""),
+      ),
+  ),
+  http.get<never, never, ListBulletinSubjectsResponse>(
+    `${API}/degree/subjects`,
+    ({ request }) =>
+      HttpResponse.json(
+        bulletinSubjects(new URL(request.url).searchParams.get("year") ?? ""),
+      ),
+  ),
+  http.get<{ subject: string }, never, ListSubjectCoursesResponse>(
+    `${API}/degree/subjects/:subject/courses`,
+    ({ params, request }) =>
+      HttpResponse.json(
+        subjectCourses(
+          params.subject,
+          new URL(request.url).searchParams.get("year") ?? "",
+        ),
       ),
   ),
   http.get<never, never, GetCourseDescriptionResponse>(

@@ -199,6 +199,30 @@ export type BulletinProgramIndex = {
 };
 
 /**
+ * BulletinSubjectIndex
+ *
+ * Every course subject in one Bulletin year, from its course descriptions index.
+ */
+export type BulletinSubjectIndex = {
+  /**
+   * Bulletinyear
+   */
+  bulletinYear: string;
+  /**
+   * Requestedyear
+   */
+  requestedYear: string;
+  /**
+   * Sourceurl
+   */
+  sourceUrl: string;
+  /**
+   * Subjects
+   */
+  subjects: Array<CodeName>;
+};
+
+/**
  * ChatMessage
  */
 export type ChatMessage = {
@@ -1638,6 +1662,30 @@ export type SubRequirement = {
 };
 
 /**
+ * SubjectCourses
+ *
+ * Every course one subject lists in a Bulletin year, undergraduate and graduate.
+ */
+export type SubjectCourses = {
+  /**
+   * Bulletinyear
+   */
+  bulletinYear: string;
+  /**
+   * Courses
+   */
+  courses: Array<CourseDescription>;
+  /**
+   * Sourceurl
+   */
+  sourceUrl: string;
+  /**
+   * Subject
+   */
+  subject: string;
+};
+
+/**
  * SuggestedPlan
  *
  * A suggested academic plan grid from the bulletin.
@@ -2181,6 +2229,89 @@ export type GetProgramRequirementsResponses = {
 
 export type GetProgramRequirementsResponse =
   GetProgramRequirementsResponses[keyof GetProgramRequirementsResponses];
+
+export type ListBulletinSubjectsData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Year
+     *
+     * Bulletin year, YYYY-YYYY
+     */
+    year: string;
+  };
+  url: "/api/degree/subjects";
+};
+
+export type ListBulletinSubjectsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListBulletinSubjectsError =
+  ListBulletinSubjectsErrors[keyof ListBulletinSubjectsErrors];
+
+export type ListBulletinSubjectsResponses = {
+  /**
+   * Successful Response
+   */
+  200: BulletinSubjectIndex;
+};
+
+export type ListBulletinSubjectsResponse =
+  ListBulletinSubjectsResponses[keyof ListBulletinSubjectsResponses];
+
+export type ListSubjectCoursesData = {
+  body?: never;
+  path: {
+    /**
+     * Subject
+     *
+     * Subject code, "CIS"
+     */
+    subject: string;
+  };
+  query: {
+    /**
+     * Year
+     *
+     * Bulletin year, YYYY-YYYY
+     */
+    year: string;
+  };
+  url: "/api/degree/subjects/{subject}/courses";
+};
+
+export type ListSubjectCoursesErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListSubjectCoursesError =
+  ListSubjectCoursesErrors[keyof ListSubjectCoursesErrors];
+
+export type ListSubjectCoursesResponses = {
+  /**
+   * Successful Response
+   */
+  200: SubjectCourses;
+};
+
+export type ListSubjectCoursesResponse =
+  ListSubjectCoursesResponses[keyof ListSubjectCoursesResponses];
 
 export type SearchProfessorsData = {
   body?: never;
