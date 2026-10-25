@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
 
 from app.core.cache import Cache, get_cache
 from app.modules.degree.client import (
@@ -13,8 +13,10 @@ from app.modules.degree.client import (
 from app.modules.degree.parser import BulletinParser
 from app.modules.degree.schemas import (
     BulletinProgramIndex,
+    BulletinSubjectIndex,
     CourseDescription,
     DegreeProgram,
+    SubjectCourses,
 )
 from app.modules.degree.service import BulletinService
 
@@ -29,6 +31,7 @@ PROGRAM_URL_PATTERN = (
 )
 BULLETIN_YEAR_PATTERN = r"^\d{4}-\d{4}$"
 COURSE_CODE_PATTERN = r"^[A-Z]{2,5} \d{4}[A-Z]?$"
+SUBJECT_PATTERN = r"^[A-Z]{2,5}$"
 
 _parser = BulletinParser()
 
@@ -101,6 +104,48 @@ async def get_course_description(
     except BulletinPageNotFound as exc:
         raise HTTPException(
             status_code=404, detail=f"{code} isn't in the {year} Bulletin."
+        ) from exc
+    except BulletinUnavailable as exc:
+        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
+
+
+@router.get("/subjects", response_model=BulletinSubjectIndex)
+async def list_bulletin_subjects(
+    service: ServiceDep,
+    year: Annotated[
+        str,
+        Query(pattern=BULLETIN_YEAR_PATTERN, description="Bulletin year, YYYY-YYYY"),
+    ],
+) -> BulletinSubjectIndex:
+    """Every course subject in one year's Bulletin, or the closest earlier year online."""
+    try:
+        return await service.subjects(year)
+    except BulletinPageNotFound as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=f"The {year} Bulletin isn't on bulletin.temple.edu.",
+        ) from exc
+    except BulletinUnavailable as exc:
+        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
+
+
+@router.get("/subjects/{subject}/courses", response_model=SubjectCourses)
+async def list_subject_courses(
+    service: ServiceDep,
+    subject: Annotated[
+        str, Path(pattern=SUBJECT_PATTERN, description='Subject code, "CIS"')
+    ],
+    year: Annotated[
+        str,
+        Query(pattern=BULLETIN_YEAR_PATTERN, description="Bulletin year, YYYY-YYYY"),
+    ],
+) -> SubjectCourses:
+    """Every course one subject lists in a year's Bulletin, with descriptions and prerequisites."""
+    try:
+        return await service.subject_courses(subject, year)
+    except BulletinPageNotFound as exc:
+        raise HTTPException(
+            status_code=404, detail=f"{subject} isn't in the {year} Bulletin."
         ) from exc
     except BulletinUnavailable as exc:
         raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
