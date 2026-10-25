@@ -296,6 +296,11 @@
             "title": "Programs",
             "type": "array"
           },
+          "requestedYear": {
+            "default": "",
+            "title": "Requestedyear",
+            "type": "string"
+          },
           "sourceUrl": {
             "title": "Sourceurl",
             "type": "string"
@@ -303,6 +308,7 @@
         },
         "required": [
           "bulletinYear",
+          "requestedYear",
           "sourceUrl",
           "programs",
           "colleges",

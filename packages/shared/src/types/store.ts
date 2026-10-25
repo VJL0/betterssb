@@ -69,7 +69,11 @@ export interface SelectedProgram extends Pick<
   BulletinProgram,
   "name" | "degree" | "url"
 > {
-  /** "YYYY-YYYY", suggested by the start term; not Temple's official record. */
+  /**
+   * "YYYY-YYYY", the Bulletin the program came from: the start term's suggested
+   * year, or the closest earlier year online when that one isn't. Not Temple's
+   * official record.
+   */
   bulletinYear: string;
 }
 

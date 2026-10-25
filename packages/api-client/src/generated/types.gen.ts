@@ -189,6 +189,10 @@ export type BulletinProgramIndex = {
    */
   programs: Array<BulletinProgram>;
   /**
+   * Requestedyear
+   */
+  requestedYear: string;
+  /**
    * Sourceurl
    */
   sourceUrl: string;

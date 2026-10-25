@@ -92,6 +92,7 @@ export const PROGRAM_URL =
 function bulletinPrograms(year: string): ListBulletinProgramsResponse {
   return {
     bulletinYear: year,
+    requestedYear: year,
     sourceUrl: `https://bulletin.temple.edu/archives/${year}/academic-programs/`,
     programs: [
       {

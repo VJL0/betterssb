@@ -15,6 +15,7 @@ from app.modules.degree.schemas import ProgramLevel, SelectionType
 from app.modules.degree.service import (
     CACHE_TTL_SECONDS,
     CURRENT_INDEX_PATH,
+    FALLBACK_TTL_SECONDS,
     BulletinService,
 )
 from tests.conftest import FIXTURES_DIR
@@ -31,6 +32,9 @@ POPUP_PATH = "/ribbit/index.cgi"
 ARCHIVED_YEAR = bulletin_edition(ARCHIVED_INDEX_HTML)
 CURRENT_YEAR = bulletin_edition(CURRENT_INDEX_HTML)
 MISSING_YEAR = "1900-1901"
+_ARCHIVED_START = int(ARCHIVED_YEAR.split("-")[0])
+# The year after the archived one: not archived, and not the current edition either.
+GAP_YEAR = f"{_ARCHIVED_START + 1}-{_ARCHIVED_START + 2}"
 ARCHIVED_INDEX_PATH = f"/archives/{ARCHIVED_YEAR}/academic-programs/"
 ARCHIVED_INDEX_URL = f"{BASE_URL}{ARCHIVED_INDEX_PATH}"
 PROGRAM_URL = next(
@@ -163,6 +167,22 @@ class TestPrograms:
             CURRENT_INDEX_PATH,
         ]
 
+    async def test_falls_back_to_the_previous_year_online(self):
+        assert GAP_YEAR != CURRENT_YEAR
+        index = await FakeBulletin().service().programs(GAP_YEAR)
+        assert (index.requested_year, index.bulletin_year) == (GAP_YEAR, ARCHIVED_YEAR)
+        assert index.source_url == ARCHIVED_INDEX_URL
+
+    async def test_a_year_online_is_its_own_requested_year(self):
+        index = await FakeBulletin().service().programs(ARCHIVED_YEAR)
+        assert index.requested_year == index.bulletin_year == ARCHIVED_YEAR
+
+    async def test_a_stand_in_year_is_rechecked_daily(self):
+        cache = MemoryCache()
+        await FakeBulletin().service(cache).programs(GAP_YEAR)
+        stand_in = next(k for k in cache.ttls if k.endswith(f"programs-for:{GAP_YEAR}"))
+        assert cache.ttls[stand_in] == FALLBACK_TTL_SECONDS
+
     async def test_a_year_that_isnt_online_is_not_found(self):
         with pytest.raises(BulletinPageNotFound):
             await FakeBulletin().service().programs(MISSING_YEAR)
@@ -272,6 +292,10 @@ class TestCourse:
         course = await bulletin.service().course(COURSE_CODE, CURRENT_YEAR)
         assert course.bulletin_url == f"{BASE_URL}/search/?P=CIS%203296"
         assert bulletin.paths()[-1] == POPUP_PATH
+
+    async def test_courses_come_from_the_stand_in_year(self):
+        course = await FakeBulletin().service().course(COURSE_CODE, GAP_YEAR)
+        assert course.bulletin_url.startswith(f"{BASE_URL}/archives/{ARCHIVED_YEAR}/")
 
     async def test_a_course_the_popup_doesnt_have_is_not_found(self):
         with pytest.raises(BulletinPageNotFound):

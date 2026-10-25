@@ -262,6 +262,9 @@ class BulletinProgramIndex(BaseSchema):
     """Every program in one Bulletin year, with the page they were read from."""
 
     bulletin_year: str
+    # The year asked for. When that year's Bulletin isn't online, an earlier
+    # year stands in and `bulletin_year` says which.
+    requested_year: str = ""
     source_url: str
     programs: list[BulletinProgram]
     # The index's keys: school and college codes, and degree symbols.

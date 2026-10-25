@@ -12,6 +12,7 @@ from tests.unit.test_bulletin_service import (
     ARCHIVED_INDEX_PATH,
     ARCHIVED_YEAR,
     COURSE_CODE,
+    GAP_YEAR,
     MISSING_YEAR,
     PROGRAM_URL,
     FakeBulletin,
@@ -50,6 +51,17 @@ class TestProgramsRoute:
         resp = await client.get("/api/degree/programs", params={"year": year})
         assert resp.status_code == 422
         assert bulletin.requests == []
+
+    async def test_a_year_not_online_returns_the_year_before(
+        self, client: AsyncClient, bulletin
+    ):
+        resp = await client.get("/api/degree/programs", params={"year": GAP_YEAR})
+        assert resp.status_code == 200
+        body = resp.json()
+        assert (body["requestedYear"], body["bulletinYear"]) == (
+            GAP_YEAR,
+            ARCHIVED_YEAR,
+        )
 
     async def test_missing_years_are_not_found(self, client: AsyncClient, bulletin):
         resp = await client.get("/api/degree/programs", params={"year": MISSING_YEAR})

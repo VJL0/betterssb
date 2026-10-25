@@ -119,7 +119,9 @@ class TestPageDetails:
         assert required.description == "All students MUST take:"
         assert [o.courses[0].number for o in required.options] == ["3296"]
         assert second.selection_type == SelectionType.SELECT_ONE
-        assert second.description == "Second writing-intensive course can be chosen from:"
+        assert (
+            second.description == "Second writing-intensive course can be chosen from:"
+        )
         assert [o.courses[0].number for o in second.options] == ["4397", "4398"]
 
     def test_lab_science_title(self, computer_science):

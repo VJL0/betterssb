@@ -20,6 +20,10 @@ from app.modules.degree.schemas import (
 
 # Archived Bulletins never change and the current one changes a few times a year.
 CACHE_TTL_SECONDS = 7 * ONE_DAY_SECONDS
+# A stand-in year is rechecked daily, so a newly published Bulletin replaces it soon.
+FALLBACK_TTL_SECONDS = ONE_DAY_SECONDS
+# How many earlier years to try when a year's Bulletin isn't online.
+MAX_FALLBACK_YEARS = 3
 # Bump the version when the parsers' output changes, so older results are refetched.
 CACHE_PREFIX = "degree:v2:"
 CURRENT_INDEX_PATH = "/academic-programs/"
@@ -45,10 +49,33 @@ class BulletinService:
         self._parser = BulletinParser()
 
     async def programs(self, year: str) -> BulletinProgramIndex:
-        """Every program in one year's ("YYYY-YYYY") Bulletin.
+        """Every program in one year's ("YYYY-YYYY") Bulletin, or the closest earlier year online.
 
-        Raises BulletinPageNotFound when that year isn't online.
+        Temple doesn't publish every year's Bulletin (2025-2026 was never
+        archived), and the year before is the safer stand-in: courses a
+        student's own year added are missing, but nothing listed is wrong.
+        Raises BulletinPageNotFound when neither the year nor the few before it are online.
         """
+        key = f"{CACHE_PREFIX}programs-for:{year}"
+        if cached := await cache_get(self._cache, key):
+            return BulletinProgramIndex.model_validate_json(cached)
+        first = int(year.split("-")[0])
+        for start in range(first, first - MAX_FALLBACK_YEARS - 1, -1):
+            try:
+                index = await self._year_programs(f"{start}-{start + 1}")
+            except BulletinPageNotFound:
+                continue
+            index.requested_year = year
+            ttl = (
+                CACHE_TTL_SECONDS
+                if index.bulletin_year == year
+                else FALLBACK_TTL_SECONDS
+            )
+            await cache_set(self._cache, key, index.model_dump_json(), ttl)
+            return index
+        raise BulletinPageNotFound(year)
+
+    async def _year_programs(self, year: str) -> BulletinProgramIndex:
         key = f"{CACHE_PREFIX}programs:{year}"
         if cached := await cache_get(self._cache, key):
             return BulletinProgramIndex.model_validate_json(cached)

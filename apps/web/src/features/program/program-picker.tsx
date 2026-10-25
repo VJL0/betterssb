@@ -1,7 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { CircleXIcon } from "lucide-react";
+import { CircleXIcon, InfoIcon } from "lucide-react";
+import Link from "next/link";
 import { useId, useMemo } from "react";
 import { queryError, type BulletinProgram } from "@workspace/api-client";
 import { listBulletinProgramsOptions } from "@workspace/api-client/query";
@@ -78,8 +79,11 @@ export function ProgramPicker() {
     () => programs.data?.programs.filter((p) => p.url) ?? NO_PROGRAMS,
     [programs.data],
   );
+  // When the suggested year isn't online, the closest earlier year stands in.
+  const shownYear = programs.data?.bulletinYear ?? year;
+  const standIn = programs.data !== undefined && shownYear !== year;
   const selected =
-    settings.program?.bulletinYear === year ? settings.program : null;
+    settings.program?.bulletinYear === shownYear ? settings.program : null;
   const selectedOption = selected
     ? (options.find((p) => p.url === selected.url) ?? null)
     : null;
@@ -129,12 +133,12 @@ export function ProgramPicker() {
             onValueChange={(program: BulletinProgram | null) =>
               void update({
                 program:
-                  program && year
+                  program && shownYear
                     ? {
                         name: program.name,
                         degree: program.degree,
                         url: program.url,
-                        bulletinYear: year,
+                        bulletinYear: shownYear,
                       }
                     : null,
                 major: program ? programLabel(program) : "",
@@ -194,6 +198,22 @@ export function ProgramPicker() {
           )}
         </Field>
       </div>
+
+      {standIn && (
+        <Alert variant="info">
+          <InfoIcon />
+          <AlertTitle>Showing the {shownYear} Bulletin</AlertTitle>
+          <AlertDescription>
+            The {year} Bulletin isn't online, so these programs and requirements
+            come from {shownYear}, the closest earlier year. Courses added in{" "}
+            {year} may be missing. Your{" "}
+            <Link href="/audit" className="underline underline-offset-2">
+              degree audit (DARS)
+            </Link>{" "}
+            shows what counts for you.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {programs.isError && (
         <Alert variant="destructive">
