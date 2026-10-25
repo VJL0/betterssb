@@ -112,15 +112,3 @@ def conflicting_sections() -> list[Section]:
 @pytest.fixture()
 def default_prefs() -> SchedulePreferences:
     return SchedulePreferences()
-
-
-@pytest.fixture()
-def transcript_text() -> str:
-    return (
-        "CIS  1068 Program Design and Abstraction    A   4.00   Fall 2024\n"
-        "MATH 1041 Calculus I                         B+  4.00   Fall 2024\n"
-        "ENGL 0802 Analytical Reading and Writing     A-  3.00   Fall 2024\n"
-        "PHYS 1061 General Physics I                  C   4.00   Spring 2025\n"
-        "\n"
-        "Overall GPA: 3.45\n"
-    )

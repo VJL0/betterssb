@@ -50,18 +50,18 @@ export const PRIMARY_PAGES: readonly AppPage[] = [
     ready: true,
   },
   {
-    id: "register",
-    label: "Register",
-    path: "/register",
-    icon: TimerIcon,
-    inTabBar: true,
-    ready: true,
-  },
-  {
     id: "audit",
     label: "Audit",
     path: "/audit",
     icon: GraduationCapIcon,
+    inTabBar: true,
+    ready: true,
+  },
+  {
+    id: "transcript",
+    label: "Transcript",
+    path: "/transcript",
+    icon: ListChecksIcon,
     inTabBar: true,
     ready: true,
   },
@@ -75,23 +75,30 @@ export const PRIMARY_PAGES: readonly AppPage[] = [
   },
 ];
 
-/** Reached from the account area and More, not the top bar. */
+/**
+ * Reached from the account area and More, not the top bar. Register stays
+ * out of the top bar until the extension it needs is published.
+ */
 export const SECONDARY_PAGES: readonly AppPage[] = [
   {
-    id: "transcript",
-    label: "Transcript",
-    path: "/transcript",
-    icon: ListChecksIcon,
+    id: "register",
+    label: "Register",
+    path: "/register",
+    icon: TimerIcon,
     inTabBar: false,
     ready: true,
   },
 ];
 
+/** A page's path when it's built, for links to it from other pages. */
+export function readyPagePath(id: string | undefined): string | null {
+  const page = [...PRIMARY_PAGES, ...SECONDARY_PAGES].find((p) => p.id === id);
+  return page?.ready ? page.path : null;
+}
+
 /** Whether a page is built, for links to it from other pages. */
 export function isPageReady(id: string): boolean {
-  return [...PRIMARY_PAGES, ...SECONDARY_PAGES].some(
-    (p) => p.id === id && p.ready,
-  );
+  return readyPagePath(id) !== null;
 }
 
 export function readyPages(pages: readonly AppPage[]): AppPage[] {

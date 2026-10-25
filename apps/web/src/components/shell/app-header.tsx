@@ -2,7 +2,6 @@
 
 import {
   HardDriveIcon,
-  ListChecksIcon,
   MessageSquareIcon,
   SettingsIcon,
   UserRoundIcon,
@@ -82,7 +81,6 @@ export function AppHeader() {
  * settings; sign-in and sync come with accounts.
  */
 function AccountMenu() {
-  const transcript = SECONDARY_PAGES.find((p) => p.id === "transcript");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -94,12 +92,12 @@ function AccountMenu() {
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Guest · this device</DropdownMenuLabel>
-          {transcript?.ready && (
-            <DropdownMenuItem render={<Link href={transcript.path} />}>
-              <ListChecksIcon />
-              Transcript
+          {readyPages(SECONDARY_PAGES).map((page) => (
+            <DropdownMenuItem key={page.id} render={<Link href={page.path} />}>
+              <page.icon />
+              {page.label}
             </DropdownMenuItem>
-          )}
+          ))}
           <DropdownMenuItem render={<Link href="/settings" />}>
             <SettingsIcon />
             Settings

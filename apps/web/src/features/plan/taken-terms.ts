@@ -1,4 +1,5 @@
-import type { Audit, TranscriptData } from "@workspace/api-client";
+import type { Audit } from "@workspace/api-client";
+import type { TranscriptData } from "@workspace/shared/lib/transcript";
 import { courseKey, emptyPlan } from "@workspace/shared/lib/plan";
 import {
   formatTermName,

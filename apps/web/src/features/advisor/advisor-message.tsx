@@ -1,5 +1,4 @@
 import { BotIcon, CopyIcon } from "lucide-react";
-import { toast } from "sonner";
 import { harden } from "rehype-harden";
 import {
   Streamdown,
@@ -7,6 +6,7 @@ import {
   type StreamdownProps,
 } from "streamdown";
 import { Button } from "@workspace/ui/components/button";
+import { copyText } from "@/lib/clipboard";
 
 // Keep Streamdown's raw HTML parsing and sanitization; advisor text must not
 // trigger image requests that can include student context in their URLs.
@@ -36,14 +36,6 @@ export function AdvisorMessage({
   isStreaming = false,
   isIncomplete = false,
 }: AdvisorMessageProps) {
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success("Copied");
-    } catch {
-      toast.error("Couldn't copy. Select the text instead.");
-    }
-  }
   return (
     <div className="flex min-w-0 gap-3">
       <span
@@ -67,7 +59,7 @@ export function AdvisorMessage({
           size="icon-xs"
           aria-label="Copy answer"
           disabled={isStreaming}
-          onClick={() => void copy()}
+          onClick={() => void copyText(text)}
           className="self-start text-muted-foreground"
         >
           <CopyIcon />

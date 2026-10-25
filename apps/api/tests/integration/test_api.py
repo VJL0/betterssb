@@ -66,26 +66,6 @@ class TestScheduleRoutes:
 
 
 class TestTranscriptRoutes:
-    async def test_parse_transcript(self, client: AsyncClient, transcript_text):
-        resp = await client.post(
-            "/api/transcript/parse",
-            content=transcript_text,
-            headers={"Content-Type": "text/plain"},
-        )
-        assert resp.status_code == 200
-        data = resp.json()
-        assert len(data["courses"]) == 4
-        assert data["gpa"] == 3.45
-
-    async def test_parse_empty_transcript(self, client: AsyncClient):
-        resp = await client.post(
-            "/api/transcript/parse",
-            content="nothing here",
-            headers={"Content-Type": "text/plain"},
-        )
-        assert resp.status_code == 200
-        assert resp.json()["courses"] == []
-
     async def test_check_prereqs(self, client: AsyncClient):
         body = {
             "completed": [
