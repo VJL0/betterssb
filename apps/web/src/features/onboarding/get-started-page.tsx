@@ -9,7 +9,6 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
-import type { BannerConnection } from "@workspace/shared/types/store";
 import {
   Alert,
   AlertDescription,
@@ -21,21 +20,26 @@ import { ButtonLink } from "@/components/button-link";
 import {
   Field,
   FieldContent,
-  FieldDescription,
   FieldError,
   FieldLabel,
   FieldLegend,
   FieldSet,
   FieldTitle,
 } from "@workspace/ui/components/field";
-import { Input } from "@workspace/ui/components/input";
 import {
   RadioGroup,
   RadioGroupItem,
 } from "@workspace/ui/components/radio-group";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
+import { templeTermName } from "@workspace/shared/lib/terms";
+import type { BannerConnection } from "@workspace/shared/types/store";
 import { firstReadyPath } from "@/components/shell/pages";
+import {
+  ProgramPicker,
+  programLabel,
+  useBulletinPrograms,
+} from "@/features/program/program-picker";
 import { Logo } from "@workspace/ui/components/logo";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import { useSettings } from "@/hooks/use-settings";
@@ -44,6 +48,7 @@ import { BANNER_REGISTRATION_URL, EXTENSION_INSTALL_URL } from "@/lib/config";
 
 const STEPS = [
   { id: "term", label: "Term" },
+  { id: "program", label: "Program" },
   { id: "banner", label: "Banner · optional" },
 ] as const;
 
@@ -53,12 +58,10 @@ function isStepId(value: string | null): value is StepId {
   return STEPS.some((s) => s.id === value);
 }
 
-interface Draft {
-  term: string | null;
-  major: string;
-}
-
-/** W1.2 · Guest onboarding: term, then an optional Banner connection. No account step. */
+/**
+ * W1.2 · Guest onboarding: term, program, then an optional Banner
+ * connection, as Settings has them. No account step.
+ */
 export function GetStartedPage() {
   // The step is in the query string, which only the browser knows; the
   // prerendered page shows the first step.
@@ -83,24 +86,21 @@ function GetStarted({ step }: { step: StepId }) {
   const terms = useTerms();
   const banner = useBannerConnection();
 
-  const [draft, setDraft] = useState<Draft | null>(null);
+  // The term waits for Continue; the program step saves as it's picked, like Settings.
+  const [draftTerm, setDraftTerm] = useState<string | null | undefined>();
   // Start from what's saved once it loads, so returning students can edit it.
-  if (draft === null && status !== "loading") {
-    setDraft({
-      term: settings.term,
-      major: settings.major,
-    });
+  if (draftTerm === undefined && status !== "loading") {
+    setDraftTerm(settings.term);
   }
-  const current: Draft = draft ?? { term: null, major: "" };
+  const term = draftTerm ?? null;
 
   function goTo(next: StepId) {
     router.push(next === "term" ? pathname : `${pathname}?step=${next}`);
   }
 
-  async function saveAndGo(next: StepId | "done") {
-    await update(current);
-    if (next === "done") router.push(firstReadyPath());
-    else goTo(next);
+  async function saveTermAndContinue() {
+    await update({ term });
+    goTo("program");
   }
 
   return (
@@ -116,7 +116,7 @@ function GetStarted({ step }: { step: StepId }) {
 
       <main className="mx-auto flex max-w-5xl flex-wrap items-start gap-6 px-4 pt-6 pb-16 sm:px-8">
         <div className="flex min-w-0 grow-999 basis-120 flex-col gap-4">
-          <ol aria-label="Setup steps" className="grid grid-cols-2 gap-1.5">
+          <ol aria-label="Setup steps" className="grid grid-cols-3 gap-1.5">
             {STEPS.map((s, i) => (
               <li
                 key={s.id}
@@ -142,27 +142,30 @@ function GetStarted({ step }: { step: StepId }) {
             {step === "term" && (
               <TermStep
                 terms={terms}
-                term={current.term}
-                major={current.major}
-                onTerm={(term) => setDraft({ ...current, term })}
-                onMajor={(major) => setDraft({ ...current, major })}
-                onContinue={() => void saveAndGo("banner")}
+                term={term}
+                onTerm={setDraftTerm}
+                onContinue={() => void saveTermAndContinue()}
+              />
+            )}
+            {step === "program" && (
+              <ProgramStep
+                onBack={() => goTo("term")}
+                onContinue={() => goTo("banner")}
               />
             )}
             {step === "banner" && (
               <BannerStep
                 connection={banner.connection}
                 extensionInstalled={banner.extensionInstalled}
-                onBack={() => goTo("term")}
-                onFinish={() => void saveAndGo("done")}
+                onBack={() => goTo("program")}
+                onFinish={() => router.push(firstReadyPath())}
               />
             )}
           </Card>
         </div>
 
         <SetupSummary
-          draft={current}
-          termName={terms.terms.find((t) => t.code === current.term)?.name}
+          termName={terms.terms.find((t) => t.code === term)?.name}
           connection={banner.connection}
         />
       </main>
@@ -192,16 +195,12 @@ function StepHeading({
 function TermStep({
   terms,
   term,
-  major,
   onTerm,
-  onMajor,
   onContinue,
 }: {
   terms: ReturnType<typeof useTerms>;
   term: string | null;
-  major: string;
   onTerm: (term: string) => void;
-  onMajor: (major: string) => void;
   onContinue: () => void;
 }) {
   const [showError, setShowError] = useState(false);
@@ -232,24 +231,46 @@ function TermStep({
         />
         {invalid && <FieldError>Choose a term to continue.</FieldError>}
       </FieldSet>
-      <Field>
-        <FieldLabel htmlFor="major">
-          Major{" "}
-          <span className="font-normal text-muted-foreground">· optional</span>
-        </FieldLabel>
-        <Input
-          id="major"
-          value={major}
-          onChange={(e) => onMajor(e.target.value)}
-          placeholder="e.g. Computer Science"
-          autoComplete="off"
-        />
-        <FieldDescription>
-          Shared with the advisor only if you choose. Skip it if you're just
-          browsing.
-        </FieldDescription>
-      </Field>
       <div className="flex justify-end">
+        <Button type="submit" size="lg">
+          Continue
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function ProgramStep({
+  onBack,
+  onContinue,
+}: {
+  onBack: () => void;
+  onContinue: () => void;
+}) {
+  const chosen = useBulletinPrograms().selectedOption !== null;
+  const [showError, setShowError] = useState(false);
+  return (
+    <form
+      className="flex flex-col gap-5"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!chosen) return setShowError(true);
+        onContinue();
+      }}
+    >
+      <StepHeading title="Where are you in your degree?">
+        Your start term picks the Bulletin year your requirements come from, and
+        your program is shared with the advisor only if you choose. You can
+        change both later in Settings.
+      </StepHeading>
+      <ProgramPicker showRequirements={false} />
+      {showError && !chosen && (
+        <FieldError>Choose your start term and program to continue.</FieldError>
+      )}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Button type="button" variant="ghost" size="lg" onClick={onBack}>
+          Back
+        </Button>
         <Button type="submit" size="lg">
           Continue
         </Button>
@@ -367,9 +388,9 @@ function BannerStep({
   return (
     <div className="flex flex-col gap-5">
       <StepHeading title="Connect Banner when you're ready">
-        Optional. Your degree audit, auto-register and Banner page overlays run
-        through the Chrome extension, inside your own Banner tab. Your Banner
-        login stays with Banner.
+        Optional, and you can connect later from Settings. Your degree audit,
+        auto-register and Banner page overlays run through the Chrome extension,
+        inside your own Banner tab. Your Banner login stays with Banner.
       </StepHeading>
       <ul className="flex flex-col gap-2">
         <StatusRow
@@ -435,17 +456,22 @@ function BannerStep({
 }
 
 function SetupSummary({
-  draft,
   termName,
   connection,
 }: {
-  draft: Draft;
   termName: string | undefined;
   connection: BannerConnection | null;
 }) {
+  // The program as the picker shows it, so one saved from another year's Bulletin reads as not chosen.
+  const { settings, selectedOption } = useBulletinPrograms();
+  const programName = selectedOption && programLabel(selectedOption);
+  const startTermName = settings.startTerm
+    ? templeTermName(settings.startTerm)
+    : null;
   const rows: [string, string, boolean][] = [
     ["Term", termName ?? "Not chosen", !!termName],
-    ["Major", draft.major || "Optional", !!draft.major],
+    ["Started", startTermName ?? "Not chosen", !!startTermName],
+    ["Program", programName ?? "Not chosen", !!programName],
     [
       "Banner",
       connection === "connected"
@@ -494,7 +520,7 @@ function SetupSummary({
           <span className="font-medium">Saved on this device</span>
           <span className="text-muted-foreground">
             Everything you set up is kept in this browser, or in the extension
-            if you add it.
+            if you add it. Change any of it later in Settings.
           </span>
         </span>
       </div>
