@@ -341,6 +341,39 @@ describe("PlanPage", () => {
     );
   });
 
+  it("optimizes the plan with the student's priorities", async () => {
+    const user = userEvent.setup();
+    const { store } = await renderPlanner();
+    await user.click(
+      await screen.findByRole("button", { name: "Optimize plan" }),
+    );
+    const sheet = await screen.findByRole("dialog");
+    await user.click(
+      within(
+        within(sheet).getByRole("group", {
+          name: "Priority for Writing intensive",
+        }),
+      ).getByRole("button", { name: "High" }),
+    );
+    await waitFor(async () =>
+      expect((await store.get("planPreferences"))?.priorities).toEqual({
+        WI: "high",
+      }),
+    );
+    const preview = within(sheet).getByRole("article", {
+      name: "Spring 2027 preview",
+    });
+    expect(within(preview).getByText("CIS 4398")).toBeTruthy();
+    await user.click(
+      await within(sheet).findByRole("button", { name: "Place 1 course" }),
+    );
+    await waitFor(async () =>
+      expect((await store.get("plan:202703"))?.courses).toEqual([
+        expect.objectContaining({ code: "CIS 4398", requirement: "WI" }),
+      ]),
+    );
+  });
+
   it("has no accessibility violations", async () => {
     const { container } = await renderPlanner();
     await screen.findByText("Toward 124 credits");

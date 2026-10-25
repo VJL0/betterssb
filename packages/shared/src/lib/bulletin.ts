@@ -56,16 +56,27 @@ export function startTermOptions(today: Date): StartTerm[] {
 
 /** August, when Temple's academic year (and its Bulletin) turns over. */
 const ACADEMIC_YEAR_START_MONTH = 7;
-const FOUR_DIGIT_YEAR = /^\d{4}$/;
+/** DARS writes a catalog year as "2024" or as its first term, "Fall 2024". */
+const CATALOG_YEAR = /^(?:(Spring|Summer|Fall)\s+)?(\d{4})$/i;
 
 function academicYear(firstYear: number): string {
   return `${firstYear}-${firstYear + 1}`;
 }
 
+/** The academic year an audit's catalog year names, or null if it can't tell. */
+function catalogAcademicYear(catalogYear: string): string | null {
+  const match = CATALOG_YEAR.exec(catalogYear.trim());
+  if (!match) return null;
+  const year = Number(match[2]);
+  const season = match[1]?.toLowerCase();
+  // Spring and Summer finish the academic year that started the Fall before.
+  return academicYear(season && season !== "fall" ? year - 1 : year);
+}
+
 /**
  * The Bulletin year to read courses from: the student's program's year, the
- * one their start term suggests, their audit's catalog year ("2024"), or
- * else the academic year `today` falls in.
+ * one their start term suggests, their audit's catalog year ("2024" or
+ * "Fall 2024"), or else the academic year `today` falls in.
  */
 export function bulletinYearFor(
   sources: {
@@ -79,9 +90,10 @@ export function bulletinYearFor(
   if (programYear) return programYear;
   const suggested = startTerm ? suggestedBulletinYear(startTerm) : null;
   if (suggested) return suggested;
-  if (auditCatalogYear && FOUR_DIGIT_YEAR.test(auditCatalogYear)) {
-    return academicYear(Number(auditCatalogYear));
-  }
+  const catalog = auditCatalogYear
+    ? catalogAcademicYear(auditCatalogYear)
+    : null;
+  if (catalog) return catalog;
   const year = today.getFullYear();
   return academicYear(
     today.getMonth() >= ACADEMIC_YEAR_START_MONTH ? year : year - 1,
