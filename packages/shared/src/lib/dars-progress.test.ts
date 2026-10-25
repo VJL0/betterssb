@@ -12,6 +12,11 @@ function requirement(overrides: Partial<Requirement>): Requirement {
     earned: null,
     inProgress: null,
     needs: null,
+    requiredCredits: null,
+    requiredGpa: null,
+    requiredSubrequirements: null,
+    requiredCount: null,
+    maxCredits: null,
     subrequirements: [],
     ...overrides,
   };
@@ -24,12 +29,22 @@ function audit(requirements: Requirement[]): Audit {
     programCode: "",
     catalogYear: "2024",
     preparedOn: "",
+    graduationDate: "",
+    analysisComplete: true,
+    degreeTotals: null,
+    categoryTotals: [],
     complete: false,
     requirements,
   };
 }
 
-const credits = (n: number) => ({ credits: n, courses: null, gpa: null });
+const credits = (n: number) => ({
+  credits: n,
+  courses: null,
+  sets: null,
+  subrequirements: null,
+  gpa: null,
+});
 
 describe("creditTotals", () => {
   it("reads the Total_Hours line", () => {
@@ -66,11 +81,26 @@ describe("neededRequirements", () => {
           title: "Major electives",
           status: "incomplete",
           needs: credits(9),
+          requiredCredits: null,
+          requiredGpa: null,
+          requiredSubrequirements: null,
+          requiredCount: null,
+          maxCredits: null,
           subrequirements: [
             {
               number: "1",
               title: "",
+              notes: [],
               status: "incomplete",
+              requiredCredits: null,
+              code: "",
+              aliases: [],
+              required: false,
+              requiredCount: null,
+              requiredGpa: null,
+              maxCredits: null,
+              choices: [],
+              notFrom: [],
               earned: null,
               inProgress: null,
               needs: null,
@@ -80,7 +110,17 @@ describe("neededRequirements", () => {
             {
               number: "2",
               title: "",
+              notes: [],
               status: "complete",
+              requiredCredits: null,
+              code: "",
+              aliases: [],
+              required: false,
+              requiredCount: null,
+              requiredGpa: null,
+              maxCredits: null,
+              choices: [],
+              notFrom: [],
               earned: null,
               inProgress: null,
               needs: null,

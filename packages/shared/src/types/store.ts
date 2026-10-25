@@ -1,5 +1,6 @@
 import type {
   Audit,
+  BulletinProgram,
   ChatMessage,
   ChatRequest,
   TranscriptData,
@@ -63,10 +64,22 @@ export interface TermPlan {
   updatedAt: string;
 }
 
+/** The program a student picked from a Bulletin's academic programs index. */
+export interface SelectedProgram extends Pick<
+  BulletinProgram,
+  "name" | "degree" | "url"
+> {
+  /** "YYYY-YYYY", suggested by the start term; not Temple's official record. */
+  bulletinYear: string;
+}
+
 export interface UserSettings {
   /** Banner term code the app opens to. */
   term: string | null;
   major: string;
+  /** Temple term code the student started in, which suggests their Bulletin year. */
+  startTerm: string | null;
+  program: SelectedProgram | null;
   keyboardShortcuts: boolean;
   /** Ratings, seats, plan tags and the plan dock on Banner's own pages. */
   bannerOverlay: boolean;

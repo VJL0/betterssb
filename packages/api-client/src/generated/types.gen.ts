@@ -9,13 +9,26 @@ export type ClientOptions = {
  */
 export type Audit = {
   /**
+   * Analysiscomplete
+   */
+  analysisComplete: boolean;
+  /**
    * Catalogyear
    */
   catalogYear: string;
   /**
+   * Categorytotals
+   */
+  categoryTotals: Array<HoursSummary>;
+  /**
    * Complete
    */
   complete: boolean | null;
+  degreeTotals: HoursSummary | null;
+  /**
+   * Graduationdate
+   */
+  graduationDate: string;
   /**
    * Preparedon
    */
@@ -43,6 +56,14 @@ export type Audit = {
  */
 export type AuditCourse = {
   /**
+   * Bannerterm
+   */
+  bannerTerm: string;
+  /**
+   * Conditioncode
+   */
+  conditionCode: string;
+  /**
    * Course
    */
   course: string;
@@ -50,6 +71,10 @@ export type AuditCourse = {
    * Credits
    */
   credits: number | null;
+  /**
+   * Exception
+   */
+  exception: boolean;
   /**
    * Grade
    */
@@ -59,6 +84,14 @@ export type AuditCourse = {
    */
   inProgress: boolean;
   /**
+   * Notes
+   */
+  notes: Array<string>;
+  /**
+   * Satisfies
+   */
+  satisfies: string;
+  /**
    * Term
    */
   term: string;
@@ -66,6 +99,99 @@ export type AuditCourse = {
    * Title
    */
   title: string;
+  /**
+   * Transfer
+   */
+  transfer: boolean;
+  /**
+   * Transfercourse
+   */
+  transferCourse: string;
+  /**
+   * Transferinstitution
+   */
+  transferInstitution: string;
+};
+
+/**
+ * BulletinProgram
+ *
+ * One degree, minor or certificate from a Bulletin's academic programs index.
+ */
+export type BulletinProgram = {
+  /**
+   * College
+   */
+  college: string;
+  /**
+   * Collegename
+   */
+  collegeName: string;
+  /**
+   * Degree
+   */
+  degree: string;
+  /**
+   * Degreename
+   */
+  degreeName: string;
+  /**
+   * Hasoptions
+   */
+  hasOptions: boolean;
+  level: ProgramLevel;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Note
+   */
+  note: string;
+  /**
+   * Url
+   */
+  url: string;
+};
+
+/**
+ * BulletinProgramIndex
+ *
+ * Every program in one Bulletin year, with the page they were read from.
+ */
+export type BulletinProgramIndex = {
+  /**
+   * Bulletinyear
+   */
+  bulletinYear: string;
+  /**
+   * Colleges
+   */
+  colleges: Array<CodeName>;
+  /**
+   * Degrees
+   */
+  degrees: Array<CodeName>;
+  /**
+   * Introduction
+   */
+  introduction: Array<string>;
+  /**
+   * Links
+   */
+  links: Array<Link>;
+  /**
+   * Programtypes
+   */
+  programTypes: Array<Definition>;
+  /**
+   * Programs
+   */
+  programs: Array<BulletinProgram>;
+  /**
+   * Sourceurl
+   */
+  sourceUrl: string;
 };
 
 /**
@@ -102,6 +228,24 @@ export type ChatRequest = {
    * Provider
    */
   provider?: "gemini" | "groq";
+};
+
+/**
+ * ChoiceCourse
+ */
+export type ChoiceCourse = {
+  /**
+   * Course
+   */
+  course: string;
+  /**
+   * Maxcredits
+   */
+  maxCredits: number | null;
+  /**
+   * Taken
+   */
+  taken: string;
 };
 
 /**
@@ -265,18 +409,148 @@ export type CodeDescription = {
 };
 
 /**
+ * CodeName
+ */
+export type CodeName = {
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Name
+   */
+  name: string;
+};
+
+/**
+ * Contact
+ */
+export type Contact = {
+  /**
+   * Details
+   */
+  details: Array<string>;
+  /**
+   * Email
+   */
+  email: string;
+  /**
+   * Group
+   */
+  group: string;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Phone
+   */
+  phone: string;
+  /**
+   * Title
+   */
+  title: string;
+  /**
+   * Url
+   */
+  url: string;
+};
+
+/**
+ * CourseChoice
+ *
+ * One option under SELECT FROM: a course, or cross-listed equivalents DARS joins with OR.
+ */
+export type CourseChoice = {
+  /**
+   * Courses
+   */
+  courses: Array<ChoiceCourse>;
+};
+
+/**
+ * CourseDescription
+ *
+ * A course's entry in the Bulletin's course descriptions.
+ */
+export type CourseDescription = {
+  /**
+   * Attributes
+   */
+  attributes: Array<string>;
+  /**
+   * Bulletinurl
+   */
+  bulletinUrl: string;
+  /**
+   * Code
+   */
+  code: string;
+  /**
+   * Corequisitecourses
+   */
+  corequisiteCourses: Array<string>;
+  /**
+   * Corequisites
+   */
+  corequisites: string;
+  /**
+   * Credits
+   */
+  credits: string;
+  /**
+   * Description
+   */
+  description: string;
+  /**
+   * Other
+   */
+  other: Array<Fact>;
+  /**
+   * Prerequisitecourses
+   */
+  prerequisiteCourses: Array<string>;
+  /**
+   * Prerequisites
+   */
+  prerequisites: string;
+  /**
+   * Repeatability
+   */
+  repeatability: string;
+  /**
+   * Restrictions
+   */
+  restrictions: Array<Fact>;
+  /**
+   * Title
+   */
+  title: string;
+};
+
+/**
  * CourseOption
  *
  * One choosable option within a requirement item.
  *
  * A single option can contain multiple corequisite courses that must
- * be taken together (e.g. CHEM 1031 & CHEM 1033).
+ * be taken together (e.g. CHEM 1031 & CHEM 1033). An option with no
+ * courses is described in words ("Up to any two foreign language
+ * courses") or by a placeholder code ("CIS 4X9X").
  */
 export type CourseOption = {
   /**
    * Courses
    */
   courses: Array<CourseRef>;
+  /**
+   * Description
+   */
+  description: string;
+  /**
+   * Group
+   */
+  group: string;
   /**
    * Ishonorsvariant
    */
@@ -289,6 +563,10 @@ export type CourseOption = {
  * A reference to a single course in the bulletin.
  */
 export type CourseRef = {
+  /**
+   * Attributes
+   */
+  attributes: Array<string>;
   /**
    * Bulletinurl
    */
@@ -316,6 +594,20 @@ export type CourseRef = {
 };
 
 /**
+ * Definition
+ */
+export type Definition = {
+  /**
+   * Description
+   */
+  description: string;
+  /**
+   * Term
+   */
+  term: string;
+};
+
+/**
  * DegreeProgram
  *
  * Complete degree requirements scraped from a Temple Bulletin page.
@@ -323,6 +615,22 @@ export type CourseRef = {
  * This is the top-level structure returned by the parser.
  */
 export type DegreeProgram = {
+  /**
+   * Acceleratedprograms
+   */
+  acceleratedPrograms: Array<LinkedProgram>;
+  /**
+   * Appliesto
+   */
+  appliesTo: string;
+  /**
+   * Archivenotice
+   */
+  archiveNotice: string;
+  /**
+   * Breadcrumb
+   */
+  breadcrumb: Array<string>;
   /**
    * Bulletinurl
    */
@@ -332,6 +640,10 @@ export type DegreeProgram = {
    */
   bulletinYear: string;
   /**
+   * Campus
+   */
+  campus: string;
+  /**
    * Categories
    */
   categories: Array<RequirementCategory>;
@@ -339,6 +651,10 @@ export type DegreeProgram = {
    * College
    */
   college: string;
+  /**
+   * Contacts
+   */
+  contacts: Array<Contact>;
   /**
    * Degreetype
    */
@@ -348,6 +664,10 @@ export type DegreeProgram = {
    */
   distinctionCriteria: Array<string>;
   /**
+   * Facts
+   */
+  facts: Array<Fact>;
+  /**
    * Footnotes
    */
   footnotes: Array<string>;
@@ -356,18 +676,70 @@ export type DegreeProgram = {
    */
   labScienceSequences: Array<LabScienceSequence>;
   /**
+   * Labsciencetitle
+   */
+  labScienceTitle: string;
+  /**
+   * Level
+   */
+  level: string;
+  /**
    * Name
    */
   name: string;
   /**
+   * Overview
+   */
+  overview: Array<string>;
+  /**
+   * Pdfurl
+   */
+  pdfUrl: string;
+  /**
    * Programcode
    */
   programCode: string;
+  /**
+   * Programpageurl
+   */
+  programPageUrl: string;
+  /**
+   * Sections
+   */
+  sections: Array<PageSection>;
   suggestedPlan: SuggestedPlan | null;
+  /**
+   * Suggestedplans
+   */
+  suggestedPlans: Array<SuggestedPlan>;
+  /**
+   * Tabs
+   */
+  tabs: Array<string>;
   /**
    * Totalcredits
    */
   totalCredits: string;
+};
+
+/**
+ * Fact
+ *
+ * A labelled line from the page, such as "Campus Location: Main".
+ */
+export type Fact = {
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Tab
+   */
+  tab: string;
+  /**
+   * Value
+   */
+  value: string;
 };
 
 /**
@@ -426,6 +798,42 @@ export type GeneratedSchedule = {
 };
 
 /**
+ * HoursSummary
+ *
+ * Credit hours from the audit's progress chart, for the degree or one category.
+ */
+export type HoursSummary = {
+  /**
+   * Category
+   */
+  category: string;
+  /**
+   * Completedcredits
+   */
+  completedCredits: number;
+  /**
+   * Gpa
+   */
+  gpa: number | null;
+  /**
+   * Inprogresscredits
+   */
+  inProgressCredits: number;
+  /**
+   * Plannedcredits
+   */
+  plannedCredits: number;
+  /**
+   * Requiredgpa
+   */
+  requiredGpa: number | null;
+  /**
+   * Unfulfilledcredits
+   */
+  unfulfilledCredits: number;
+};
+
+/**
  * LabScienceSequence
  *
  * A lab-science department sequence (e.g. Biology, Chemistry, Physics).
@@ -458,6 +866,54 @@ export type LabScienceSequence = {
    * Scienceboptions
    */
   scienceBOptions: Array<CourseOption>;
+};
+
+/**
+ * Link
+ */
+export type Link = {
+  /**
+   * Text
+   */
+  text: string;
+  /**
+   * Url
+   */
+  url: string;
+};
+
+/**
+ * LinkedProgram
+ *
+ * A program the page points to, such as an accelerated +1 master's.
+ */
+export type LinkedProgram = {
+  /**
+   * Group
+   */
+  group: string;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Url
+   */
+  url: string;
+};
+
+/**
+ * ListItem
+ */
+export type ListItem = {
+  /**
+   * Level
+   */
+  level: number;
+  /**
+   * Text
+   */
+  text: string;
 };
 
 /**
@@ -546,16 +1002,84 @@ export type MeetingTime = {
 };
 
 /**
+ * PageBlock
+ *
+ * A paragraph, list or plain table in one of the page's tabs.
+ */
+export type PageBlock = {
+  /**
+   * Courses
+   */
+  courses: Array<string>;
+  /**
+   * Items
+   */
+  items: Array<ListItem>;
+  /**
+   * Kind
+   */
+  kind: "paragraph" | "list" | "table";
+  /**
+   * Label
+   */
+  label: string;
+  /**
+   * Lines
+   */
+  lines: Array<string>;
+  /**
+   * Links
+   */
+  links: Array<Link>;
+  /**
+   * Rows
+   */
+  rows: Array<Array<string>>;
+};
+
+/**
+ * PageSection
+ *
+ * The content under one heading of a page tab.
+ */
+export type PageSection = {
+  /**
+   * Blocks
+   */
+  blocks: Array<PageBlock>;
+  /**
+   * Headings
+   */
+  headings: Array<string>;
+  /**
+   * Tab
+   */
+  tab: string;
+};
+
+/**
  * PlanCourse
  *
  * A single slot in the suggested academic plan grid.
  */
 export type PlanCourse = {
+  /**
+   * Attributes
+   */
+  attributes: Array<string>;
   course: CourseOption | null;
   /**
    * Credits
    */
   credits: string;
+  /**
+   * Footnotes
+   */
+  footnotes: Array<string>;
+  /**
+   * Options
+   */
+  options: Array<CourseOption>;
   /**
    * Placeholder
    */
@@ -575,7 +1099,7 @@ export type PlanSemester = {
   /**
    * Term
    */
-  term: "Fall" | "Spring" | "Summer";
+  term: string;
   /**
    * Totalcredits
    */
@@ -671,6 +1195,13 @@ export type ProblemError = {
 };
 
 /**
+ * ProgramLevel
+ *
+ * The Bulletin index column a program is listed under.
+ */
+export type ProgramLevel = "undergraduate" | "graduate" | "professional";
+
+/**
  * Progress
  */
 export type Progress = {
@@ -686,6 +1217,14 @@ export type Progress = {
    * Gpa
    */
   gpa: number | null;
+  /**
+   * Sets
+   */
+  sets: number | null;
+  /**
+   * Subrequirements
+   */
+  subrequirements: number | null;
 };
 
 /**
@@ -740,11 +1279,31 @@ export type Requirement = {
   code: string;
   earned: Progress | null;
   inProgress: Progress | null;
+  /**
+   * Maxcredits
+   */
+  maxCredits: number | null;
   needs: Progress | null;
   /**
    * Notes
    */
   notes: Array<string>;
+  /**
+   * Requiredcount
+   */
+  requiredCount: number | null;
+  /**
+   * Requiredcredits
+   */
+  requiredCredits: number | null;
+  /**
+   * Requiredgpa
+   */
+  requiredGpa: number | null;
+  /**
+   * Requiredsubrequirements
+   */
+  requiredSubrequirements: number | null;
   /**
    * Status
    */
@@ -762,12 +1321,11 @@ export type Requirement = {
 /**
  * RequirementCategory
  *
- * A top-level requirement section.
+ * One course list on the page, named by where it sits.
  *
- * Maps to the numbered <ol> items on the bulletin:
- * 1. University Requirements
- * 2. College Requirements
- * 3. Major Requirements for Bachelor of Science
+ * The name is the requirement summary item or heading above the list
+ * ("Major Requirements for Bachelor of Science (73-74 s.h.)"), and the
+ * description is the sentence that introduces it.
  */
 export type RequirementCategory = {
   /**
@@ -786,6 +1344,10 @@ export type RequirementCategory = {
    * Notes
    */
   notes: Array<string>;
+  /**
+   * Tab
+   */
+  tab: string;
   /**
    * Totalcredits
    */
@@ -806,6 +1368,10 @@ export type RequirementGroup = {
    */
   constraints: Array<string>;
   /**
+   * Credits
+   */
+  credits: string;
+  /**
    * Items
    */
   items: Array<RequirementItem>;
@@ -823,9 +1389,17 @@ export type RequirementGroup = {
  * Covers three patterns found on the bulletin:
  * - REQUIRED:   take this exact course (options has 1 entry with 1 course)
  * - SELECT_ONE: pick one option from the list (e.g. CIS 1051 or CIS 1951)
- * - SELECT_N:   pick N credits worth from the options pool
+ * - SELECT_N:   pick N courses or N credits worth from the options pool
  */
 export type RequirementItem = {
+  /**
+   * Choosecount
+   */
+  chooseCount: number | null;
+  /**
+   * Choosecredits
+   */
+  chooseCredits: string;
   /**
    * Credits
    */
@@ -995,16 +1569,56 @@ export type SelectionType = "required" | "select_one" | "select_n";
  */
 export type SubRequirement = {
   /**
+   * Aliases
+   */
+  aliases: Array<string>;
+  /**
+   * Choices
+   */
+  choices: Array<CourseChoice>;
+  /**
+   * Code
+   */
+  code: string;
+  /**
    * Courses
    */
   courses: Array<AuditCourse>;
   earned: Progress | null;
   inProgress: Progress | null;
+  /**
+   * Maxcredits
+   */
+  maxCredits: number | null;
   needs: Progress | null;
+  /**
+   * Notfrom
+   */
+  notFrom: Array<string>;
+  /**
+   * Notes
+   */
+  notes: Array<string>;
   /**
    * Number
    */
   number: string;
+  /**
+   * Required
+   */
+  required: boolean;
+  /**
+   * Requiredcount
+   */
+  requiredCount: number | null;
+  /**
+   * Requiredcredits
+   */
+  requiredCredits: number | null;
+  /**
+   * Requiredgpa
+   */
+  requiredGpa: number | null;
   /**
    * Selectfrom
    */
@@ -1022,13 +1636,21 @@ export type SubRequirement = {
 /**
  * SuggestedPlan
  *
- * The 4-year suggested academic plan grid from the bulletin.
+ * A suggested academic plan grid from the bulletin.
  */
 export type SuggestedPlan = {
   /**
    * Footnotes
    */
   footnotes: Array<string>;
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Subtitle
+   */
+  subtitle: string;
   /**
    * Totalcredits
    */
@@ -1398,6 +2020,50 @@ export type ParseAuditResponses = {
 
 export type ParseAuditResponse = ParseAuditResponses[keyof ParseAuditResponses];
 
+export type GetCourseDescriptionData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Code
+     *
+     * Course code, "CIS 3296"
+     */
+    code: string;
+    /**
+     * Year
+     *
+     * Bulletin year, YYYY-YYYY
+     */
+    year: string;
+  };
+  url: "/api/degree/courses";
+};
+
+export type GetCourseDescriptionErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetCourseDescriptionError =
+  GetCourseDescriptionErrors[keyof GetCourseDescriptionErrors];
+
+export type GetCourseDescriptionResponses = {
+  /**
+   * Successful Response
+   */
+  200: CourseDescription;
+};
+
+export type GetCourseDescriptionResponse =
+  GetCourseDescriptionResponses[keyof GetCourseDescriptionResponses];
+
 export type ParseBulletinData = {
   /**
    * Html
@@ -1435,6 +2101,82 @@ export type ParseBulletinResponses = {
 
 export type ParseBulletinResponse =
   ParseBulletinResponses[keyof ParseBulletinResponses];
+
+export type ListBulletinProgramsData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Year
+     *
+     * Bulletin year, YYYY-YYYY
+     */
+    year: string;
+  };
+  url: "/api/degree/programs";
+};
+
+export type ListBulletinProgramsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListBulletinProgramsError =
+  ListBulletinProgramsErrors[keyof ListBulletinProgramsErrors];
+
+export type ListBulletinProgramsResponses = {
+  /**
+   * Successful Response
+   */
+  200: BulletinProgramIndex;
+};
+
+export type ListBulletinProgramsResponse =
+  ListBulletinProgramsResponses[keyof ListBulletinProgramsResponses];
+
+export type GetProgramRequirementsData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Url
+     *
+     * A program page URL from `list_bulletin_programs`
+     */
+    url: string;
+  };
+  url: "/api/degree/requirements";
+};
+
+export type GetProgramRequirementsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetProgramRequirementsError =
+  GetProgramRequirementsErrors[keyof GetProgramRequirementsErrors];
+
+export type GetProgramRequirementsResponses = {
+  /**
+   * Successful Response
+   */
+  200: DegreeProgram;
+};
+
+export type GetProgramRequirementsResponse =
+  GetProgramRequirementsResponses[keyof GetProgramRequirementsResponses];
 
 export type SearchProfessorsData = {
   body?: never;

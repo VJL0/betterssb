@@ -25,11 +25,11 @@ import {
   FieldLabel,
   FieldTitle,
 } from "@workspace/ui/components/field";
-import { Input } from "@workspace/ui/components/input";
 import { Kbd } from "@workspace/ui/components/kbd";
 import { Switch } from "@workspace/ui/components/switch";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { BannerBadge } from "@/components/banner-status";
+import { ProgramPicker } from "@/features/program/program-picker";
 import { TermSelect } from "@/components/term-select";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import { useSettings } from "@/hooks/use-settings";
@@ -136,36 +136,15 @@ function AccountSection() {
 }
 
 function TermSection() {
-  const { settings, update } = useSettings();
-  const [major, setMajor] = useState<string | null>(null);
-  const majorId = useId();
-
   return (
     <SettingsSection id="term" title="Term and major">
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(14rem,100%),1fr))] gap-4">
-        <Field>
-          {/* The select names itself; this is the visible heading. */}
-          <FieldTitle>Term</FieldTitle>
-          <TermSelect className="w-full" />
-          <FieldDescription>Also in the top bar.</FieldDescription>
-        </Field>
-        <Field>
-          <FieldLabel htmlFor={majorId}>Major</FieldLabel>
-          <Input
-            id={majorId}
-            value={major ?? settings.major}
-            placeholder="e.g. Computer Science"
-            autoComplete="off"
-            onChange={(e) => setMajor(e.target.value)}
-            onBlur={() => {
-              if (major !== null && major !== settings.major) {
-                void update({ major });
-              }
-              setMajor(null);
-            }}
-          />
-        </Field>
-      </div>
+      <Field>
+        {/* The select names itself; this is the visible heading. */}
+        <FieldTitle>Term</FieldTitle>
+        <TermSelect className="w-full sm:w-64" />
+        <FieldDescription>Also in the top bar.</FieldDescription>
+      </Field>
+      <ProgramPicker />
     </SettingsSection>
   );
 }

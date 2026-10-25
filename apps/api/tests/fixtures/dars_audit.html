@@ -6,7 +6,9 @@
 <div class="container-fluid" id="main">
   <h1>Audit Information</h1>
   <div class="auditTitle">
-    <div class="floatright"></div>
+    <div class="floatright" style="height:60px;">
+      <a class="btn btn-primary" href="/selfservice/audit/create.html" id="pageAddButton" role="button">Request Audit</a>
+    </div>
     <!--div -->
     Doe, Jane
     <!-- /div -->
@@ -22,6 +24,8 @@
     <div class="auditHeaderEntry col-3"><h>Fall 2024</h></div>
     <div class="auditHeaderEntryLabel col-1"><h><b>Student ID</b></h></div>
     <div class="auditHeaderEntry col-3"><h>000000000</h></div>
+    <div class="auditHeaderEntryLabel col-1"><h><b>Graduation Date</b></h></div>
+    <div class="auditHeaderEntry col-3"><h>05/2028</h></div>
     <div class="auditHeaderEntryLabel col-1"></div>
     <div class="auditHeaderEntry col-3"></div>
   </div>
@@ -37,7 +41,8 @@
               <div class="reqHeader">
                 _________________________________________________________________<br/>
                 W A R N I N G<br/>
-                THE DARS ANALYSIS IS NOT DEFINITIVE.<br/>
+                THE DARS ANALYSIS IS NOT DEFINITIVE. FINAL RESPONSIBILITY FOR<br/>
+                COMPLETION OF REQUIREMENTS IS HELD BY YOU.<br/>
                 _________________________________________________________________
               </div>
               <div class="reqTitle"></div>
@@ -49,7 +54,12 @@
         <div class="requirement Status_OK category_GENED rname_GENED-GW rtabx_11" id="req-2" rname="GENED-GW" pseudo="GENED-GW">
           <div class="reqHeaderTable">
             <div class="reqText">
-              <div class="reqHeader"></div>
+              <div class="reqHeader">
+                TEMPLE UNIVERSITY<br/>
+                FULL GENERAL EDUCATION<br/>
+                A STUDENT MAY USE NO MORE THAN TWO COURSES FROM A SINGLE DEPT.<br/>
+                TO SATISFY GENED REQUIREMENTS.
+              </div>
               <div class="reqTitle">~GENED-GW- GENED REQUIREMENT FOR ANALYTIC READ AND WRITING</div>
             </div>
           </div>
@@ -75,7 +85,46 @@
           </div>
         </div>
 
-        <div class="requirement Status_NO category_MAJOR rname_CISS.TBS rtabx_06" id="req-3" rname="CISS.TBS" pseudo="CISS.TBS">
+        <div class="requirement Status_NO category_GENED rname_GENED-GB rtabx_16" id="req-2b" rname="GENED-GB" pseudo="GENED-GB" rqdsubreq="1" rqdcount="1" rqdgpa="0" rqdhours="0.0" maxhours="3.0" authcode1=" " authcode2=" ">
+          <div class="reqHeaderTable">
+            <div class="reqText">
+              <div class="reqHeader"></div>
+              <div class="reqTitle">~ GENED-GB --- GENED REQUIREMENT FOR HUMAN BEHAVIOR</div>
+            </div>
+          </div>
+          <div class="reqBody">
+            <table class="requirementTotals"></table>
+            <div class="auditSubrequirements">
+              <div class="subrequirement" pseudo="GENED-GB-1" pseudolist='["GENEDGB1","GB-1","GENED-GB-1","MINORGENED"]' rqdgpa="0" rqdhours="2.0" rqdsubreq="1" maxhours="3.0">
+                <div class="subreqPretext"><span class="subreqRequired"></span><span class="status Status_NO"></span><span class="subreqNumber">1)</span></div>
+                <div class="subreqBody">
+                  <span class="subreqTitle srTitle_substatusNO">HUMAN BEHAVIOR COURSE -</span>
+                  <table class="subreqNeeds"><tr><td class="rowlabel">NEEDS:</td><td class="count number">1</td><td class="countlabel fieldlabel">COURSE</td></tr></table>
+                  <table class="notcourses" pseudo="HIDE"></table>
+                  <table class="selectcourses" pseudo="GENED-GB-1">
+                    <tr class="selectfromcourses"><td class="fromlabel">SELECT FROM:</td><td class="fromcourselist"><table>
+                      <tr><td>
+                        <span class="course draggable" department="ANTH " number="0814"><span class="number">ANTH 0814</span></span>
+                        OR
+                        <span class="course draggable" department="GUS  " number="0814"><span class="number">GUS 0814</span></span>
+                        <span class="course draggable" department="AOD  " number="0836"><span class="number">AOD 0836</span></span>
+                        OR
+                      </td></tr>
+                      <tr><td>
+                        <span class="course draggable" department="CSI  " number="0836"><span class="number">CSI 0836(SP19 OR AFTER)</span></span>
+                        <span class="course draggable" department="EDUC " number="0823"><span class="number">EDUC 0823(SP10-S216)</span></span>
+                        ,
+                        <span class="course draggable" department="EDUC " number="0815"><span class="number">0815</span></span>
+                      </td></tr>
+                    </table></td></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="requirement Status_NO category_MAJOR rname_CISS.TBS rtabx_06" id="req-3" rname="CISS.TBS" pseudo="CISS.TBS" rqdsubreq="16" rqdcount="0" rqdgpa="2" rqdhours="0.0" maxhours="0.0" authcode1=" " authcode2=" ">
           <div class="reqHeaderTable">
             <div class="reqText">
               <div class="reqHeader"></div>
@@ -123,15 +172,88 @@
                   </table>
                 </div>
               </div>
+              <div class="subrequirement" pseudo="CISS.TBS-13" pseudolist='["CISS.TBS-13"]' rqdgpa="0" rqdhours="15.0" rqdsubreq="0" maxhours="999.9">
+                <div class="subreqPretext"><span class="status Status_NO"></span><span class="subreqNumber">13)</span></div>
+                <div class="subreqBody">
+                  <span class="subreqTitle srTitle_substatusNO">
+                    FOUR TO FIVE CIS ELECTIVES -<br/>
+                    * 15-16 CREDITS ARE REQUIRED<br/>
+                    * A MAXIMUM OF EIGHT CREDITS FROM CIS 3381, 4282 OR<br/>
+                    4382 MAY BE TAKEN AS ELECTIVES.<br/>
+                    * A MAXIMUM OF FOUR CREDITS FROM CIS 3381 MAY BE<br/>
+                    TAKEN AS ELECTIVES.
+                  </span>
+                  <table class="subrequirementTotals">
+                    <tr class="subreqEarned">
+                      <td class="bigcolumn"><span class="hours number">4.0</span><span class="hourslabel fieldlabel">CREDITS</span></td>
+                      <td class="count number"></td><td class="countlabel fieldlabel"></td>
+                    </tr>
+                    <tr class="subreqIpHours">
+                      <td class="rowlabel">IN-PROGRESS</td><td class="hours number">3.0</td><td class="hourslabel fieldlabel">CREDITS</td>
+                    </tr>
+                  </table>
+                  <table class="completedCourses" summary="complete course table">
+                    <tr class="takenCourse">
+                      <td class="term">FL25</td><td class="course">MATH 2043</td><td class="credit">4.0</td>
+                      <td class="grade">C</td><td class="ccode"></td>
+                      <td class="description"><table><tr><td class="descLine">Calculus III</td></tr></table></td>
+                    </tr>
+                  </table>
+                  <table class="subreqNeeds">
+                    <tr><td class="rowlabel">NEEDS:</td><td class="hours number">8.0</td><td class="hourslabel smallfieldlabel">CREDITS</td></tr>
+                  </table>
+                  <table class="notcourses" pseudo=""><tr><td class="fromcourselist"><table><tr><td>
+                    <span class="course draggable" department="CIS  " number="4398"><span class="number">CIS 4398</span></span>
+                  </td></tr></table></td></tr></table>
+                  <table class="selectcourses" pseudo="CISS.TBS-13">
+                    <tr class="selectfromcourses"><td class="fromlabel">SELECT FROM:</td><td class="fromcourselist"><table><tr><td>
+                      <span class="course draggable" department="CIS  " number="3100"><span class="number">CIS 3100</span></span>
+                      ,
+                      <span class="course draggable" department="CIS  " number="3381"><span class="number">3381(4)</span></span>
+                      ,
+                    </td></tr></table></td></tr>
+                  </table>
+                </div>
+              </div>
+              <div class="subrequirement" pseudo="CISS.TBS-14" pseudolist='["CISS.TBS-14"]' rqdgpa="0" rqdhours="0.0" rqdsubreq="1" maxhours="4.5">
+                <div class="subreqPretext"><span class="status Status_OK"></span><span class="subreqNumber">14)</span></div>
+                <div class="subreqBody">
+                  <span class="subreqTitle srTitle_substatusNONE">CALCULUS I -</span>
+                  <table class="subrequirementTotals">
+                    <tr class="subreqEarned"><td class="bigcolumn"></td><td class="count number">1</td><td class="countlabel fieldlabel">COURSE</td></tr>
+                  </table>
+                  <table class="completedCourses" summary="complete course table">
+                    <tr class="takenCourse">
+                      <td class="term"></td><td class="course">CISS.TBS-14</td><td class="credit">0.0</td>
+                      <td class="grade">CP</td><td class="ccode"></td>
+                      <td class="description"><table></table></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="subrequirement" pseudo="CISS.TBS-16A" rqdgpa="0" rqdhours="0.0" rqdsubreq="1">
+                <div class="subreqPretext"><span class="status Status_IP"></span><span class="subreqNumber">16)</span></div>
+                <div class="subreqBody">
+                  <span class="subreqTitle srTitle_substatusIP">TWO SEQUENCED LAB SCIENCE COURSES TAKEN IN<br/>ONE DEPARTMENT -</span>
+                  <table class="subrequirementTotals">
+                    <tr class="subreqEarned"><td class="bigcolumn"></td><td class="count number">0</td><td class="countlabel fieldlabel">SETS</td></tr>
+                    <tr class="subreqIpHours">
+                      <td class="rowlabel">IN-PROGRESS</td><td class="hours number"></td><td class="hourslabel fieldlabel"></td>
+                      <td class="count number">1</td><td class="countlabel fieldlabel">SET  TAKEN</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="requirement Status_NO category_BLANK rname_CAS-ULS rtabx_29" id="req-4" rname="CAS-ULS" pseudo="CAS-ULS">
+        <div class="requirement Status_NO category_BLANK rname_CAS-ULS rtabx_29" id="req-4" rname="CAS-ULS" pseudo="CAS-ULS" rqdsubreq="1" rqdcount="0" rqdgpa="0" rqdhours="45.0" maxhours="999.9" authcode1=" " authcode2=" ">
           <div class="reqHeaderTable">
             <div class="reqText">
               <div class="reqHeader"></div>
-              <div class="reqTitle">~CAS-ULS -- A MINIMUM OF 45 SEMESTER HOURS IN UPPER LEVEL COURSES</div>
+              <div class="reqTitle">~CAS-ULS -- A MINIMUM OF 45 SEMESTER HOURS IN UPPER<br/>
+                LEVEL COURSES MUST BE COMPLETED WITH A PASSING GRADE</div>
             </div>
           </div>
           <div class="reqBody">
@@ -156,8 +278,8 @@
               </tr>
             </table>
             <div class="auditSubrequirements">
-              <div class="subrequirement">
-                <div class="subreqPretext"><span class="status Status_NO"></span><span class="subreqNumber">1)</span></div>
+              <div class="subrequirement" pseudo="CAS-ULS-1" pseudolist='["HIDE","CAS-ULS-1","CAS-UL-1","HIDE"]' rqdgpa="0" rqdhours="45.0" rqdsubreq="0" maxhours="999.9">
+                <div class="subreqPretext"><span class="subreqRequired">R</span><span class="status Status_NO"></span><span class="subreqNumber">1)</span></div>
                 <div class="subreqBody">
                   <span class="subreqTitle srTitle_substatusNO">UPPER LEVEL CLA/CST/ENGR COURSES</span>
                   <table class="selectcourses" pseudo="CAS-ULS-1">
@@ -174,9 +296,98 @@
           </div>
         </div>
 
+        <div class="requirement Status_NO category_ELECTIVES rname_FREECSBS rtabx_40" id="req-5" rname="FREECSBS" pseudo="FREECSBS">
+          <div class="reqHeaderTable">
+            <div class="reqText">
+              <div class="reqHeader"></div>
+              <div class="reqTitle">~FREECSBS -- FREE ELECTIVES REQUIREMENT<br/><br/>
+                * COURSES NOT USED TO SATISFY GENED, COLLEGE OR MAJOR, ETC<br/>
+                * PLEASE SEE AN ADVISOR FOR A CONFIRMATION ON WHAT<br/>
+                COURSES ARE CLASSIFIED AS 'FREE ELECTIVES'.<br/></div>
+            </div>
+          </div>
+          <div class="reqBody">
+            <table class="requirementTotals">
+              <tr class="reqNeeds">
+                <td class="warnind"></td><td class="rowlabel">NEEDS:</td>
+                <td class="hourscount bigcolumn"><span class="hours number">22.0</span><span class="hourslabel smallfieldlabel">CREDITS</span></td>
+                <td class="subreqs number">1</td><td class="subreqslabel fieldlabel">SUB-REQ</td>
+              </tr>
+            </table>
+            <div class="auditSubrequirements">
+              <div class="subrequirement" pseudo="FREECSBS-1" rqdgpa="0" rqdhours="24.0" rqdsubreq="0">
+                <div class="subreqPretext"><span class="status Status_NONE"></span><span class="subreqNumber">1)</span></div>
+                <div class="subreqBody">
+                  <span class="subreqTitle srTitle_substatusNO">FREE ELECTIVE COURSES -</span>
+                  <table class="completedCourses" summary="complete course table">
+                    <tr class="takenCourse">
+                      <td class="term">SP23</td><td class="course">MATH 1031</td><td class="credit">0.0</td>
+                      <td class="grade">NT</td><td class="ccode">&gt;D</td>
+                      <td class="description"><table>
+                        <tr><td class="descLine">Differential and Integral Cal</td></tr>
+                        <tr><td class="descLine">T01008: AP663</td></tr>
+                      </table></td>
+                    </tr>
+                    <tr class="takenCourse">
+                      <td class="term">S224</td><td class="course">EDAD 0855</td><td class="credit">3.0</td>
+                      <td class="grade">A</td><td class="ccode"></td>
+                      <td class="description"><table>
+                        <tr><td class="descLine">Why care about College?</td></tr>
+                        <tr><td class="descLine">Satisfies: AMST 0855</td></tr>
+                      </table></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="requirement Status_NONE category_ACADEMIC_HISTOR rname_TRANSCRIP rtabx_90" id="req-6" rname="TRANSCRIP" pseudo="TRANSCRIP" rqdsubreq="1" maxhours="999.9">
+          <div class="reqHeaderTable">
+            <div class="reqText">
+              <div class="reqHeader"></div>
+              <div class="reqTitle">COURSE HISTORY SP2023 to FL2026<br/>** This is not an official transcript of your grades **</div>
+            </div>
+          </div>
+          <div class="reqBody">
+            <table class="requirementTotals"></table>
+            <div class="auditSubrequirements">
+              <div class="subrequirement" pseudo="" rqdgpa="0" rqdhours="0.0" rqdsubreq="0" maxhours="1.0">
+                <div class="subreqPretext"><span class="status Status_NONE"></span><span class="subreqNumber"></span></div>
+                <div class="subreqBody">
+                  <span class="subreqTitle srTitle_substatusOK">SP2024</span>
+                  <table class="subrequirementTotals">
+                    <tr class="subreqEarned"><td class="bigcolumn"><span class="hours number">(  4.0</span><span class="hourslabel fieldlabel">CREDITS)</span></td></tr>
+                  </table>
+                  <table class="completedCourses" summary="complete course table">
+                    <tr class="takenCourse">
+                      <td class="term">SP24</td><td class="course">CIS  1068</td><td class="credit">4.0</td>
+                      <td class="grade">TR</td><td class="ccode"></td>
+                      <td class="description"><table>
+                        <tr><td class="descLine">Program Design &amp; Abstraction</td></tr>
+                        <tr><td class="descLine">T01008: AP314</td></tr>
+                      </table></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div id="endText">
+        '*** END OF ANALYSIS***'
       </div>
     </div>
   </div>
 </div>
+<script type='text/javascript'>
+  function loadAuditGraphOptions(){
+    loadAcademicProgressGraph(false, { complete: "Complete", inProgress: "In-Progress", unfulfilled: "Unfulfilled", planned: "Planned", hours: "Hours", gpa: "GPA" }, {"options":{"gpa":{"decimalPlaces":2}},"data":[{"label":"GENED","unfulfilledHours":6.0,"completedHours":27.0,"inProgressHours":4.0,"plannedHours":0.0,"gpa":0.0,"reqGpa":0.0,"seriesName":"GENED","rtabx":"/selfservice/audit/read.html?id=x","or":0,"optional":0},{"label":"MAJOR","unfulfilledHours":7.0,"completedHours":71.0,"inProgressHours":19.0,"plannedHours":0.0,"gpa":0.0,"reqGpa":2.0,"seriesName":"MAJOR","rtabx":"/selfservice/audit/read.html?id=y","or":0,"optional":0}]});
+    loadGpaDetailGraph(false, { complete: "Complete" }, {"options":{},"data":[{"unfulfilledHours":36.0,"completedHours":69.0,"inProgressHours":18.0,"plannedHours":0.0,"gpa":3.4391668,"reqGpa":2.0}]});
+  }
+</script>
 </body>
 </html>

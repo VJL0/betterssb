@@ -12,6 +12,11 @@ function requirement(overrides: Partial<Requirement>): Requirement {
     earned: null,
     inProgress: null,
     needs: null,
+    requiredCredits: null,
+    requiredGpa: null,
+    requiredSubrequirements: null,
+    requiredCount: null,
+    maxCredits: null,
     subrequirements: [],
     ...overrides,
   };

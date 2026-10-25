@@ -11,8 +11,11 @@ import { client } from "../client.gen";
 import {
   checkPrerequisites,
   generateSchedules,
+  getCourseDescription,
   getMe,
+  getProgramRequirements,
   listAttributes,
+  listBulletinPrograms,
   listSubjects,
   listTerms,
   logout,
@@ -30,12 +33,21 @@ import type {
   GenerateSchedulesData,
   GenerateSchedulesError,
   GenerateSchedulesResponse,
+  GetCourseDescriptionData,
+  GetCourseDescriptionError,
+  GetCourseDescriptionResponse,
   GetMeData,
   GetMeError,
   GetMeResponse,
+  GetProgramRequirementsData,
+  GetProgramRequirementsError,
+  GetProgramRequirementsResponse,
   ListAttributesData,
   ListAttributesError,
   ListAttributesResponse,
+  ListBulletinProgramsData,
+  ListBulletinProgramsError,
+  ListBulletinProgramsResponse,
   ListSubjectsData,
   ListSubjectsError,
   ListSubjectsResponse,
@@ -384,6 +396,36 @@ export const parseAuditMutation = (
   return mutationOptions;
 };
 
+export const getCourseDescriptionQueryKey = (
+  options: Options<GetCourseDescriptionData>,
+) => createQueryKey("getCourseDescription", options);
+
+/**
+ * Get Course Description
+ *
+ * A course's description, credits, attributes, prerequisites and restrictions from one year's Bulletin.
+ */
+export const getCourseDescriptionOptions = (
+  options: Options<GetCourseDescriptionData>,
+) =>
+  queryOptions<
+    GetCourseDescriptionResponse,
+    GetCourseDescriptionError,
+    GetCourseDescriptionResponse,
+    ReturnType<typeof getCourseDescriptionQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getCourseDescription({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getCourseDescriptionQueryKey(options),
+  });
+
 /**
  * Parse Bulletin
  *
@@ -412,6 +454,66 @@ export const parseBulletinMutation = (
   };
   return mutationOptions;
 };
+
+export const listBulletinProgramsQueryKey = (
+  options: Options<ListBulletinProgramsData>,
+) => createQueryKey("listBulletinPrograms", options);
+
+/**
+ * List Bulletin Programs
+ *
+ * Every program in one year's Bulletin, from its academic programs index.
+ */
+export const listBulletinProgramsOptions = (
+  options: Options<ListBulletinProgramsData>,
+) =>
+  queryOptions<
+    ListBulletinProgramsResponse,
+    ListBulletinProgramsError,
+    ListBulletinProgramsResponse,
+    ReturnType<typeof listBulletinProgramsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listBulletinPrograms({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listBulletinProgramsQueryKey(options),
+  });
+
+export const getProgramRequirementsQueryKey = (
+  options: Options<GetProgramRequirementsData>,
+) => createQueryKey("getProgramRequirements", options);
+
+/**
+ * Get Program Requirements
+ *
+ * A program's degree requirements, parsed from its Bulletin page.
+ */
+export const getProgramRequirementsOptions = (
+  options: Options<GetProgramRequirementsData>,
+) =>
+  queryOptions<
+    GetProgramRequirementsResponse,
+    GetProgramRequirementsError,
+    GetProgramRequirementsResponse,
+    ReturnType<typeof getProgramRequirementsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getProgramRequirements({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getProgramRequirementsQueryKey(options),
+  });
 
 export const searchProfessorsQueryKey = (
   options: Options<SearchProfessorsData>,

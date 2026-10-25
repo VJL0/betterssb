@@ -3,10 +3,22 @@
     "schemas": {
       "Audit": {
         "properties": {
+          "analysisComplete": {
+            "default": false,
+            "title": "Analysiscomplete",
+            "type": "boolean"
+          },
           "catalogYear": {
             "default": "",
             "title": "Catalogyear",
             "type": "string"
+          },
+          "categoryTotals": {
+            "items": {
+              "$ref": "#/components/schemas/HoursSummary"
+            },
+            "title": "Categorytotals",
+            "type": "array"
           },
           "complete": {
             "anyOf": [
@@ -18,6 +30,21 @@
               }
             ],
             "title": "Complete"
+          },
+          "degreeTotals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HoursSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "graduationDate": {
+            "default": "",
+            "title": "Graduationdate",
+            "type": "string"
           },
           "preparedOn": {
             "default": "",
@@ -53,7 +80,11 @@
           "programCode",
           "catalogYear",
           "preparedOn",
+          "graduationDate",
           "complete",
+          "analysisComplete",
+          "degreeTotals",
+          "categoryTotals",
           "requirements"
         ],
         "title": "Audit",
@@ -61,6 +92,16 @@
       },
       "AuditCourse": {
         "properties": {
+          "bannerTerm": {
+            "default": "",
+            "title": "Bannerterm",
+            "type": "string"
+          },
+          "conditionCode": {
+            "default": "",
+            "title": "Conditioncode",
+            "type": "string"
+          },
           "course": {
             "title": "Course",
             "type": "string"
@@ -76,6 +117,11 @@
             ],
             "title": "Credits"
           },
+          "exception": {
+            "default": false,
+            "title": "Exception",
+            "type": "boolean"
+          },
           "grade": {
             "default": "",
             "title": "Grade",
@@ -86,6 +132,18 @@
             "title": "Inprogress",
             "type": "boolean"
           },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "satisfies": {
+            "default": "",
+            "title": "Satisfies",
+            "type": "string"
+          },
           "term": {
             "title": "Term",
             "type": "string"
@@ -94,17 +152,166 @@
             "default": "",
             "title": "Title",
             "type": "string"
+          },
+          "transfer": {
+            "default": false,
+            "title": "Transfer",
+            "type": "boolean"
+          },
+          "transferCourse": {
+            "default": "",
+            "title": "Transfercourse",
+            "type": "string"
+          },
+          "transferInstitution": {
+            "default": "",
+            "title": "Transferinstitution",
+            "type": "string"
           }
         },
         "required": [
           "term",
+          "bannerTerm",
           "course",
           "title",
           "credits",
           "grade",
-          "inProgress"
+          "inProgress",
+          "conditionCode",
+          "notes",
+          "transfer",
+          "transferInstitution",
+          "transferCourse",
+          "satisfies",
+          "exception"
         ],
         "title": "AuditCourse",
+        "type": "object"
+      },
+      "BulletinProgram": {
+        "description": "One degree, minor or certificate from a Bulletin's academic programs index.",
+        "properties": {
+          "college": {
+            "default": "",
+            "title": "College",
+            "type": "string"
+          },
+          "collegeName": {
+            "default": "",
+            "title": "Collegename",
+            "type": "string"
+          },
+          "degree": {
+            "title": "Degree",
+            "type": "string"
+          },
+          "degreeName": {
+            "default": "",
+            "title": "Degreename",
+            "type": "string"
+          },
+          "hasOptions": {
+            "default": false,
+            "title": "Hasoptions",
+            "type": "boolean"
+          },
+          "level": {
+            "$ref": "#/components/schemas/ProgramLevel"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          },
+          "url": {
+            "default": "",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "degree",
+          "note",
+          "level",
+          "college",
+          "collegeName",
+          "degreeName",
+          "hasOptions",
+          "url"
+        ],
+        "title": "BulletinProgram",
+        "type": "object"
+      },
+      "BulletinProgramIndex": {
+        "description": "Every program in one Bulletin year, with the page they were read from.",
+        "properties": {
+          "bulletinYear": {
+            "title": "Bulletinyear",
+            "type": "string"
+          },
+          "colleges": {
+            "items": {
+              "$ref": "#/components/schemas/CodeName"
+            },
+            "title": "Colleges",
+            "type": "array"
+          },
+          "degrees": {
+            "items": {
+              "$ref": "#/components/schemas/CodeName"
+            },
+            "title": "Degrees",
+            "type": "array"
+          },
+          "introduction": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Introduction",
+            "type": "array"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/Link"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "programTypes": {
+            "items": {
+              "$ref": "#/components/schemas/Definition"
+            },
+            "title": "Programtypes",
+            "type": "array"
+          },
+          "programs": {
+            "items": {
+              "$ref": "#/components/schemas/BulletinProgram"
+            },
+            "title": "Programs",
+            "type": "array"
+          },
+          "sourceUrl": {
+            "title": "Sourceurl",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bulletinYear",
+          "sourceUrl",
+          "programs",
+          "colleges",
+          "degrees",
+          "programTypes",
+          "introduction",
+          "links"
+        ],
+        "title": "BulletinProgramIndex",
         "type": "object"
       },
       "ChatMessage": {
@@ -166,6 +373,37 @@
           "messages"
         ],
         "title": "ChatRequest",
+        "type": "object"
+      },
+      "ChoiceCourse": {
+        "properties": {
+          "course": {
+            "title": "Course",
+            "type": "string"
+          },
+          "maxCredits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxcredits"
+          },
+          "taken": {
+            "default": "",
+            "title": "Taken",
+            "type": "string"
+          }
+        },
+        "required": [
+          "course",
+          "taken",
+          "maxCredits"
+        ],
+        "title": "ChoiceCourse",
         "type": "object"
       },
       "ClassSearchResult": {
@@ -436,8 +674,190 @@
         "title": "CodeDescription",
         "type": "object"
       },
+      "CodeName": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "CodeName",
+        "type": "object"
+      },
+      "Contact": {
+        "properties": {
+          "details": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Details",
+            "type": "array"
+          },
+          "email": {
+            "default": "",
+            "title": "Email",
+            "type": "string"
+          },
+          "group": {
+            "default": "",
+            "title": "Group",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "phone": {
+            "default": "",
+            "title": "Phone",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "default": "",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "title",
+          "group",
+          "details",
+          "email",
+          "phone",
+          "url"
+        ],
+        "title": "Contact",
+        "type": "object"
+      },
+      "CourseChoice": {
+        "description": "One option under SELECT FROM: a course, or cross-listed equivalents DARS joins with OR.",
+        "properties": {
+          "courses": {
+            "items": {
+              "$ref": "#/components/schemas/ChoiceCourse"
+            },
+            "title": "Courses",
+            "type": "array"
+          }
+        },
+        "required": [
+          "courses"
+        ],
+        "title": "CourseChoice",
+        "type": "object"
+      },
+      "CourseDescription": {
+        "description": "A course's entry in the Bulletin's course descriptions.",
+        "properties": {
+          "attributes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Attributes",
+            "type": "array"
+          },
+          "bulletinUrl": {
+            "default": "",
+            "title": "Bulletinurl",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "corequisiteCourses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Corequisitecourses",
+            "type": "array"
+          },
+          "corequisites": {
+            "default": "",
+            "title": "Corequisites",
+            "type": "string"
+          },
+          "credits": {
+            "default": "",
+            "title": "Credits",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "other": {
+            "items": {
+              "$ref": "#/components/schemas/Fact"
+            },
+            "title": "Other",
+            "type": "array"
+          },
+          "prerequisiteCourses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prerequisitecourses",
+            "type": "array"
+          },
+          "prerequisites": {
+            "default": "",
+            "title": "Prerequisites",
+            "type": "string"
+          },
+          "repeatability": {
+            "default": "",
+            "title": "Repeatability",
+            "type": "string"
+          },
+          "restrictions": {
+            "items": {
+              "$ref": "#/components/schemas/Fact"
+            },
+            "title": "Restrictions",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "title",
+          "credits",
+          "description",
+          "attributes",
+          "repeatability",
+          "prerequisites",
+          "corequisites",
+          "prerequisiteCourses",
+          "corequisiteCourses",
+          "restrictions",
+          "other",
+          "bulletinUrl"
+        ],
+        "title": "CourseDescription",
+        "type": "object"
+      },
       "CourseOption": {
-        "description": "One choosable option within a requirement item.\n\nA single option can contain multiple corequisite courses that must\nbe taken together (e.g. CHEM 1031 & CHEM 1033).",
+        "description": "One choosable option within a requirement item.\n\nA single option can contain multiple corequisite courses that must\nbe taken together (e.g. CHEM 1031 & CHEM 1033). An option with no\ncourses is described in words (\"Up to any two foreign language\ncourses\") or by a placeholder code (\"CIS 4X9X\").",
         "properties": {
           "courses": {
             "items": {
@@ -445,6 +865,16 @@
             },
             "title": "Courses",
             "type": "array"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "group": {
+            "default": "",
+            "title": "Group",
+            "type": "string"
           },
           "isHonorsVariant": {
             "default": false,
@@ -454,6 +884,8 @@
         },
         "required": [
           "courses",
+          "description",
+          "group",
           "isHonorsVariant"
         ],
         "title": "CourseOption",
@@ -462,6 +894,13 @@
       "CourseRef": {
         "description": "A reference to a single course in the bulletin.",
         "properties": {
+          "attributes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Attributes",
+            "type": "array"
+          },
           "bulletinUrl": {
             "default": "",
             "title": "Bulletinurl",
@@ -501,15 +940,58 @@
           "number",
           "title",
           "credits",
+          "attributes",
           "writingIntensive",
           "bulletinUrl"
         ],
         "title": "CourseRef",
         "type": "object"
       },
+      "Definition": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "term": {
+            "title": "Term",
+            "type": "string"
+          }
+        },
+        "required": [
+          "term",
+          "description"
+        ],
+        "title": "Definition",
+        "type": "object"
+      },
       "DegreeProgram": {
         "description": "Complete degree requirements scraped from a Temple Bulletin page.\n\nThis is the top-level structure returned by the parser.",
         "properties": {
+          "acceleratedPrograms": {
+            "items": {
+              "$ref": "#/components/schemas/LinkedProgram"
+            },
+            "title": "Acceleratedprograms",
+            "type": "array"
+          },
+          "appliesTo": {
+            "default": "",
+            "title": "Appliesto",
+            "type": "string"
+          },
+          "archiveNotice": {
+            "default": "",
+            "title": "Archivenotice",
+            "type": "string"
+          },
+          "breadcrumb": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Breadcrumb",
+            "type": "array"
+          },
           "bulletinUrl": {
             "default": "",
             "title": "Bulletinurl",
@@ -518,6 +1000,11 @@
           "bulletinYear": {
             "default": "",
             "title": "Bulletinyear",
+            "type": "string"
+          },
+          "campus": {
+            "default": "",
+            "title": "Campus",
             "type": "string"
           },
           "categories": {
@@ -532,6 +1019,13 @@
             "title": "College",
             "type": "string"
           },
+          "contacts": {
+            "items": {
+              "$ref": "#/components/schemas/Contact"
+            },
+            "title": "Contacts",
+            "type": "array"
+          },
           "degreeType": {
             "default": "",
             "title": "Degreetype",
@@ -542,6 +1036,13 @@
               "type": "string"
             },
             "title": "Distinctioncriteria",
+            "type": "array"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/Fact"
+            },
+            "title": "Facts",
             "type": "array"
           },
           "footnotes": {
@@ -558,14 +1059,48 @@
             "title": "Labsciencesequences",
             "type": "array"
           },
+          "labScienceTitle": {
+            "default": "",
+            "title": "Labsciencetitle",
+            "type": "string"
+          },
+          "level": {
+            "default": "",
+            "title": "Level",
+            "type": "string"
+          },
           "name": {
             "title": "Name",
+            "type": "string"
+          },
+          "overview": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Overview",
+            "type": "array"
+          },
+          "pdfUrl": {
+            "default": "",
+            "title": "Pdfurl",
             "type": "string"
           },
           "programCode": {
             "default": "",
             "title": "Programcode",
             "type": "string"
+          },
+          "programPageUrl": {
+            "default": "",
+            "title": "Programpageurl",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/PageSection"
+            },
+            "title": "Sections",
+            "type": "array"
           },
           "suggestedPlan": {
             "anyOf": [
@@ -576,6 +1111,20 @@
                 "type": "null"
               }
             ]
+          },
+          "suggestedPlans": {
+            "items": {
+              "$ref": "#/components/schemas/SuggestedPlan"
+            },
+            "title": "Suggestedplans",
+            "type": "array"
+          },
+          "tabs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tabs",
+            "type": "array"
           },
           "totalCredits": {
             "default": "",
@@ -588,16 +1137,55 @@
           "degreeType",
           "programCode",
           "college",
+          "level",
+          "breadcrumb",
+          "campus",
           "bulletinUrl",
           "bulletinYear",
+          "pdfUrl",
+          "programPageUrl",
+          "archiveNotice",
+          "appliesTo",
           "totalCredits",
+          "tabs",
+          "overview",
+          "facts",
           "categories",
+          "labScienceTitle",
           "labScienceSequences",
           "suggestedPlan",
+          "suggestedPlans",
           "distinctionCriteria",
-          "footnotes"
+          "footnotes",
+          "contacts",
+          "acceleratedPrograms",
+          "sections"
         ],
         "title": "DegreeProgram",
+        "type": "object"
+      },
+      "Fact": {
+        "description": "A labelled line from the page, such as \"Campus Location: Main\".",
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "tab": {
+            "title": "Tab",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tab",
+          "label",
+          "value"
+        ],
+        "title": "Fact",
         "type": "object"
       },
       "Faculty": {
@@ -699,6 +1287,69 @@
         "title": "GeneratedSchedule",
         "type": "object"
       },
+      "HoursSummary": {
+        "description": "Credit hours from the audit's progress chart, for the degree or one category.",
+        "properties": {
+          "category": {
+            "default": "",
+            "title": "Category",
+            "type": "string"
+          },
+          "completedCredits": {
+            "default": 0.0,
+            "title": "Completedcredits",
+            "type": "number"
+          },
+          "gpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpa"
+          },
+          "inProgressCredits": {
+            "default": 0.0,
+            "title": "Inprogresscredits",
+            "type": "number"
+          },
+          "plannedCredits": {
+            "default": 0.0,
+            "title": "Plannedcredits",
+            "type": "number"
+          },
+          "requiredGpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requiredgpa"
+          },
+          "unfulfilledCredits": {
+            "default": 0.0,
+            "title": "Unfulfilledcredits",
+            "type": "number"
+          }
+        },
+        "required": [
+          "category",
+          "completedCredits",
+          "inProgressCredits",
+          "unfulfilledCredits",
+          "plannedCredits",
+          "gpa",
+          "requiredGpa"
+        ],
+        "title": "HoursSummary",
+        "type": "object"
+      },
       "LabScienceSequence": {
         "description": "A lab-science department sequence (e.g. Biology, Chemistry, Physics).\n\nThe student picks one sequence, then selects one course from A\nand one from B within that sequence.",
         "properties": {
@@ -747,6 +1398,68 @@
           "footnotes"
         ],
         "title": "LabScienceSequence",
+        "type": "object"
+      },
+      "Link": {
+        "properties": {
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "url"
+        ],
+        "title": "Link",
+        "type": "object"
+      },
+      "LinkedProgram": {
+        "description": "A program the page points to, such as an accelerated +1 master's.",
+        "properties": {
+          "group": {
+            "default": "",
+            "title": "Group",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "url",
+          "group"
+        ],
+        "title": "LinkedProgram",
+        "type": "object"
+      },
+      "ListItem": {
+        "properties": {
+          "level": {
+            "default": 0,
+            "title": "Level",
+            "type": "integer"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "level"
+        ],
+        "title": "ListItem",
         "type": "object"
       },
       "MeetingFaculty": {
@@ -943,9 +1656,114 @@
         "title": "MeetingTime",
         "type": "object"
       },
+      "PageBlock": {
+        "description": "A paragraph, list or plain table in one of the page's tabs.",
+        "properties": {
+          "courses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Courses",
+            "type": "array"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ListItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "kind": {
+            "enum": [
+              "paragraph",
+              "list",
+              "table"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Lines",
+            "type": "array"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/Link"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "rows": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "kind",
+          "label",
+          "lines",
+          "items",
+          "rows",
+          "links",
+          "courses"
+        ],
+        "title": "PageBlock",
+        "type": "object"
+      },
+      "PageSection": {
+        "description": "The content under one heading of a page tab.",
+        "properties": {
+          "blocks": {
+            "items": {
+              "$ref": "#/components/schemas/PageBlock"
+            },
+            "title": "Blocks",
+            "type": "array"
+          },
+          "headings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Headings",
+            "type": "array"
+          },
+          "tab": {
+            "title": "Tab",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tab",
+          "headings",
+          "blocks"
+        ],
+        "title": "PageSection",
+        "type": "object"
+      },
       "PlanCourse": {
         "description": "A single slot in the suggested academic plan grid.",
         "properties": {
+          "attributes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Attributes",
+            "type": "array"
+          },
           "course": {
             "anyOf": [
               {
@@ -961,6 +1779,20 @@
             "title": "Credits",
             "type": "string"
           },
+          "footnotes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Footnotes",
+            "type": "array"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/CourseOption"
+            },
+            "title": "Options",
+            "type": "array"
+          },
           "placeholder": {
             "default": "",
             "title": "Placeholder",
@@ -969,8 +1801,11 @@
         },
         "required": [
           "course",
+          "options",
           "placeholder",
-          "credits"
+          "credits",
+          "attributes",
+          "footnotes"
         ],
         "title": "PlanCourse",
         "type": "object"
@@ -986,11 +1821,6 @@
             "type": "array"
           },
           "term": {
-            "enum": [
-              "Fall",
-              "Spring",
-              "Summer"
-            ],
             "title": "Term",
             "type": "string"
           },
@@ -1156,6 +1986,16 @@
         "title": "ProblemError",
         "type": "object"
       },
+      "ProgramLevel": {
+        "description": "The Bulletin index column a program is listed under.",
+        "enum": [
+          "undergraduate",
+          "graduate",
+          "professional"
+        ],
+        "title": "ProgramLevel",
+        "type": "string"
+      },
       "Progress": {
         "properties": {
           "courses": {
@@ -1190,11 +2030,35 @@
               }
             ],
             "title": "Gpa"
+          },
+          "sets": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sets"
+          },
+          "subrequirements": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subrequirements"
           }
         },
         "required": [
           "credits",
           "courses",
+          "sets",
+          "subrequirements",
           "gpa"
         ],
         "title": "Progress",
@@ -1291,6 +2155,17 @@
               }
             ]
           },
+          "maxCredits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxcredits"
+          },
           "needs": {
             "anyOf": [
               {
@@ -1307,6 +2182,50 @@
             },
             "title": "Notes",
             "type": "array"
+          },
+          "requiredCount": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requiredcount"
+          },
+          "requiredCredits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requiredcredits"
+          },
+          "requiredGpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requiredgpa"
+          },
+          "requiredSubrequirements": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requiredsubrequirements"
           },
           "status": {
             "enum": [
@@ -1337,6 +2256,11 @@
           "title",
           "status",
           "notes",
+          "requiredCredits",
+          "requiredGpa",
+          "requiredSubrequirements",
+          "requiredCount",
+          "maxCredits",
           "earned",
           "inProgress",
           "needs",
@@ -1346,7 +2270,7 @@
         "type": "object"
       },
       "RequirementCategory": {
-        "description": "A top-level requirement section.\n\nMaps to the numbered <ol> items on the bulletin:\n  1. University Requirements\n  2. College Requirements\n  3. Major Requirements for Bachelor of Science",
+        "description": "One course list on the page, named by where it sits.\n\nThe name is the requirement summary item or heading above the list\n(\"Major Requirements for Bachelor of Science (73-74 s.h.)\"), and the\ndescription is the sentence that introduces it.",
         "properties": {
           "description": {
             "default": "",
@@ -1371,6 +2295,11 @@
             "title": "Notes",
             "type": "array"
           },
+          "tab": {
+            "default": "",
+            "title": "Tab",
+            "type": "string"
+          },
           "totalCredits": {
             "default": "",
             "title": "Totalcredits",
@@ -1379,6 +2308,7 @@
         },
         "required": [
           "name",
+          "tab",
           "totalCredits",
           "description",
           "groups",
@@ -1397,6 +2327,11 @@
             "title": "Constraints",
             "type": "array"
           },
+          "credits": {
+            "default": "",
+            "title": "Credits",
+            "type": "string"
+          },
           "items": {
             "items": {
               "$ref": "#/components/schemas/RequirementItem"
@@ -1411,6 +2346,7 @@
         },
         "required": [
           "name",
+          "credits",
           "items",
           "constraints"
         ],
@@ -1418,8 +2354,24 @@
         "type": "object"
       },
       "RequirementItem": {
-        "description": "A single line-item in a requirement group.\n\nCovers three patterns found on the bulletin:\n  - REQUIRED:   take this exact course (options has 1 entry with 1 course)\n  - SELECT_ONE: pick one option from the list (e.g. CIS 1051 or CIS 1951)\n  - SELECT_N:   pick N credits worth from the options pool",
+        "description": "A single line-item in a requirement group.\n\nCovers three patterns found on the bulletin:\n  - REQUIRED:   take this exact course (options has 1 entry with 1 course)\n  - SELECT_ONE: pick one option from the list (e.g. CIS 1051 or CIS 1951)\n  - SELECT_N:   pick N courses or N credits worth from the options pool",
         "properties": {
+          "chooseCount": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Choosecount"
+          },
+          "chooseCredits": {
+            "default": "",
+            "title": "Choosecredits",
+            "type": "string"
+          },
           "credits": {
             "anyOf": [
               {
@@ -1464,6 +2416,8 @@
           "description",
           "credits",
           "creditsRange",
+          "chooseCount",
+          "chooseCredits",
           "options",
           "footnotes"
         ],
@@ -1685,6 +2639,25 @@
       },
       "SubRequirement": {
         "properties": {
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Aliases",
+            "type": "array"
+          },
+          "choices": {
+            "items": {
+              "$ref": "#/components/schemas/CourseChoice"
+            },
+            "title": "Choices",
+            "type": "array"
+          },
+          "code": {
+            "default": "",
+            "title": "Code",
+            "type": "string"
+          },
           "courses": {
             "items": {
               "$ref": "#/components/schemas/AuditCourse"
@@ -1712,6 +2685,17 @@
               }
             ]
           },
+          "maxCredits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxcredits"
+          },
           "needs": {
             "anyOf": [
               {
@@ -1722,10 +2706,62 @@
               }
             ]
           },
+          "notFrom": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notfrom",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
           "number": {
             "default": "",
             "title": "Number",
             "type": "string"
+          },
+          "required": {
+            "default": false,
+            "title": "Required",
+            "type": "boolean"
+          },
+          "requiredCount": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requiredcount"
+          },
+          "requiredCredits": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requiredcredits"
+          },
+          "requiredGpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requiredgpa"
           },
           "selectFrom": {
             "items": {
@@ -1752,19 +2788,29 @@
         },
         "required": [
           "number",
+          "code",
+          "aliases",
           "title",
+          "notes",
           "status",
+          "required",
+          "requiredCredits",
+          "requiredCount",
+          "requiredGpa",
+          "maxCredits",
           "earned",
           "inProgress",
           "needs",
           "courses",
-          "selectFrom"
+          "selectFrom",
+          "choices",
+          "notFrom"
         ],
         "title": "SubRequirement",
         "type": "object"
       },
       "SuggestedPlan": {
-        "description": "The 4-year suggested academic plan grid from the bulletin.",
+        "description": "A suggested academic plan grid from the bulletin.",
         "properties": {
           "footnotes": {
             "items": {
@@ -1772,6 +2818,16 @@
             },
             "title": "Footnotes",
             "type": "array"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "subtitle": {
+            "default": "",
+            "title": "Subtitle",
+            "type": "string"
           },
           "totalCredits": {
             "default": "",
@@ -1787,6 +2843,8 @@
           }
         },
         "required": [
+          "name",
+          "subtitle",
           "years",
           "totalCredits",
           "footnotes"
@@ -2520,6 +3578,74 @@
         ]
       }
     },
+    "/api/degree/courses": {
+      "get": {
+        "description": "A course's description, credits, attributes, prerequisites and restrictions from one year's Bulletin.",
+        "operationId": "get_course_description",
+        "parameters": [
+          {
+            "description": "Course code, \"CIS 3296\"",
+            "in": "query",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "description": "Course code, \"CIS 3296\"",
+              "pattern": "^[A-Z]{2,5} \\d{4}[A-Z]?$",
+              "title": "Code",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Bulletin year, YYYY-YYYY",
+            "in": "query",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "description": "Bulletin year, YYYY-YYYY",
+              "pattern": "^\\d{4}-\\d{4}$",
+              "title": "Year",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDescription"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Get Course Description",
+        "tags": [
+          "degree"
+        ]
+      }
+    },
     "/api/degree/parse-bulletin": {
       "post": {
         "description": "Parse a Temple University Bulletin HTML page into structured degree requirements.",
@@ -2580,6 +3706,118 @@
           }
         },
         "summary": "Parse Bulletin",
+        "tags": [
+          "degree"
+        ]
+      }
+    },
+    "/api/degree/programs": {
+      "get": {
+        "description": "Every program in one year's Bulletin, from its academic programs index.",
+        "operationId": "list_bulletin_programs",
+        "parameters": [
+          {
+            "description": "Bulletin year, YYYY-YYYY",
+            "in": "query",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "description": "Bulletin year, YYYY-YYYY",
+              "pattern": "^\\d{4}-\\d{4}$",
+              "title": "Year",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulletinProgramIndex"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Bulletin Programs",
+        "tags": [
+          "degree"
+        ]
+      }
+    },
+    "/api/degree/requirements": {
+      "get": {
+        "description": "A program's degree requirements, parsed from its Bulletin page.",
+        "operationId": "get_program_requirements",
+        "parameters": [
+          {
+            "description": "A program page URL from `list_bulletin_programs`",
+            "in": "query",
+            "name": "url",
+            "required": true,
+            "schema": {
+              "description": "A program page URL from `list_bulletin_programs`",
+              "pattern": "^https://bulletin\\.temple\\.edu/(archives/\\d{4}-\\d{4}/)?(undergraduate|graduate)(/[a-z0-9_-]+)+(/|/index\\.html)?(#[a-z0-9_-]+)?$",
+              "title": "Url",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DegreeProgram"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Get Program Requirements",
         "tags": [
           "degree"
         ]
