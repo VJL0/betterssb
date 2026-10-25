@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { Audit, TranscriptData } from "@workspace/api-client";
+import type { Audit } from "@workspace/api-client";
+import type { TranscriptData } from "./transcript";
 import {
   MAX_CONTEXT_CHARS,
   advisorContext,

@@ -18,7 +18,7 @@ import type {
   ListTermsResponse,
   ParseAuditResponse,
   ParseBulletinResponse,
-  ParseTranscriptResponse,
+  ParseTranscriptPdfResponse,
   SearchProfessorsResponse,
   SearchSectionsResponse,
 } from "../generated/types.gen";
@@ -278,8 +278,17 @@ export const handlers = [
     `${API}/transcript/check-prereqs`,
     () => HttpResponse.json({}),
   ),
-  http.post<never, never, ParseTranscriptResponse>(
-    `${API}/transcript/parse`,
-    () => HttpResponse.json({ courses: [], gpa: null }),
+  http.post<never, never, ParseTranscriptPdfResponse>(
+    `${API}/transcript/parse-pdf`,
+    () =>
+      HttpResponse.json({
+        courses: [],
+        gpa: null,
+        institution: null,
+        program: {},
+        periods: [],
+        totals: [],
+        diagnostics: [],
+      }),
   ),
 ];

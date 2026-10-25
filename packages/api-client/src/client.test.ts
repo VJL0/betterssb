@@ -14,7 +14,7 @@ import {
   client,
   configureApiClient,
   listTerms,
-  parseTranscript,
+  parseBulletin,
   queryError,
   searchSections,
 } from "./index";
@@ -95,10 +95,10 @@ describe("requests", () => {
   });
 
   it("sends a plain-text body as text", async () => {
-    const sent = recordRequests("POST /api/transcript/parse");
-    await parseTranscript({ body: "CIS 1068 A 4.0" });
+    const sent = recordRequests("POST /api/degree/parse-bulletin");
+    await parseBulletin({ body: "<html></html>" });
     expect(sent[0]!.headers.get("Content-Type")).toBe("text/plain");
-    expect(await sent[0]!.text()).toBe("CIS 1068 A 4.0");
+    expect(await sent[0]!.text()).toBe("<html></html>");
   });
 
   it("resolves with the data", async () => {

@@ -28,6 +28,9 @@ import type {
   GetProgramRequirementsData,
   GetProgramRequirementsErrors,
   GetProgramRequirementsResponses,
+  InspectTranscriptPdfData,
+  InspectTranscriptPdfErrors,
+  InspectTranscriptPdfResponses,
   ListAttributesData,
   ListAttributesErrors,
   ListAttributesResponses,
@@ -55,9 +58,9 @@ import type {
   ParseBulletinData,
   ParseBulletinErrors,
   ParseBulletinResponses,
-  ParseTranscriptData,
-  ParseTranscriptErrors,
-  ParseTranscriptResponses,
+  ParseTranscriptPdfData,
+  ParseTranscriptPdfErrors,
+  ParseTranscriptPdfResponses,
   SearchProfessorsData,
   SearchProfessorsErrors,
   SearchProfessorsResponses,
@@ -389,27 +392,53 @@ export const checkPrerequisites = <ThrowOnError extends boolean = true>(
   });
 
 /**
- * Parse Transcript
+ * Parse Transcript Pdf
  *
- * Parse a pasted transcript into structured course data.
+ * Return academic data; report incomplete parsing through a simple error.
  */
-export const parseTranscript = <ThrowOnError extends boolean = true>(
-  options: Options<ParseTranscriptData, ThrowOnError>,
+export const parseTranscriptPdf = <ThrowOnError extends boolean = true>(
+  options: Options<ParseTranscriptPdfData, ThrowOnError>,
 ): RequestResult<
-  ParseTranscriptResponses,
-  ParseTranscriptErrors,
+  ParseTranscriptPdfResponses,
+  ParseTranscriptPdfErrors,
   ThrowOnError
 > =>
   (options.client ?? client).post<
-    ParseTranscriptResponses,
-    ParseTranscriptErrors,
+    ParseTranscriptPdfResponses,
+    ParseTranscriptPdfErrors,
     ThrowOnError
   >({
     bodySerializer: null,
-    url: "/api/transcript/parse",
+    url: "/api/transcript/parse-pdf",
     ...options,
     headers: {
-      "Content-Type": "text/plain",
+      "Content-Type": "application/pdf",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Inspect Transcript Pdf
+ *
+ * Inspect simple and detailed JSON without storing the uploaded document.
+ */
+export const inspectTranscriptPdf = <ThrowOnError extends boolean = true>(
+  options: Options<InspectTranscriptPdfData, ThrowOnError>,
+): RequestResult<
+  InspectTranscriptPdfResponses,
+  InspectTranscriptPdfErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    InspectTranscriptPdfResponses,
+    InspectTranscriptPdfErrors,
+    ThrowOnError
+  >({
+    bodySerializer: null,
+    url: "/api/transcript/parse-pdf/data",
+    ...options,
+    headers: {
+      "Content-Type": "application/pdf",
       ...options.headers,
     },
   });

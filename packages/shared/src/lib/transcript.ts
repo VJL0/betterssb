@@ -1,7 +1,17 @@
-import type { TranscriptCourse, TranscriptData } from "@workspace/api-client";
+import type {
+  AcademicTranscript,
+  TranscriptCourse,
+} from "@workspace/api-client";
+import { formatTermName } from "./terms";
 
 const SEASON_ORDER = ["winter", "spring", "summer", "fall"];
 const TERM_LABEL = /^(winter|spring|summer|fall)\b.*?(\d{4})$/i;
+
+/** What's kept from a transcript: course codes, titles, credits, grades and the GPA. */
+export interface TranscriptData {
+  courses: TranscriptCourse[];
+  gpa: number | null;
+}
 
 export interface TranscriptTerm {
   /** As the transcript names it, e.g. "Fall 2024". */
@@ -41,4 +51,21 @@ export function transcriptTerms(data: TranscriptData): TranscriptTerm[] {
       credits: courses.reduce((sum, c) => sum + c.credits, 0),
     }))
     .sort(newestFirst);
+}
+
+/** Keeps only the saved fields, with Banner's "2024 Fall" terms named "Fall 2024". */
+export function savedTranscript(
+  transcript: AcademicTranscript,
+): TranscriptData {
+  return {
+    courses: transcript.courses.map((course) => ({
+      subject: course.subject,
+      courseNumber: course.courseNumber,
+      title: course.title,
+      grade: course.grade,
+      credits: course.credits,
+      term: formatTermName(course.term),
+    })),
+    gpa: transcript.gpa,
+  };
 }

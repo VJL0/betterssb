@@ -12,11 +12,6 @@ class TranscriptCourse(BaseSchema):
     term: str
 
 
-class TranscriptData(BaseSchema):
-    courses: list[TranscriptCourse]
-    gpa: float | None = None
-
-
 class DegreeRequirement(BaseSchema):
     name: str
     required_courses: list[str]
