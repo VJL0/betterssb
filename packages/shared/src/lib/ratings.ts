@@ -21,11 +21,20 @@ export function formatRating(rating: number): string {
 }
 
 /**
- * A profile nobody has rated reports 0.0, which would read as a terrible
- * score. It carries no information, so it's treated like no profile.
+ * An instructor's overall score, or null without one. A profile nobody has
+ * rated reports 0.0, which would read as a terrible score, so it has none.
  */
-export function usableRating(rating: RmpRating | null): RmpRating | null {
-  return rating && rating.numRatings > 0 ? rating : null;
+export function ratedScore(
+  rating: RmpRating | null | undefined,
+): number | null {
+  return rating && rating.numRatings > 0 ? rating.overallRating : null;
+}
+
+/** An instructor's difficulty, 1 easy to 5 hard, or null without ratings (RMP reports 0.0). */
+export function ratedDifficulty(
+  rating: RmpRating | null | undefined,
+): number | null {
+  return rating && rating.numRatings > 0 ? rating.difficulty : null;
 }
 
 /**

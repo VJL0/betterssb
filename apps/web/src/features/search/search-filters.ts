@@ -7,32 +7,45 @@ import {
 import {
   meetingTimeToDays,
   primaryInstructorName,
+  TBA_INSTRUCTOR,
 } from "@workspace/shared/lib/sections";
+import { ratedDifficulty, ratedScore } from "@workspace/shared/lib/ratings";
 import type { RatingLookup } from "@/hooks/use-ratings";
 import type { ClassSection } from "@workspace/api-client";
+import {
+  courseLevel,
+  DEFAULT_BANNER_FILTERS,
+  type BannerFilters,
+} from "./banner-filters";
 
-export const MIN_RATING_OPTIONS = [0, 3.5, 4] as const;
-export type MinRating = (typeof MIN_RATING_OPTIONS)[number];
+/** Rate My Professors' scale, for both rating and difficulty (1 easy, 5 hard). */
+export const RMP_SCALE = { min: 1, max: 5, step: 0.5 } as const;
 
-export interface SearchFilters {
+/**
+ * Banner's filters plus the ones checked on the sections it returns. Days
+ * stay here because Banner's day filter matches a meeting's exact pattern;
+ * Banner ignores open-only; ratings aren't Banner's.
+ */
+export interface SearchFilters extends BannerFilters {
   /** Sections may only meet on these days. */
   days: WeekDay[];
-  minRating: MinRating;
+  /** Rate My Professors scores, or null for any. */
+  minRating: number | null;
+  maxDifficulty: number | null;
   openOnly: boolean;
   /** Minutes after midnight, or null for any time. */
   startAfter: number | null;
   endBefore: number | null;
-  /** Section must have at least one of these Banner attribute codes. */
-  attributes: string[];
 }
 
 export const DEFAULT_FILTERS: SearchFilters = {
+  ...DEFAULT_BANNER_FILTERS,
   days: [...WEEKDAYS],
-  minRating: 0,
+  minRating: null,
+  maxDifficulty: null,
   openOnly: false,
   startAfter: null,
   endBefore: null,
-  attributes: [],
 };
 
 type Ratings = ReadonlyMap<string, RatingLookup>;
@@ -56,57 +69,101 @@ function withinTimes(section: ClassSection, filters: SearchFilters) {
   });
 }
 
-function meetsRating(section: ClassSection, min: MinRating, ratings: Ratings) {
-  if (min === 0) return true;
-  const rating = ratings.get(primaryInstructorName(section));
+/**
+ * Whether the instructor's Rate My Professors number passes. One with no
+ * number (no profile, nobody has rated them, or not assigned yet) doesn't.
+ */
+function instructorPasses(
+  section: ClassSection,
+  ratings: Ratings,
+  number: (rating: RatingLookup) => number | null,
+  passes: (value: number) => boolean,
+) {
+  const name = primaryInstructorName(section);
+  // TBA is never looked up, so it would otherwise look "still loading".
+  if (name === TBA_INSTRUCTOR) return false;
+  const rating = ratings.get(name);
   // Still loading: keep it, so rows don't vanish and reappear.
   if (rating === undefined) return true;
-  return rating !== null && rating.overallRating >= min;
+  const value = number(rating);
+  return value !== null && passes(value);
+}
+
+function meetsRating(
+  section: ClassSection,
+  min: number | null,
+  ratings: Ratings,
+) {
+  return (
+    min === null ||
+    instructorPasses(section, ratings, ratedScore, (score) => score >= min)
+  );
+}
+
+function meetsDifficulty(
+  section: ClassSection,
+  max: number | null,
+  ratings: Ratings,
+) {
+  return (
+    max === null ||
+    instructorPasses(section, ratings, ratedDifficulty, (d) => d <= max)
+  );
+}
+
+/** Banner searched the range from the lowest level picked to the highest. */
+function atPickedLevel(section: ClassSection, levels: readonly number[]) {
+  return (
+    levels.length === 0 || levels.includes(courseLevel(section.courseNumber))
+  );
 }
 
 type FilterCheck = (s: ClassSection, f: SearchFilters, r: Ratings) => boolean;
 
-const CHECKS: Record<keyof SearchFilters, FilterCheck> = {
-  days: (s, f) => meetsOnAllowedDays(s, f.days),
-  minRating: (s, f, r) => meetsRating(s, f.minRating, r),
-  openOnly: (s, f) => !f.openOnly || s.seatsAvailable > 0,
-  startAfter: (s, f) => withinTimes(s, f),
-  endBefore: (s, f) => withinTimes(s, f),
-  attributes: (s, f) =>
-    f.attributes.length === 0 ||
-    s.sectionAttributes.some((a) => f.attributes.includes(a.code)),
-};
+const CHECKS: FilterCheck[] = [
+  (s, f) => meetsOnAllowedDays(s, f.days),
+  (s, f, r) => meetsRating(s, f.minRating, r),
+  (s, f, r) => meetsDifficulty(s, f.maxDifficulty, r),
+  (s, f) => !f.openOnly || s.seatsAvailable > 0,
+  (s, f) => withinTimes(s, f),
+  (s, f) => atPickedLevel(s, f.levels),
+];
 
 export function sectionPasses(
   section: ClassSection,
   filters: SearchFilters,
   ratings: Ratings,
 ): boolean {
-  return Object.values(CHECKS).every((check) =>
-    check(section, filters, ratings),
-  );
+  return CHECKS.every((check) => check(section, filters, ratings));
 }
 
 export function activeFilterCount(filters: SearchFilters): number {
   return [
     filters.days.length < WEEKDAYS.length,
-    filters.minRating > 0,
+    filters.minRating !== null,
+    filters.maxDifficulty !== null,
     filters.openOnly,
     filters.startAfter !== null,
     filters.endBefore !== null,
+    filters.formats.length > 0,
+    filters.levels.length > 0,
     filters.attributes.length > 0,
+    filters.campus !== null,
+    filters.partOfTerm !== null,
+    filters.instructor.trim() !== "",
   ].filter(Boolean).length;
 }
 
+/** Filters checked here, whose reset needs no new search to count. */
 export type FilterName =
-  "days" | "minRating" | "openOnly" | "times" | "attributes";
+  "days" | "minRating" | "maxDifficulty" | "openOnly" | "times";
 
 const RESETS: Record<FilterName, (f: SearchFilters) => SearchFilters> = {
   days: (f) => ({ ...f, days: DEFAULT_FILTERS.days }),
-  minRating: (f) => ({ ...f, minRating: 0 }),
+  minRating: (f) => ({ ...f, minRating: null }),
+  maxDifficulty: (f) => ({ ...f, maxDifficulty: null }),
   openOnly: (f) => ({ ...f, openOnly: false }),
   times: (f) => ({ ...f, startAfter: null, endBefore: null }),
-  attributes: (f) => ({ ...f, attributes: [] }),
 };
 
 /**

@@ -40,6 +40,12 @@ import type {
   ListBulletinSubjectsData,
   ListBulletinSubjectsErrors,
   ListBulletinSubjectsResponses,
+  ListCampusesData,
+  ListCampusesErrors,
+  ListCampusesResponses,
+  ListPartsOfTermData,
+  ListPartsOfTermErrors,
+  ListPartsOfTermResponses,
   ListSubjectCoursesData,
   ListSubjectCoursesErrors,
   ListSubjectCoursesResponses,
@@ -142,11 +148,44 @@ export const listAttributes = <ThrowOnError extends boolean = true>(
   >({ url: "/api/classes/attributes", ...options });
 
 /**
+ * List Campuses
+ *
+ * Campuses with sections in a term, such as Main, Center City and Japan.
+ */
+export const listCampuses = <ThrowOnError extends boolean = true>(
+  options: Options<ListCampusesData, ThrowOnError>,
+): RequestResult<ListCampusesResponses, ListCampusesErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    ListCampusesResponses,
+    ListCampusesErrors,
+    ThrowOnError
+  >({ url: "/api/classes/campuses", ...options });
+
+/**
+ * List Parts Of Term
+ *
+ * Parts of a term, such as the full term and the 7-week halves, with their dates.
+ */
+export const listPartsOfTerm = <ThrowOnError extends boolean = true>(
+  options: Options<ListPartsOfTermData, ThrowOnError>,
+): RequestResult<
+  ListPartsOfTermResponses,
+  ListPartsOfTermErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    ListPartsOfTermResponses,
+    ListPartsOfTermErrors,
+    ThrowOnError
+  >({ url: "/api/classes/parts-of-term", ...options });
+
+/**
  * Search Sections
  *
  * Sections in a term from Banner's public class search, with live seats.
  *
- * Needs a subject, keyword or attribute; a whole-term listing is too large to serve.
+ * Needs a subject, keyword, attribute or instructor; the other filters
+ * only narrow those, since a whole-term listing is too large to serve.
  */
 export const searchSections = <ThrowOnError extends boolean = true>(
   options: Options<SearchSectionsData, ThrowOnError>,

@@ -22,6 +22,14 @@ const SEARCH_TIMEOUT = { timeout: 3_000 };
 
 const SEARCH = "GET /api/classes/search";
 
+type User = ReturnType<typeof userEvent.setup>;
+
+/** Opens the full filters panel and returns queries scoped to it. */
+async function openFilters(user: User) {
+  await user.click(await screen.findByRole("button", { name: /^Filters/ }));
+  return within(await screen.findByRole("dialog", { name: "Filters" }));
+}
+
 /** True when the query is the one the page should send for "CIS 2168". */
 function isCis2168(query: URLSearchParams): boolean {
   return (
@@ -116,11 +124,57 @@ describe("SearchPage", () => {
       (await screen.findAllByText("Rating loading", { exact: false })).length,
     ).toBeGreaterThan(0);
     // Filtering by rating can't work until there are ratings.
-    for (const button of within(
-      screen.getAllByRole("group", { name: "Instructor rating" })[0]!,
-    ).getAllByRole("button")) {
-      expect(button.hasAttribute("disabled")).toBe(true);
+    const filters = await openFilters(user);
+    for (const name of [
+      "Minimum instructor rating",
+      "Maximum instructor difficulty",
+    ]) {
+      expect(
+        filters.getByRole("slider", { name }).hasAttribute("disabled"),
+      ).toBe(true);
     }
+  });
+
+  it("sorts sections by most open seats", async () => {
+    server.use(
+      http.get(`${API}/classes/search`, () =>
+        HttpResponse.json({
+          totalCount: 2,
+          fetchedAt: FETCHED_AT,
+          sections: [
+            classSection({ seatsAvailable: 2 }),
+            classSection({
+              courseReferenceNumber: "41208",
+              sequenceNumber: "002",
+              seatsAvailable: 20,
+            }),
+          ],
+        }),
+      ),
+    );
+    const user = userEvent.setup();
+    renderPage(<SearchPage />);
+    const input = await screen.findByRole("searchbox", {
+      name: "Search courses",
+    });
+    await waitFor(() => expect(input.hasAttribute("disabled")).toBe(false));
+    await user.type(input, "CIS 2168");
+    const firstSection = async () =>
+      (
+        await screen.findAllByRole(
+          "button",
+          { name: /^Add CIS 2168/ },
+          SEARCH_TIMEOUT,
+        )
+      )[0]!.getAttribute("aria-label");
+    expect(await firstSection()).toContain("· 001");
+
+    await user.click(screen.getByRole("combobox", { name: "Sort by" }));
+    await user.click(
+      await screen.findByRole("option", { name: "Most open seats" }),
+    );
+
+    expect(await firstSection()).toContain("· 002");
   });
 
   it("has no accessibility violations with results", async () => {
@@ -133,6 +187,144 @@ describe("SearchPage", () => {
     await user.type(input, "CIS 2168");
     await screen.findAllByText("Data Structures", undefined, SEARCH_TIMEOUT);
     expect(await axeViolations(container)).toEqual([]);
+  });
+});
+
+describe("SearchPage filters", () => {
+  /** The params of the last search sent, once one matching `done` is. */
+  async function lastSearch(
+    searches: Request[],
+    done: (query: URLSearchParams) => boolean,
+  ): Promise<URLSearchParams> {
+    let query = new URLSearchParams();
+    await waitFor(() => {
+      query = new URL(searches.at(-1)!.url).searchParams;
+      expect(done(query)).toBe(true);
+    }, SEARCH_TIMEOUT);
+    return query;
+  }
+
+  it("searches a GenEd area with nothing typed", async () => {
+    server.use(
+      http.get(`${API}/classes/attributes`, () =>
+        HttpResponse.json([{ code: "GA", description: "GenEd Arts" }]),
+      ),
+    );
+    const searches = recordRequests(SEARCH);
+    const user = userEvent.setup();
+    renderPage(<SearchPage />);
+    const filters = await openFilters(user);
+
+    await user.click(await filters.findByRole("checkbox", { name: "Arts" }));
+
+    const query = await lastSearch(searches, (q) => q.has("attribute"));
+    expect(query.getAll("attribute")).toEqual(["GA"]);
+    expect(query.has("keyword")).toBe(false);
+    expect(query.has("subject")).toBe(false);
+  });
+
+  it("sends a format's instructional methods with the search", async () => {
+    const searches = recordRequests(SEARCH);
+    const user = userEvent.setup();
+    renderPage(<SearchPage />);
+    const input = await screen.findByRole("searchbox", {
+      name: "Search courses",
+    });
+    await waitFor(() => expect(input.hasAttribute("disabled")).toBe(false));
+    await user.type(input, "CIS 2168");
+    const filters = await openFilters(user);
+
+    await user.click(filters.getByRole("button", { name: "Async online" }));
+
+    const query = await lastSearch(searches, (q) =>
+      q.has("instructionalMethod"),
+    );
+    expect(query.getAll("instructionalMethod")).toEqual(["OLL"]);
+    expect(query.get("subject")).toBe("CIS");
+  });
+
+  it("turns a quick filter on with one tap and counts it", async () => {
+    const searches = recordRequests(SEARCH);
+    const user = userEvent.setup();
+    renderPage(<SearchPage />);
+    const input = await screen.findByRole("searchbox", {
+      name: "Search courses",
+    });
+    await waitFor(() => expect(input.hasAttribute("disabled")).toBe(false));
+    await user.type(input, "CIS 2168");
+    const quick = within(screen.getByRole("group", { name: "Quick filters" }));
+
+    await user.click(quick.getByRole("button", { name: "Online" }));
+
+    const query = await lastSearch(searches, (q) =>
+      q.has("instructionalMethod"),
+    );
+    expect(query.getAll("instructionalMethod")).toEqual([
+      "VIRT",
+      "VRT2",
+      "VIDEO",
+      "OLL",
+    ]);
+    expect(
+      quick
+        .getByRole("button", { name: "Online" })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
+    expect(screen.getByRole("button", { name: "Filters (1)" })).toBeTruthy();
+  });
+
+  it("shows each applied filter as a chip that removes it", async () => {
+    server.use(
+      http.get(`${API}/classes/campuses`, () =>
+        HttpResponse.json([{ code: "MN", description: "Main" }]),
+      ),
+    );
+    const searches = recordRequests(SEARCH);
+    const user = userEvent.setup();
+    renderPage(<SearchPage />);
+    const input = await screen.findByRole("searchbox", {
+      name: "Search courses",
+    });
+    await waitFor(() => expect(input.hasAttribute("disabled")).toBe(false));
+    await user.type(input, "CIS 2168");
+    const filters = await openFilters(user);
+    await user.click(filters.getByRole("combobox", { name: "Campus" }));
+    await user.click(await screen.findByRole("option", { name: "Main" }));
+    await user.keyboard("{Escape}");
+    await lastSearch(searches, (q) => q.get("campus") === "MN");
+
+    // Desktop's row and the phone row beside the quick filters both list it.
+    const chips = await screen.findAllByRole("button", {
+      name: "Remove filter: Main",
+    });
+    await user.click(chips[0]!);
+
+    await lastSearch(searches, (q) => !q.has("campus"));
+    expect(
+      screen.queryAllByRole("button", { name: "Remove filter: Main" }),
+    ).toEqual([]);
+  });
+
+  it("offers to reset when Banner's filters leave nothing", async () => {
+    const user = userEvent.setup();
+    renderPage(<SearchPage />);
+    const filters = await openFilters(user);
+
+    await user.type(
+      filters.getByRole("searchbox", { name: "Instructor name" }),
+      "Nobody",
+    );
+    await user.keyboard("{Escape}");
+
+    expect(
+      await screen.findByText(
+        "Nothing in Spring 2027 matches",
+        undefined,
+        SEARCH_TIMEOUT,
+      ),
+    ).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "Reset filters" }));
+    expect(screen.getByRole("button", { name: "Filters" })).toBeTruthy();
   });
 });
 

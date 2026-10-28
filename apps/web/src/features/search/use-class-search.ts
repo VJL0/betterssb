@@ -18,6 +18,11 @@ import {
   parseClassQuery,
   type ClassQuery,
 } from "@workspace/shared/lib/class-query";
+import {
+  bannerQuery,
+  canSearchWithoutText,
+  type BannerFilters,
+} from "./banner-filters";
 
 /** Each search opens a Banner session, so wait for typing to pause. */
 const TYPING_PAUSE_MS = 500;
@@ -28,19 +33,25 @@ const NO_SUBJECTS = new Set<string>();
 
 type SearchQuery = SearchSectionsData["query"];
 
-function filtersFor(term: string, query: ClassQuery): SearchQuery | null {
+function filtersFor(
+  term: string,
+  query: ClassQuery,
+  filters: BannerFilters,
+): SearchQuery | null {
+  const narrowing = { term, ...bannerQuery(filters), limit: PAGE_SIZE };
   switch (query.kind) {
     case "course":
       return {
-        term,
+        ...narrowing,
         subject: query.subject,
         courseNumber: query.courseNumber,
-        limit: PAGE_SIZE,
       };
     case "subject":
-      return { term, subject: query.subject, limit: PAGE_SIZE };
+      return { ...narrowing, subject: query.subject };
     case "keyword":
-      return { term, keyword: query.keyword, limit: PAGE_SIZE };
+      return { ...narrowing, keyword: query.keyword };
+    case "empty":
+      return canSearchWithoutText(filters) ? narrowing : null;
     default:
       return null;
   }
@@ -87,15 +98,22 @@ function useSettledInput(input: string): string {
   return settled;
 }
 
+function isTyping(text: string, settled: string): boolean {
+  return text.trim() !== settled.trim() && text.trim().length >= 2;
+}
+
 /**
  * Banner's class search for what the student typed: a course ("CIS 2168"),
- * a subject ("CIS") or a keyword. Pages load 50 sections at a time.
+ * a subject ("CIS") or a keyword, narrowed by `bannerFilters`. An attribute
+ * or instructor filter searches on its own. Pages load 50 sections at a time.
  */
 export function useClassSearch(
   term: string | null,
   input: string,
+  bannerFilters: BannerFilters,
 ): ClassSearch {
   const settledInput = useSettledInput(input);
+  const settledInstructor = useSettledInput(bannerFilters.instructor);
   const subjects = useQuery({
     ...listSubjectsOptions({ query: { term: term ?? "" } }),
     enabled: term !== null,
@@ -112,7 +130,12 @@ export function useClassSearch(
         : { kind: "empty" },
     [settledInput, subjects.data, subjectsSettled],
   );
-  const filters = term ? filtersFor(term, query) : null;
+  const filters = term
+    ? filtersFor(term, query, {
+        ...bannerFilters,
+        instructor: settledInstructor,
+      })
+    : null;
 
   const search = useInfiniteQuery({
     ...searchSectionsInfiniteOptions({
@@ -129,7 +152,8 @@ export function useClassSearch(
   });
 
   const typing =
-    input.trim() !== settledInput.trim() && input.trim().length >= 2;
+    isTyping(input, settledInput) ||
+    isTyping(bannerFilters.instructor, settledInstructor);
   const result = filters ? (search.data ?? null) : null;
   const refreshing = search.isFetching && !search.isFetchingNextPage;
 

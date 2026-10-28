@@ -16,12 +16,12 @@ import type { RmpRating } from "@workspace/api-client";
 
 const NO_RATINGS = new Map<string, RatingLookup>();
 
-function rating(overallRating: number): RmpRating {
+function rating(overallRating: number, difficulty = 3): RmpRating {
   return {
     professorName: "Dana Whitlock",
     department: "Computer Science",
     overallRating,
-    difficulty: 3,
+    difficulty,
     numRatings: 20,
     wouldTakeAgainPct: null,
     topTags: [],
@@ -58,7 +58,7 @@ describe("sectionPasses", () => {
     expect(sectionPasses(onlineMath, filters, NO_RATINGS)).toBe(true);
   });
 
-  it("checks times, open seats and attributes", () => {
+  it("checks times, open seats and course levels", () => {
     expect(
       sectionPasses(
         tuesThurs,
@@ -69,9 +69,18 @@ describe("sectionPasses", () => {
     expect(
       sectionPasses(mwf, { ...DEFAULT_FILTERS, openOnly: true }, NO_RATINGS),
     ).toBe(false);
-    const genEd = { ...DEFAULT_FILTERS, attributes: ["GQ"] };
-    expect(sectionPasses(onlineMath, genEd, NO_RATINGS)).toBe(true);
-    expect(sectionPasses(tuesThurs, genEd, NO_RATINGS)).toBe(false);
+    // Banner returns 1000–3999 for these; the 2000s drop here.
+    const skipping = {
+      ...DEFAULT_FILTERS,
+      levels: [1000 as const, 3000 as const],
+    };
+    expect(sectionPasses(onlineMath, skipping, NO_RATINGS)).toBe(true);
+    expect(sectionPasses(tuesThurs, skipping, NO_RATINGS)).toBe(false);
+  });
+
+  it("leaves the filters Banner applied to Banner", () => {
+    const genEd = { ...DEFAULT_FILTERS, attributes: ["GQ"], campus: "MN" };
+    expect(sectionPasses(tuesThurs, genEd, NO_RATINGS)).toBe(true);
   });
 
   it("keeps a section while its rating loads, and drops one with no profile", () => {
@@ -86,6 +95,60 @@ describe("sectionPasses", () => {
     ).toBe(true);
     expect(
       sectionPasses(tuesThurs, filters, new Map([[name, rating(3.2)]])),
+    ).toBe(false);
+    const unrated = { ...rating(0), numRatings: 0 };
+    expect(sectionPasses(tuesThurs, filters, new Map([[name, unrated]]))).toBe(
+      false,
+    );
+  });
+});
+
+describe("maxDifficulty", () => {
+  const name = "Whitlock, Dana";
+  const filters = { ...DEFAULT_FILTERS, maxDifficulty: 2.5 as const };
+  const passes = (lookup: RatingLookup) =>
+    sectionPasses(tuesThurs, filters, new Map([[name, lookup]]));
+
+  it("keeps instructors at or under the difficulty", () => {
+    expect(passes(rating(4, 2.5))).toBe(true);
+    expect(passes(rating(4, 2.6))).toBe(false);
+  });
+
+  it("keeps a section while its rating loads", () => {
+    expect(sectionPasses(tuesThurs, filters, new Map())).toBe(true);
+  });
+
+  it("drops instructors with no profile or no ratings, whose 0.0 isn't easy", () => {
+    expect(passes(null)).toBe(false);
+    expect(passes({ ...rating(0, 0), numRatings: 0 })).toBe(false);
+  });
+
+  it("counts as a filter the empty state can name", () => {
+    expect(activeFilterCount(filters)).toBe(1);
+    expect(
+      mostRestrictiveFilter(
+        [tuesThurs],
+        filters,
+        new Map([[name, rating(4, 4.2)]]),
+      ),
+    ).toEqual({ filter: "maxDifficulty", recovered: 1 });
+  });
+});
+
+describe("TBA instructors", () => {
+  // Nobody to look up, so no rating ever arrives; it isn't "still loading".
+  const tba = classSection({ courseReferenceNumber: "41300", faculty: [] });
+
+  it("pass when no rating filter is on", () => {
+    expect(sectionPasses(tba, DEFAULT_FILTERS, new Map())).toBe(true);
+  });
+
+  it("fail a rating minimum or a difficulty maximum", () => {
+    expect(
+      sectionPasses(tba, { ...DEFAULT_FILTERS, minRating: 3 }, new Map()),
+    ).toBe(false);
+    expect(
+      sectionPasses(tba, { ...DEFAULT_FILTERS, maxDifficulty: 4 }, new Map()),
     ).toBe(false);
   });
 });
@@ -108,6 +171,18 @@ describe("mostRestrictiveFilter", () => {
     });
     expect(activeFilterCount(filters)).toBe(3);
     expect(activeFilterCount(resetFilter(filters, "times"))).toBe(2);
+  });
+
+  it("counts Banner's filters as active", () => {
+    expect(
+      activeFilterCount({
+        ...DEFAULT_FILTERS,
+        formats: ["async"],
+        instructor: "Hamid",
+        campus: "MN",
+      }),
+    ).toBe(3);
+    expect(activeFilterCount({ ...DEFAULT_FILTERS, instructor: "  " })).toBe(0);
   });
 });
 

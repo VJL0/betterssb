@@ -6,7 +6,6 @@ import {
   RefreshCwIcon,
   SearchIcon,
   SearchXIcon,
-  SlidersHorizontalIcon,
 } from "lucide-react";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -41,6 +40,7 @@ import { Kbd } from "@workspace/ui/components/kbd";
 import {
   Sheet,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@workspace/ui/components/sheet";
@@ -52,18 +52,23 @@ import {
   PAGE_SIZE,
   useClassSearch,
   type ClassSearch,
-} from "@/hooks/use-class-search";
+} from "./use-class-search";
 import { useCurrentTerm } from "@/hooks/use-current-term";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { usePlan } from "@/hooks/use-plan";
 import { useRatings, type Ratings } from "@/hooks/use-ratings";
-import { formatClockTime, formatUpdated } from "@/lib/relative-time";
+import { formatClockTime } from "@/lib/relative-time";
 import { undoToast } from "@/lib/undo-toast";
 import { CourseCard } from "./course-card";
-import { FiltersPanel } from "./filters-panel";
+import { FiltersPanel, NO_OPTIONS, type SearchOptions } from "./filters-panel";
 import { PlanRail } from "./plan-rail";
+import { QuickFilterBar } from "./quick-filter-bar";
+import { sortGroups, type SortKey } from "./sort-results";
+import { SortSelect } from "./sort-select";
+import { AppliedFilterChips } from "./applied-filter-chips";
+import { quickFilterBase } from "./applied-filters";
+import { hasBannerFilters, isGenEdArea } from "./banner-filters";
 import {
-  activeFilterCount,
   DEFAULT_FILTERS,
   groupByCourse,
   mostRestrictiveFilter,
@@ -72,29 +77,34 @@ import {
   type FilterName,
   type SearchFilters,
 } from "./search-filters";
-import type { ClassSection, CodeDescription } from "@workspace/api-client";
-import { listAttributesOptions } from "@workspace/api-client/query";
+import type { ClassSection } from "@workspace/api-client";
+import {
+  listAttributesOptions,
+  listCampusesOptions,
+  listPartsOfTermOptions,
+} from "@workspace/api-client/query";
 
 const EXAMPLES = ["CIS 2168", "MATH", "data science"];
-const CLOCK_TICK_MS = 30_000;
-/** Attributes change between terms, not within one. */
-const ATTRIBUTES_STALE_MS = 24 * 60 * 60 * 1000;
-const NO_ATTRIBUTES: CodeDescription[] = [];
+const RESULTS_HEADING_ID = "search-results-heading";
+const FILTERS_HEADING_ID = "search-filters-heading";
+/** Attributes, campuses and parts of term change between terms, not within one. */
+const SEARCH_OPTIONS_STALE_MS = 24 * 60 * 60 * 1000;
 
 const FILTER_LABEL: Record<FilterName, string> = {
   days: "meeting days",
   minRating: "rating",
+  maxDifficulty: "difficulty",
   openOnly: "open-only",
   times: "time of day",
-  attributes: "attribute",
 };
 
 /** W2.1 · Course search: live sections from Banner with ratings and seats. */
 export function SearchPage() {
   const { term, status: termStatus } = useCurrentTerm();
   const [input, setInput] = useState("");
+  const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
   const inputRef = useRef<HTMLInputElement>(null);
-  const search = useClassSearch(term?.code ?? null, input);
+  const search = useClassSearch(term?.code ?? null, input, filters);
 
   return (
     <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
@@ -104,7 +114,7 @@ export function SearchPage() {
       <Suspense>
         <QueryFromUrl onQuery={setInput} />
       </Suspense>
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight">
             Course search
@@ -113,12 +123,13 @@ export function SearchPage() {
             {term ? `${term.name} · live from Banner` : "Loading terms…"}
           </p>
         </div>
+        {/* The page's main action: most students arrive with a course code. */}
         <form
           role="search"
-          className="flex min-w-0 grow basis-lg flex-wrap items-center justify-end gap-2"
+          className="w-full max-w-3xl"
           onSubmit={(e) => e.preventDefault()}
         >
-          <InputGroup className="h-9 max-w-xl grow basis-88">
+          <InputGroup className="h-10">
             <InputGroupAddon>
               <SearchIcon aria-hidden />
             </InputGroupAddon>
@@ -135,7 +146,6 @@ export function SearchPage() {
               <Kbd aria-hidden>/</Kbd>
             </InputGroupAddon>
           </InputGroup>
-          {search.result && <UpdatedButton search={search} />}
         </form>
       </div>
 
@@ -149,6 +159,8 @@ export function SearchPage() {
         <SearchBody
           term={term}
           search={search}
+          filters={filters}
+          onFiltersChange={setFilters}
           inputRef={inputRef}
           onExample={setInput}
         />
@@ -168,46 +180,53 @@ function QueryFromUrl({ onQuery }: { onQuery: (query: string) => void }) {
   return null;
 }
 
-function UpdatedButton({ search }: { search: ClassSearch }) {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), CLOCK_TICK_MS);
-    return () => clearInterval(timer);
-  }, []);
+/** When Banner sent these seats, beside the counts it's about. */
+function SeatsFreshness({ search }: { search: ClassSearch }) {
   const refreshing = search.status === "loading";
   return (
-    <Button
-      type="button"
-      variant="outline"
-      onClick={search.refresh}
-      disabled={refreshing}
-      aria-label={`Refresh seats. Updated ${formatUpdated(search.result!.fetchedAt, now)}`}
-    >
-      {refreshing ? (
-        <Spinner data-icon="inline-start" aria-hidden />
-      ) : (
-        <RefreshCwIcon data-icon="inline-start" />
-      )}
-      Updated {formatUpdated(search.result!.fetchedAt, now)}
-    </Button>
+    <span className="flex items-center gap-1 text-muted-foreground tabular-nums">
+      Seats as of {formatClockTime(search.result!.fetchedAt)}
+      <Button
+        variant="ghost"
+        size="xs"
+        aria-label="Refresh seats"
+        onClick={search.refresh}
+        disabled={refreshing}
+      >
+        {refreshing ? (
+          <Spinner data-icon="inline-start" aria-hidden />
+        ) : (
+          <RefreshCwIcon data-icon="inline-start" />
+        )}
+        Refresh
+      </Button>
+    </span>
   );
 }
 
 interface SearchBodyProps {
   term: { code: string; name: string };
   search: ClassSearch;
+  filters: SearchFilters;
+  onFiltersChange: (filters: SearchFilters) => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
   onExample: (query: string) => void;
 }
 
-function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
+function SearchBody({
+  term,
+  search,
+  filters,
+  onFiltersChange: setFilters,
+  inputRef,
+  onExample,
+}: SearchBodyProps) {
   const planState = usePlan(term.code, term.name);
   const { plan } = planState;
-  const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS);
   const [preview, setPreview] = useState<PlannedSection | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [planOpen, setPlanOpen] = useState(false);
-  const attributes = useAttributes(term.code);
+  const options = useSearchOptions(term.code);
 
   const sections = useMemo(
     () => search.result?.sections ?? [],
@@ -217,7 +236,8 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
   const visible = sections.filter((s) =>
     sectionPasses(s, filters, ratings.byName),
   );
-  const groups = groupByCourse(visible);
+  const [sort, setSort] = useState<SortKey>("course");
+  const groups = sortGroups(groupByCourse(visible), sort, ratings.byName);
   const plannedCrns = new Set(plan.sections.map((s) => s.crn));
 
   async function toggle(section: ClassSection) {
@@ -265,15 +285,9 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
     },
   });
 
-  const filterCount = activeFilterCount(filters);
-  const filtersPanel = (
-    <FiltersPanel
-      filters={filters}
-      onChange={setFilters}
-      attributes={attributes}
-      ratingsReady={ratings.status === "ready"}
-    />
-  );
+  const quickContext = {
+    genEdCodes: options.attributes.filter(isGenEdArea).map((a) => a.code),
+  };
   const rail = (
     <PlanRail
       plan={plan}
@@ -285,17 +299,64 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
 
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_19rem]">
-      <aside aria-label="Filters" className="hidden lg:block">
-        {filtersPanel}
-      </aside>
-
-      <section aria-label="Results" className="flex min-w-0 flex-col gap-4">
-        <div className="flex flex-wrap gap-2 lg:hidden">
-          <Button variant="outline" onClick={() => setFiltersOpen(true)}>
-            <SlidersHorizontalIcon data-icon="inline-start" />
-            Filters{filterCount > 0 && ` (${filterCount})`}
+      {/* With 11 kinds of filter, a visible sidebar beats a toolbar on
+          desktop; it scrolls on its own so filters stay in reach. Switches
+          and checkboxes have tap areas wider than they look, so it never
+          scrolls sideways, and the padding keeps focus rings in view. */}
+      <aside
+        aria-labelledby={FILTERS_HEADING_ID}
+        className="sticky top-24 -ml-1 hidden max-h-[calc(100vh-7rem)] flex-col gap-4 overflow-x-hidden overflow-y-auto pr-3 pb-4 pl-1 lg:flex"
+      >
+        <div className="flex items-center justify-between">
+          <h2 id={FILTERS_HEADING_ID} className="font-medium">
+            Filters
+          </h2>
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={() => setFilters(DEFAULT_FILTERS)}
+            disabled={isDefault(filters)}
+          >
+            Reset
           </Button>
         </div>
+        <FiltersPanel
+          filters={filters}
+          onChange={setFilters}
+          options={options}
+          ratingsReady={ratings.status === "ready"}
+        />
+      </aside>
+
+      <section
+        aria-labelledby={RESULTS_HEADING_ID}
+        className="flex min-w-0 flex-col gap-4"
+      >
+        <h2 id={RESULTS_HEADING_ID} className="sr-only">
+          Results
+        </h2>
+        <div className="flex flex-col gap-2 lg:hidden">
+          <QuickFilterBar
+            filters={filters}
+            onChange={setFilters}
+            context={quickContext}
+            onOpenFilters={() => setFiltersOpen(true)}
+          />
+          {/* Pressed quick filters already show; chips cover the rest. */}
+          <AppliedFilterChips
+            filters={filters}
+            onChange={setFilters}
+            names={options}
+            base={quickFilterBase(filters, quickContext)}
+            className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0"
+          />
+        </div>
+        <AppliedFilterChips
+          filters={filters}
+          onChange={setFilters}
+          names={options}
+          className="hidden flex-wrap lg:flex"
+        />
 
         <Results
           term={term}
@@ -305,6 +366,8 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
           visibleCount={visible.length}
           filters={filters}
           ratings={ratings}
+          sort={sort}
+          onSortChange={setSort}
           onResetFilter={(name) => setFilters(resetFilter(filters, name))}
           onResetAll={() => setFilters(DEFAULT_FILTERS)}
           onExample={onExample}
@@ -342,11 +405,33 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
       </div>
 
       <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
-        <SheetContent side="left" className="overflow-y-auto">
+        <SheetContent side="left">
           <SheetHeader>
             <SheetTitle>Filters</SheetTitle>
           </SheetHeader>
-          <div className="px-4 pb-6">{filtersPanel}</div>
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6">
+            <FiltersPanel
+              filters={filters}
+              onChange={setFilters}
+              options={options}
+              ratingsReady={ratings.status === "ready"}
+            />
+          </div>
+          <SheetFooter className="flex-row border-t">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setFilters(DEFAULT_FILTERS)}
+              disabled={isDefault(filters)}
+            >
+              Reset
+            </Button>
+            <Button className="flex-1" onClick={() => setFiltersOpen(false)}>
+              {search.result
+                ? `Show ${visible.length} section${visible.length === 1 ? "" : "s"}`
+                : "Done"}
+            </Button>
+          </SheetFooter>
         </SheetContent>
       </Sheet>
       <Sheet open={planOpen} onOpenChange={setPlanOpen}>
@@ -359,6 +444,10 @@ function SearchBody({ term, search, inputRef, onExample }: SearchBodyProps) {
       </Sheet>
     </div>
   );
+}
+
+function isDefault(filters: SearchFilters): boolean {
+  return JSON.stringify(filters) === JSON.stringify(DEFAULT_FILTERS);
 }
 
 function movePlanButtonFocus(step: 1 | -1) {
@@ -376,13 +465,26 @@ function movePlanButtonFocus(step: 1 | -1) {
   buttons[next]?.focus();
 }
 
-/** Section attributes for the filter. Optional: search works without them. */
-function useAttributes(term: string): CodeDescription[] {
-  const { data } = useQuery({
-    ...listAttributesOptions({ query: { term } }),
-    staleTime: ATTRIBUTES_STALE_MS,
+/** The term's choices for the filters. Optional: search works without them. */
+function useSearchOptions(term: string): SearchOptions {
+  const query = { query: { term } };
+  const attributes = useQuery({
+    ...listAttributesOptions(query),
+    staleTime: SEARCH_OPTIONS_STALE_MS,
   });
-  return data ?? NO_ATTRIBUTES;
+  const campuses = useQuery({
+    ...listCampusesOptions(query),
+    staleTime: SEARCH_OPTIONS_STALE_MS,
+  });
+  const partsOfTerm = useQuery({
+    ...listPartsOfTermOptions(query),
+    staleTime: SEARCH_OPTIONS_STALE_MS,
+  });
+  return {
+    attributes: attributes.data ?? NO_OPTIONS,
+    campuses: campuses.data ?? NO_OPTIONS,
+    partsOfTerm: partsOfTerm.data ?? NO_OPTIONS,
+  };
 }
 
 interface ResultsProps {
@@ -393,6 +495,8 @@ interface ResultsProps {
   visibleCount: number;
   filters: SearchFilters;
   ratings: Ratings;
+  sort: SortKey;
+  onSortChange: (sort: SortKey) => void;
   onResetFilter: (name: FilterName) => void;
   onResetAll: () => void;
   onExample: (query: string) => void;
@@ -407,6 +511,8 @@ function Results({
   visibleCount,
   filters,
   ratings,
+  sort,
+  onSortChange,
   onResetFilter,
   onResetAll,
   onExample,
@@ -434,8 +540,9 @@ function Results({
           </EmptyMedia>
           <EmptyTitle>Search {term.name} sections</EmptyTitle>
           <EmptyDescription>
-            Type a course like CIS 2168, a subject like MATH, or a keyword.
-            Results come live from Banner with seats and ratings.
+            Type a course like CIS 2168, a subject like MATH, or a keyword, or
+            pick a GenEd area or instructor in the filters. Results come live
+            from Banner with seats and ratings.
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent className="flex-row flex-wrap justify-center">
@@ -498,13 +605,29 @@ function Results({
         </Alert>
       )}
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <p role="status" className="text-muted-foreground tabular-nums">
-          {sections.length === 0
-            ? "No sections found."
-            : `${visibleCount} of ${result.totalCount} sections · ${courses} course${courses === 1 ? "" : "s"}${hiddenByFilters > 0 ? ` · ${hiddenByFilters} hidden by filters` : ""}`}
-        </p>
-        <RatingsStatus ratings={ratings} />
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <p role="status" className="text-muted-foreground tabular-nums">
+            {sections.length === 0
+              ? "No sections found."
+              : `${visibleCount} of ${result.totalCount} sections · ${courses} course${courses === 1 ? "" : "s"}${hiddenByFilters > 0 ? ` · ${hiddenByFilters} hidden by filters` : ""}`}
+          </p>
+          <SeatsFreshness search={search} />
+        </div>
+        {sections.length > 0 && (
+          <SortSelect
+            value={sort}
+            onChange={onSortChange}
+            ratingsReady={ratings.status === "ready"}
+          />
+        )}
       </div>
+      <RatingsStatus ratings={ratings} />
+      {sort !== "course" && sections.length < result.totalCount && (
+        <p className="text-muted-foreground">
+          Sorted among the {sections.length} sections loaded so far. Load more
+          below to include the rest.
+        </p>
+      )}
 
       {sections.length === 0 ? (
         <Empty className="border border-dashed">
@@ -514,9 +637,18 @@ function Results({
             </EmptyMedia>
             <EmptyTitle>Nothing in {term.name} matches</EmptyTitle>
             <EmptyDescription>
-              Check the course number, or try a subject or keyword.
+              {hasBannerFilters(filters)
+                ? "Try removing a filter, or search a subject or keyword."
+                : "Check the course number, or try a subject or keyword."}
             </EmptyDescription>
           </EmptyHeader>
+          {hasBannerFilters(filters) && (
+            <EmptyContent>
+              <Button variant="outline" size="sm" onClick={onResetAll}>
+                Reset filters
+              </Button>
+            </EmptyContent>
+          )}
         </Empty>
       ) : visibleCount === 0 ? (
         <Empty className="border border-dashed">

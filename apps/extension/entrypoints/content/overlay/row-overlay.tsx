@@ -4,7 +4,6 @@ import type { RmpRating } from "@workspace/api-client";
 import { instructorSearchName } from "@workspace/shared/lib/instructors";
 import { formatClock } from "@workspace/shared/lib/meeting-times";
 import type { PlanClash } from "@workspace/shared/lib/plan";
-import { usableRating } from "@workspace/shared/lib/ratings";
 import { Badge } from "@workspace/ui/components/badge";
 import { RmpBadge } from "@workspace/ui/components/rmp-badge";
 import { SeatMeter } from "@workspace/ui/components/seat-meter";
@@ -41,7 +40,7 @@ function Rating({
   if (!rating.isSuccess) return null;
   return createPortal(
     <RmpBadge
-      rating={usableRating(rating.data)}
+      rating={rating.data}
       instructorName={slot.name}
       popupContainer={popupContainer}
       compact

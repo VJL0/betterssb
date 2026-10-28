@@ -58,13 +58,16 @@ export function formatBannerTime(raw: string): string {
   return raw;
 }
 
+/** The instructor name of a section nobody has been assigned to yet. */
+export const TBA_INSTRUCTOR = "TBA";
+
 export function primaryInstructorName(
   ssb: Pick<SectionSource, "faculty">,
 ): string {
   return (
     ssb.faculty.find((f) => f.primaryIndicator)?.displayName ??
     ssb.faculty[0]?.displayName ??
-    "TBA"
+    TBA_INSTRUCTOR
   );
 }
 

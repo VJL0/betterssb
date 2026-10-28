@@ -13,6 +13,8 @@ import type {
   ListBulletinProgramsResponse,
   ListBulletinSubjectsResponse,
   ListAttributesResponse,
+  ListCampusesResponse,
+  ListPartsOfTermResponse,
   ListSubjectCoursesResponse,
   ListSubjectsResponse,
   ListTermsResponse,
@@ -223,6 +225,13 @@ export const handlers = [
   ),
   http.get<never, never, ListAttributesResponse>(
     `${API}/classes/attributes`,
+    () => HttpResponse.json([]),
+  ),
+  http.get<never, never, ListCampusesResponse>(`${API}/classes/campuses`, () =>
+    HttpResponse.json([]),
+  ),
+  http.get<never, never, ListPartsOfTermResponse>(
+    `${API}/classes/parts-of-term`,
     () => HttpResponse.json([]),
   ),
   http.get<never, never, SearchSectionsResponse>(`${API}/classes/search`, () =>

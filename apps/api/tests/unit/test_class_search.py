@@ -72,6 +72,31 @@ class FakeBanner:
                     {"code": "CIS", "description": "Computer &amp; Information Science"}
                 ],
             )
+        if path.endswith("/classSearch/get_campus"):
+            return httpx.Response(200, json=[{"code": "MN", "description": "Main"}])
+        if path.endswith("/classSearch/get_partOfTerm"):
+            return httpx.Response(
+                200,
+                json=[
+                    {
+                        "code": "07A",
+                        "description": "7-week Courses (7A) 01/11/2027 - 03/08/2027",
+                    }
+                ],
+            )
+        if path.endswith("/classSearch/get_instructor"):
+            # Banner numbers instructors per session, so codes differ between searches.
+            return httpx.Response(
+                200,
+                json=[
+                    {"code": f"{self.sessions}01", "description": "Nahed Hamid"},
+                    {"code": f"{self.sessions}02", "description": "Hamid Heravi"},
+                    {
+                        "code": f"{self.sessions}03",
+                        "description": "Idrisa B. Abdul-Hamid",
+                    },
+                ],
+            )
         return httpx.Response(404)
 
     def service(self, cache: MemoryCache | None = None) -> ClassSearchService:
@@ -135,6 +160,24 @@ class TestSearch:
         assert again == first
         assert list(cache.ttls.values()) == [SEARCH_TTL_SECONDS]
 
+    async def test_empty_results_are_not_cached(self):
+        """Banner sometimes answers with nothing for a moment; that mustn't stick."""
+        banner = FakeBanner(search_body={"success": True, "totalCount": 0, "data": []})
+        cache = MemoryCache()
+        service = banner.service(cache)
+        await service.search(FILTERS)
+        await service.search(FILTERS)
+        assert banner.paths().count("/searchResults/searchResults") == 2
+        assert cache.values == {}
+
+    async def test_an_unknown_instructor_is_looked_up_again(self):
+        banner = FakeBanner()
+        service = banner.service(MemoryCache())
+        nobody = SearchFilters(term="202703", instructor="Nobody")
+        await service.search(nobody)
+        await service.search(nobody)
+        assert banner.paths().count("/classSearch/get_instructor") == 2
+
     async def test_a_broken_cache_doesnt_break_search(self):
         class DownCache:
             async def get(self, name: str) -> str | None:
@@ -174,6 +217,111 @@ class TestSearch:
             await ClassSearchService(client, None).search(FILTERS)
 
 
+class TestSearchFilters:
+    async def test_code_lists_are_sent_comma_separated(self):
+        banner = FakeBanner()
+        await banner.service().search(
+            SearchFilters(
+                term="202703",
+                attributes=("GA", "GW"),
+                campuses=("MN", "CC"),
+                instructional_methods=("OLL", "VIRT"),
+                parts_of_term=("07A",),
+            )
+        )
+        sent = banner.requests[-1].url.params
+        assert sent["txt_attribute"] == "GA,GW"
+        assert sent["txt_campus"] == "MN,CC"
+        assert sent["txt_instructionalMethod"] == "OLL,VIRT"
+        assert sent["txt_partOfTerm"] == "07A"
+
+    @pytest.mark.parametrize(
+        ("number_from", "number_to", "sent_from", "sent_to"),
+        [
+            ("3000", "4999", "3000", "4999"),
+            # Banner compares as text: "999" would sort after "9063".
+            ("0", "999", "0000", "0999"),
+            ("5000", "", "5000", "9999"),
+            ("", "1999", "0000", "1999"),
+        ],
+    )
+    async def test_course_number_ranges_have_both_ends_in_four_digits(
+        self, number_from, number_to, sent_from, sent_to
+    ):
+        banner = FakeBanner()
+        await banner.service().search(
+            SearchFilters(
+                term="202703",
+                subject="MATH",
+                course_number_from=number_from,
+                course_number_to=number_to,
+            )
+        )
+        sent = banner.requests[-1].url.params
+        assert sent["txt_course_number_range"] == sent_from
+        assert sent["txt_course_number_range_to"] == sent_to
+
+    async def test_no_range_sends_no_range(self):
+        banner = FakeBanner()
+        await banner.service().search(FILTERS)
+        assert "txt_course_number_range" not in banner.requests[-1].url.params
+
+    async def test_instructor_is_looked_up_in_the_search_session(self):
+        banner = FakeBanner()
+        await banner.service().search(
+            SearchFilters(term="202703", instructor="nahed hamid")
+        )
+        assert banner.paths() == [
+            "/term/search",
+            "/classSearch/get_instructor",
+            "/searchResults/searchResults",
+        ]
+        _, lookup, search = banner.requests
+        assert lookup.url.params["searchTerm"] == "nahed"
+        assert lookup.headers["cookie"] == search.headers["cookie"] == "JSESSIONID=s1"
+        assert search.url.params["txt_instructor"] == "101"
+
+    async def test_one_name_matches_every_instructor_with_it(self):
+        banner = FakeBanner()
+        await banner.service().search(SearchFilters(term="202703", instructor="Hamid"))
+        assert banner.requests[-1].url.params["txt_instructor"] == "101,102,103"
+
+    @pytest.mark.parametrize(
+        ("typed", "looked_up", "codes"),
+        [
+            ("Nahed", "nahed", "101"),
+            ("Hamid, Nahed", "hamid", "101"),
+            ("N. Hamid", "hamid", "101"),
+            # Banner's lookup finds nothing for "abdul-hamid" itself.
+            ("Abdul-Hamid", "abdul", "103"),
+        ],
+    )
+    async def test_names_are_matched_word_by_word(self, typed, looked_up, codes):
+        banner = FakeBanner()
+        await banner.service().search(SearchFilters(term="202703", instructor=typed))
+        lookup = banner.requests[1]
+        assert lookup.url.params["searchTerm"] == looked_up
+        assert banner.requests[-1].url.params["txt_instructor"] == codes
+
+    async def test_a_name_without_letters_finds_nothing(self):
+        banner = FakeBanner()
+        result = await banner.service().search(
+            SearchFilters(term="202703", instructor="--")
+        )
+        assert result.total_count == 0
+        assert banner.paths() == ["/term/search"]
+
+    async def test_an_unknown_instructor_finds_nothing_without_searching(self):
+        """An empty instructor filter would match every section in the term."""
+        banner = FakeBanner()
+        result = await banner.service().search(
+            SearchFilters(term="202703", instructor="Nobody Here")
+        )
+        assert result.total_count == 0
+        assert result.sections == []
+        assert "/searchResults/searchResults" not in banner.paths()
+
+
 class TestLookups:
     async def test_terms_are_cached_for_a_day(self):
         banner = FakeBanner()
@@ -192,3 +340,21 @@ class TestLookups:
         assert subjects[0].description == "Computer & Information Science"
         assert banner.requests[0].url.params["searchTerm"] == "CIS"
         assert "classes:subjects:202703:CIS" in cache.values
+
+    @pytest.mark.parametrize(
+        ("lookup", "path", "code"),
+        [
+            ("campuses", "/classSearch/get_campus", "MN"),
+            ("parts_of_term", "/classSearch/get_partOfTerm", "07A"),
+        ],
+    )
+    async def test_term_lookups_are_cached_per_term(self, lookup, path, code):
+        banner = FakeBanner()
+        cache = MemoryCache()
+        service = banner.service(cache)
+        first = await getattr(service, lookup)("202703")
+        await getattr(service, lookup)("202703")
+        assert [item.code for item in first] == [code]
+        assert banner.paths() == [path]
+        assert banner.requests[0].url.params["term"] == "202703"
+        assert list(cache.ttls.values()) == [LOOKUP_TTL_SECONDS]

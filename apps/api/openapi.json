@@ -4072,9 +4072,129 @@
         ]
       }
     },
+    "/api/classes/campuses": {
+      "get": {
+        "description": "Campuses with sections in a term, such as Main, Center City and Japan.",
+        "operationId": "list_campuses",
+        "parameters": [
+          {
+            "description": "Banner term code",
+            "in": "query",
+            "name": "term",
+            "required": true,
+            "schema": {
+              "description": "Banner term code",
+              "pattern": "^\\d{6}$",
+              "title": "Term",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CodeDescription"
+                  },
+                  "title": "Response List Campuses",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Campuses",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/classes/parts-of-term": {
+      "get": {
+        "description": "Parts of a term, such as the full term and the 7-week halves, with their dates.",
+        "operationId": "list_parts_of_term",
+        "parameters": [
+          {
+            "description": "Banner term code",
+            "in": "query",
+            "name": "term",
+            "required": true,
+            "schema": {
+              "description": "Banner term code",
+              "pattern": "^\\d{6}$",
+              "title": "Term",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CodeDescription"
+                  },
+                  "title": "Response List Parts Of Term",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Parts Of Term",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
     "/api/classes/search": {
       "get": {
-        "description": "Sections in a term from Banner's public class search, with live seats.\n\nNeeds a subject, keyword or attribute; a whole-term listing is too large to serve.",
+        "description": "Sections in a term from Banner's public class search, with live seats.\n\nNeeds a subject, keyword, attribute or instructor; the other filters\nonly narrow those, since a whole-term listing is too large to serve.",
         "operationId": "search_sections",
         "parameters": [
           {
@@ -4142,20 +4262,147 @@
             }
           },
           {
+            "description": "Any of these attributes",
             "in": "query",
             "name": "attribute",
             "required": false,
             "schema": {
               "anyOf": [
                 {
-                  "pattern": "^[A-Za-z0-9]{1,6}$",
+                  "items": {
+                    "pattern": "^[A-Za-z0-9]{1,6}$",
+                    "type": "string"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Any of these attributes",
+              "title": "Attribute"
+            }
+          },
+          {
+            "description": "At any of these campuses",
+            "in": "query",
+            "name": "campus",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "pattern": "^[A-Za-z0-9]{1,6}$",
+                    "type": "string"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "At any of these campuses",
+              "title": "Campus"
+            }
+          },
+          {
+            "description": "Taught in any of these ways, such as CLAS or OLL",
+            "in": "query",
+            "name": "instructionalMethod",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "pattern": "^[A-Za-z0-9]{1,6}$",
+                    "type": "string"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Taught in any of these ways, such as CLAS or OLL",
+              "title": "Instructionalmethod"
+            }
+          },
+          {
+            "in": "query",
+            "name": "partOfTerm",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "pattern": "^[A-Za-z0-9]{1,6}$",
+                    "type": "string"
+                  },
+                  "maxItems": 20,
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Partofterm"
+            }
+          },
+          {
+            "in": "query",
+            "name": "courseNumberFrom",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{1,4}$",
                   "type": "string"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "title": "Attribute"
+              "title": "Coursenumberfrom"
+            }
+          },
+          {
+            "in": "query",
+            "name": "courseNumberTo",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{1,4}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Coursenumberto"
+            }
+          },
+          {
+            "description": "Any part of an instructor's name, in any order",
+            "in": "query",
+            "name": "instructor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 60,
+                  "minLength": 2,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Any part of an instructor's name, in any order",
+              "title": "Instructor"
             }
           },
           {

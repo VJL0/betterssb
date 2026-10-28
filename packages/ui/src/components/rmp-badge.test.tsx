@@ -34,6 +34,36 @@ describe("RmpBadge", () => {
     expect(screen.getByRole("link").textContent).toMatch(/^4\.6 rating for/);
   });
 
+  it("says No ratings yet for a profile nobody has rated, and links to it", () => {
+    // RMP reports 0.0 (and sometimes "100% would take again") with no ratings.
+    render(
+      <RmpBadge
+        rating={rating({
+          professorName: "Ammani Ahmad-Khan",
+          overallRating: 0,
+          difficulty: 0,
+          wouldTakeAgainPct: 100,
+          numRatings: 0,
+          rmpUrl: "https://www.ratemyprofessors.com/professor/3126954",
+        })}
+        instructorName="Ammani Ahmad-Khan"
+      />,
+    );
+    const link = screen.getByRole("link", {
+      name: "No ratings yet for Ammani Ahmad-Khan on Rate My Professors, opens in a new tab",
+    });
+    expect(link.getAttribute("href")).toBe(
+      "https://www.ratemyprofessors.com/professor/3126954",
+    );
+    expect(link.textContent).toBe("No ratings yet");
+    expect(screen.queryByText(/0\.0/)).toBeNull();
+  });
+
+  it("says No ratings when compact and the profile is unrated", () => {
+    render(<RmpBadge rating={rating({ numRatings: 0 })} compact />);
+    expect(screen.getByRole("link").textContent).toBe("No ratings");
+  });
+
   it("says No RMP when compact and there's no profile", () => {
     render(<RmpBadge rating={null} compact />);
     expect(screen.getByText("No RMP").textContent).toBe("No RMP profile");
