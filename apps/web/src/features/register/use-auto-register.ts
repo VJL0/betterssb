@@ -11,6 +11,7 @@ import {
   getAutoRegister,
   getBannerPlans,
   getBannerRegistrationTerms,
+  getRegistrationTime,
   onAutoRegisterChange,
   saveAutoRegisterQueue,
 } from "@/lib/extension";
@@ -91,6 +92,17 @@ export function useBannerRegistration(connected: boolean) {
     retry: false,
   });
   return { terms, plans };
+}
+
+/** The student's registration time for `term`, as TUportal lists it. */
+export function useRegistrationTime(term: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["registrationTime", term],
+    queryFn: () => getRegistrationTime(term),
+    enabled: enabled && !!term,
+    staleTime: BANNER_STALE_MS,
+    retry: false,
+  });
 }
 
 /** Whether Banner knows each queued CRN in the term. */

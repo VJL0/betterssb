@@ -44,6 +44,11 @@ describe("parseBridgeRequest", () => {
         request("AUTOREG_CHECK_CRNS", { term: "202703", crns: ["41207"] }),
       )?.request,
     ).toEqual({ type: "AUTOREG_CHECK_CRNS", term: "202703", crns: ["41207"] });
+    expect(
+      parseBridgeRequest(
+        request("AUTOREG_REGISTRATION_TIME", { term: "202703" }),
+      )?.request,
+    ).toEqual({ type: "AUTOREG_REGISTRATION_TIME", term: "202703" });
   });
 
   it.each([
@@ -73,6 +78,10 @@ describe("parseBridgeRequest", () => {
     [
       "a CRN check without a term",
       request("AUTOREG_CHECK_CRNS", { crns: ["41207"] }),
+    ],
+    [
+      "a registration time lookup with a bad term",
+      request("AUTOREG_REGISTRATION_TIME", { term: "Spring 2027" }),
     ],
     [
       "an unknown key",
