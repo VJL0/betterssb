@@ -3,7 +3,10 @@ import {
   parseBridgeRequest,
 } from "@workspace/shared/lib/bridge";
 import { armProblem } from "@workspace/shared/lib/auto-reg-queue";
-import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
+import type {
+  AutoRegSnapshot,
+  RegistrationTimeLookup,
+} from "@workspace/shared/types/auto-reg";
 import type { SSBRegPlanHeader, SSBTerm } from "@workspace/shared/types/ssb";
 import type { BannerConnection, StoreKey } from "@workspace/shared/types/store";
 
@@ -31,6 +34,8 @@ export function installFakeBridge({
   bannerPlans = [] as SSBRegPlanHeader[],
   /** CRNs Banner's lookup finds; others come back not found. */
   knownCrns = [] as string[],
+  /** What TUportal's countdown answers for any term. */
+  registrationTime = { status: "not-listed" } as RegistrationTimeLookup,
 } = {}) {
   const data = new Map(Object.entries(documents)) as Map<StoreKey, unknown>;
   const auto = { current: { ...autoRegister } };
@@ -116,6 +121,8 @@ export function installFakeBridge({
             found: knownCrns.includes(crn),
           })),
         });
+      case "AUTOREG_REGISTRATION_TIME":
+        return reply(id, { success: true, data: registrationTime });
       case "BANNER_REG_TERMS":
         return reply(id, { success: true, data: registrationTerms });
       case "BANNER_REG_PLANS":

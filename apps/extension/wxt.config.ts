@@ -1,7 +1,12 @@
 import { createRequire } from "node:module";
 import { defineConfig } from "wxt";
 import tailwindcss from "@tailwindcss/vite";
-import { BANNER_ORIGIN, BANNER_PAGES, DARS_PAGES } from "./lib/temple-urls";
+import {
+  BANNER_ORIGIN,
+  BANNER_PAGES,
+  DARS_PAGES,
+  TUPORTAL_PAGES,
+} from "./lib/temple-urls";
 
 const require = createRequire(import.meta.url);
 
@@ -27,7 +32,13 @@ export default defineConfig({
     description:
       "Supercharge Temple University's Self-Service Banner registration",
     permissions: ["storage", "alarms", "notifications", "tabs", "activeTab"],
-    host_permissions: [BANNER_PAGES, DARS_PAGES, apiHostPermission()],
+    host_permissions: [
+      BANNER_PAGES,
+      DARS_PAGES,
+      // Read-only: the priority registration countdown, for the auto-register time.
+      TUPORTAL_PAGES,
+      apiHostPermission(),
+    ],
     web_accessible_resources: [
       // These match patterns must end in "/*": only the origin counts.
       { resources: [OVERLAY_FONT], matches: [`${BANNER_ORIGIN}/*`] },

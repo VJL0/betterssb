@@ -10,6 +10,9 @@ export const ENVIRONMENT =
 export const BANNER_REGISTRATION_URL =
   "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/registration";
 
+/** Where students sign in to TUportal, whose countdown has their registration time. */
+export const TUPORTAL_URL = "https://tuportal6.temple.edu/group/home/";
+
 /** The extension's store listing. Unset until the extension is published. */
 export const EXTENSION_INSTALL_URL: string | null =
   process.env.NEXT_PUBLIC_EXTENSION_INSTALL_URL || null;

@@ -12,6 +12,7 @@ export type MessageType =
   | "AUTOREG_ARM"
   | "AUTOREG_DISARM"
   | "AUTOREG_CHECK_CRNS"
+  | "AUTOREG_REGISTRATION_TIME"
   | "OVERLAY_STATUS";
 
 export interface ExtensionMessage {

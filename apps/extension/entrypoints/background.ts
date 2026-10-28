@@ -35,6 +35,7 @@ import {
 import type { BannerConnection } from "@workspace/shared/types/store";
 import { searchProfessors } from "@workspace/api-client";
 import { BANNER_PAGES, DARS_PAGES, DARS_START_URL } from "@/lib/temple-urls";
+import { lookUpRegistrationTime } from "@/lib/tuportal-api";
 
 const DARS_TAB_READY_TIMEOUT_MS = 150_000;
 
@@ -224,6 +225,10 @@ async function handleAutoRegister(
         checks.push({ crn, found: crnLookupResult(crn, result) });
       }
       return { success: true, data: checks };
+    }
+    case "AUTOREG_REGISTRATION_TIME": {
+      const { term } = msg.payload as { term: string };
+      return { success: true, data: await lookUpRegistrationTime(term) };
     }
     default:
       return { success: false, error: `Unknown message type: ${msg.type}` };

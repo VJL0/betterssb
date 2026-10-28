@@ -44,6 +44,17 @@ export function splitTempleTerm(
     : null;
 }
 
+/** "202703" for Banner's "2027 Spring", or null for a name outside Temple's seasons. */
+export function templeTermCodeFromName(
+  bannerDescription: string,
+): string | null {
+  const plain = bannerDescription.replace(VIEW_ONLY, " ").trim();
+  const match = BANNER_TERM_NAME.exec(plain);
+  // Exact names, so "Summer I" never matches "Summer II".
+  const season = TEMPLE_SEASONS.find((s) => s.name === match?.[2]);
+  return match && season ? templeTermCode(Number(match[1]), season.code) : null;
+}
+
 /** "Fall 2027" for "202736", or null for a code outside Temple's scheme. */
 export function templeTermName(code: string): string | null {
   const term = splitTempleTerm(code);

@@ -5,6 +5,7 @@ import {
   nextTerms,
   splitTempleTerm,
   templeTermCode,
+  templeTermCodeFromName,
 } from "./terms";
 
 describe("formatTermName", () => {
@@ -43,6 +44,19 @@ describe("Temple term codes", () => {
   it("rolls over to the next year", () => {
     expect(nextTerms("202636", 2)).toEqual(["202703", "202720"]);
     expect(nextTerms("bad", 2)).toEqual([]);
+  });
+});
+
+describe("templeTermCodeFromName", () => {
+  it.each([
+    ["2027 Spring", "202703"],
+    ["2027 Summer I", "202720"],
+    ["2027 Summer II", "202726"],
+    ["2026 Fall (View Only)", "202636"],
+    ["2027 Winter", null],
+    ["Spring 2027", null],
+  ])("reads %j as %j", (name, code) => {
+    expect(templeTermCodeFromName(name)).toBe(code);
   });
 });
 

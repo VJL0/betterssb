@@ -18,6 +18,7 @@ import type {
   AutoRegQueue,
   AutoRegSnapshot,
   CrnCheck,
+  RegistrationTimeLookup,
 } from "@workspace/shared/types/auto-reg";
 import type { SSBGetPlansResponse, SSBTerm } from "@workspace/shared/types/ssb";
 import type { BannerConnection, StoreKey } from "@workspace/shared/types/store";
@@ -163,6 +164,19 @@ export function checkCrns(term: string, crns: string[]): Promise<CrnCheck[]> {
   return bridgeRequest<CrnCheck[]>(
     { type: "AUTOREG_CHECK_CRNS", term, crns },
     CRN_CHECK_TIMEOUT_MS,
+  );
+}
+
+// The extension asks TUportal over the network, which can take a few seconds.
+const REGISTRATION_TIME_TIMEOUT_MS = 15_000;
+
+/** The student's registration time for `term`, from TUportal's priority registration countdown. */
+export function getRegistrationTime(
+  term: string,
+): Promise<RegistrationTimeLookup> {
+  return bridgeRequest<RegistrationTimeLookup>(
+    { type: "AUTOREG_REGISTRATION_TIME", term },
+    REGISTRATION_TIME_TIMEOUT_MS,
   );
 }
 

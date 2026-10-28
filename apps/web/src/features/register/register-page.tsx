@@ -1,16 +1,18 @@
 "use client";
 
-import { useId, useMemo, useRef } from "react";
+import { useEffect, useEffectEvent, useId, useMemo, useRef } from "react";
 import { CircleXIcon, ExternalLinkIcon, PuzzleIcon } from "lucide-react";
 import { toast } from "sonner";
 import { queryError, type ClassSection } from "@workspace/api-client";
 import { armProblem } from "@workspace/shared/lib/auto-reg-queue";
 import { splitCourseCode } from "@workspace/shared/lib/plan";
+import { localDateTimeValue } from "@workspace/shared/lib/registration-time";
 import { formatTermName } from "@workspace/shared/lib/terms";
 import type {
   AutoRegQueue,
   AutoRegSnapshot,
   CrnCheck,
+  RegistrationTimeLookup,
 } from "@workspace/shared/types/auto-reg";
 import type { SSBRegPlanHeader } from "@workspace/shared/types/ssb";
 import type { BannerConnection } from "@workspace/shared/types/store";
@@ -33,6 +35,7 @@ import {
   FieldDescription,
   FieldLabel,
 } from "@workspace/ui/components/field";
+import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
 import {
@@ -49,7 +52,11 @@ import { useCurrentTerm } from "@/hooks/use-current-term";
 import { useNow } from "@/hooks/use-now";
 import { usePlans } from "@/hooks/use-plans";
 import { useTerms } from "@/hooks/use-terms";
-import { BANNER_REGISTRATION_URL, EXTENSION_INSTALL_URL } from "@/lib/config";
+import {
+  BANNER_REGISTRATION_URL,
+  EXTENSION_INSTALL_URL,
+  TUPORTAL_URL,
+} from "@/lib/config";
 import type { PlanCourse } from "@/features/schedule/schedule-options";
 import { useCourseSections } from "@/features/schedule/use-course-sections";
 import { ArmPanel, formatRunAt, type ArmCheck } from "./arm-panel";
@@ -60,6 +67,7 @@ import {
   useAutoRegister,
   useBannerRegistration,
   useCrnChecks,
+  useRegistrationTime,
 } from "./use-auto-register";
 
 /** Arm-time checks only need to notice the submit time passing. */
@@ -240,6 +248,10 @@ function AutoRegister({
     snapshot.crns,
     connected && !snapshot.armed,
   );
+  const registrationTime = useRegistrationTime(term, !snapshot.armed);
+  usePrefilledRunAt(snapshot, term, registrationTime.data, (scheduledRunAt) =>
+    save({ scheduledRunAt }),
+  );
 
   const termOptions: TermOption[] = registration.terms.data
     ? registration.terms.data.map((t) => ({
@@ -370,6 +382,7 @@ function AutoRegister({
           term={term}
           termOptions={termOptions}
           scheduledRunAt={snapshot.scheduledRunAt}
+          registrationTime={registrationTime.data}
           armed={snapshot.armed}
           onTerm={(code) => save({ term: code })}
           onRunAt={(scheduledRunAt) => save({ scheduledRunAt })}
@@ -379,10 +392,103 @@ function AutoRegister({
   );
 }
 
+/** Whether two `datetime-local` values name the same moment ("07:00" and "07:00:00" do). */
+function sameMoment(a: string, b: string): boolean {
+  return !!b && new Date(a).getTime() === new Date(b).getTime();
+}
+
+/** The registration time TUportal lists, as a `datetime-local` value, or null. */
+function portalRunAt(
+  lookup: RegistrationTimeLookup | undefined,
+): string | null {
+  return lookup?.status === "found"
+    ? localDateTimeValue(lookup.startsAt)
+    : null;
+}
+
+/**
+ * Fills an empty submit time with the TUportal registration time, once per
+ * term, when that time is still ahead. A time the student set is left alone.
+ */
+function usePrefilledRunAt(
+  { armed, scheduledRunAt }: AutoRegSnapshot,
+  term: string,
+  lookup: RegistrationTimeLookup | undefined,
+  onRunAt: (value: string) => void,
+) {
+  const filledFor = useRef<string | null>(null);
+  const fill = useEffectEvent(onRunAt);
+  const detected = portalRunAt(lookup);
+
+  useEffect(() => {
+    if (!detected || armed || scheduledRunAt || filledFor.current === term) {
+      return;
+    }
+    if (new Date(detected).getTime() <= Date.now()) return;
+    filledFor.current = term;
+    fill(detected);
+  }, [detected, armed, scheduledRunAt, term]);
+}
+
+function RunAtDescription({
+  scheduledRunAt,
+  registrationTime,
+  armed,
+  onRunAt,
+}: {
+  scheduledRunAt: string;
+  registrationTime: RegistrationTimeLookup | undefined;
+  armed: boolean;
+  onRunAt: (value: string) => void;
+}) {
+  const detected = portalRunAt(registrationTime);
+  if (detected && sameMoment(detected, scheduledRunAt)) {
+    return (
+      <FieldDescription>
+        Your registration time from TUportal, in this computer's time zone.
+      </FieldDescription>
+    );
+  }
+  if (detected) {
+    return (
+      <FieldDescription>
+        TUportal says your window opens {formatRunAt(detected)}.{" "}
+        {!armed && (
+          <Button
+            variant="link"
+            size="xs"
+            className="px-0"
+            onClick={() => onRunAt(detected)}
+          >
+            Use this time
+          </Button>
+        )}
+      </FieldDescription>
+    );
+  }
+  if (registrationTime?.status === "signed-out") {
+    return (
+      <FieldDescription>
+        <a href={TUPORTAL_URL} target="_blank" rel="noreferrer">
+          Sign in to TUportal
+        </a>{" "}
+        to fill this in from your registration time, or enter it yourself.
+      </FieldDescription>
+    );
+  }
+  return (
+    <FieldDescription>
+      The moment your registration window opens, from your registration status
+      in Banner, in this computer's time zone.
+    </FieldDescription>
+  );
+}
+
 function RunSettings({
   term,
   termOptions,
   scheduledRunAt,
+  registrationTime,
   armed,
   onTerm,
   onRunAt,
@@ -390,6 +496,7 @@ function RunSettings({
   term: string;
   termOptions: readonly TermOption[];
   scheduledRunAt: string;
+  registrationTime: RegistrationTimeLookup | undefined;
   armed: boolean;
   onTerm: (code: string) => void;
   onRunAt: (value: string) => void;
@@ -435,10 +542,12 @@ function RunSettings({
           disabled={armed}
           onChange={(e) => onRunAt(e.target.value)}
         />
-        <FieldDescription>
-          The moment your registration window opens, from your registration
-          status in Banner, in this computer's time zone.
-        </FieldDescription>
+        <RunAtDescription
+          scheduledRunAt={scheduledRunAt}
+          registrationTime={registrationTime}
+          armed={armed}
+          onRunAt={onRunAt}
+        />
       </Field>
       <p className="rounded-2xl bg-muted/50 p-3 text-xs text-foreground/70">
         The queue and the armed state live in the extension in this browser. It
