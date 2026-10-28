@@ -21,6 +21,7 @@ export type BridgeRequest =
   | { type: "AUTOREG_ARM" }
   | { type: "AUTOREG_DISARM" }
   | { type: "AUTOREG_CHECK_CRNS"; term: string; crns: string[] }
+  | { type: "AUTOREG_REGISTRATION_TIME"; term: string }
   | { type: "BANNER_REG_TERMS" }
   | { type: "BANNER_REG_PLANS" };
 
@@ -114,6 +115,10 @@ export function parseBridgeRequest(
     case "AUTOREG_CHECK_CRNS":
       return isTermCode(payload.term) && isCrnList(payload.crns)
         ? { id, request: { type, term: payload.term, crns: payload.crns } }
+        : null;
+    case "AUTOREG_REGISTRATION_TIME":
+      return isTermCode(payload.term)
+        ? { id, request: { type, term: payload.term } }
         : null;
     case "STORE_GET":
     case "STORE_DELETE":

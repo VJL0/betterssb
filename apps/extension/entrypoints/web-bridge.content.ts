@@ -17,10 +17,11 @@ import type { StoreDocuments, StoreKey } from "@workspace/shared/types/store";
  * Injected only on the web app's own origin. The site can run a DARS audit,
  * read the Banner connection status, read and write the shared local store
  * (so guest plans are the same in the website and the extension), read
- * Banner's registration terms and plans, and set up, arm and disarm
- * auto-register. Only the requests `parseBridgeRequest` allows cross; no
- * Banner registration call does, and the extension checks a queue before it
- * can be armed. Communication uses `window.postMessage` on this origin.
+ * Banner's registration terms and plans and the student's TUportal
+ * registration time, and set up, arm and disarm auto-register. Only the
+ * requests `parseBridgeRequest` allows cross; no Banner registration call
+ * does, and the extension checks a queue before it can be armed.
+ * Communication uses `window.postMessage` on this origin.
  */
 
 type Reply = Omit<BridgeResponse, "source" | "dir" | "id">;
@@ -57,6 +58,11 @@ async function handle(request: BridgeRequest): Promise<Reply> {
       return sendMessage({
         type: "AUTOREG_CHECK_CRNS",
         payload: { term: request.term, crns: request.crns },
+      });
+    case "AUTOREG_REGISTRATION_TIME":
+      return sendMessage({
+        type: "AUTOREG_REGISTRATION_TIME",
+        payload: { term: request.term },
       });
     // Read-only Banner lookups; nothing that registers crosses the bridge.
     case "BANNER_REG_TERMS":

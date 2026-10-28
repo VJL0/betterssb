@@ -6,6 +6,7 @@ import {
   emptyPlan,
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
+import { localDateTimeValue } from "@workspace/shared/lib/registration-time";
 import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
 import { axeViolations } from "@workspace/ui/test/axe";
 import { API, http, HttpResponse, server } from "@workspace/api-client/testing";
@@ -17,6 +18,7 @@ import { RegisterPage } from "./register-page";
 const NOW = "2026-10-17T12:00:00.000Z";
 const FUTURE = "2030-11-14T07:00";
 const SPRING = { code: "202703", description: "2027 Spring" };
+const PORTAL_TIME = "2030-11-15T12:00:00.000Z";
 
 let bridge: ReturnType<typeof installFakeBridge> | null = null;
 
@@ -143,6 +145,64 @@ describe("RegisterPage", () => {
         .getByRole("button", { name: "Arm auto-register" })
         .hasAttribute("disabled"),
     ).toBe(true);
+  });
+
+  it("fills an empty submit time from TUportal", async () => {
+    const fake = install({
+      autoRegister: { term: "202703", crns: ["41207"] },
+      registrationTime: { status: "found", startsAt: PORTAL_TIME },
+    });
+    renderPage(<RegisterPage />);
+    await waitFor(() =>
+      expect(fake.auto.current.scheduledRunAt).toBe(
+        localDateTimeValue(PORTAL_TIME),
+      ),
+    );
+    expect(
+      await screen.findByText(
+        "Your registration time from TUportal, in this computer's time zone.",
+      ),
+    ).toBeTruthy();
+  });
+
+  it("keeps a time the student set and offers TUportal's", async () => {
+    const user = userEvent.setup();
+    const fake = install({
+      autoRegister: { term: "202703", crns: ["41207"], scheduledRunAt: FUTURE },
+      registrationTime: { status: "found", startsAt: PORTAL_TIME },
+    });
+    renderPage(<RegisterPage />);
+    await user.click(
+      await screen.findByRole("button", { name: "Use this time" }),
+    );
+    await waitFor(() =>
+      expect(fake.auto.current.scheduledRunAt).toBe(
+        localDateTimeValue(PORTAL_TIME),
+      ),
+    );
+  });
+
+  it("doesn't fill in a TUportal time that has passed", async () => {
+    const fake = install({
+      autoRegister: { term: "202703", crns: ["41207"] },
+      registrationTime: { status: "found", startsAt: "2020-11-15T12:00:00Z" },
+    });
+    renderPage(<RegisterPage />);
+    expect(
+      await screen.findByText(/TUportal says your window opens/),
+    ).toBeTruthy();
+    expect(fake.auto.current.scheduledRunAt).toBe("");
+  });
+
+  it("asks to sign in to TUportal when it's signed out", async () => {
+    install({
+      autoRegister: { term: "202703", crns: ["41207"] },
+      registrationTime: { status: "signed-out" },
+    });
+    renderPage(<RegisterPage />);
+    expect(
+      await screen.findByRole("link", { name: "Sign in to TUportal" }),
+    ).toBeTruthy();
   });
 
   it("shows the last run by CRN", async () => {
