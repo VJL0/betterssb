@@ -18,6 +18,8 @@ import {
   listAttributes,
   listBulletinPrograms,
   listBulletinSubjects,
+  listCampuses,
+  listPartsOfTerm,
   listSubjectCourses,
   listSubjects,
   listTerms,
@@ -57,6 +59,12 @@ import type {
   ListBulletinSubjectsData,
   ListBulletinSubjectsError,
   ListBulletinSubjectsResponse,
+  ListCampusesData,
+  ListCampusesError,
+  ListCampusesResponse,
+  ListPartsOfTermData,
+  ListPartsOfTermError,
+  ListPartsOfTermResponse,
   ListSubjectCoursesData,
   ListSubjectCoursesError,
   ListSubjectCoursesResponse,
@@ -205,6 +213,61 @@ export const listAttributesOptions = (options: Options<ListAttributesData>) =>
     queryKey: listAttributesQueryKey(options),
   });
 
+export const listCampusesQueryKey = (options: Options<ListCampusesData>) =>
+  createQueryKey("listCampuses", options);
+
+/**
+ * List Campuses
+ *
+ * Campuses with sections in a term, such as Main, Center City and Japan.
+ */
+export const listCampusesOptions = (options: Options<ListCampusesData>) =>
+  queryOptions<
+    ListCampusesResponse,
+    ListCampusesError,
+    ListCampusesResponse,
+    ReturnType<typeof listCampusesQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listCampuses({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listCampusesQueryKey(options),
+  });
+
+export const listPartsOfTermQueryKey = (
+  options: Options<ListPartsOfTermData>,
+) => createQueryKey("listPartsOfTerm", options);
+
+/**
+ * List Parts Of Term
+ *
+ * Parts of a term, such as the full term and the 7-week halves, with their dates.
+ */
+export const listPartsOfTermOptions = (options: Options<ListPartsOfTermData>) =>
+  queryOptions<
+    ListPartsOfTermResponse,
+    ListPartsOfTermError,
+    ListPartsOfTermResponse,
+    ReturnType<typeof listPartsOfTermQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listPartsOfTerm({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listPartsOfTermQueryKey(options),
+  });
+
 export const searchSectionsQueryKey = (options: Options<SearchSectionsData>) =>
   createQueryKey("searchSections", options);
 
@@ -213,7 +276,8 @@ export const searchSectionsQueryKey = (options: Options<SearchSectionsData>) =>
  *
  * Sections in a term from Banner's public class search, with live seats.
  *
- * Needs a subject, keyword or attribute; a whole-term listing is too large to serve.
+ * Needs a subject, keyword, attribute or instructor; the other filters
+ * only narrow those, since a whole-term listing is too large to serve.
  */
 export const searchSectionsOptions = (options: Options<SearchSectionsData>) =>
   queryOptions<
@@ -278,7 +342,8 @@ export const searchSectionsInfiniteQueryKey = (
  *
  * Sections in a term from Banner's public class search, with live seats.
  *
- * Needs a subject, keyword or attribute; a whole-term listing is too large to serve.
+ * Needs a subject, keyword, attribute or instructor; the other filters
+ * only narrow those, since a whole-term listing is too large to serve.
  */
 export const searchSectionsInfiniteOptions = (
   options: Options<SearchSectionsData>,

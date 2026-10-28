@@ -9,6 +9,7 @@ import { courseCode, planCourseColor } from "@workspace/shared/lib/plan";
 import {
   meetingTimeToDays,
   primaryInstructorName,
+  TBA_INSTRUCTOR,
 } from "@workspace/shared/lib/sections";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { Card } from "@workspace/ui/components/card";
@@ -112,7 +113,9 @@ export function SectionInstructor({
   return (
     <span className="flex flex-wrap items-center gap-2">
       <span title={name}>{shortInstructorName(name)}</span>
-      {name !== "TBA" && <InstructorRating name={name} ratings={ratings} />}
+      {name !== TBA_INSTRUCTOR && (
+        <InstructorRating name={name} ratings={ratings} />
+      )}
     </span>
   );
 }

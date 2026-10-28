@@ -2336,6 +2336,85 @@ export type ListAttributesResponses = {
 export type ListAttributesResponse =
   ListAttributesResponses[keyof ListAttributesResponses];
 
+export type ListCampusesData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Term
+     *
+     * Banner term code
+     */
+    term: string;
+  };
+  url: "/api/classes/campuses";
+};
+
+export type ListCampusesErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListCampusesError = ListCampusesErrors[keyof ListCampusesErrors];
+
+export type ListCampusesResponses = {
+  /**
+   * Response List Campuses
+   *
+   * Successful Response
+   */
+  200: Array<CodeDescription>;
+};
+
+export type ListCampusesResponse =
+  ListCampusesResponses[keyof ListCampusesResponses];
+
+export type ListPartsOfTermData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Term
+     *
+     * Banner term code
+     */
+    term: string;
+  };
+  url: "/api/classes/parts-of-term";
+};
+
+export type ListPartsOfTermErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListPartsOfTermError =
+  ListPartsOfTermErrors[keyof ListPartsOfTermErrors];
+
+export type ListPartsOfTermResponses = {
+  /**
+   * Response List Parts Of Term
+   *
+   * Successful Response
+   */
+  200: Array<CodeDescription>;
+};
+
+export type ListPartsOfTermResponse =
+  ListPartsOfTermResponses[keyof ListPartsOfTermResponses];
+
 export type SearchSectionsData = {
   body?: never;
   path?: never;
@@ -2360,8 +2439,40 @@ export type SearchSectionsData = {
     keyword?: string | null;
     /**
      * Attribute
+     *
+     * Any of these attributes
      */
-    attribute?: string | null;
+    attribute?: Array<string> | null;
+    /**
+     * Campus
+     *
+     * At any of these campuses
+     */
+    campus?: Array<string> | null;
+    /**
+     * Instructionalmethod
+     *
+     * Taught in any of these ways, such as CLAS or OLL
+     */
+    instructionalMethod?: Array<string> | null;
+    /**
+     * Partofterm
+     */
+    partOfTerm?: Array<string> | null;
+    /**
+     * Coursenumberfrom
+     */
+    courseNumberFrom?: string | null;
+    /**
+     * Coursenumberto
+     */
+    courseNumberTo?: string | null;
+    /**
+     * Instructor
+     *
+     * Any part of an instructor's name, in any order
+     */
+    instructor?: string | null;
     /**
      * Offset
      */

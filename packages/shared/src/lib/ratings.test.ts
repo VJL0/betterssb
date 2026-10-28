@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   formatRating,
+  ratedDifficulty,
+  ratedScore,
   ratingBand,
   rmpSearchUrl,
-  usableRating,
 } from "./ratings";
 import type { RmpRating } from "@workspace/api-client";
 
@@ -30,7 +31,7 @@ describe("formatRating", () => {
   });
 });
 
-describe("usableRating", () => {
+describe("ratedScore", () => {
   const rating = (numRatings: number): RmpRating => ({
     professorName: "Ada Lovelace",
     department: "Computer Science",
@@ -42,16 +43,23 @@ describe("usableRating", () => {
     rmpUrl: "https://www.ratemyprofessors.com/professor/1",
   });
 
-  it("keeps a rated profile", () => {
-    expect(usableRating(rating(12))?.overallRating).toBe(4.2);
+  it("is a rated profile's overall score", () => {
+    expect(ratedScore(rating(12))).toBe(4.2);
   });
 
-  it("drops a profile nobody has rated", () => {
-    expect(usableRating(rating(0))).toBeNull();
+  it("is null for a profile nobody has rated, not its 0.0", () => {
+    expect(ratedScore(rating(0))).toBeNull();
   });
 
-  it("passes no profile through", () => {
-    expect(usableRating(null)).toBeNull();
+  it("is null without a profile", () => {
+    expect(ratedScore(null)).toBeNull();
+    expect(ratedScore(undefined)).toBeNull();
+  });
+
+  it("gives difficulty only for a rated profile", () => {
+    expect(ratedDifficulty(rating(12))).toBe(3.1);
+    expect(ratedDifficulty(rating(0))).toBeNull();
+    expect(ratedDifficulty(null)).toBeNull();
   });
 });
 
