@@ -17,6 +17,7 @@ import {
   planCredits,
   plannedSectionFrom,
 } from "@workspace/shared/lib/plan";
+import { ratedScore } from "@workspace/shared/lib/ratings";
 import { primaryInstructorName } from "@workspace/shared/lib/sections";
 import type { PlannedSection } from "@workspace/shared/types/store";
 import {
@@ -362,9 +363,7 @@ function ScheduleBuilder({ term }: { term: Term }) {
                 ratingsLoading={ratings.status === "syncing"}
                 ratingFor={(s) => {
                   const rating = ratings.byName.get(s.instructor);
-                  return rating === undefined
-                    ? undefined
-                    : (rating?.overallRating ?? null);
+                  return rating === undefined ? undefined : ratedScore(rating);
                 }}
               />
               <ScheduleSectionsTable

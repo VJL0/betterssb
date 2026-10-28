@@ -34,10 +34,10 @@ import {
   planCourseColor,
   removeSection,
 } from "@workspace/shared/lib/plan";
-import { usableRating } from "@workspace/shared/lib/ratings";
 import {
   meetingTimeToDays,
   primaryInstructorName,
+  TBA_INSTRUCTOR,
 } from "@workspace/shared/lib/sections";
 import { planKey } from "@workspace/shared/lib/store";
 import { Card } from "@workspace/ui/components/card";
@@ -112,7 +112,7 @@ export function SearchTab({ term }: { term: Term }) {
   const planned = new Set(plan.sections.map((s) => s.crn));
   const sections = search.data?.sections ?? [];
   const names = [...new Set(sections.map(primaryInstructorName))].filter(
-    (n) => n !== "TBA",
+    (n) => n !== TBA_INSTRUCTOR,
   );
   const ratings = useQueries({
     queries: names.map((name) => ({
@@ -121,8 +121,7 @@ export function SearchTab({ term }: { term: Term }) {
       }),
       staleTime: Infinity,
       retry: false,
-      select: (matches: RmpRating[]) =>
-        usableRating(matchingProfile(name, matches)),
+      select: (matches: RmpRating[]) => matchingProfile(name, matches),
     })),
     combine: (results) => new Map(names.map((name, i) => [name, results[i]])),
   });
@@ -216,7 +215,7 @@ export function SearchTab({ term }: { term: Term }) {
                         </span>
                         <span className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
                           <span title={name}>{shortInstructorName(name)}</span>
-                          {name !== "TBA" &&
+                          {name !== TBA_INSTRUCTOR &&
                             (rating?.isPending ? (
                               <Skeleton className="h-5 w-16 rounded-2xl" />
                             ) : (

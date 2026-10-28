@@ -85,6 +85,12 @@ function RmpBadge({
     );
   }
 
+  if (rating.numRatings === 0) {
+    return (
+      <UnratedBadge rating={rating} compact={compact} className={className} />
+    );
+  }
+
   const text = badgeText(rating, showWouldTakeAgain, compact);
   const variant = BAND_VARIANT[ratingBand(rating.overallRating)];
   // Without a profile link (sample data, say) there's nothing to open.
@@ -138,6 +144,42 @@ function RmpPendingBadge({ className }: { className?: string }) {
       Rating loading
       <span className="sr-only"> from Rate My Professors</span>
     </Badge>
+  );
+}
+
+/**
+ * A profile nobody has rated yet. RMP reports its score as 0.0, which would
+ * read as terrible, so the badge says so instead and links to the profile.
+ */
+function UnratedBadge({
+  rating,
+  compact,
+  className,
+}: {
+  rating: RmpRating;
+  compact: boolean;
+  className?: string;
+}) {
+  const text = compact ? "No ratings" : "No ratings yet";
+  const classes = cn("border-dashed text-muted-foreground", className);
+  if (!rating.rmpUrl) {
+    return (
+      <Badge data-slot="rmp-badge" variant="outline" className={classes}>
+        {text}
+      </Badge>
+    );
+  }
+  return (
+    <a
+      data-slot="rmp-badge"
+      href={rating.rmpUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`No ratings yet for ${rating.professorName} on Rate My Professors, opens in a new tab`}
+      className={cn(badgeVariants({ variant: "outline" }), classes)}
+    >
+      {text}
+    </a>
   );
 }
 

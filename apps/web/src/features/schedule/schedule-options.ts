@@ -16,6 +16,7 @@ import {
   usesOnlyDays,
   type ScheduleStats,
 } from "@workspace/shared/lib/schedule-stats";
+import { ratedScore } from "@workspace/shared/lib/ratings";
 import { FEW_SEATS_THRESHOLD } from "@workspace/shared/lib/seats";
 import {
   isSupportScheduleType,
@@ -296,8 +297,8 @@ function averageRating(
 ): number | null {
   const values = sections
     .filter((s) => !isSupportScheduleType(s.scheduleTypeDescription))
-    .map((s) => ratings.get(primaryInstructorName(s))?.overallRating)
-    .filter((r): r is number => r !== undefined);
+    .map((s) => ratedScore(ratings.get(primaryInstructorName(s))))
+    .filter((r): r is number => r !== null);
   if (values.length === 0) return null;
   return values.reduce((a, b) => a + b, 0) / values.length;
 }

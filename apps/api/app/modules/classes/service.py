@@ -60,10 +60,13 @@ class ClassSearchService:
         )
 
     async def attributes(self, term: str) -> list[CodeDescription]:
-        return await self._lookup(
-            f"{CACHE_PREFIX}attributes:{term}",
-            lambda: self._client.get_attributes(term),
-        )
+        return await self._term_lookup("attribute", term)
+
+    async def campuses(self, term: str) -> list[CodeDescription]:
+        return await self._term_lookup("campus", term)
+
+    async def parts_of_term(self, term: str) -> list[CodeDescription]:
+        return await self._term_lookup("partOfTerm", term)
 
     async def search(self, filters: SearchFilters) -> ClassSearchResult:
         key = _search_key(filters)
@@ -75,10 +78,20 @@ class ClassSearchService:
             sections=body.get("data") or [],
             fetched_at=datetime.now(UTC),
         )
+        # Banner sometimes answers with nothing for a moment (an instructor
+        # lookup coming back empty); a cached miss would hide real sections.
+        if not result.sections:
+            return result
         await cache_set(
             self._cache, key, result.model_dump_json(by_alias=True), SEARCH_TTL_SECONDS
         )
         return result
+
+    async def _term_lookup(self, lookup: str, term: str) -> list[CodeDescription]:
+        return await self._lookup(
+            f"{CACHE_PREFIX}{lookup}:{term}",
+            lambda: self._client.get_lookup(lookup, term),
+        )
 
     async def _lookup(self, key: str, fetch) -> list[CodeDescription]:
         if cached := await cache_get(self._cache, key):

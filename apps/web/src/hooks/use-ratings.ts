@@ -6,7 +6,7 @@ import {
   instructorSearchName,
   matchingProfile,
 } from "@workspace/shared/lib/instructors";
-import { usableRating } from "@workspace/shared/lib/ratings";
+import { TBA_INSTRUCTOR } from "@workspace/shared/lib/sections";
 
 /** undefined while loading or unknown, null for no profile. */
 export type RatingLookup = RmpRating | null | undefined;
@@ -66,8 +66,7 @@ function ratingQuery(name: string) {
     ...searchProfessorsOptions({
       query: { name: instructorSearchName(name) },
     }),
-    select: (matches: RmpRating[]) =>
-      usableRating(matchingProfile(name, matches)),
+    select: (matches: RmpRating[]) => matchingProfile(name, matches),
     // One lookup per instructor for the life of the page.
     staleTime: Infinity,
     // Any other failed lookup shows as "no profile" now and is retried on reload.
@@ -80,7 +79,7 @@ function ratingQuery(name: string) {
 /** Temple University ratings for Banner instructor names ("Last, First"). */
 export function useRatings(names: readonly string[]): Ratings {
   // One string key, so the lookups only change when the set of names does.
-  const key = [...new Set(names.filter((n) => n && n !== "TBA"))]
+  const key = [...new Set(names.filter((n) => n && n !== TBA_INSTRUCTOR))]
     .sort()
     .join("\n");
   const wanted = useMemo(() => (key ? key.split("\n") : []), [key]);
