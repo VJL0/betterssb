@@ -49,8 +49,10 @@ betterssb/
 │   │       ├── core/                  # Config, database, security, errors, OpenAPI
 │   │       └── shared/                # Cross-cutting schemas
 │   │
-│   ├── ellucian-api/  # Mock Ellucian SSB API (FastAPI), for development
-│   └── seat-tracker/  # Standalone seat watcher (ntfy), separate from the app
+│   └── ellucian-api/  # Mock Ellucian SSB API (FastAPI), for development
+│
+├── services/          # Deployed to AWS, not Vercel
+│   └── seat-tracker/  # Standalone seat watcher (ntfy): a Lambda function deployed with SAM
 │
 └── packages/
     ├── api-client/    # TypeScript client generated from the API's OpenAPI schema (Hey API)

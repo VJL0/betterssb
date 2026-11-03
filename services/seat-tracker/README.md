@@ -22,9 +22,12 @@ restrictions. Request and HTML-schema failures are never recorded as a closed cl
 
 ## Setup
 
-Install the locked dependencies with [uv](https://docs.astral.sh/uv/):
+The tracker is its own uv project in the betterssb monorepo, outside the pnpm workspace and the
+Vercel deployment; `pnpm install` doesn't touch it. Run every command in this README from
+`services/seat-tracker`. Install the locked dependencies with [uv](https://docs.astral.sh/uv/):
 
 ```bash
+cd services/seat-tracker
 uv sync
 ```
 
@@ -66,7 +69,7 @@ Subscribe to a private topic in the ntfy app, then provide the same topic throug
 export NTFY_TOPIC="your-private-topic"
 ```
 
-For local use, you can instead place only the topic name in `.ntfy-topic` at the project root. The
+For local use, you can instead place only the topic name in `.ntfy-topic` in `services/seat-tracker`. The
 topic is effectively a password, is never logged, and both `.ntfy-topic` and `.env` are ignored by
 Git. Opening alerts are published through ntfy with high priority and a rotating-light tag.
 
@@ -152,8 +155,9 @@ aws ssm put-parameter \
 ### One-time GitHub OIDC bootstrap
 
 Deploy the bootstrap with administrator credentials once. `GitHubSubjectClaim` must be the exact
-claim issued for the protected `production` GitHub environment. GitHub repositories using the new
-immutable-identity format must include the owner and repository IDs; do not substitute a wildcard.
+claim issued for the protected `production` environment of the `VJL0/betterssb` repository. GitHub
+repositories using the new immutable-identity format must include the owner and repository IDs; do
+not substitute a wildcard.
 
 ```bash
 aws cloudformation deploy \
@@ -161,7 +165,7 @@ aws cloudformation deploy \
   --stack-name ssb-seat-tracker-bootstrap \
   --capabilities CAPABILITY_IAM \
   --parameter-overrides \
-    GitHubSubjectClaim='repo:OWNER/REPOSITORY:environment:production'
+    GitHubSubjectClaim='repo:VJL0/betterssb:environment:production'
 ```
 
 If the account already has GitHub's OIDC provider, also pass
@@ -170,8 +174,8 @@ The bootstrap creates a private, encrypted artifact bucket; a GitHub role restri
 OIDC audience and subject; and a separate CloudFormation execution role. This keeps the GitHub job
 on short-lived credentials and prevents it from directly creating application resources.
 
-Create a protected GitHub environment named `production`, restrict it to `main`, and set these
-environment variables from the bootstrap outputs and your account:
+In the betterssb repository, create a protected GitHub environment named `production`, restrict it
+to `main`, and set these environment variables from the bootstrap outputs and your account:
 
 - `AWS_ACCOUNT_ID`
 - `AWS_REGION`
@@ -181,7 +185,9 @@ environment variables from the bootstrap outputs and your account:
 - `NTFY_TOPIC_PARAMETER_NAME` (`/ssb-seat-tracker/ntfy-topic`)
 - `ALERT_EMAIL`
 
-The deploy workflow tests and validates the application before it requests AWS credentials. It
+The deploy workflow (`.github/workflows/seat-tracker-deploy.yml` at the repository root) runs on
+pushes to `main` that change `services/seat-tracker`, or by hand. It tests and validates the
+application before it requests AWS credentials. It
 then builds the ARM64 package with the locked dependency graph and deploys through CloudFormation.
 All third-party GitHub actions are pinned to immutable commit IDs. Confirm the SNS subscription
 email after the first deployment.
@@ -212,7 +218,8 @@ first successful check.
 
 The normal suite isolates application rules and AWS adapters with fresh fakes. This is deliberate:
 AWS recommends using mocks for business and failure behavior while also testing deployed managed
-service configuration in the cloud. CI runs:
+service configuration in the cloud. CI (`.github/workflows/seat-tracker-ci.yml` at the repository
+root) runs on pull requests and pushes to `main` that change `services/seat-tracker`:
 
 ```bash
 uv lock --check
@@ -220,9 +227,10 @@ uv sync --locked
 uv run ruff check .
 uv run ruff format --check .
 uv run pytest
-sam validate --lint
-sam build
 ```
+
+The deploy workflow runs the same checks, then `sam validate --lint` and `sam build`, before it
+deploys.
 
 After deployment, verify the stack itself rather than emulating Scheduler, IAM, or DynamoDB:
 
