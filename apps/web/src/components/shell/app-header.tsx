@@ -2,6 +2,7 @@
 
 import {
   HardDriveIcon,
+  LogOutIcon,
   MessageSquareIcon,
   SettingsIcon,
   UserRoundIcon,
@@ -18,8 +19,15 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { BannerBadge } from "@/components/banner-status";
 import { Logo } from "@workspace/ui/components/logo";
+import { cn } from "@workspace/ui/lib/utils";
 import { TermSelect } from "@/components/term-select";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
+import {
+  useAuthErrorToast,
+  useCurrentUser,
+  useSignOut,
+} from "@/hooks/use-current-user";
+import { LOGIN_URL, type User } from "@/lib/auth";
 import { openFeedbackForm } from "@/lib/feedback";
 import { FEEDBACK_ENABLED } from "@/lib/sentry";
 import { NavLink } from "./nav-link";
@@ -33,6 +41,9 @@ import {
 /** The web top bar (DS4 WHeader). Below 640 px the page links move to the tab bar. */
 export function AppHeader() {
   const banner = useBannerConnection();
+  const currentUser = useCurrentUser();
+  const user = currentUser.data ?? null;
+  useAuthErrorToast();
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="flex min-h-16 flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 sm:px-6 lg:px-8">
@@ -59,7 +70,8 @@ export function AppHeader() {
             ))}
           </ul>
         </nav>
-        <div className="ml-auto flex flex-wrap items-center gap-2">
+        {/* Below 640 px these drop to a second row, leaving Sign in beside the logo. */}
+        <div className="order-last ml-auto flex flex-wrap items-center gap-2 sm:order-none">
           <BannerBadge connection={banner.connection} />
           <TermSelect />
           <span
@@ -69,18 +81,28 @@ export function AppHeader() {
             <HardDriveIcon aria-hidden className="size-3.5" />
             Saved on this device
           </span>
-          <AccountMenu />
+          <AccountMenu user={user} />
         </div>
+        {!user && !currentUser.isPending && (
+          // A full-page navigation: the backend runs the Google sign-in.
+          <a
+            href={LOGIN_URL}
+            className={cn(buttonVariants({ size: "sm" }), "ml-auto sm:ml-0")}
+          >
+            Sign in
+          </a>
+        )}
       </div>
     </header>
   );
 }
 
 /**
- * The design's account menu (WHeader). Guests get their records and
- * settings; sign-in and sync come with accounts.
+ * The design's account menu (WHeader): who's signed in, or that this is a
+ * guest on this device, then their records and settings.
  */
-function AccountMenu() {
+function AccountMenu({ user }: { user: User | null }) {
+  const signOut = useSignOut();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -91,7 +113,16 @@ function AccountMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Guest · this device</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            {user ? (
+              <span className="flex flex-col">
+                <span className="text-foreground">{user.name}</span>
+                <span className="truncate">{user.email}</span>
+              </span>
+            ) : (
+              "Guest · this device"
+            )}
+          </DropdownMenuLabel>
           {readyPages(SECONDARY_PAGES).map((page) => (
             <DropdownMenuItem key={page.id} render={<Link href={page.path} />}>
               <page.icon />
@@ -106,6 +137,15 @@ function AccountMenu() {
             <DropdownMenuItem onClick={() => void openFeedbackForm("menu")}>
               <MessageSquareIcon />
               Send feedback
+            </DropdownMenuItem>
+          )}
+          {user && (
+            <DropdownMenuItem
+              disabled={signOut.isPending}
+              onClick={() => signOut.mutate()}
+            >
+              <LogOutIcon />
+              Sign out
             </DropdownMenuItem>
           )}
         </DropdownMenuGroup>
