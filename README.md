@@ -169,12 +169,11 @@ Postgres uses two connection strings, which Neon's Vercel integration sets for y
 
 Neon's PgBouncer runs in transaction mode, which migration tools may not support, so Alembic uses the direct connection and falls back to `DATABASE_URL` when it's unset. Neon's `postgresql://…?sslmode=require&channel_binding=require` strings can be pasted as-is: the API switches them to asyncpg and maps `sslmode` to asyncpg's `ssl`. asyncpg has no channel binding, so that parameter is dropped.
 
-Migrations run from GitHub Actions, not Vercel:
+Production builds run migrations themselves. The API's `[tool.vercel.scripts]` build (`apps/api/scripts/vercel_build.py`) runs `alembic upgrade head` with `DATABASE_URL_UNPOOLED` after Vercel installs dependencies and before the new version goes live, so a failed migration fails the deploy and the previous version keeps serving. Preview builds skip it, so a pull request never changes production's schema before it's merged. The script needs Vercel's system environment variables (`VERCEL_ENV`) exposed to the build, which is the default.
 
-- **CI** (`.github/workflows/ci.yml`, job `migrations`) applies every migration to an empty Postgres 18, runs `alembic check` so a model change without a migration fails, then rolls everything back and applies it again. Two migrations from different branches (two heads) also fail here.
-- **Deploy** (`.github/workflows/migrate.yml`) runs `alembic upgrade head` against production when a push to `main` changes `apps/api/alembic/`, or by hand from the Actions tab. It uses the `DATABASE_URL_UNPOOLED` secret of the `production` GitHub environment (Settings → Environments → New environment `production`, limited to `main`, with Neon's direct connection string as that secret).
+The old version keeps serving while the migration runs, so keep each migration compatible with the code before it: add tables and nullable or defaulted columns first, and drop or rename old ones in a later release. To fix a bad migration in production, add a new one rather than downgrading.
 
-Vercel deploys `main` at the same time, so the new code can start before its migration finishes, or run on a migration that failed. Keep each migration compatible with the code before it: add tables and nullable or defaulted columns first, and drop or rename old ones in a later release. If the workflow fails, fix it and re-run it from the Actions tab.
+CI's `migrations` job (`.github/workflows/ci.yml`) applies every migration to an empty Postgres 18, runs `alembic check` so a model change without a migration fails, then rolls everything back and applies it again. Two migrations from different branches (two heads) also fail there.
 
 ### Loading the Extension Manually
 
