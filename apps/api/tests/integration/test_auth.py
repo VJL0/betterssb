@@ -9,7 +9,6 @@ import base64
 import json
 import time
 import uuid
-from collections.abc import AsyncIterator
 from datetime import UTC, datetime, timedelta
 from urllib.parse import parse_qs, urlparse
 
@@ -21,10 +20,7 @@ from itsdangerous import TimestampSigner
 from joserfc import jwt
 from joserfc.jwk import KeySet, RSAKey
 from sqlalchemy import select, update
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import StaticPool
 
-from app.core.database import Base
 from app.core.security import hash_token
 from app.main import app
 from app.modules.auth.models import User, UserSession
@@ -101,17 +97,6 @@ class FakeGoogle:
             "expires_in": 3599,
             "id_token": id_token,
         }
-
-
-@pytest.fixture()
-async def db(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[async_sessionmaker]:
-    engine = create_async_engine("sqlite+aiosqlite://", poolclass=StaticPool)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    factory = async_sessionmaker(engine, expire_on_commit=False)
-    monkeypatch.setattr(app.state, "session_factory", factory, raising=False)
-    yield factory
-    await engine.dispose()
 
 
 @pytest.fixture()

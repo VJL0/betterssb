@@ -15,6 +15,7 @@ import type {
   ListAttributesResponse,
   ListCampusesResponse,
   ListPartsOfTermResponse,
+  ListSeatWatchesResponse,
   ListSubjectCoursesResponse,
   ListSubjectsResponse,
   ListTermsResponse,
@@ -277,6 +278,9 @@ export const handlers = [
     () => HttpResponse.json(REQUIREMENTS),
   ),
   http.get<never, never, SearchProfessorsResponse>(`${API}/rmp/search`, () =>
+    HttpResponse.json([]),
+  ),
+  http.get<never, never, ListSeatWatchesResponse>(`${API}/seat-watches`, () =>
     HttpResponse.json([]),
   ),
   http.post<never, never, GenerateSchedulesResponse>(

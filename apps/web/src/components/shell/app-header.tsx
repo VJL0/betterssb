@@ -21,6 +21,7 @@ import { BannerBadge } from "@/components/banner-status";
 import { Logo } from "@workspace/ui/components/logo";
 import { cn } from "@workspace/ui/lib/utils";
 import { TermSelect } from "@/components/term-select";
+import { SeatTrackerMenu } from "@/features/seat-tracker/seat-tracker-menu";
 import { useBannerConnection } from "@/hooks/use-banner-connection";
 import {
   useAuthErrorToast,
@@ -81,6 +82,7 @@ export function AppHeader() {
             <HardDriveIcon aria-hidden className="size-3.5" />
             Saved on this device
           </span>
+          {user && <SeatTrackerMenu user={user} />}
           <AccountMenu user={user} />
         </div>
         {!user && !currentUser.isPending && (

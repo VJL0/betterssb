@@ -33,6 +33,10 @@ dev = [
     "ruff>=0.17.0",
 ]
 
+# Vercel runs this after installing dependencies, before the build goes live.
+[tool.vercel.scripts]
+build = "python scripts/vercel_build.py"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"

@@ -58,3 +58,47 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+
+  # Runs every migration against a real Postgres, the database production
+  # uses, since the API's tests run on SQLite.
+  migrations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          working-directory: apps/api
+          enable-cache: true
+
+      - run: uv sync --locked
+
+      # Also fails when two branches each added a migration (two heads).
+      - name: Migrations apply to an empty database
+        run: uv run alembic upgrade head
+
+      - name: Models have no changes missing a migration
+        run: uv run alembic check
+
+      - name: Migrations roll back and apply again
+        run: |
+          uv run alembic downgrade base
+          uv run alembic upgrade head

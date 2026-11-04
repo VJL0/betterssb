@@ -3009,6 +3009,123 @@
         "title": "SchedulePreferences",
         "type": "object"
       },
+      "SeatWatchCreate": {
+        "properties": {
+          "crn": {
+            "description": "Five-digit CRN",
+            "pattern": "^\\d{5}$",
+            "title": "Crn",
+            "type": "string"
+          },
+          "term": {
+            "description": "Banner term code",
+            "pattern": "^\\d{6}$",
+            "title": "Term",
+            "type": "string"
+          }
+        },
+        "required": [
+          "term",
+          "crn"
+        ],
+        "title": "SeatWatchCreate",
+        "type": "object"
+      },
+      "SeatWatchResponse": {
+        "description": "A watched section with Banner's seats from the last check.",
+        "properties": {
+          "checkedAt": {
+            "format": "date-time",
+            "title": "Checkedat",
+            "type": "string"
+          },
+          "courseNumber": {
+            "title": "Coursenumber",
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "title": "Createdat",
+            "type": "string"
+          },
+          "crn": {
+            "title": "Crn",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "maximumEnrollment": {
+            "title": "Maximumenrollment",
+            "type": "integer"
+          },
+          "notifiedAt": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notifiedat"
+          },
+          "seatsAvailable": {
+            "title": "Seatsavailable",
+            "type": "integer"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "term": {
+            "title": "Term",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "waitAvailable": {
+            "title": "Waitavailable",
+            "type": "integer"
+          },
+          "waitCapacity": {
+            "title": "Waitcapacity",
+            "type": "integer"
+          },
+          "waitCount": {
+            "title": "Waitcount",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "term",
+          "crn",
+          "title",
+          "subject",
+          "courseNumber",
+          "section",
+          "seatsAvailable",
+          "maximumEnrollment",
+          "waitCount",
+          "waitCapacity",
+          "waitAvailable",
+          "checkedAt",
+          "notifiedAt",
+          "createdAt"
+        ],
+        "title": "SeatWatchResponse",
+        "type": "object"
+      },
       "Section-Input": {
         "description": "One meeting block of a section. A CRN with several blocks sends one entry per block.",
         "properties": {
@@ -5116,6 +5233,164 @@
         "summary": "Generate Schedules",
         "tags": [
           "schedule"
+        ]
+      }
+    },
+    "/api/seat-watches": {
+      "get": {
+        "description": "The signed-in student's watched sections, oldest first.",
+        "operationId": "list_seat_watches",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SeatWatchResponse"
+                  },
+                  "title": "Response List Seat Watches",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "List Seat Watches",
+        "tags": [
+          "seat-tracker"
+        ]
+      },
+      "post": {
+        "description": "Watch a CRN and email the student's Google address when a seat opens.",
+        "operationId": "create_seat_watch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeatWatchCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeatWatchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "Create Seat Watch",
+        "tags": [
+          "seat-tracker"
+        ]
+      }
+    },
+    "/api/seat-watches/{watch_id}": {
+      "delete": {
+        "description": "Stop watching a section.",
+        "operationId": "delete_seat_watch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "watch_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Watch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "Delete Seat Watch",
+        "tags": [
+          "seat-tracker"
         ]
       }
     },
