@@ -10,6 +10,8 @@ import {
 import { client } from "../client.gen";
 import {
   checkPrerequisites,
+  createSeatWatch,
+  deleteSeatWatch,
   generateSchedules,
   getCourseDescription,
   getMe,
@@ -20,6 +22,7 @@ import {
   listBulletinSubjects,
   listCampuses,
   listPartsOfTerm,
+  listSeatWatches,
   listSubjectCourses,
   listSubjects,
   listTerms,
@@ -35,6 +38,12 @@ import type {
   CheckPrerequisitesData,
   CheckPrerequisitesError,
   CheckPrerequisitesResponse,
+  CreateSeatWatchData,
+  CreateSeatWatchError,
+  CreateSeatWatchResponse,
+  DeleteSeatWatchData,
+  DeleteSeatWatchError,
+  DeleteSeatWatchResponse,
   GenerateSchedulesData,
   GenerateSchedulesError,
   GenerateSchedulesResponse,
@@ -65,6 +74,9 @@ import type {
   ListPartsOfTermData,
   ListPartsOfTermError,
   ListPartsOfTermResponse,
+  ListSeatWatchesData,
+  ListSeatWatchesError,
+  ListSeatWatchesResponse,
   ListSubjectCoursesData,
   ListSubjectCoursesError,
   ListSubjectCoursesResponse,
@@ -704,6 +716,94 @@ export const generateSchedulesMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await generateSchedules({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const listSeatWatchesQueryKey = (
+  options?: Options<ListSeatWatchesData>,
+) => createQueryKey("listSeatWatches", options);
+
+/**
+ * List Seat Watches
+ *
+ * The signed-in student's watched sections, oldest first.
+ */
+export const listSeatWatchesOptions = (
+  options?: Options<ListSeatWatchesData>,
+) =>
+  queryOptions<
+    ListSeatWatchesResponse,
+    ListSeatWatchesError,
+    ListSeatWatchesResponse,
+    ReturnType<typeof listSeatWatchesQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listSeatWatches({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listSeatWatchesQueryKey(options),
+  });
+
+/**
+ * Create Seat Watch
+ *
+ * Watch a CRN and email the student's Google address when a seat opens.
+ */
+export const createSeatWatchMutation = (
+  options?: Partial<Options<CreateSeatWatchData>>,
+): UseMutationOptions<
+  CreateSeatWatchResponse,
+  CreateSeatWatchError,
+  Options<CreateSeatWatchData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    CreateSeatWatchResponse,
+    CreateSeatWatchError,
+    Options<CreateSeatWatchData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await createSeatWatch({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Delete Seat Watch
+ *
+ * Stop watching a section.
+ */
+export const deleteSeatWatchMutation = (
+  options?: Partial<Options<DeleteSeatWatchData>>,
+): UseMutationOptions<
+  DeleteSeatWatchResponse,
+  DeleteSeatWatchError,
+  Options<DeleteSeatWatchData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    DeleteSeatWatchResponse,
+    DeleteSeatWatchError,
+    Options<DeleteSeatWatchData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await deleteSeatWatch({
         ...options,
         ...fnOptions,
         throwOnError: true,

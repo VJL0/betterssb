@@ -15,6 +15,7 @@ Everything is saved on your device. There's no account yet; sign-in for sync is 
 | **Transcript**       | Upload your transcript PDF to see your courses by term, GPA and what each counts toward.                                                                                         |
 | **AI advisor**       | Ask about your plan, audit and transcript. You choose which of them the advisor can see.                                                                                         |
 | **Auto-register**    | Queue CRNs, pick a time, arm it; the extension submits them in your Banner tab when registration opens.                                                                          |
+| **Seat tracker**     | Signed in, enter a full section's CRN from the bell in the top bar; you get an email at your Google address when a seat opens, and the bell lists the classes it's waiting on.   |
 | **On Banner pages**  | Ratings before instructors, seat meters, "In your plan" and conflict tags, and a plan dock on Banner's class search. One setting turns it all off.                               |
 | **Popup**            | Today (countdown, this tab, your plan with live seats), Search, Register and Audit at a glance.                                                                                  |
 
@@ -220,7 +221,18 @@ FRONTEND_URL=http://localhost:3000
 SESSION_SECRET=...             # Required, 32+ chars: openssl rand -hex 32
 GOOGLE_API_KEY=...             # Required for chatbot
 GROQ_API_KEY=...               # Enables the Qwen fallback on Groq
+SMTP_USERNAME=...              # Gmail address the seat tracker sends from
+SMTP_PASSWORD=...              # That account's Google app password
+CRON_SECRET=...                # Bearer token for the seat check: openssl rand -hex 32
 ```
+
+### Seat tracker
+
+Signed-in students watch CRNs from the bell in the top bar (`/api/seat-watches`, stored per user in the `seat_watches` table, up to 10 each). `GET /api/seat-watches/check` reads every watched section's seats from Banner's public enrollment page, once per CRN however many students watch it, and emails each student at their Google sign-in address when a section goes from full (zero or fewer seats) to open. A section that stays open emails once; one that fills and reopens emails again. A failed email is retried on the next run.
+
+The check needs `Authorization: Bearer $CRON_SECRET` and is left out of the OpenAPI schema, since a scheduler calls it, not the website. [cron-job.org](https://cron-job.org) runs it every minute: create a job for `https://<domain>/api/seat-watches/check` with the GET method, an every-minute schedule and, under Advanced → Headers, `Authorization: Bearer <CRON_SECRET>`. (Vercel Cron would work too, but per-minute crons need a Pro plan.) Overlapping runs are skipped through a 55-second Redis lock and answer `409`.
+
+Emails go out through Gmail's SMTP server (`smtp.gmail.com:465`) from `SMTP_USERNAME`, a Gmail account kept for BetterSSB, signed in with an [app password](https://myaccount.google.com/apppasswords). App passwords need 2-Step Verification on that account and are revoked when its password changes. Gmail stops an account from sending for up to a day after about 500 emails in a day. Without these settings, development logs each email and production turns the check off (`503`).
 
 The API won't start without `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a valid `SESSION_SECRET`.
 

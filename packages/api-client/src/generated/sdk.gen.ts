@@ -16,6 +16,12 @@ import type {
   CheckPrerequisitesData,
   CheckPrerequisitesErrors,
   CheckPrerequisitesResponses,
+  CreateSeatWatchData,
+  CreateSeatWatchErrors,
+  CreateSeatWatchResponses,
+  DeleteSeatWatchData,
+  DeleteSeatWatchErrors,
+  DeleteSeatWatchResponses,
   GenerateSchedulesData,
   GenerateSchedulesErrors,
   GenerateSchedulesResponses,
@@ -46,6 +52,9 @@ import type {
   ListPartsOfTermData,
   ListPartsOfTermErrors,
   ListPartsOfTermResponses,
+  ListSeatWatchesData,
+  ListSeatWatchesErrors,
+  ListSeatWatchesResponses,
   ListSubjectCoursesData,
   ListSubjectCoursesErrors,
   ListSubjectCoursesResponses,
@@ -404,6 +413,67 @@ export const generateSchedules = <ThrowOnError extends boolean = true>(
       ...options.headers,
     },
   });
+
+/**
+ * List Seat Watches
+ *
+ * The signed-in student's watched sections, oldest first.
+ */
+export const listSeatWatches = <ThrowOnError extends boolean = true>(
+  options?: Options<ListSeatWatchesData, ThrowOnError>,
+): RequestResult<
+  ListSeatWatchesResponses,
+  ListSeatWatchesErrors,
+  ThrowOnError
+> =>
+  (options?.client ?? client).get<
+    ListSeatWatchesResponses,
+    ListSeatWatchesErrors,
+    ThrowOnError
+  >({ url: "/api/seat-watches", ...options });
+
+/**
+ * Create Seat Watch
+ *
+ * Watch a CRN and email the student's Google address when a seat opens.
+ */
+export const createSeatWatch = <ThrowOnError extends boolean = true>(
+  options: Options<CreateSeatWatchData, ThrowOnError>,
+): RequestResult<
+  CreateSeatWatchResponses,
+  CreateSeatWatchErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    CreateSeatWatchResponses,
+    CreateSeatWatchErrors,
+    ThrowOnError
+  >({
+    url: "/api/seat-watches",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Delete Seat Watch
+ *
+ * Stop watching a section.
+ */
+export const deleteSeatWatch = <ThrowOnError extends boolean = true>(
+  options: Options<DeleteSeatWatchData, ThrowOnError>,
+): RequestResult<
+  DeleteSeatWatchResponses,
+  DeleteSeatWatchErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).delete<
+    DeleteSeatWatchResponses,
+    DeleteSeatWatchErrors,
+    ThrowOnError
+  >({ url: "/api/seat-watches/{watch_id}", ...options });
 
 /**
  * Check Prerequisites

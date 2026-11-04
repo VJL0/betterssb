@@ -10,6 +10,7 @@ from app.modules.dars.router import router as dars_router
 from app.modules.degree.router import router as degree_router
 from app.modules.rmp.router import router as rmp_router
 from app.modules.schedule.router import router as schedule_router
+from app.modules.seat_tracker.router import router as seat_tracker_router
 from app.modules.transcript.router import router as transcript_router
 
 # Every endpoint can fail with problem details; documented once here.
@@ -22,4 +23,5 @@ api_router.include_router(dars_router)
 api_router.include_router(degree_router)
 api_router.include_router(rmp_router)
 api_router.include_router(schedule_router)
+api_router.include_router(seat_tracker_router)
 api_router.include_router(transcript_router)

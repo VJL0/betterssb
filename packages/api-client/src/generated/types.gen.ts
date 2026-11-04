@@ -1732,6 +1732,92 @@ export type SchedulePreferences = {
 };
 
 /**
+ * SeatWatchCreate
+ */
+export type SeatWatchCreate = {
+  /**
+   * Crn
+   *
+   * Five-digit CRN
+   */
+  crn: string;
+  /**
+   * Term
+   *
+   * Banner term code
+   */
+  term: string;
+};
+
+/**
+ * SeatWatchResponse
+ *
+ * A watched section with Banner's seats from the last check.
+ */
+export type SeatWatchResponse = {
+  /**
+   * Checkedat
+   */
+  checkedAt: string;
+  /**
+   * Coursenumber
+   */
+  courseNumber: string;
+  /**
+   * Createdat
+   */
+  createdAt: string;
+  /**
+   * Crn
+   */
+  crn: string;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Maximumenrollment
+   */
+  maximumEnrollment: number;
+  /**
+   * Notifiedat
+   */
+  notifiedAt: string | null;
+  /**
+   * Seatsavailable
+   */
+  seatsAvailable: number;
+  /**
+   * Section
+   */
+  section: string;
+  /**
+   * Subject
+   */
+  subject: string;
+  /**
+   * Term
+   */
+  term: string;
+  /**
+   * Title
+   */
+  title: string;
+  /**
+   * Waitavailable
+   */
+  waitAvailable: number;
+  /**
+   * Waitcapacity
+   */
+  waitCapacity: number;
+  /**
+   * Waitcount
+   */
+  waitCount: number;
+};
+
+/**
  * Section
  *
  * One meeting block of a section. A CRN with several blocks sends one entry per block.
@@ -2926,6 +3012,106 @@ export type GenerateSchedulesResponses = {
 
 export type GenerateSchedulesResponse =
   GenerateSchedulesResponses[keyof GenerateSchedulesResponses];
+
+export type ListSeatWatchesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/seat-watches";
+};
+
+export type ListSeatWatchesErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListSeatWatchesError =
+  ListSeatWatchesErrors[keyof ListSeatWatchesErrors];
+
+export type ListSeatWatchesResponses = {
+  /**
+   * Response List Seat Watches
+   *
+   * Successful Response
+   */
+  200: Array<SeatWatchResponse>;
+};
+
+export type ListSeatWatchesResponse =
+  ListSeatWatchesResponses[keyof ListSeatWatchesResponses];
+
+export type CreateSeatWatchData = {
+  body: SeatWatchCreate;
+  path?: never;
+  query?: never;
+  url: "/api/seat-watches";
+};
+
+export type CreateSeatWatchErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type CreateSeatWatchError =
+  CreateSeatWatchErrors[keyof CreateSeatWatchErrors];
+
+export type CreateSeatWatchResponses = {
+  /**
+   * Successful Response
+   */
+  201: SeatWatchResponse;
+};
+
+export type CreateSeatWatchResponse =
+  CreateSeatWatchResponses[keyof CreateSeatWatchResponses];
+
+export type DeleteSeatWatchData = {
+  body?: never;
+  path: {
+    /**
+     * Watch Id
+     */
+    watch_id: string;
+  };
+  query?: never;
+  url: "/api/seat-watches/{watch_id}";
+};
+
+export type DeleteSeatWatchErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type DeleteSeatWatchError =
+  DeleteSeatWatchErrors[keyof DeleteSeatWatchErrors];
+
+export type DeleteSeatWatchResponses = {
+  /**
+   * Successful Response
+   */
+  204: void;
+};
+
+export type DeleteSeatWatchResponse =
+  DeleteSeatWatchResponses[keyof DeleteSeatWatchResponses];
 
 export type CheckPrerequisitesData = {
   body: PrereqCheckRequest;

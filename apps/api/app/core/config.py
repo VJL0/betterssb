@@ -79,6 +79,16 @@ class Settings(DatabaseSettings):
     GOOGLE_API_KEY: str = ""
     GROQ_API_KEY: str = ""
 
+    # Seat tracker emails, from a Gmail account with an app password. Empty logs
+    # them in development and turns the check run off in production.
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 465
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    # The bearer token the scheduler (cron-job.org) sends to run seat checks.
+    # Empty turns the check endpoint off.
+    CRON_SECRET: str = ""
+
     # Error monitoring. Empty turns Sentry off (tests, local runs without it).
     SENTRY_DSN: str = ""
     # Vercel sets the deployed commit.
