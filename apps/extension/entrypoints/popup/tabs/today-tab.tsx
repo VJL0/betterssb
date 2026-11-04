@@ -5,6 +5,7 @@ import {
   ExternalLinkIcon,
   GlobeIcon,
 } from "lucide-react";
+import { outcomeHeadline } from "@workspace/shared/lib/auto-reg-batch-result";
 import { countdown } from "@workspace/shared/lib/auto-reg-queue";
 import {
   describeMeetings,
@@ -13,7 +14,7 @@ import {
   planCourseColor,
   planCredits,
 } from "@workspace/shared/lib/plan";
-import { planKey, withSettingDefaults } from "@workspace/shared/lib/store";
+import { planKey, settingsOrDefaults } from "@workspace/shared/lib/store";
 import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
@@ -169,9 +170,8 @@ export function TodayTab({
                 lastRun.ok ? "size-4 text-success" : "size-4 text-warning"
               }
             />
-            {lastRun.registeredCount + lastRun.failedCount > 0
-              ? `${lastRun.registeredCount} of ${lastRun.registeredCount + lastRun.failedCount} registered`
-              : lastRun.summary || "Auto-register ran"}
+            {outcomeHeadline(lastRun) ??
+              (lastRun.summary || "Auto-register ran")}
           </h2>
           <p className="text-xs text-muted-foreground">
             {shortTime(lastRun.at, true)}
@@ -234,7 +234,7 @@ function BannerTabCard({ signedOut }: { signedOut: boolean }) {
   const settings = useStoreDocument("settings");
   const status = useOverlayStatus(true);
   const switchId = useId();
-  const current = withSettingDefaults(settings.value);
+  const current = settingsOrDefaults(settings.value);
   const sections = status.data?.sections ?? 0;
 
   return (

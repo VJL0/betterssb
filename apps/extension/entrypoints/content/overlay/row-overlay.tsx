@@ -1,7 +1,10 @@
 import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import type { RmpRating } from "@workspace/api-client";
-import { instructorSearchName } from "@workspace/shared/lib/instructors";
+import {
+  instructorSearchName,
+  isRmpRating,
+} from "@workspace/shared/lib/instructors";
 import { formatClock } from "@workspace/shared/lib/meeting-times";
 import type { PlanClash } from "@workspace/shared/lib/plan";
 import { Badge } from "@workspace/ui/components/badge";
@@ -15,13 +18,22 @@ export function clashSummary({ planned, overlap }: PlanClash): string {
   return `${planned.courseCode} · ${planned.section}, ${overlap.days.join("")} ${formatClock(overlap.start)}`;
 }
 
+// The background answers null when Rate My Professors has no match.
+function isRatingReply(data: unknown): data is RmpRating | null {
+  return data === null || isRmpRating(data);
+}
+
 function useRating(name: string) {
   return useQuery({
     queryKey: ["rmpRating", name],
     queryFn: () =>
-      askBackground<RmpRating | null>("FETCH_RATING", {
-        name: instructorSearchName(name),
-      }),
+      askBackground(
+        {
+          type: "FETCH_RATING",
+          payload: { name: instructorSearchName(name) },
+        },
+        isRatingReply,
+      ),
     // A rating doesn't change while the page is open.
     staleTime: Infinity,
     retry: false,

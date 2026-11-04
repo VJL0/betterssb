@@ -1,5 +1,5 @@
 import { AUTO_REG_RUN_STATE_KEY } from "@/lib/auto-reg-run-state";
-import { AUTO_REG_SCHEDULE_CONFIG_KEY } from "@/lib/auto-reg-schedule-config";
+import { AUTO_REG_QUEUE_KEY } from "@/lib/auto-reg-queue-storage";
 import { sendMessage } from "@/lib/messaging";
 import { extensionStore } from "@/lib/local-store";
 import {
@@ -9,7 +9,7 @@ import {
   type BridgeRequest,
   type BridgeResponse,
 } from "@workspace/shared/lib/bridge";
-import type { StoreDocuments, StoreKey } from "@workspace/shared/types/store";
+import { isRecord } from "@workspace/shared/lib/guards";
 
 /**
  * Bridge between the BetterSSB website and the extension.
@@ -40,10 +40,7 @@ async function handle(request: BridgeRequest): Promise<Reply> {
       await extensionStore.delete(request.key);
       return { success: true };
     case "STORE_SET":
-      await extensionStore.set(
-        request.key,
-        request.value as StoreDocuments[StoreKey],
-      );
+      await extensionStore.set(request.key, request.value);
       return { success: true };
     case "AUTOREG_GET":
     case "AUTOREG_ARM":
@@ -73,12 +70,11 @@ async function handle(request: BridgeRequest): Promise<Reply> {
 }
 
 function hasRequestId(data: unknown): data is { id: string } {
-  const d = data as { source?: unknown; dir?: unknown; id?: unknown } | null;
   return (
-    !!d &&
-    d.source === BRIDGE_SOURCE &&
-    d.dir === "request" &&
-    typeof d.id === "string"
+    isRecord(data) &&
+    data.source === BRIDGE_SOURCE &&
+    data.dir === "request" &&
+    typeof data.id === "string"
   );
 }
 
@@ -107,10 +103,7 @@ export default defineContentScript({
     // The website refreshes auto-register when it's armed, run or edited elsewhere.
     browser.storage.onChanged.addListener((changes, area) => {
       if (area !== "local") return;
-      if (
-        AUTO_REG_RUN_STATE_KEY in changes ||
-        AUTO_REG_SCHEDULE_CONFIG_KEY in changes
-      ) {
+      if (AUTO_REG_RUN_STATE_KEY in changes || AUTO_REG_QUEUE_KEY in changes) {
         const event: BridgeEvent = {
           source: BRIDGE_SOURCE,
           dir: "event",

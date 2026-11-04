@@ -137,6 +137,9 @@ export interface StoreDocuments {
 
 export type StoreKey = keyof StoreDocuments;
 
+/** Any one store document, whatever its key. */
+export type StoreDocument = StoreDocuments[StoreKey];
+
 export interface LocalStore {
   get<K extends StoreKey>(key: K): Promise<StoreDocuments[K] | null>;
   set<K extends StoreKey>(key: K, value: StoreDocuments[K]): Promise<void>;

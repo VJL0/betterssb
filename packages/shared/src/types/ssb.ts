@@ -179,7 +179,7 @@ export interface SSBAddCRNRegistrationResponse {
  * Payload for POST /classRegistration/submitRegistration/batch.
  *
  * The `update` array holds the full RegistrationTemporaryView model objects
- * returned by `addRegistrationItem` (or `addCRNRegistrationItems`).
+ * returned by `addCRNRegistrationItems`.
  * The client passes these through opaquely.
  */
 export interface SSBSubmitRegistrationBatchPayload {

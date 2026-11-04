@@ -17,15 +17,12 @@ async function handleSSBMessage(
       return { success: true, data };
     }
     case "SSB_REG_GET_SECTION_CRN": {
-      const { crn, term } = msg.payload as { crn: string; term: string };
+      const { crn, term } = msg.payload;
       const data = await ssb.getSectionDetailsFromCRN(crn, term);
       return { success: true, data };
     }
     case "SSB_AUTO_REGISTER_RUN": {
-      const { term, crnList } = msg.payload as {
-        term: string;
-        crnList: string[];
-      };
+      const { term, crnList } = msg.payload;
       const result = await ssb.executeRegistrationSubmit(term, crnList);
       return { success: true, data: result };
     }

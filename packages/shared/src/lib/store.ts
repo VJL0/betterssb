@@ -1,7 +1,10 @@
 import { assignCourseColorOrder } from "./course-colors";
+import { isRecord } from "./guards";
 import type {
   AdvisorThread,
+  BannerConnection,
   LocalStore,
+  StoreDocument,
   StoreDocuments,
   StoreKey,
   TermPlan,
@@ -31,25 +34,53 @@ export const DEFAULT_SETTINGS: Omit<UserSettings, "updatedAt"> = {
   bannerOverlay: true,
 };
 
-/**
- * Saved settings over the defaults, so settings saved before a field existed
- * read that field's default.
- */
-export function withSettingDefaults(saved: UserSettings | null): UserSettings {
-  return { ...DEFAULT_SETTINGS, updatedAt: "", ...saved };
+/** The saved settings, or the defaults before the student has saved any. */
+export function settingsOrDefaults(saved: UserSettings | null): UserSettings {
+  return saved ?? { ...DEFAULT_SETTINGS, updatedAt: "" };
 }
 
 export function planKey(term: string): `plan:${string}` {
   return `${PLAN_KEY_PREFIX}${term}`;
 }
 
-export function isStoreKey(key: unknown): key is StoreKey {
-  if (typeof key !== "string") return false;
-  if (SINGLE_KEYS.has(key)) return true;
+export function isPlanKey(key: string): key is `plan:${string}` {
   return (
     key.startsWith(PLAN_KEY_PREFIX) &&
     TERM_CODE.test(key.slice(PLAN_KEY_PREFIX.length))
   );
+}
+
+export function isStoreKey(key: unknown): key is StoreKey {
+  if (typeof key !== "string") return false;
+  return SINGLE_KEYS.has(key) || isPlanKey(key);
+}
+
+/**
+ * Whether `value` has the outline of the document stored at `key`: a plan's
+ * section and course lists, the thread list, or an object for the rest.
+ */
+export function isStoreDocument<K extends StoreKey>(
+  key: K,
+  value: unknown,
+): value is StoreDocuments[K] {
+  if (isPlanKey(key)) {
+    return (
+      isRecord(value) &&
+      Array.isArray(value.sections) &&
+      Array.isArray(value.courses)
+    );
+  }
+  return key === "advisorThreads" ? Array.isArray(value) : isRecord(value);
+}
+
+const BANNER_CONNECTIONS: ReadonlySet<unknown> = new Set<BannerConnection>([
+  "connected",
+  "signed-out",
+  "not-connected",
+]);
+
+export function isBannerConnection(value: unknown): value is BannerConnection {
+  return BANNER_CONNECTIONS.has(value);
 }
 
 function newerOf<T>(a: T, b: T, stamp: (doc: T) => string): T {
@@ -103,30 +134,34 @@ export function mergeDocuments<K extends StoreKey>(
   key: K,
   a: StoreDocuments[K],
   b: StoreDocuments[K],
-): StoreDocuments[K] {
-  if (key.startsWith(PLAN_KEY_PREFIX)) {
-    return mergePlans(a as TermPlan, b as TermPlan) as StoreDocuments[K];
+): StoreDocuments[K];
+// TypeScript can't tie a narrowed `key` to the documents' type, so the body
+// narrows the documents by their own fields; anything unexpected keeps `a`.
+export function mergeDocuments(
+  key: StoreKey,
+  a: StoreDocument,
+  b: StoreDocument,
+): StoreDocument {
+  if (isPlanKey(key)) {
+    return "sections" in a && "sections" in b ? mergePlans(a, b) : a;
   }
   switch (key) {
     case "advisorThreads":
-      return mergeThreads(
-        a as AdvisorThread[],
-        b as AdvisorThread[],
-      ) as StoreDocuments[K];
+      return Array.isArray(a) && Array.isArray(b) ? mergeThreads(a, b) : a;
     case "settings":
     case "planPreferences":
-      return newerOf(
-        a as { updatedAt: string },
-        b as { updatedAt: string },
-        (d) => d.updatedAt,
-      ) as StoreDocuments[K];
+      return "updatedAt" in a && "updatedAt" in b
+        ? newerOf<StoreDocument & { updatedAt: string }>(
+            a,
+            b,
+            (d) => d.updatedAt,
+          )
+        : a;
     case "audit":
     case "transcript":
-      return newerOf(
-        a as { storedAt: string },
-        b as { storedAt: string },
-        (d) => d.storedAt,
-      ) as StoreDocuments[K];
+      return "storedAt" in a && "storedAt" in b
+        ? newerOf<StoreDocument & { storedAt: string }>(a, b, (d) => d.storedAt)
+        : a;
     default:
       return a;
   }

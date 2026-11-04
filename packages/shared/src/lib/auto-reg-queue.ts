@@ -2,7 +2,9 @@
  * Rules for the auto-register queue that both the extension (which enforces
  * them before arming) and the website (which explains them) apply.
  */
-import type { AutoRegQueue } from "../types/auto-reg";
+import type { AutoRegQueue, AutoRegSnapshot } from "../types/auto-reg";
+import { isResultRecord } from "./auto-reg-batch-result";
+import { isRecord } from "./guards";
 
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -37,11 +39,11 @@ export function crnLookupResult(
   result: RelayedResult,
 ): boolean | null {
   if (!result.success) return null;
-  const data = result.data as Record<string, unknown> | null | undefined;
-  if (!data || typeof data !== "object") return null;
+  const { data } = result;
+  if (!isRecord(data)) return null;
   if (data.success === false) return false;
-  const section = (data.model ?? data) as Record<string, unknown> | null;
-  if (section && "courseReferenceNumber" in section) {
+  const section = isRecord(data.model) ? data.model : data;
+  if ("courseReferenceNumber" in section) {
     return String(section.courseReferenceNumber) === crn;
   }
   return null;
@@ -72,4 +74,17 @@ export function moveCrn(
   const [crn] = next.splice(from, 1);
   next.splice(to, 0, crn!);
   return next;
+}
+
+/** Whether the extension's AUTOREG_GET reply is a snapshot of the queue. */
+export function isAutoRegSnapshot(value: unknown): value is AutoRegSnapshot {
+  return (
+    isRecord(value) &&
+    typeof value.term === "string" &&
+    Array.isArray(value.crns) &&
+    value.crns.every((crn) => typeof crn === "string") &&
+    typeof value.scheduledRunAt === "string" &&
+    typeof value.armed === "boolean" &&
+    (value.lastResult === null || isResultRecord(value.lastResult))
+  );
 }

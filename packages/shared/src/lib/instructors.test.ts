@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   instructorSearchName,
+  isRmpRating,
   isSameInstructor,
   matchingProfile,
   shortInstructorName,
@@ -61,5 +62,20 @@ describe("matchingProfile", () => {
     expect(
       matchingProfile("Cindy Li", [{ professorName: "Cindy Liao" }]),
     ).toBeNull();
+  });
+});
+
+describe("isRmpRating", () => {
+  it("accepts a profile and rejects anything else", () => {
+    expect(
+      isRmpRating({
+        professorName: "Ada Lovelace",
+        overallRating: 4.8,
+        numRatings: 12,
+        rmpUrl: "https://www.ratemyprofessors.com/professor/1",
+      }),
+    ).toBe(true);
+    expect(isRmpRating({ professorName: "Ada Lovelace" })).toBe(false);
+    expect(isRmpRating(null)).toBe(false);
   });
 });

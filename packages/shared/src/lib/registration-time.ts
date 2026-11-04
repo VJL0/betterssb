@@ -6,6 +6,7 @@
  *              "dateTimestamp":"Wednesday October 28, 2026 7:00:00 AM EDT",
  *              "desc":"2027 Spring", "timeZone":"MN"}]}
  */
+import { isRecord } from "./guards";
 import { templeTermCodeFromName } from "./terms";
 
 export interface RegistrationTime {
@@ -34,6 +35,12 @@ const PORTAL_TIMESTAMP =
   /^[A-Za-z]+\s+([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s+(AM|PM)\s+(EDT|EST)$/;
 /** Temple is in Philadelphia, so TUportal only ever writes Eastern time. */
 const UTC_OFFSET_HOURS = { EDT: -4, EST: -5 } as const;
+
+function isPortalZone(
+  zone: string | undefined,
+): zone is keyof typeof UTC_OFFSET_HOURS {
+  return zone !== undefined && Object.hasOwn(UTC_OFFSET_HOURS, zone);
+}
 const HOURS_PER_HALF_DAY = 12;
 
 /**
@@ -48,7 +55,8 @@ export function parsePortalTimestamp(text: string): string | null {
   const hour12 = Number(hour) % HOURS_PER_HALF_DAY;
   const hour24 = meridiem === "PM" ? hour12 + HOURS_PER_HALF_DAY : hour12;
   if (month === -1 || Number(hour) > HOURS_PER_HALF_DAY) return null;
-  const offset = UTC_OFFSET_HOURS[zone as keyof typeof UTC_OFFSET_HOURS];
+  if (!isPortalZone(zone)) return null;
+  const offset = UTC_OFFSET_HOURS[zone];
   const utc = Date.UTC(
     Number(year),
     month,
@@ -62,10 +70,11 @@ export function parsePortalTimestamp(text: string): string | null {
 
 /** Every term's registration time in a PriorityRegistration.jsp answer. */
 export function parsePriorityRegistration(body: unknown): RegistrationTime[] {
-  const items = (body as { items?: unknown } | null)?.items;
+  const items = isRecord(body) ? body.items : undefined;
   if (!Array.isArray(items)) return [];
   return items.flatMap((item: unknown) => {
-    const { desc, dateTimestamp } = (item ?? {}) as Record<string, unknown>;
+    if (!isRecord(item)) return [];
+    const { desc, dateTimestamp } = item;
     if (typeof desc !== "string" || typeof dateTimestamp !== "string") {
       return [];
     }

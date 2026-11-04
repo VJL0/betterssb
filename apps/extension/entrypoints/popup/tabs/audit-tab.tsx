@@ -17,6 +17,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { usePlans } from "../hooks/use-plans";
 import { useStoreDocument } from "@/hooks/use-store-document";
+import { isRecord } from "@workspace/shared/lib/guards";
 import { askBackground } from "@/lib/ask-background";
 import { openWeb } from "../lib/open-web";
 
@@ -25,9 +26,16 @@ const NEEDED_SHOWN = 5;
 const TICK_MS = 1_000;
 const MS_PER_SECOND = 1_000;
 
+function isAuditReply(data: unknown): data is { html: string } {
+  return isRecord(data) && typeof data.html === "string";
+}
+
 /** Runs the audit in DARS (the background drives the DARS tab), then parses it. */
 async function runAudit() {
-  const { html } = await askBackground<{ html?: string }>("DARS_RUN_AUDIT");
+  const { html } = await askBackground(
+    { type: "DARS_RUN_AUDIT", payload: {} },
+    isAuditReply,
+  );
   if (!html) throw new Error("The audit failed.");
   const { data } = await parseAudit({
     body: html,

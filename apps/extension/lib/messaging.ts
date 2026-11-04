@@ -1,24 +1,32 @@
-export type MessageType =
-  | "FETCH_RATING"
-  // Answered by the content script in a Banner tab (the background relays them).
-  | "SSB_REG_GET_TERMS"
-  | "SSB_REG_GET_PLANS"
-  | "SSB_REG_GET_SECTION_CRN"
-  | "SSB_AUTO_REGISTER_RUN"
-  | "DARS_RUN_AUDIT"
-  | "BANNER_STATUS"
-  | "AUTOREG_GET"
-  | "AUTOREG_SAVE_QUEUE"
-  | "AUTOREG_ARM"
-  | "AUTOREG_DISARM"
-  | "AUTOREG_CHECK_CRNS"
-  | "AUTOREG_REGISTRATION_TIME"
-  | "OVERLAY_STATUS";
+import type { AutoRegQueue } from "@workspace/shared/types/auto-reg";
 
-export interface ExtensionMessage {
-  type: MessageType;
-  payload: unknown;
+type NoPayload = Record<string, never>;
+
+/** Each message type's payload; `switch (msg.type)` narrows `msg.payload` to it. */
+export interface MessagePayloads {
+  FETCH_RATING: { name: string };
+  // Answered by the content script in a Banner tab (the background relays them).
+  SSB_REG_GET_TERMS: NoPayload;
+  SSB_REG_GET_PLANS: NoPayload;
+  SSB_REG_GET_SECTION_CRN: { crn: string; term: string };
+  SSB_AUTO_REGISTER_RUN: { term: string; crnList: string[] };
+  DARS_RUN_AUDIT: NoPayload;
+  BANNER_STATUS: NoPayload;
+  AUTOREG_GET: NoPayload;
+  AUTOREG_SAVE_QUEUE: { queue: AutoRegQueue };
+  AUTOREG_ARM: NoPayload;
+  AUTOREG_DISARM: NoPayload;
+  AUTOREG_CHECK_CRNS: { term: string; crns: string[] };
+  AUTOREG_REGISTRATION_TIME: { term: string };
+  OVERLAY_STATUS: NoPayload;
 }
+
+export type MessageType = keyof MessagePayloads;
+
+/** A message of type `K` (any type by default), with that type's payload. */
+export type ExtensionMessage<K extends MessageType = MessageType> = {
+  [T in K]: { type: T; payload: MessagePayloads[T] };
+}[K];
 
 export interface ExtensionResponse {
   success: boolean;

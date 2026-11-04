@@ -6,15 +6,16 @@ import type {
   StoreDocuments,
   StoreKey,
   TermPlan,
-  UserSettings,
 } from "../types/store";
 import {
   DEFAULT_SETTINGS,
+  isBannerConnection,
+  isStoreDocument,
   isStoreKey,
   mergeDocuments,
   mergeStoreInto,
   planKey,
-  withSettingDefaults,
+  settingsOrDefaults,
 } from "./store";
 import { DEFAULT_PLAN_PREFERENCES } from "./plan-optimizer";
 
@@ -52,32 +53,14 @@ function plan(
   };
 }
 
-describe("withSettingDefaults", () => {
-  it("fills fields saved before they existed", () => {
-    const older: Partial<UserSettings> = {
-      ...DEFAULT_SETTINGS,
-      term: "202703",
-      updatedAt: "2026-10-01T00:00:00.000Z",
-    };
-    delete older.bannerOverlay;
-    expect(withSettingDefaults(older as never)).toMatchObject({
-      term: "202703",
-      bannerOverlay: true,
-    });
-  });
-
-  it("keeps a saved choice", () => {
-    expect(
-      withSettingDefaults({
-        ...DEFAULT_SETTINGS,
-        bannerOverlay: false,
-        updatedAt: "",
-      }).bannerOverlay,
-    ).toBe(false);
+describe("settingsOrDefaults", () => {
+  it("keeps the saved settings", () => {
+    const saved = { ...DEFAULT_SETTINGS, bannerOverlay: false, updatedAt: "" };
+    expect(settingsOrDefaults(saved)).toBe(saved);
   });
 
   it("uses the defaults before anything is saved", () => {
-    expect(withSettingDefaults(null)).toEqual({
+    expect(settingsOrDefaults(null)).toEqual({
       ...DEFAULT_SETTINGS,
       updatedAt: "",
     });
@@ -101,6 +84,31 @@ describe("isStoreKey", () => {
 
   it("builds plan keys", () => {
     expect(planKey("202703")).toBe("plan:202703");
+  });
+});
+
+describe("isStoreDocument", () => {
+  it("checks a plan's section and course lists", () => {
+    expect(isStoreDocument("plan:202703", { sections: [], courses: [] })).toBe(
+      true,
+    );
+    expect(isStoreDocument("plan:202703", { sections: "nope" })).toBe(false);
+  });
+
+  it("wants a list of advisor threads and an object for the rest", () => {
+    expect(isStoreDocument("advisorThreads", [])).toBe(true);
+    expect(isStoreDocument("advisorThreads", {})).toBe(false);
+    expect(isStoreDocument("settings", { term: "202703" })).toBe(true);
+    expect(isStoreDocument("settings", "202703")).toBe(false);
+    expect(isStoreDocument("audit", null)).toBe(false);
+  });
+});
+
+describe("isBannerConnection", () => {
+  it("accepts only the three connection states", () => {
+    expect(isBannerConnection("signed-out")).toBe(true);
+    expect(isBannerConnection("online")).toBe(false);
+    expect(isBannerConnection(undefined)).toBe(false);
   });
 });
 

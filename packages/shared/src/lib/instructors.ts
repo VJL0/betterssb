@@ -1,3 +1,6 @@
+import type { RmpRating } from "@workspace/api-client";
+import { isRecord } from "./guards";
+
 const MIDDLE_INITIAL = /^[A-Z]\.?$/i;
 
 /**
@@ -79,5 +82,16 @@ export function matchingProfile<T extends { professorName: string }>(
 ): T | null {
   return (
     results.find((r) => isSameInstructor(bannerName, r.professorName)) ?? null
+  );
+}
+
+/** Whether a reply is a Rate My Professors profile (the fields the overlay shows). */
+export function isRmpRating(value: unknown): value is RmpRating {
+  return (
+    isRecord(value) &&
+    typeof value.professorName === "string" &&
+    typeof value.overallRating === "number" &&
+    typeof value.numRatings === "number" &&
+    typeof value.rmpUrl === "string"
   );
 }

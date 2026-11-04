@@ -89,6 +89,10 @@ describe("parseBridgeRequest", () => {
     ],
     ["a malformed plan key", request("STORE_GET", { key: "plan:../x" })],
     ["a set without a value", request("STORE_SET", { key: "settings" })],
+    [
+      "a plan that isn't a plan",
+      request("STORE_SET", { key: "plan:202703", value: { sections: 1 } }),
+    ],
     ["another source", { ...request("BANNER_STATUS"), source: "evil" }],
     ["a response", { ...request("BANNER_STATUS"), dir: "response" }],
     ["a missing id", { ...request("BANNER_STATUS"), id: 5 }],

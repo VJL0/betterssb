@@ -12,9 +12,7 @@ import { createShadowHost, LAYER_SLOT } from "./shadow-host";
  * into small shadow roots inside Banner's own table cells.
  */
 export function startOverlay(): void {
-  // WXT types getURL with public/ files only; the font is copied in by a build hook.
-  const extensionUrl = browser.runtime.getURL as (path: string) => string;
-  addDocumentRules(overlayCss, extensionUrl(OVERLAY_FONT_PATH));
+  addDocumentRules(overlayCss, browser.runtime.getURL(OVERLAY_FONT_PATH));
   const layer = createShadowHost(overlayCss, LAYER_SLOT, "block");
   document.body.append(layer.host);
 

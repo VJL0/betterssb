@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { ExternalLinkIcon } from "lucide-react";
 import type { TermPlan } from "@workspace/shared/types/store";
+import {
+  CRN_OUTCOME_BADGE,
+  outcomeHeadline,
+} from "@workspace/shared/lib/auto-reg-batch-result";
 import { planKey } from "@workspace/shared/lib/store";
 import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
@@ -63,7 +67,10 @@ export function RegisterTab() {
 
   return (
     <div className="flex flex-col gap-3">
-      <Tabs value={view} onValueChange={(v) => setView(v as string)}>
+      <Tabs
+        value={view}
+        onValueChange={(v) => typeof v === "string" && setView(v)}
+      >
         <TabsList aria-label="Auto-register" className="self-start">
           <TabsTrigger value="results" disabled={!result}>
             Last run
@@ -75,9 +82,8 @@ export function RegisterTab() {
           {result && (
             <Card className="gap-0 rounded-2xl p-3" render={<section />}>
               <h2 className="font-medium">
-                {result.registeredCount + result.failedCount > 0
-                  ? `${result.registeredCount} of ${result.registeredCount + result.failedCount} registered`
-                  : result.summary || "Auto-register ran"}
+                {outcomeHeadline(result) ??
+                  (result.summary || "Auto-register ran")}
               </h2>
               <p className="text-xs text-muted-foreground">
                 {when(result.at)}
@@ -93,11 +99,11 @@ export function RegisterTab() {
                       <span className="font-medium">
                         {sectionLabel(plan, line.crn) ?? line.label ?? line.crn}
                       </span>
-                      <StatusBadge tone={line.ok ? "success" : "destructive"}>
-                        {line.ok ? "Registered" : "Not registered"}
+                      <StatusBadge tone={CRN_OUTCOME_BADGE[line.outcome].tone}>
+                        {CRN_OUTCOME_BADGE[line.outcome].label}
                       </StatusBadge>
                     </span>
-                    {!line.ok && line.detail && (
+                    {line.outcome !== "registered" && line.detail && (
                       <span className="text-xs text-muted-foreground">
                         {line.detail}
                       </span>

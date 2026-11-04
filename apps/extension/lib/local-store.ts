@@ -1,12 +1,9 @@
 import {
   EXTENSION_STORE_PREFIX,
+  isStoreDocument,
   isStoreKey,
 } from "@workspace/shared/lib/store";
-import type {
-  LocalStore,
-  StoreDocuments,
-  StoreKey,
-} from "@workspace/shared/types/store";
+import type { LocalStore, StoreKey } from "@workspace/shared/types/store";
 
 function storageKey(key: StoreKey): string {
   return `${EXTENSION_STORE_PREFIX}${key}`;
@@ -26,7 +23,8 @@ export const extensionStore: LocalStore = {
   async get<K extends StoreKey>(key: K) {
     const name = storageKey(key);
     const result = await browser.storage.local.get(name);
-    return (result[name] as StoreDocuments[K] | undefined) ?? null;
+    const stored: unknown = result[name];
+    return isStoreDocument(key, stored) ? stored : null;
   },
 
   async set(key, value) {

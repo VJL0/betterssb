@@ -3,6 +3,7 @@ import {
   armProblem,
   countdown,
   crnLookupResult,
+  isAutoRegSnapshot,
   moveCrn,
 } from "./auto-reg-queue";
 
@@ -74,5 +75,25 @@ describe("moveCrn", () => {
   it("moves within bounds only", () => {
     expect(moveCrn(["a", "b", "c"], 2, -1)).toEqual(["a", "c", "b"]);
     expect(moveCrn(["a", "b"], 0, -1)).toEqual(["a", "b"]);
+  });
+});
+
+describe("isAutoRegSnapshot", () => {
+  const snapshot = {
+    term: "202703",
+    crns: ["41207"],
+    scheduledRunAt: "2026-11-14T07:00",
+    armed: false,
+    lastResult: null,
+  };
+
+  it("accepts the extension's snapshot", () => {
+    expect(isAutoRegSnapshot(snapshot)).toBe(true);
+  });
+
+  it("rejects a snapshot with the wrong field types", () => {
+    expect(isAutoRegSnapshot({ ...snapshot, crns: "41207" })).toBe(false);
+    expect(isAutoRegSnapshot({ ...snapshot, armed: "yes" })).toBe(false);
+    expect(isAutoRegSnapshot({ ...snapshot, lastResult: {} })).toBe(false);
   });
 });

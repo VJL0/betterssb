@@ -4,6 +4,13 @@ const PROPERTY_RULES = /@property\s*[^{]*\{[^}]*\}/g;
 /** The path the extension serves Inter's Latin file at (see wxt.config.ts). */
 export const OVERLAY_FONT_PATH = "/fonts/inter-latin-wght-normal.woff2";
 
+// WXT types getURL with public/ files only; the font is copied in by a build hook.
+declare module "wxt/browser" {
+  interface WxtRuntime {
+    getURL(path: typeof OVERLAY_FONT_PATH): string;
+  }
+}
+
 function interFontFace(fontUrl: string): string {
   return `@font-face{font-family:"Inter Variable";font-style:normal;font-display:swap;font-weight:100 900;src:url("${fontUrl}") format("woff2-variations")}`;
 }

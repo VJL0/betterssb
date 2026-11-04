@@ -18,10 +18,6 @@ export const DAY_NAMES: Record<WeekDay, string> = {
   U: "Sunday",
 };
 
-export function isWeekDay(letter: string): letter is WeekDay {
-  return (WEEK_DAYS as readonly string[]).includes(letter);
-}
-
 /** Day letters of a Banner days string ("TR"), in week order, ignoring unknown letters. */
 export function parseDays(days: string): WeekDay[] {
   const present = new Set(days.toUpperCase().split(""));

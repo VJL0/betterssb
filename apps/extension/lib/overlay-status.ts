@@ -1,3 +1,5 @@
+import { isRecord } from "@workspace/shared/lib/guards";
+
 /** What the Banner overlay is showing on its tab, for the popup's Today tab. */
 export interface OverlayStatus {
   /** Section rows with ratings, seats and tags. */
@@ -15,4 +17,12 @@ export function setOverlayStatus(status: OverlayStatus | null): void {
 
 export function overlayStatus(): OverlayStatus | null {
   return current;
+}
+
+export function isOverlayStatus(value: unknown): value is OverlayStatus {
+  return (
+    isRecord(value) &&
+    typeof value.sections === "number" &&
+    typeof value.inPlan === "number"
+  );
 }

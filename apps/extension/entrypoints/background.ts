@@ -1,84 +1,104 @@
-import { setUpApiClient } from "@/lib/api-client";
-import { onMessage, sendTabMessage } from "@/lib/messaging";
-import { matchingProfile } from "@workspace/shared/lib/instructors";
-import type { ExtensionMessage, ExtensionResponse } from "@/lib/messaging";
+import { searchProfessors } from "@workspace/api-client";
 import {
   buildResultRecord,
+  failedResultRecord,
+  isExecuteRegistrationResult,
   type AutoRegBatchResultRecord,
-  type StagingFailure,
 } from "@workspace/shared/lib/auto-reg-batch-result";
-import {
-  parseAutoRegBatchResultJson,
-  parseManualCrns,
-} from "@workspace/shared/lib/auto-reg-helpers";
 import {
   armProblem,
   crnLookupResult,
 } from "@workspace/shared/lib/auto-reg-queue";
+import { matchingProfile } from "@workspace/shared/lib/instructors";
 import type {
   AutoRegQueue,
   AutoRegSnapshot,
   CrnCheck,
 } from "@workspace/shared/types/auto-reg";
-import {
-  AUTO_REG_SCHEDULE_CONFIG_KEY,
-  getAutoRegScheduleConfig,
-  patchAutoRegScheduleConfig,
-  type AutoRegScheduleConfig,
-} from "@/lib/auto-reg-schedule-config";
+import type { BannerConnection } from "@workspace/shared/types/store";
+import { setUpApiClient } from "@/lib/api-client";
 import {
   AUTO_REG_RUN_STATE_KEY,
   getAutoRegRunState,
   patchAutoRegRunState,
   type AutoRegRunState,
 } from "@/lib/auto-reg-run-state";
-import type { BannerConnection } from "@workspace/shared/types/store";
-import { searchProfessors } from "@workspace/api-client";
+import {
+  AUTO_REG_QUEUE_KEY,
+  getAutoRegQueue,
+  saveAutoRegQueue,
+} from "@/lib/auto-reg-queue-storage";
+import {
+  onMessage,
+  sendTabMessage,
+  type ExtensionMessage,
+  type ExtensionResponse,
+} from "@/lib/messaging";
 import { BANNER_PAGES, DARS_PAGES, DARS_START_URL } from "@/lib/temple-urls";
 import { lookUpRegistrationTime } from "@/lib/tuportal-api";
 
 const DARS_TAB_READY_TIMEOUT_MS = 150_000;
+const DARS_SIGN_IN_POLL_MS = 1000;
+// The DARS content script may still be loading right after sign-in.
+const DARS_RELAY_ATTEMPTS = 10;
+const DARS_RELAY_RETRY_MS = 500;
 
-const REG_CHECK_ALARM = "betterssb-reg-check";
 /** Set when a Banner call fails the way an expired session does; cleared on the next success. */
 const BANNER_SIGNED_OUT_KEY = "betterssb:bannerSignedOut";
 // A signed-out Banner answers XHRs with 401/403 or its HTML login page instead of JSON.
-const SIGNED_OUT_ERROR = /\b(401|403)\b|not valid JSON|Unexpected token '<'/i;
-const AUTO_REG_FIRE_ALARM = "betterssb-auto-reg-fire";
+const BANNER_SIGNED_OUT_ERROR =
+  /\b(401|403)\b|not valid JSON|Unexpected token '<'/i;
 
-/** Fires once at `when` — batch runs only from this alarm (single attempt). */
-async function syncAutoRegFireAlarm(): Promise<void> {
-  await browser.alarms.clear(AUTO_REG_FIRE_ALARM);
-  const { armed } = await getAutoRegRunState();
-  const { scheduledRunAt } = await getAutoRegScheduleConfig();
-  if (!armed || !scheduledRunAt?.trim()) return;
+const AUTO_REG_REMINDER_ALARM = "betterssb:autoRegReminder";
+const AUTO_REG_REMINDER_LEAD_MINUTES = 5;
+const AUTO_REG_RUN_ALARM = "betterssb:autoRegRun";
+const AUTO_REG_REMINDER_NOTIFICATION = "betterssb:autoRegReminder";
+const AUTO_REG_DONE_NOTIFICATION = "betterssb:autoRegDone";
+const AUTO_REG_FAILED_NOTIFICATION = "betterssb:autoRegFailed";
 
-  const when = new Date(scheduledRunAt).getTime();
-  if (!Number.isFinite(when) || when <= Date.now()) return;
+const NOTIFICATION_ICON = "icon/128.png";
+const NOTIFICATION_MESSAGE_MAX_LENGTH = 220;
 
-  await browser.alarms.create(AUTO_REG_FIRE_ALARM, { when });
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function findSSBTab(): Promise<number | null> {
+function unknownMessage(msg: ExtensionMessage): ExtensionResponse {
+  return { success: false, error: `Unknown message type: ${msg.type}` };
+}
+
+function notify(id: string, title: string, message: string): void {
+  void browser.notifications.create(id, {
+    type: "basic",
+    iconUrl: NOTIFICATION_ICON,
+    title,
+    message: message.slice(0, NOTIFICATION_MESSAGE_MAX_LENGTH),
+    priority: 2,
+  });
+}
+
+// ── Banner tab ──────────────────────────────────────────────────────────────
+
+async function findBannerTab(): Promise<number | null> {
   const tabs = await browser.tabs.query({ url: BANNER_PAGES });
   return tabs[0]?.id ?? null;
 }
 
 async function recordBannerSession(result: ExtensionResponse): Promise<void> {
   const signedOut =
-    !result.success && SIGNED_OUT_ERROR.test(result.error ?? "");
-  if (signedOut || result.success) {
-    const stored = await browser.storage.local.get(BANNER_SIGNED_OUT_KEY);
-    if (stored[BANNER_SIGNED_OUT_KEY] !== signedOut) {
-      await browser.storage.local.set({ [BANNER_SIGNED_OUT_KEY]: signedOut });
-    }
+    !result.success && BANNER_SIGNED_OUT_ERROR.test(result.error ?? "");
+  // Other failures say nothing about the session, so they leave it as it was.
+  if (!signedOut && !result.success) return;
+  const stored = await browser.storage.local.get(BANNER_SIGNED_OUT_KEY);
+  if (stored[BANNER_SIGNED_OUT_KEY] !== signedOut) {
+    await browser.storage.local.set({ [BANNER_SIGNED_OUT_KEY]: signedOut });
   }
 }
 
-async function relayToSSBTab(
+async function relayToBannerTab(
   msg: ExtensionMessage,
 ): Promise<ExtensionResponse> {
-  const tabId = await findSSBTab();
+  const tabId = await findBannerTab();
   if (!tabId) {
     return {
       success: false,
@@ -95,14 +115,12 @@ async function relayToSSBTab(
  * fail like an expired session. "not-connected" also covers never opening Banner.
  */
 async function bannerConnection(): Promise<BannerConnection> {
-  if (!(await findSSBTab())) return "not-connected";
+  if (!(await findBannerTab())) return "not-connected";
   const stored = await browser.storage.local.get(BANNER_SIGNED_OUT_KEY);
   return stored[BANNER_SIGNED_OUT_KEY] === true ? "signed-out" : "connected";
 }
 
-function isSSBMessage(type: string): boolean {
-  return type.startsWith("SSB_");
-}
+// ── DARS tab ────────────────────────────────────────────────────────────────
 
 /** A DARS tab is usable once it's on a `/selfservice/` page (i.e. past SSO login). */
 function isDarsReady(tab: Browser.tabs.Tab): boolean {
@@ -135,7 +153,7 @@ async function getOrOpenDarsTab(): Promise<number> {
         "Timed out waiting for DARS sign-in. Sign in, then try again.",
       );
     }
-    await new Promise((r) => setTimeout(r, 1000));
+    await sleep(DARS_SIGN_IN_POLL_MS);
   }
 }
 
@@ -145,48 +163,38 @@ async function relayToDarsTab(
 ): Promise<ExtensionResponse> {
   const tabId = await getOrOpenDarsTab();
   let lastError = "DARS tab did not respond.";
-  for (let attempt = 0; attempt < 10; attempt++) {
+  for (let attempt = 0; attempt < DARS_RELAY_ATTEMPTS; attempt++) {
     try {
       return await sendTabMessage(tabId, msg);
     } catch (err) {
       lastError = err instanceof Error ? err.message : lastError;
-      await new Promise((r) => setTimeout(r, 500));
+      await sleep(DARS_RELAY_RETRY_MS);
     }
   }
   return { success: false, error: lastError };
 }
 
-function queueOf(config: AutoRegScheduleConfig): AutoRegQueue {
-  return {
-    term: config.term.trim(),
-    crns: parseManualCrns(config.crns),
-    scheduledRunAt: config.scheduledRunAt,
-  };
-}
+// ── Auto-register queue ─────────────────────────────────────────────────────
 
 function snapshotOf(
-  config: AutoRegScheduleConfig,
+  queue: AutoRegQueue,
   run: AutoRegRunState,
 ): AutoRegSnapshot {
-  return {
-    ...queueOf(config),
-    armed: run.armed,
-    lastResult: parseAutoRegBatchResultJson(run.lastBatchResultJson),
-  };
+  return { ...queue, armed: run.armed, lastResult: run.lastResult };
 }
 
 /**
  * Auto-register requests from the website (through the web bridge) and the
  * popup. Arming is checked here, so no caller can arm an incomplete queue.
  */
-async function handleAutoRegister(
+async function handleAutoRegMessage(
   msg: ExtensionMessage,
 ): Promise<ExtensionResponse> {
-  const config = await getAutoRegScheduleConfig();
+  const queue = await getAutoRegQueue();
   const run = await getAutoRegRunState();
   switch (msg.type) {
     case "AUTOREG_GET":
-      return { success: true, data: snapshotOf(config, run) };
+      return { success: true, data: snapshotOf(queue, run) };
     case "AUTOREG_SAVE_QUEUE": {
       if (run.armed) {
         return {
@@ -194,18 +202,11 @@ async function handleAutoRegister(
           error: "Disarm auto-register to change the queue.",
         };
       }
-      const { queue } = msg.payload as { queue: AutoRegQueue };
-      await patchAutoRegScheduleConfig({
-        term: queue.term,
-        crns: queue.crns.join(", "),
-        scheduledRunAt: queue.scheduledRunAt,
-        // CRNs come from the website now, not from a Banner plan.
-        manualMode: true,
-      });
+      await saveAutoRegQueue(msg.payload.queue);
       return { success: true };
     }
     case "AUTOREG_ARM": {
-      const problem = armProblem(queueOf(config), Date.now());
+      const problem = armProblem(queue, Date.now());
       if (problem) return { success: false, error: problem };
       await patchAutoRegRunState({ armed: true, dedupeRunKey: "" });
       return { success: true };
@@ -214,11 +215,11 @@ async function handleAutoRegister(
       await patchAutoRegRunState({ armed: false });
       return { success: true };
     case "AUTOREG_CHECK_CRNS": {
-      const { term, crns } = msg.payload as { term: string; crns: string[] };
+      const { term, crns } = msg.payload;
       const checks: CrnCheck[] = [];
       // One at a time: Banner keeps registration state per session.
       for (const crn of crns) {
-        const result = await relayToSSBTab({
+        const result = await relayToBannerTab({
           type: "SSB_REG_GET_SECTION_CRN",
           payload: { crn, term },
         });
@@ -227,25 +228,137 @@ async function handleAutoRegister(
       return { success: true, data: checks };
     }
     case "AUTOREG_REGISTRATION_TIME": {
-      const { term } = msg.payload as { term: string };
+      const { term } = msg.payload;
       return { success: true, data: await lookUpRegistrationTime(term) };
     }
     default:
-      return { success: false, error: `Unknown message type: ${msg.type}` };
+      return unknownMessage(msg);
   }
 }
 
-function isAutoRegisterMessage(type: string): boolean {
-  return type.startsWith("AUTOREG_");
+// ── Auto-register run ───────────────────────────────────────────────────────
+
+/** Sets the one-shot run alarm; the queue is submitted only from it (single attempt). */
+async function syncAutoRegRunAlarm(): Promise<void> {
+  await browser.alarms.clear(AUTO_REG_RUN_ALARM);
+  const { armed } = await getAutoRegRunState();
+  const { scheduledRunAt } = await getAutoRegQueue();
+  if (!armed || !scheduledRunAt) return;
+
+  const when = new Date(scheduledRunAt).getTime();
+  if (!Number.isFinite(when) || when <= Date.now()) return;
+
+  await browser.alarms.create(AUTO_REG_RUN_ALARM, { when });
 }
 
-/** Stable idempotency key for a specific batch attempt (time + term + CRNs). */
-function buildBatchDedupeKey(
-  scheduledRunAt: string,
-  termCode: string,
-  crnList: string[],
-): string {
-  return `${scheduledRunAt}|${termCode}|${crnList.join(",")}`;
+function minutesUntil(iso: string): number {
+  return (new Date(iso).getTime() - Date.now()) / 60_000;
+}
+
+function isDue(scheduledRunAt: string): boolean {
+  const at = new Date(scheduledRunAt).getTime();
+  return Number.isFinite(at) && at <= Date.now();
+}
+
+/** Stable idempotency key for one run of a queue (time + term + CRNs). */
+function dedupeRunKeyOf(queue: AutoRegQueue): string {
+  return `${queue.scheduledRunAt}|${queue.term}|${queue.crns.join(",")}`;
+}
+
+/** Notifies once when an armed run is a few minutes away. */
+async function remindBeforeAutoRegRun(): Promise<void> {
+  const { armed, reminderForScheduledRunAt } = await getAutoRegRunState();
+  if (!armed) return;
+
+  const { scheduledRunAt } = await getAutoRegQueue();
+  if (!scheduledRunAt || reminderForScheduledRunAt === scheduledRunAt) return;
+
+  const minutesLeft = minutesUntil(scheduledRunAt);
+  if (!(minutesLeft > 0 && minutesLeft <= AUTO_REG_REMINDER_LEAD_MINUTES))
+    return;
+
+  await patchAutoRegRunState({ reminderForScheduledRunAt: scheduledRunAt });
+  const shownMinutes = Math.ceil(minutesLeft);
+  notify(
+    AUTO_REG_REMINDER_NOTIFICATION,
+    "Registration Opening Soon!",
+    `Your registration window opens in ~${shownMinutes} minute${shownMinutes === 1 ? "" : "s"}.`,
+  );
+}
+
+async function finishAutoRegRun(
+  record: AutoRegBatchResultRecord,
+): Promise<void> {
+  await patchAutoRegRunState({ lastResult: record, armed: false });
+  await browser.alarms.clear(AUTO_REG_RUN_ALARM);
+}
+
+/** Submits the armed queue in the Banner tab, once, and records the outcome. */
+async function submitAutoRegQueue(): Promise<void> {
+  const run = await getAutoRegRunState();
+  if (!run.armed) return;
+
+  const queue = await getAutoRegQueue();
+  if (!isDue(queue.scheduledRunAt) || !queue.term || queue.crns.length === 0) {
+    return;
+  }
+
+  const dedupeRunKey = dedupeRunKeyOf(queue);
+  if (run.dedupeRunKey === dedupeRunKey) return;
+  await patchAutoRegRunState({ dedupeRunKey });
+
+  const result = await relayToBannerTab({
+    type: "SSB_AUTO_REGISTER_RUN",
+    payload: { term: queue.term, crnList: queue.crns },
+  });
+  const at = new Date().toISOString();
+
+  if (!result.success) {
+    const error = result.error ?? "Unknown error";
+    await finishAutoRegRun(failedResultRecord(error, at));
+    notify(AUTO_REG_FAILED_NOTIFICATION, "Auto-register failed", error);
+    return;
+  }
+
+  const submitted = isExecuteRegistrationResult(result.data)
+    ? result.data
+    : null;
+  const record = buildResultRecord(
+    submitted?.batchResponse ?? null,
+    queue.crns,
+    submitted?.stagingFailures ?? [],
+    at,
+  );
+  await finishAutoRegRun(record);
+  notify(
+    AUTO_REG_DONE_NOTIFICATION,
+    record.ok ? "Auto-register complete" : "Auto-register — errors",
+    record.summary || "Batch submitted. See results in Auto-Register.",
+  );
+}
+
+// ── Messages ────────────────────────────────────────────────────────────────
+
+async function fetchRating(name: string): Promise<ExtensionResponse> {
+  const { data: ratings } = await searchProfessors({ query: { name } });
+  return { success: true, data: matchingProfile(name, ratings) };
+}
+
+async function handleMessage(
+  msg: ExtensionMessage,
+): Promise<ExtensionResponse> {
+  if (msg.type.startsWith("SSB_")) return relayToBannerTab(msg);
+  if (msg.type.startsWith("AUTOREG_")) return handleAutoRegMessage(msg);
+  switch (msg.type) {
+    case "BANNER_STATUS":
+      return { success: true, data: await bannerConnection() };
+    case "DARS_RUN_AUDIT":
+      return relayToDarsTab(msg);
+    case "FETCH_RATING":
+      return fetchRating(msg.payload.name);
+    default:
+      return unknownMessage(msg);
+  }
 }
 
 export default defineBackground(() => {
@@ -253,47 +366,7 @@ export default defineBackground(() => {
 
   onMessage(async (msg, sendResponse) => {
     try {
-      if (isSSBMessage(msg.type)) {
-        const result = await relayToSSBTab(msg);
-        sendResponse(result);
-        return;
-      }
-
-      if (msg.type === "BANNER_STATUS") {
-        sendResponse({ success: true, data: await bannerConnection() });
-        return;
-      }
-
-      if (isAutoRegisterMessage(msg.type)) {
-        sendResponse(await handleAutoRegister(msg));
-        return;
-      }
-
-      if (msg.type === "DARS_RUN_AUDIT") {
-        const result = await relayToDarsTab(msg);
-        sendResponse(result);
-        return;
-      }
-
-      switch (msg.type) {
-        case "FETCH_RATING": {
-          const { name } = msg.payload as { name: string };
-          const { data: ratings } = await searchProfessors({
-            query: { name },
-          });
-          sendResponse({
-            success: true,
-            data: matchingProfile(name, ratings),
-          });
-          break;
-        }
-
-        default:
-          sendResponse({
-            success: false,
-            error: `Unknown message type: ${msg.type}`,
-          });
-      }
+      sendResponse(await handleMessage(msg));
     } catch (err) {
       sendResponse({
         success: false,
@@ -302,132 +375,19 @@ export default defineBackground(() => {
     }
   });
 
-  void syncAutoRegFireAlarm();
+  void syncAutoRegRunAlarm();
 
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
-    if (
-      AUTO_REG_RUN_STATE_KEY in changes ||
-      AUTO_REG_SCHEDULE_CONFIG_KEY in changes
-    ) {
-      void syncAutoRegFireAlarm();
+    if (AUTO_REG_RUN_STATE_KEY in changes || AUTO_REG_QUEUE_KEY in changes) {
+      void syncAutoRegRunAlarm();
     }
   });
 
-  browser.alarms.create(REG_CHECK_ALARM, { periodInMinutes: 1 });
+  browser.alarms.create(AUTO_REG_REMINDER_ALARM, { periodInMinutes: 1 });
 
   browser.alarms.onAlarm.addListener(async (alarm) => {
-    if (alarm.name === REG_CHECK_ALARM) {
-      const { armed, reminderForScheduledRunAt } = await getAutoRegRunState();
-      if (!armed) return;
-
-      const { scheduledRunAt: targetTime } = await getAutoRegScheduleConfig();
-      if (!targetTime) return;
-
-      const target = new Date(targetTime).getTime();
-      const now = Date.now();
-      const diffMinutes = (target - now) / 60_000;
-
-      if (diffMinutes > 0 && diffMinutes <= 5) {
-        if (reminderForScheduledRunAt === targetTime) return;
-        await patchAutoRegRunState({ reminderForScheduledRunAt: targetTime });
-        browser.notifications.create("betterssb-reg-reminder", {
-          type: "basic",
-          iconUrl: "icon/128.png",
-          title: "Registration Opening Soon!",
-          message: `Your registration window opens in ~${Math.ceil(diffMinutes)} minute${Math.ceil(diffMinutes) === 1 ? "" : "s"}.`,
-          priority: 2,
-        });
-      }
-      return;
-    }
-
-    if (alarm.name !== AUTO_REG_FIRE_ALARM) return;
-
-    const runState = await getAutoRegRunState();
-    if (!runState.armed) return;
-
-    const schedule = await getAutoRegScheduleConfig();
-    const { scheduledRunAt: targetTime, term, crns: crnsRaw } = schedule;
-    if (!targetTime) return;
-
-    const targetMs = new Date(targetTime).getTime();
-    if (!Number.isFinite(targetMs)) return;
-
-    const now = Date.now();
-    if (now < targetMs) return;
-
-    if (!term?.trim() || !crnsRaw?.trim()) return;
-
-    const crnList = parseManualCrns(crnsRaw);
-    if (crnList.length === 0) return;
-
-    const batchDedupeKey = buildBatchDedupeKey(
-      targetTime,
-      term.trim(),
-      crnList,
-    );
-    if (runState.dedupeRunKey === batchDedupeKey) return;
-
-    await patchAutoRegRunState({ dedupeRunKey: batchDedupeKey });
-
-    const result = await relayToSSBTab({
-      type: "SSB_AUTO_REGISTER_RUN",
-      payload: { term: term.trim(), crnList },
-    });
-
-    const at = new Date().toISOString();
-
-    if (result.success) {
-      const raw = result.data as {
-        stagingFailures: StagingFailure[];
-        batchResponse: unknown;
-      } | null;
-      const record = buildResultRecord(
-        raw?.batchResponse ?? null,
-        raw?.stagingFailures ?? [],
-        at,
-      );
-      await patchAutoRegRunState({
-        lastBatchResultJson: JSON.stringify(record),
-        armed: false,
-      });
-      await browser.alarms.clear(AUTO_REG_FIRE_ALARM);
-      browser.notifications.create("betterssb-reg-done", {
-        type: "basic",
-        iconUrl: "icon/128.png",
-        title: record.ok ? "Auto-register complete" : "Auto-register — errors",
-        message:
-          record.summary.slice(0, 220) ||
-          "Batch submitted. See results in Auto-Register.",
-        priority: 2,
-      });
-    } else {
-      const err = result.error ?? "Unknown error";
-      const record: AutoRegBatchResultRecord = {
-        at,
-        ok: false,
-        registeredCount: 0,
-        failedCount: 0,
-        stagingFailures: [],
-        crnResults: [],
-        registeredHours: null,
-        billingHours: null,
-        summary: err,
-        error: err,
-      };
-      await patchAutoRegRunState({
-        lastBatchResultJson: JSON.stringify(record),
-        armed: false,
-      });
-      await browser.alarms.clear(AUTO_REG_FIRE_ALARM);
-      browser.notifications.create("betterssb-reg-fail", {
-        type: "basic",
-        iconUrl: "icon/128.png",
-        title: "Auto-register failed",
-        message: err.slice(0, 220),
-        priority: 2,
-      });
-    }
+    if (alarm.name === AUTO_REG_REMINDER_ALARM) await remindBeforeAutoRegRun();
+    else if (alarm.name === AUTO_REG_RUN_ALARM) await submitAutoRegQueue();
   });
 });
