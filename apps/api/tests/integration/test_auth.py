@@ -113,9 +113,12 @@ def google(cache: FakeCache, monkeypatch: pytest.MonkeyPatch) -> FakeGoogle:
     return FakeGoogle(client)
 
 
-async def start_login(client: AsyncClient, google: FakeGoogle) -> dict[str, str]:
+async def start_login(
+    client: AsyncClient, google: FakeGoogle, next_path: str | None = None
+) -> dict[str, str]:
     """Start sign-in and return the query params of Google's authorization URL."""
-    resp = await client.get("/api/auth/google/login")
+    query = {"next": next_path} if next_path is not None else {}
+    resp = await client.get("/api/auth/google/login", params=query)
     assert resp.status_code == 302
     params = {
         k: v[0] for k, v in parse_qs(urlparse(resp.headers["location"]).query).items()
@@ -124,8 +127,10 @@ async def start_login(client: AsyncClient, google: FakeGoogle) -> dict[str, str]
     return params
 
 
-async def sign_in(client: AsyncClient, google: FakeGoogle) -> Response:
-    params = await start_login(client, google)
+async def sign_in(
+    client: AsyncClient, google: FakeGoogle, next_path: str | None = None
+) -> Response:
+    params = await start_login(client, google, next_path)
     return await client.get(
         "/api/auth/google/callback",
         params={"code": "auth-code", "state": params["state"]},
@@ -178,15 +183,78 @@ class TestLogin:
 
 
 class TestLoginErrors:
-    async def test_google_unreachable_at_login(self, client: AsyncClient, google):
+    @pytest.mark.parametrize(
+        ("query", "page"),
+        [({}, ""), ({"next": "/plan"}, "/plan")],
+        ids=["home", "page"],
+    )
+    async def test_google_unreachable_at_login(
+        self, client: AsyncClient, google, query, page
+    ):
         async def unreachable():
             raise httpx2.ConnectError("connection refused")
 
         app.state.google.load_server_metadata = unreachable
-        resp = await client.get("/api/auth/google/login")
+        resp = await client.get("/api/auth/google/login", params=query)
 
         assert resp.status_code == 303
-        assert resp.headers["location"].endswith("?auth_error=failed")
+        assert (
+            resp.headers["location"]
+            == f"{settings.FRONTEND_URL}{page}?auth_error=failed"
+        )
+
+
+class TestReturnPath:
+    async def test_returns_to_the_page_sign_in_started_on(
+        self, client: AsyncClient, db, google
+    ):
+        resp = await sign_in(client, google, "/search?q=CIS+1001&term=202703")
+
+        assert resp.status_code == 303
+        assert (
+            resp.headers["location"]
+            == f"{settings.FRONTEND_URL}/search?q=CIS+1001&term=202703"
+        )
+        assert SESSION_COOKIE in client.cookies
+
+    async def test_failure_returns_to_the_page_with_the_error(
+        self, client: AsyncClient, db, google
+    ):
+        params = await start_login(client, google, "/search?q=CIS")
+        resp = await client.get(
+            "/api/auth/google/callback",
+            params={"error": "access_denied", "state": params["state"]},
+        )
+
+        assert (
+            resp.headers["location"]
+            == f"{settings.FRONTEND_URL}/search?q=CIS&auth_error=access_denied"
+        )
+
+    @pytest.mark.parametrize(
+        "next_path",
+        [
+            "https://evil.example.com",
+            "//evil.example.com",
+            "/\\evil.example.com",
+            "/\t/evil.example.com",
+            "search",
+            "/" + "a" * 2048,
+        ],
+        ids=["absolute", "protocol-relative", "backslash", "tab", "relative", "long"],
+    )
+    async def test_ignores_paths_off_the_frontend(
+        self, client: AsyncClient, db, google, next_path
+    ):
+        resp = await sign_in(client, google, next_path)
+        assert resp.headers["location"] == settings.FRONTEND_URL
+
+    async def test_abandoned_sign_in_leaves_no_return_path(
+        self, client: AsyncClient, db, google
+    ):
+        await start_login(client, google, "/plan")
+        resp = await sign_in(client, google)
+        assert resp.headers["location"] == settings.FRONTEND_URL
 
 
 class TestCallback:

@@ -246,8 +246,8 @@ The advisor uses PydanticAI with Gemini 3.8 Flash and, when `GROQ_API_KEY` is se
 
 Sign-in is Google only, using the OAuth 2.0 authorization code flow with OpenID Connect, via [Authlib](https://docs.authlib.org/).
 
-1. `GET /api/auth/google/login` redirects to Google with `state`, `nonce`, and a PKCE challenge. Those values are kept in Redis. A signed cookie that expires after 10 minutes ties them to the browser that started the flow, so sign-in must finish within that time.
-2. `GET /api/auth/google/callback` checks `state`, exchanges the code, and validates the ID token locally against Google's keys (signature, `iss`, `aud`, `exp`, `nonce`). It then upserts the user by Google's `sub` (never by email), opens a session, and redirects to `FRONTEND_URL`. If sign-in fails, it appends `?auth_error=access_denied|failed|account_disabled`.
+1. `GET /api/auth/google/login?next=/search` redirects to Google with `state`, `nonce`, and a PKCE challenge. `next` is the page to come back to, a path on the frontend; anything else is ignored. Those values are kept in Redis. A signed cookie that expires after 10 minutes ties them to the browser that started the flow, so sign-in must finish within that time.
+2. `GET /api/auth/google/callback` checks `state`, exchanges the code, and validates the ID token locally against Google's keys (signature, `iss`, `aud`, `exp`, `nonce`). It then upserts the user by Google's `sub` (never by email), opens a session, and redirects to the `next` page on `FRONTEND_URL` (the home page without one). If sign-in fails, it redirects there too and appends `auth_error=access_denied|failed|account_disabled` to the query.
 3. Sessions are server-side, in the Postgres `sessions` table. The `__Host-Http-sid` cookie (`Secure`, `HttpOnly`, `SameSite=Lax`, host-only) holds a random 256-bit token, and only its SHA-256 hash is stored. Sessions expire after 7 days of inactivity or 30 days total. Each sign-in issues a new ID.
 4. `POST /api/auth/logout` deletes the session row and clears the cookie. `GET /api/auth/me` returns the current user, or `401`.
 

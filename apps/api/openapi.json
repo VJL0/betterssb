@@ -3893,7 +3893,7 @@
   "paths": {
     "/api/auth/google/callback": {
       "get": {
-        "description": "Finish Google sign-in, start a session, and redirect to the frontend.",
+        "description": "Finish Google sign-in, start a session, and return to the page it started on.",
         "operationId": "google_callback",
         "responses": {
           "200": {
@@ -3940,6 +3940,26 @@
       "get": {
         "description": "Redirect to Google to sign in.",
         "operationId": "google_login",
+        "parameters": [
+          {
+            "description": "The frontend page to return to, such as `/search?q=CIS`.",
+            "in": "query",
+            "name": "next",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The frontend page to return to, such as `/search?q=CIS`.",
+              "title": "Next"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {

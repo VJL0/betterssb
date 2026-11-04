@@ -15,11 +15,13 @@ function signedOut() {
 }
 
 describe("AppHeader", () => {
-  it("offers sign-in to a guest", async () => {
+  it("offers sign-in to a guest that comes back to this page", async () => {
     signedOut();
-    renderPage(<AppHeader />);
+    renderPage(<AppHeader />, { route: "/search?q=CIS 1001" });
     const signIn = await screen.findByRole("link", { name: "Sign in" });
-    expect(signIn.getAttribute("href")).toBe("/api/auth/google/login");
+    expect(signIn.getAttribute("href")).toBe(
+      "/api/auth/google/login?next=%2Fsearch%3Fq%3DCIS%2B1001",
+    );
   });
 
   it("still offers sign-in when the API can't say who's signed in", async () => {
