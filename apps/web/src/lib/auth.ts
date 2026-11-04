@@ -1,7 +1,8 @@
 /**
  * Google sign-in, run entirely by the backend. The browser is sent to the
  * login endpoint, the backend finishes OAuth, sets an HttpOnly session cookie,
- * and redirects back here (with `?auth_error=` if it failed).
+ * and redirects back to the page sign-in started on (with `?auth_error=` if it
+ * failed).
  */
 import {
   ApiError,
@@ -15,7 +16,12 @@ const UNAUTHORIZED = 401;
 export type User = UserResponse;
 
 /** A navigation, not a fetch call, so it isn't in the generated client. */
-export const LOGIN_URL = "/api/auth/google/login";
+const LOGIN_PATH = "/api/auth/google/login";
+
+/** Signs in, then comes back to `returnTo` (a path with its query string). */
+export function loginUrl(returnTo: string): string {
+  return `${LOGIN_PATH}?${new URLSearchParams({ next: returnTo })}`;
+}
 
 const AUTH_ERRORS: Record<string, string> = {
   access_denied: "Sign-in was cancelled.",

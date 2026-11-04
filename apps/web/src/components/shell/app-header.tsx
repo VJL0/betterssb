@@ -8,6 +8,8 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { buttonVariants } from "@workspace/ui/components/button";
 import {
   DropdownMenu,
@@ -28,7 +30,7 @@ import {
   useCurrentUser,
   useSignOut,
 } from "@/hooks/use-current-user";
-import { LOGIN_URL, type User } from "@/lib/auth";
+import { loginUrl, type User } from "@/lib/auth";
 import { openFeedbackForm } from "@/lib/feedback";
 import { FEEDBACK_ENABLED } from "@/lib/sentry";
 import { NavLink } from "./nav-link";
@@ -86,16 +88,29 @@ export function AppHeader() {
           <AccountMenu user={user} />
         </div>
         {!user && !currentUser.isPending && (
-          // A full-page navigation: the backend runs the Google sign-in.
-          <a
-            href={LOGIN_URL}
-            className={cn(buttonVariants({ size: "sm" }), "ml-auto sm:ml-0")}
-          >
-            Sign in
-          </a>
+          // Reading the query string suspends while the page prerenders.
+          <Suspense>
+            <SignInLink />
+          </Suspense>
         )}
       </div>
     </header>
+  );
+}
+
+/** Sign in that comes back to this page, query string included. */
+function SignInLink() {
+  const pathname = usePathname();
+  const search = useSearchParams().toString();
+  const returnTo = search ? `${pathname}?${search}` : pathname;
+  return (
+    // A full-page navigation: the backend runs the Google sign-in.
+    <a
+      href={loginUrl(returnTo)}
+      className={cn(buttonVariants({ size: "sm" }), "ml-auto sm:ml-0")}
+    >
+      Sign in
+    </a>
   );
 }
 
