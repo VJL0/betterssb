@@ -1,5 +1,9 @@
 import { ExternalLinkIcon } from "lucide-react";
-import type { AutoRegBatchResultRecord } from "@workspace/shared/lib/auto-reg-batch-result";
+import {
+  CRN_OUTCOME_BADGE,
+  outcomeHeadline,
+  type AutoRegBatchResultRecord,
+} from "@workspace/shared/lib/auto-reg-batch-result";
 import { Card } from "@workspace/ui/components/card";
 import { StatusBadge } from "@workspace/ui/components/status-badge";
 import {
@@ -25,13 +29,9 @@ function ranAt(iso: string): string {
 
 /** W4.1 results: the last batch's outcome, CRN by CRN. */
 export function LastRun({ result }: { result: AutoRegBatchResultRecord }) {
-  const total = result.registeredCount + result.failedCount;
   const heading =
-    total > 0
-      ? `${result.registeredCount} of ${total} registered`
-      : result.ok
-        ? "Submitted"
-        : "The run didn't go through";
+    outcomeHeadline(result) ??
+    (result.ok ? "Submitted" : "The run didn't go through");
 
   return (
     <Card
@@ -75,8 +75,8 @@ export function LastRun({ result }: { result: AutoRegBatchResultRecord }) {
                   </TableCell>
                   <TableCell className="tabular-nums">{line.crn}</TableCell>
                   <TableCell>
-                    <StatusBadge tone={line.ok ? "success" : "destructive"}>
-                      {line.ok ? "Registered" : "Not registered"}
+                    <StatusBadge tone={CRN_OUTCOME_BADGE[line.outcome].tone}>
+                      {CRN_OUTCOME_BADGE[line.outcome].label}
                     </StatusBadge>
                   </TableCell>
                   <TableCell className="whitespace-normal text-muted-foreground">

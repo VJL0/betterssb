@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { isPlanKey } from "@workspace/shared/lib/store";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { extensionStore } from "@/lib/local-store";
 
@@ -8,9 +9,7 @@ export function usePlans(): TermPlan[] {
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      const keys = (await extensionStore.keys()).filter((k) =>
-        k.startsWith("plan:"),
-      ) as `plan:${string}`[];
+      const keys = (await extensionStore.keys()).filter(isPlanKey);
       const docs = await Promise.all(keys.map((k) => extensionStore.get(k)));
       if (!cancelled) setPlans(docs.filter((d): d is TermPlan => d !== null));
     };

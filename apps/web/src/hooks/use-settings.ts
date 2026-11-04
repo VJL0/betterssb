@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { withSettingDefaults } from "@workspace/shared/lib/store";
+import { settingsOrDefaults } from "@workspace/shared/lib/store";
 import type { UserSettings } from "@workspace/shared/types/store";
 import { useStoreDocument } from "@/lib/store/store-context";
 
@@ -7,7 +7,7 @@ import { useStoreDocument } from "@/lib/store/store-context";
 export function useSettings() {
   const doc = useStoreDocument("settings");
   const settings: UserSettings = useMemo(
-    () => withSettingDefaults(doc.value),
+    () => settingsOrDefaults(doc.value),
     [doc.value],
   );
   const { save } = doc;

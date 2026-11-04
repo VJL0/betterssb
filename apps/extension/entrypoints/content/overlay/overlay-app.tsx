@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { clashesWithPlan } from "@workspace/shared/lib/plan";
-import { planKey, withSettingDefaults } from "@workspace/shared/lib/store";
+import { planKey, settingsOrDefaults } from "@workspace/shared/lib/store";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { useStoreDocument } from "@/hooks/use-store-document";
 import { setOverlayStatus } from "@/lib/overlay-status";
@@ -42,7 +42,7 @@ export function OverlayApp({
   popupContainer: HTMLElement;
 }) {
   const settings = useStoreDocument("settings");
-  const { bannerOverlay, term } = withSettingDefaults(settings.value);
+  const { bannerOverlay, term } = settingsOrDefaults(settings.value);
   const enabled = settings.loaded && bannerOverlay;
 
   useEffect(() => {

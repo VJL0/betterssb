@@ -59,9 +59,10 @@ export function createShadowHost(
 }
 
 function ownHost(element: Element | null, slot: string): HTMLElement | null {
-  return element?.localName === HOST_TAG &&
-    (element as HTMLElement).dataset.slot === slot
-    ? (element as HTMLElement)
+  return element instanceof HTMLElement &&
+    element.localName === HOST_TAG &&
+    element.dataset.slot === slot
+    ? element
     : null;
 }
 
@@ -82,10 +83,10 @@ export function hostBefore(anchor: Element, slot: string, css: string) {
 
 /** The host at the end of `cell`, made on first use. */
 export function hostInside(cell: Element, slot: string, css: string) {
-  const existing = [...cell.children].find((child) => ownHost(child, slot));
-  if (existing && containers.has(existing)) {
-    return containerOf(existing as HTMLElement);
-  }
+  const existing = [...cell.children]
+    .map((child) => ownHost(child, slot))
+    .find((host) => host !== null);
+  if (existing && containers.has(existing)) return containerOf(existing);
   const { host, container } = createShadowHost(css, slot, "block");
   cell.append(host);
   return container;

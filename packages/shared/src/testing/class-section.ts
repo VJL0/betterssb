@@ -17,12 +17,16 @@ export function meetingTime(
   end: string | null,
   overrides: Partial<MeetingTime> = {},
 ): MeetingTime {
-  const flags = Object.fromEntries(
-    Object.entries(DAY_FLAGS).map(([letter, name]) => [
-      name,
-      days.includes(letter),
-    ]),
-  ) as Record<(typeof DAY_FLAGS)[keyof typeof DAY_FLAGS], boolean>;
+  const meets = (letter: keyof typeof DAY_FLAGS) => days.includes(letter);
+  const flags = {
+    [DAY_FLAGS.M]: meets("M"),
+    [DAY_FLAGS.T]: meets("T"),
+    [DAY_FLAGS.W]: meets("W"),
+    [DAY_FLAGS.R]: meets("R"),
+    [DAY_FLAGS.F]: meets("F"),
+    [DAY_FLAGS.S]: meets("S"),
+    [DAY_FLAGS.U]: meets("U"),
+  };
   return {
     beginTime: begin,
     endTime: end,

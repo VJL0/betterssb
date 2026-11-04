@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { sendTabMessage } from "@/lib/messaging";
-import type { OverlayStatus } from "@/lib/overlay-status";
+import { isOverlayStatus, type OverlayStatus } from "@/lib/overlay-status";
 import { isBannerPage } from "@/lib/temple-urls";
 
 /** Whether the tab the popup opened over is a Banner page. */
@@ -37,7 +37,9 @@ export function useOverlayStatus(onBanner: boolean) {
         type: "OVERLAY_STATUS",
         payload: {},
       }).catch(() => null);
-      return response?.success ? (response.data as OverlayStatus | null) : null;
+      return response?.success && isOverlayStatus(response.data)
+        ? response.data
+        : null;
     },
   });
 }

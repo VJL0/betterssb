@@ -14,6 +14,7 @@ import type {
   SSBAddCRNRegistrationResponse,
   SSBSubmitRegistrationBatchPayload,
 } from "@workspace/shared/types/ssb";
+import type { ExecuteRegistrationResult } from "@workspace/shared/lib/auto-reg-batch-result";
 
 const SSB_BASE = "/StudentRegistrationSsb/ssb";
 
@@ -124,9 +125,9 @@ async function ssbPost<T>(
 
   if (!res.ok) throw new Error(`SSB POST ${path} failed: ${res.status}`);
 
-  const ct = res.headers.get("content-type") ?? "";
-  if (ct.includes("application/json")) return res.json();
-  return (await res.text()) as unknown as T;
+  // Banner labels some JSON answers text/html; a login page fails to parse,
+  // which the background reads as a signed-out session.
+  return JSON.parse(await res.text());
 }
 
 async function ssbPostJson<T>(path: string, body: unknown): Promise<T> {
@@ -211,11 +212,6 @@ export async function submitRegistrationBatch(
   payload: SSBSubmitRegistrationBatchPayload,
 ): Promise<unknown> {
   return ssbPostJson("/classRegistration/submitRegistration/batch", payload);
-}
-
-export interface ExecuteRegistrationResult {
-  stagingFailures: { crn: string; message: string }[];
-  batchResponse: unknown;
 }
 
 /**

@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
-import type { BannerConnection } from "@workspace/shared/types/store";
+import { isAutoRegSnapshot } from "@workspace/shared/lib/auto-reg-queue";
+import { isBannerConnection } from "@workspace/shared/lib/store";
 import { AUTO_REG_RUN_STATE_KEY } from "@/lib/auto-reg-run-state";
-import { AUTO_REG_SCHEDULE_CONFIG_KEY } from "@/lib/auto-reg-schedule-config";
-import { askBackground } from "@/lib/ask-background";
+import { AUTO_REG_QUEUE_KEY } from "@/lib/auto-reg-queue-storage";
+import { askBackground, tellBackground } from "@/lib/ask-background";
 
 const AUTO_REGISTER = ["autoRegister"] as const;
 
@@ -14,10 +14,7 @@ export function useAutoRegister() {
 
   useEffect(() => {
     const onChanged = (changes: Record<string, unknown>) => {
-      if (
-        AUTO_REG_RUN_STATE_KEY in changes ||
-        AUTO_REG_SCHEDULE_CONFIG_KEY in changes
-      ) {
+      if (AUTO_REG_RUN_STATE_KEY in changes || AUTO_REG_QUEUE_KEY in changes) {
         void queryClient.invalidateQueries({ queryKey: AUTO_REGISTER });
       }
     };
@@ -27,10 +24,11 @@ export function useAutoRegister() {
 
   const snapshot = useQuery({
     queryKey: AUTO_REGISTER,
-    queryFn: () => askBackground<AutoRegSnapshot>("AUTOREG_GET"),
+    queryFn: () =>
+      askBackground({ type: "AUTOREG_GET", payload: {} }, isAutoRegSnapshot),
   });
   const disarm = useMutation({
-    mutationFn: () => askBackground("AUTOREG_DISARM"),
+    mutationFn: () => tellBackground({ type: "AUTOREG_DISARM", payload: {} }),
     onSettled: () => queryClient.invalidateQueries({ queryKey: AUTO_REGISTER }),
   });
   return { snapshot, disarm };
@@ -40,6 +38,7 @@ export function useAutoRegister() {
 export function useBannerConnection() {
   return useQuery({
     queryKey: ["bannerConnection"],
-    queryFn: () => askBackground<BannerConnection>("BANNER_STATUS"),
+    queryFn: () =>
+      askBackground({ type: "BANNER_STATUS", payload: {} }, isBannerConnection),
   });
 }

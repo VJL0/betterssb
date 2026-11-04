@@ -1,11 +1,13 @@
 /**
  * The postMessage protocol between the BetterSSB website and the extension's
  * web-bridge content script. Only the requests listed here cross the bridge,
- * and store requests must name a known store key.
+ * store requests must name a known store key, and a document being saved
+ * must have that key's outline.
  */
 import type { AutoRegQueue } from "../types/auto-reg";
-import type { StoreKey } from "../types/store";
-import { isStoreKey } from "./store";
+import type { StoreDocument, StoreKey } from "../types/store";
+import { isRecord } from "./guards";
+import { isStoreDocument, isStoreKey } from "./store";
 
 export const BRIDGE_SOURCE = "betterssb-bridge";
 
@@ -15,7 +17,7 @@ export type BridgeRequest =
   | { type: "STORE_KEYS" }
   | { type: "STORE_GET"; key: StoreKey }
   | { type: "STORE_DELETE"; key: StoreKey }
-  | { type: "STORE_SET"; key: StoreKey; value: unknown }
+  | { type: "STORE_SET"; key: StoreKey; value: StoreDocument }
   | { type: "AUTOREG_GET" }
   | { type: "AUTOREG_SAVE_QUEUE"; queue: AutoRegQueue }
   | { type: "AUTOREG_ARM" }
@@ -24,8 +26,6 @@ export type BridgeRequest =
   | { type: "AUTOREG_REGISTRATION_TIME"; term: string }
   | { type: "BANNER_REG_TERMS" }
   | { type: "BANNER_REG_PLANS" };
-
-export type BridgeRequestType = BridgeRequest["type"];
 
 export interface BridgeResponse {
   source: typeof BRIDGE_SOURCE;
@@ -67,8 +67,8 @@ function isTermCode(value: unknown): value is string {
 
 /** A queue the extension may save: a term, unique 5-digit CRNs, and a time. */
 export function parseAutoRegQueue(value: unknown): AutoRegQueue | null {
-  const v = value as Record<string, unknown> | null;
-  if (typeof v !== "object" || v === null) return null;
+  if (!isRecord(value)) return null;
+  const v = value;
   if (!isTermCode(v.term) || !isCrnList(v.crns)) return null;
   if (
     typeof v.scheduledRunAt !== "string" ||
@@ -82,13 +82,7 @@ export function parseAutoRegQueue(value: unknown): AutoRegQueue | null {
 type Envelope = Record<string, unknown>;
 
 function isEnvelope(data: unknown, dir: string): data is Envelope {
-  const d = data as Envelope | null;
-  return (
-    typeof d === "object" &&
-    d !== null &&
-    d.source === BRIDGE_SOURCE &&
-    d.dir === dir
-  );
+  return isRecord(data) && data.source === BRIDGE_SOURCE && data.dir === dir;
 }
 
 /** The request in a page message, or null if it isn't an allowed bridge request. */
@@ -97,7 +91,7 @@ export function parseBridgeRequest(
 ): { id: string; request: BridgeRequest } | null {
   if (!isEnvelope(data, "request") || typeof data.id !== "string") return null;
   const { id, type } = data;
-  const payload = (data.payload ?? {}) as Envelope;
+  const payload: Envelope = isRecord(data.payload) ? data.payload : {};
   switch (type) {
     case "DARS_RUN_AUDIT":
     case "BANNER_STATUS":
@@ -126,7 +120,8 @@ export function parseBridgeRequest(
         ? { id, request: { type, key: payload.key } }
         : null;
     case "STORE_SET":
-      return isStoreKey(payload.key) && "value" in payload
+      return isStoreKey(payload.key) &&
+        isStoreDocument(payload.key, payload.value)
         ? { id, request: { type, key: payload.key, value: payload.value } }
         : null;
     default:

@@ -121,8 +121,7 @@ describe("Banner overlay", () => {
       },
     ]);
     answerBackground({
-      FETCH_RATING: (payload) =>
-        (payload as { name: string }).name === "Ada Lovelace" ? LOVELACE : null,
+      FETCH_RATING: ({ name }) => (name === "Ada Lovelace" ? LOVELACE : null),
     });
   });
 

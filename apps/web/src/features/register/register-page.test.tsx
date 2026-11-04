@@ -214,27 +214,40 @@ describe("RegisterPage", () => {
           at: NOW,
           ok: false,
           registeredCount: 1,
+          waitlistedCount: 1,
           failedCount: 1,
           stagingFailures: [],
           crnResults: [
-            { crn: "41207", label: "CIS 2168", ok: true, detail: "Registered" },
+            {
+              crn: "41207",
+              label: "CIS 2168",
+              outcome: "registered",
+              detail: "Registered",
+            },
+            {
+              crn: "50067",
+              label: "CIS 3441",
+              outcome: "waitlisted",
+              detail: "Added to the waitlist",
+            },
             {
               crn: "52018",
               label: "MATH 2101",
-              ok: false,
+              outcome: "failed",
               detail: "Closed section",
             },
           ],
           registeredHours: "4",
           billingHours: "4",
-          summary: "1 registered, 1 failed",
+          summary: "1 registered, 1 waitlisted, 1 failed",
         },
       },
     });
     renderPage(<RegisterPage />);
     expect(
-      await screen.findByText("Last run · 1 of 2 registered"),
+      await screen.findByText("Last run · 1 of 3 registered, 1 waitlisted"),
     ).toBeTruthy();
+    expect(screen.getByText("Waitlisted")).toBeTruthy();
     expect(screen.getByText("Closed section")).toBeTruthy();
   });
 
