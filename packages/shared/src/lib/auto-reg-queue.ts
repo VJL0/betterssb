@@ -22,27 +22,15 @@ export function armProblem(queue: AutoRegQueue, now: number): string | null {
   return null;
 }
 
-/** What a relayed Banner call returned. */
-export interface RelayedResult {
-  success: boolean;
-  data?: unknown;
-  error?: string;
-}
-
 /**
  * Whether Banner's section-by-CRN lookup found `crn`. Banner answers
- * `{ success: false }` for an unknown CRN; anything this can't read means
- * Banner couldn't be asked, which is null rather than a guess.
+ * `{ success: false }` for an unknown CRN; an answer this can't read is null
+ * rather than a guess.
  */
-export function crnLookupResult(
-  crn: string,
-  result: RelayedResult,
-): boolean | null {
-  if (!result.success) return null;
-  const { data } = result;
-  if (!isRecord(data)) return null;
-  if (data.success === false) return false;
-  const section = isRecord(data.model) ? data.model : data;
+export function crnLookupResult(crn: string, answer: unknown): boolean | null {
+  if (!isRecord(answer)) return null;
+  if (answer.success === false) return false;
+  const section = isRecord(answer.model) ? answer.model : answer;
   if ("courseReferenceNumber" in section) {
     return String(section.courseReferenceNumber) === crn;
   }

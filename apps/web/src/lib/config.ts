@@ -6,9 +6,13 @@
 export const ENVIRONMENT =
   process.env.NODE_ENV === "production" ? "production" : "development";
 
-/** Where students sign in to Temple's Banner registration. */
+/**
+ * Banner's "Register for Classes" entry: signs the student in if needed and
+ * lands on term selection. Not the `/ssb/registration` landing page, which
+ * ends a signed-in session.
+ */
 export const BANNER_REGISTRATION_URL =
-  "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/registration";
+  "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/registration/registerPostSignIn?mode=registration";
 
 /** Where students sign in to TUportal, whose countdown has their registration time. */
 export const TUPORTAL_URL = "https://tuportal6.temple.edu/group/home/";

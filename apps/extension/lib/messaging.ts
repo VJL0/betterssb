@@ -5,11 +5,11 @@ type NoPayload = Record<string, never>;
 /** Each message type's payload; `switch (msg.type)` narrows `msg.payload` to it. */
 export interface MessagePayloads {
   FETCH_RATING: { name: string };
-  // Answered by the content script in a Banner tab (the background relays them).
+  // Banner calls, made by the background with the student's cookies.
   SSB_REG_GET_TERMS: NoPayload;
-  SSB_REG_GET_PLANS: NoPayload;
-  SSB_REG_GET_SECTION_CRN: { crn: string; term: string };
-  SSB_AUTO_REGISTER_RUN: { term: string; crnList: string[] };
+  SSB_REG_GET_PLANS: { term: string };
+  /** To a Banner tab: restart the page's own idle-logout timer. */
+  BANNER_RESTART_TIMER: NoPayload;
   DARS_RUN_AUDIT: NoPayload;
   BANNER_STATUS: NoPayload;
   AUTOREG_GET: NoPayload;
@@ -51,28 +51,8 @@ export function sendTabMessage(
   );
 }
 
+/** Listens for extension messages, in the background or a content script. */
 export function onMessage(
-  handler: (
-    msg: ExtensionMessage,
-    sendResponse: (res: ExtensionResponse) => void,
-  ) => void,
-): void {
-  browser.runtime.onMessage.addListener(
-    (
-      message: ExtensionMessage,
-      _sender: Browser.runtime.MessageSender,
-      sendResponse: (res: ExtensionResponse) => void,
-    ) => {
-      handler(message, sendResponse);
-      return true;
-    },
-  );
-}
-
-/**
- * Listen for messages in a content script (from background or popup).
- */
-export function onContentMessage(
   handler: (
     msg: ExtensionMessage,
     sendResponse: (res: ExtensionResponse) => void,

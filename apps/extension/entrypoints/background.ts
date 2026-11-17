@@ -2,7 +2,6 @@ import { searchProfessors } from "@workspace/api-client";
 import {
   buildResultRecord,
   failedResultRecord,
-  isExecuteRegistrationResult,
   type AutoRegBatchResultRecord,
 } from "@workspace/shared/lib/auto-reg-batch-result";
 import {
@@ -17,6 +16,10 @@ import type {
 } from "@workspace/shared/types/auto-reg";
 import type { BannerConnection } from "@workspace/shared/types/store";
 import { setUpApiClient } from "@/lib/api-client";
+import {
+  BANNER_CONNECTION_KEY,
+  isSignedInToBanner,
+} from "@/lib/banner-session";
 import {
   AUTO_REG_RUN_STATE_KEY,
   getAutoRegRunState,
@@ -34,6 +37,7 @@ import {
   type ExtensionMessage,
   type ExtensionResponse,
 } from "@/lib/messaging";
+import * as ssb from "@/lib/ssb-api";
 import { BANNER_PAGES, DARS_PAGES, DARS_START_URL } from "@/lib/temple-urls";
 import { lookUpRegistrationTime } from "@/lib/tuportal-api";
 
@@ -43,18 +47,14 @@ const DARS_SIGN_IN_POLL_MS = 1000;
 const DARS_RELAY_ATTEMPTS = 10;
 const DARS_RELAY_RETRY_MS = 500;
 
-/** Set when a Banner call fails the way an expired session does; cleared on the next success. */
-const BANNER_SIGNED_OUT_KEY = "betterssb:bannerSignedOut";
-// A signed-out Banner answers XHRs with 401/403 or its HTML login page instead of JSON.
-const BANNER_SIGNED_OUT_ERROR =
-  /\b(401|403)\b|not valid JSON|Unexpected token '<'/i;
-
+/** Fires every minute: the run reminder, and watching Banner while armed. */
 const AUTO_REG_REMINDER_ALARM = "betterssb:autoRegReminder";
 const AUTO_REG_REMINDER_LEAD_MINUTES = 5;
 const AUTO_REG_RUN_ALARM = "betterssb:autoRegRun";
 const AUTO_REG_REMINDER_NOTIFICATION = "betterssb:autoRegReminder";
 const AUTO_REG_DONE_NOTIFICATION = "betterssb:autoRegDone";
 const AUTO_REG_FAILED_NOTIFICATION = "betterssb:autoRegFailed";
+const BANNER_SIGNED_OUT_NOTIFICATION = "betterssb:bannerSignedOut";
 
 const NOTIFICATION_ICON = "icon/128.png";
 const NOTIFICATION_MESSAGE_MAX_LENGTH = 220;
@@ -77,47 +77,99 @@ function notify(id: string, title: string, message: string): void {
   });
 }
 
-// ── Banner tab ──────────────────────────────────────────────────────────────
+// ── Banner ──────────────────────────────────────────────────────────────────
 
-async function findBannerTab(): Promise<number | null> {
-  const tabs = await browser.tabs.query({ url: BANNER_PAGES });
-  return tabs[0]?.id ?? null;
-}
-
-async function recordBannerSession(result: ExtensionResponse): Promise<void> {
-  const signedOut =
-    !result.success && BANNER_SIGNED_OUT_ERROR.test(result.error ?? "");
-  // Other failures say nothing about the session, so they leave it as it was.
-  if (!signedOut && !result.success) return;
-  const stored = await browser.storage.local.get(BANNER_SIGNED_OUT_KEY);
-  if (stored[BANNER_SIGNED_OUT_KEY] !== signedOut) {
-    await browser.storage.local.set({ [BANNER_SIGNED_OUT_KEY]: signedOut });
-  }
-}
-
-async function relayToBannerTab(
-  msg: ExtensionMessage,
+/** Runs a Banner call and answers with it, the way messages are answered. */
+async function answerFromBanner(
+  call: () => Promise<unknown>,
 ): Promise<ExtensionResponse> {
-  const tabId = await findBannerTab();
-  if (!tabId) {
+  try {
+    return { success: true, data: await call() };
+  } catch (err) {
     return {
       success: false,
-      error: "No SSB tab found. Please open your registration page first.",
+      error: err instanceof Error ? err.message : "Banner request failed",
     };
   }
-  const result = await sendTabMessage(tabId, msg);
-  await recordBannerSession(result);
-  return result;
+}
+
+async function handleBannerMessage(
+  msg: ExtensionMessage,
+): Promise<ExtensionResponse> {
+  switch (msg.type) {
+    case "SSB_REG_GET_TERMS":
+      return answerFromBanner(() => ssb.getRegistrationTerms());
+    case "SSB_REG_GET_PLANS": {
+      const { term } = msg.payload;
+      return answerFromBanner(async () => {
+        await ssb.openRegistration(term);
+        return ssb.getPlans();
+      });
+    }
+    default:
+      return unknownMessage(msg);
+  }
+}
+
+/** An armed run submits through Banner, so a sign-out is worth interrupting for. */
+async function warnArmedSignOut(): Promise<void> {
+  if (!(await getAutoRegRunState()).armed) return;
+  notify(
+    BANNER_SIGNED_OUT_NOTIFICATION,
+    "Banner signed you out",
+    "Auto-register is armed but can't submit until you sign back in to Banner.",
+  );
 }
 
 /**
- * Whether Banner is usable: an open Banner tab whose last relayed call didn't
- * fail like an expired session. "not-connected" also covers never opening Banner.
+ * Banner, checked now with the student's cookies; no Banner tab is needed.
+ * A change is saved, which tells the popup and the website, and a sign-out
+ * warns an armed run. "not-connected" means Banner couldn't be reached.
  */
-async function bannerConnection(): Promise<BannerConnection> {
-  if (!(await findBannerTab())) return "not-connected";
-  const stored = await browser.storage.local.get(BANNER_SIGNED_OUT_KEY);
-  return stored[BANNER_SIGNED_OUT_KEY] === true ? "signed-out" : "connected";
+async function checkBanner(): Promise<BannerConnection> {
+  const connection = await isSignedInToBanner().then(
+    (signedIn): BannerConnection => (signedIn ? "connected" : "signed-out"),
+    (): BannerConnection => "not-connected",
+  );
+  const stored = await browser.storage.local.get(BANNER_CONNECTION_KEY);
+  const before: unknown = stored[BANNER_CONNECTION_KEY];
+  if (before === connection) return connection;
+  await browser.storage.local.set({ [BANNER_CONNECTION_KEY]: connection });
+  if (before === "connected" && connection === "signed-out") {
+    await warnArmedSignOut();
+  }
+  return connection;
+}
+
+async function bannerTabIds(): Promise<number[]> {
+  const tabs = await browser.tabs.query({ url: BANNER_PAGES });
+  return tabs.flatMap((tab) => (tab.id == null ? [] : [tab.id]));
+}
+
+/**
+ * Open Banner pages sign the student out after their own idle timeout, which
+ * ends the session the run needs, so each one restarts its timer.
+ */
+async function restartBannerPageTimers(): Promise<void> {
+  await Promise.all(
+    (await bannerTabIds()).map((tabId) =>
+      sendTabMessage(tabId, { type: "BANNER_RESTART_TIMER", payload: {} })
+        // A tab still loading starts its timer fresh anyway.
+        .catch(() => undefined),
+    ),
+  );
+}
+
+/**
+ * While a run is armed: checks Banner every minute, so a sign-out is noticed
+ * at once. The check is also what keeps the session: each request restarts
+ * Banner's idle window, so the session outlives it with no other calls
+ * (docs/ssb-login-system.md, "How the extension uses this").
+ */
+async function watchBannerWhileArmed(): Promise<void> {
+  if (!(await getAutoRegRunState()).armed) return;
+  if ((await checkBanner()) !== "connected") return;
+  await restartBannerPageTimers();
 }
 
 // ── DARS tab ────────────────────────────────────────────────────────────────
@@ -174,6 +226,14 @@ async function relayToDarsTab(
   return { success: false, error: lastError };
 }
 
+/** Whether Banner has `crn` in the opened term, or null when it couldn't say. */
+async function lookUpCrn(crn: string, term: string): Promise<boolean | null> {
+  return ssb.getSectionDetailsFromCRN(crn, term).then(
+    (answer) => crnLookupResult(crn, answer),
+    () => null,
+  );
+}
+
 // ── Auto-register queue ─────────────────────────────────────────────────────
 
 function snapshotOf(
@@ -209,6 +269,7 @@ async function handleAutoRegMessage(
       const problem = armProblem(queue, Date.now());
       if (problem) return { success: false, error: problem };
       await patchAutoRegRunState({ armed: true, dedupeRunKey: "" });
+      await watchBannerWhileArmed();
       return { success: true };
     }
     case "AUTOREG_DISARM":
@@ -217,13 +278,14 @@ async function handleAutoRegMessage(
     case "AUTOREG_CHECK_CRNS": {
       const { term, crns } = msg.payload;
       const checks: CrnCheck[] = [];
+      // When registration can't open, no CRN can be checked: each is unknown.
+      const opened = await ssb.openRegistration(term).then(
+        () => true,
+        () => false,
+      );
       // One at a time: Banner keeps registration state per session.
       for (const crn of crns) {
-        const result = await relayToBannerTab({
-          type: "SSB_REG_GET_SECTION_CRN",
-          payload: { crn, term },
-        });
-        checks.push({ crn, found: crnLookupResult(crn, result) });
+        checks.push({ crn, found: opened ? await lookUpCrn(crn, term) : null });
       }
       return { success: true, data: checks };
     }
@@ -293,7 +355,7 @@ async function finishAutoRegRun(
   await browser.alarms.clear(AUTO_REG_RUN_ALARM);
 }
 
-/** Submits the armed queue in the Banner tab, once, and records the outcome. */
+/** Submits the armed queue to Banner, once, and records the outcome. */
 async function submitAutoRegQueue(): Promise<void> {
   const run = await getAutoRegRunState();
   if (!run.armed) return;
@@ -307,26 +369,27 @@ async function submitAutoRegQueue(): Promise<void> {
   if (run.dedupeRunKey === dedupeRunKey) return;
   await patchAutoRegRunState({ dedupeRunKey });
 
-  const result = await relayToBannerTab({
-    type: "SSB_AUTO_REGISTER_RUN",
-    payload: { term: queue.term, crnList: queue.crns },
-  });
+  const submitted = await ssb
+    .executeRegistrationSubmit(queue.term, queue.crns)
+    .catch((err: unknown) =>
+      err instanceof Error ? err : new Error("Banner request failed"),
+    );
   const at = new Date().toISOString();
 
-  if (!result.success) {
-    const error = result.error ?? "Unknown error";
-    await finishAutoRegRun(failedResultRecord(error, at));
-    notify(AUTO_REG_FAILED_NOTIFICATION, "Auto-register failed", error);
+  if (submitted instanceof Error) {
+    await finishAutoRegRun(failedResultRecord(submitted.message, at));
+    notify(
+      AUTO_REG_FAILED_NOTIFICATION,
+      "Auto-register failed",
+      submitted.message,
+    );
     return;
   }
 
-  const submitted = isExecuteRegistrationResult(result.data)
-    ? result.data
-    : null;
   const record = buildResultRecord(
-    submitted?.batchResponse ?? null,
+    submitted.batchResponse,
     queue.crns,
-    submitted?.stagingFailures ?? [],
+    submitted.stagingFailures,
     at,
   );
   await finishAutoRegRun(record);
@@ -347,11 +410,11 @@ async function fetchRating(name: string): Promise<ExtensionResponse> {
 async function handleMessage(
   msg: ExtensionMessage,
 ): Promise<ExtensionResponse> {
-  if (msg.type.startsWith("SSB_")) return relayToBannerTab(msg);
+  if (msg.type.startsWith("SSB_")) return handleBannerMessage(msg);
   if (msg.type.startsWith("AUTOREG_")) return handleAutoRegMessage(msg);
   switch (msg.type) {
     case "BANNER_STATUS":
-      return { success: true, data: await bannerConnection() };
+      return { success: true, data: await checkBanner() };
     case "DARS_RUN_AUDIT":
       return relayToDarsTab(msg);
     case "FETCH_RATING":
@@ -387,7 +450,9 @@ export default defineBackground(() => {
   browser.alarms.create(AUTO_REG_REMINDER_ALARM, { periodInMinutes: 1 });
 
   browser.alarms.onAlarm.addListener(async (alarm) => {
-    if (alarm.name === AUTO_REG_REMINDER_ALARM) await remindBeforeAutoRegRun();
-    else if (alarm.name === AUTO_REG_RUN_ALARM) await submitAutoRegQueue();
+    if (alarm.name === AUTO_REG_REMINDER_ALARM) {
+      await remindBeforeAutoRegRun();
+      await watchBannerWhileArmed();
+    } else if (alarm.name === AUTO_REG_RUN_ALARM) await submitAutoRegQueue();
   });
 });

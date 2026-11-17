@@ -6,8 +6,12 @@
 export const BANNER_ORIGIN = "https://prd-xereg.temple.edu";
 /** Banner's registration pages: the content script, host permission and tab lookups. */
 export const BANNER_PAGES = `${BANNER_ORIGIN}/StudentRegistrationSsb/*`;
-/** Where students sign in to Banner registration. */
-export const BANNER_REGISTRATION_URL = `${BANNER_ORIGIN}/StudentRegistrationSsb/ssb/registration`;
+/**
+ * Banner's "Register for Classes" entry: signs the student in if needed and
+ * lands on term selection. Not the `/ssb/registration` landing page, which
+ * ends a signed-in session.
+ */
+export const BANNER_REGISTRATION_URL = `${BANNER_ORIGIN}/StudentRegistrationSsb/ssb/registration/registerPostSignIn?mode=registration`;
 
 export const DARS_ORIGIN = "https://prd-dars.temple.edu";
 export const DARS_PAGES = `${DARS_ORIGIN}/selfservice/*`;

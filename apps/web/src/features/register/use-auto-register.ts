@@ -75,8 +75,8 @@ export function useAutoRegister(extensionInstalled: boolean) {
   return { snapshot, save, arm, disarm };
 }
 
-/** Banner's registration terms and the student's Banner plans, once Banner is connected. */
-export function useBannerRegistration(connected: boolean) {
+/** Banner's registration terms and the student's Banner plans for `term`, once Banner is connected. */
+export function useBannerRegistration(connected: boolean, term: string) {
   const terms = useQuery({
     queryKey: ["bannerRegistrationTerms"],
     queryFn: getBannerRegistrationTerms,
@@ -85,9 +85,9 @@ export function useBannerRegistration(connected: boolean) {
     retry: false,
   });
   const plans = useQuery({
-    queryKey: ["bannerPlans"],
-    queryFn: getBannerPlans,
-    enabled: connected,
+    queryKey: ["bannerPlans", term],
+    queryFn: () => getBannerPlans(term),
+    enabled: connected && !!term,
     staleTime: BANNER_STALE_MS,
     retry: false,
   });

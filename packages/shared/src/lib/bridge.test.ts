@@ -49,6 +49,10 @@ describe("parseBridgeRequest", () => {
         request("AUTOREG_REGISTRATION_TIME", { term: "202703" }),
       )?.request,
     ).toEqual({ type: "AUTOREG_REGISTRATION_TIME", term: "202703" });
+    expect(
+      parseBridgeRequest(request("BANNER_REG_PLANS", { term: "202703" }))
+        ?.request,
+    ).toEqual({ type: "BANNER_REG_PLANS", term: "202703" });
   });
 
   it.each([
@@ -83,6 +87,7 @@ describe("parseBridgeRequest", () => {
       "a registration time lookup with a bad term",
       request("AUTOREG_REGISTRATION_TIME", { term: "Spring 2027" }),
     ],
+    ["a plans lookup without a term", request("BANNER_REG_PLANS")],
     [
       "an unknown key",
       request("STORE_GET", { key: "betterssb:autoRegRunState" }),
@@ -125,5 +130,6 @@ describe("isBridgeEvent", () => {
     expect(isBridgeEvent({ ...event, key: "audit" })).toBe(true);
     expect(isBridgeEvent({ ...event, key: "nope" })).toBe(false);
     expect(isBridgeEvent({ ...event, type: "AUTOREG_CHANGED" })).toBe(true);
+    expect(isBridgeEvent({ ...event, type: "BANNER_CHANGED" })).toBe(true);
   });
 });

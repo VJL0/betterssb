@@ -43,7 +43,7 @@ describe("GetStartedPage", () => {
       within(screen.getByRole("list", { name: "Setup steps" }))
         .getAllByRole("listitem")
         .map((step) => step.textContent),
-    ).toEqual(["Term", "Program", "Banner · optional"]);
+    ).toEqual(["Term", "Program", "Extension · optional"]);
     await user.click(screen.getByRole("button", { name: "Continue" }));
     expect(screen.getByText("Choose a term to continue.")).toBeTruthy();
   });
@@ -73,7 +73,7 @@ describe("GetStartedPage", () => {
     ).toBeTruthy();
   });
 
-  it("saves the term, start term and program, and lets Banner be skipped", async () => {
+  it("saves the term, start term and program, and lets the extension be skipped", async () => {
     const user = userEvent.setup();
     const startTerm = startTermOptions(new Date()).find((t) =>
       t.name.startsWith("Fall"),
@@ -120,7 +120,7 @@ describe("GetStartedPage", () => {
     for (const route of [
       "/start",
       "/start?step=program",
-      "/start?step=banner",
+      "/start?step=extension",
     ]) {
       const { container, unmount } = renderStart(route);
       await screen.findByRole("heading", { level: 1 });

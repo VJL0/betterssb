@@ -37,28 +37,18 @@ describe("crnLookupResult", () => {
     expect(
       crnLookupResult("41207", {
         success: true,
-        data: { success: true, model: { courseReferenceNumber: "41207" } },
+        model: { courseReferenceNumber: "41207" },
       }),
     ).toBe(true);
-    expect(
-      crnLookupResult("41207", {
-        success: true,
-        data: { courseReferenceNumber: 41207 },
-      }),
-    ).toBe(true);
-    expect(
-      crnLookupResult("41207", { success: true, data: { success: false } }),
-    ).toBe(false);
+    expect(crnLookupResult("41207", { courseReferenceNumber: 41207 })).toBe(
+      true,
+    );
+    expect(crnLookupResult("41207", { success: false })).toBe(false);
   });
 
-  it("is null when Banner couldn't be asked or the answer is unreadable", () => {
-    expect(
-      crnLookupResult("41207", { success: false, error: "No SSB tab" }),
-    ).toBeNull();
-    expect(crnLookupResult("41207", { success: true, data: "<html>" })).toBe(
-      null,
-    );
-    expect(crnLookupResult("41207", { success: true, data: {} })).toBeNull();
+  it("is null when the answer is unreadable", () => {
+    expect(crnLookupResult("41207", "<html>")).toBeNull();
+    expect(crnLookupResult("41207", {})).toBeNull();
   });
 });
 

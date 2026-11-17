@@ -1,7 +1,7 @@
 /**
  * Auto-register as the website sees it through the extension bridge. The
  * extension keeps the queue and the armed flag in chrome.storage.local and
- * runs the batch from a one-shot alarm in the student's own Banner tab.
+ * runs the batch from a one-shot alarm, with the student's own Banner sign-in.
  */
 import type { AutoRegBatchResultRecord } from "../lib/auto-reg-batch-result";
 

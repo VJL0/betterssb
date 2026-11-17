@@ -137,9 +137,9 @@ function NoExtension() {
         </EmptyMedia>
         <EmptyTitle>Auto-register runs from the extension</EmptyTitle>
         <EmptyDescription>
-          It submits your CRNs through your own signed-in Banner tab, so it
-          needs the BetterSSB extension in Chrome on this computer. Your queue
-          stays in this browser.
+          It submits your CRNs with your own Banner sign-in, so it needs the
+          BetterSSB extension in Chrome on this computer. Your queue stays in
+          this browser.
         </EmptyDescription>
       </EmptyHeader>
       {EXTENSION_INSTALL_URL && (
@@ -175,14 +175,23 @@ function coursesOf(rows: readonly QueueRow[]): PlanCourse[] {
   return [...courses.values()];
 }
 
-function bannerCheck(connection: BannerConnection | null): ArmCheck {
+function bannerCheck(
+  connection: BannerConnection | null,
+  armed: boolean,
+): ArmCheck {
   switch (connection) {
     case "connected":
-      return { label: "Banner tab open and signed in", state: "ok" };
+      return {
+        // While armed, the extension keeps Banner signed in until the run.
+        label: armed
+          ? "Signed in to Banner, kept signed in until the run"
+          : "Signed in to Banner",
+        state: "ok",
+      };
     case "signed-out":
-      return { label: "Sign in to Banner in your open tab", state: "bad" };
+      return { label: "Sign in to Banner", state: "bad" };
     case "not-connected":
-      return { label: "Open Banner registration in a tab", state: "bad" };
+      return { label: "Couldn't reach Banner", state: "bad" };
     default:
       return { label: "Checking Banner…", state: "pending" };
   }
@@ -224,9 +233,8 @@ function AutoRegister({
   const now = useNow(NOW_TICK_MS);
   const crnInput = useRef<HTMLInputElement>(null);
   const connected = connection === "connected";
-  const registration = useBannerRegistration(connected);
-
   const term = snapshot.term || currentTerm?.code || "";
+  const registration = useBannerRegistration(connected, term);
   const bannerPlans = registration.plans.data?.plans ?? NO_BANNER_PLANS;
   const rows = useMemo(
     () => queueRows(snapshot.crns, term, plans, bannerPlans),
@@ -272,12 +280,12 @@ function AutoRegister({
   };
   const queueProblem = armProblem(queue, now);
   const blocker = !connected
-    ? "Can't arm yet: auto-register submits through your Banner tab, so open Banner registration and sign in."
+    ? "Can't arm yet: auto-register submits with your Banner sign-in, so sign in to Banner first."
     : queueProblem;
 
   const termOpen = registration.terms.data?.some((t) => t.code === term);
   const checks: ArmCheck[] = [
-    bannerCheck(connection),
+    bannerCheck(connection, snapshot.armed),
     !connected || !registration.terms.data
       ? { label: "Term not checked yet", state: "pending" }
       : termOpen
@@ -347,11 +355,12 @@ function AutoRegister({
               <AlertTitle>
                 {connection === "signed-out"
                   ? "Can't arm: Banner is signed out"
-                  : "Can't arm: no Banner tab is open"}
+                  : "Can't arm: couldn't reach Banner"}
               </AlertTitle>
               <AlertDescription>
-                Auto-register submits through your own signed-in Banner tab.
-                Open Banner registration and keep the tab open until it runs.
+                {connection === "signed-out"
+                  ? "Auto-register submits with your own Banner sign-in. Sign in to Banner in any tab; you can close it afterwards."
+                  : "Check your connection. BetterSSB checks again on its own."}
               </AlertDescription>
               <AlertAction>
                 <ButtonLink
@@ -551,7 +560,8 @@ function RunSettings({
       </Field>
       <p className="rounded-2xl bg-muted/50 p-3 text-xs text-foreground/70">
         The queue and the armed state live in the extension in this browser. It
-        runs once, in your Banner tab, and doesn't retry or swap in backups.
+        runs once, with your Banner sign-in, and doesn't retry or swap in
+        backups.
       </p>
     </Card>
   );

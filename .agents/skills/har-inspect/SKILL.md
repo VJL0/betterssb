@@ -23,8 +23,8 @@ python3 $S diff "data/ssb/addcrnregistration and batch perfect result.har" \
 
 1. `list` to find the calls of interest, then `show` only those indexes.
 2. For a success/failure pair, `diff` first, then `show` the same endpoint from both files and compare the payloads and response bodies.
-3. When writing TypeScript for the content script, derive types from the actual `show` output (field names, nulls, nesting), not from memory of Banner's API, since it varies between Banner versions and schools.
-4. Banner's mutating calls need the page's `X-Synchronizer-Token` header and session cookies, which is why they run in the content script and not the backend.
+3. When writing TypeScript for the extension's Banner client (`apps/extension/lib/ssb-api.ts`), derive types from the actual `show` output (field names, nulls, nesting), not from memory of Banner's API, since it varies between Banner versions and schools.
+4. Banner's calls need the student's session cookies and a page's `X-Synchronizer-Token` header, which is why they run in the extension's background service worker (its host permission sends the cookies) and not the backend.
 
 ## Capturing new HARs
 

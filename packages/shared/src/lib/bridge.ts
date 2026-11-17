@@ -25,7 +25,7 @@ export type BridgeRequest =
   | { type: "AUTOREG_CHECK_CRNS"; term: string; crns: string[] }
   | { type: "AUTOREG_REGISTRATION_TIME"; term: string }
   | { type: "BANNER_REG_TERMS" }
-  | { type: "BANNER_REG_PLANS" };
+  | { type: "BANNER_REG_PLANS"; term: string };
 
 export interface BridgeResponse {
   source: typeof BRIDGE_SOURCE;
@@ -43,7 +43,8 @@ export type BridgeEvent =
       type: "STORE_CHANGED";
       key: StoreKey;
     }
-  | { source: typeof BRIDGE_SOURCE; dir: "event"; type: "AUTOREG_CHANGED" };
+  | { source: typeof BRIDGE_SOURCE; dir: "event"; type: "AUTOREG_CHANGED" }
+  | { source: typeof BRIDGE_SOURCE; dir: "event"; type: "BANNER_CHANGED" };
 
 /** A queue can hold at most this many CRNs (Banner's add limit is far lower). */
 export const MAX_QUEUED_CRNS = 30;
@@ -100,8 +101,11 @@ export function parseBridgeRequest(
     case "AUTOREG_ARM":
     case "AUTOREG_DISARM":
     case "BANNER_REG_TERMS":
-    case "BANNER_REG_PLANS":
       return { id, request: { type } };
+    case "BANNER_REG_PLANS":
+      return isTermCode(payload.term)
+        ? { id, request: { type, term: payload.term } }
+        : null;
     case "AUTOREG_SAVE_QUEUE": {
       const queue = parseAutoRegQueue(payload.queue);
       return queue ? { id, request: { type, queue } } : null;
@@ -138,6 +142,8 @@ export function isBridgeResponse(
 
 export function isBridgeEvent(data: unknown): data is BridgeEvent {
   if (!isEnvelope(data, "event")) return false;
-  if (data.type === "AUTOREG_CHANGED") return true;
+  if (data.type === "AUTOREG_CHANGED" || data.type === "BANNER_CHANGED") {
+    return true;
+  }
   return data.type === "STORE_CHANGED" && isStoreKey(data.key);
 }

@@ -5,7 +5,7 @@
  * requests on this origin (see @workspace/shared/lib/bridge). Through it the
  * site runs DARS audits in the student's own session, reads the Banner
  * connection, shares the extension's local store, and sets up and arms
- * auto-register (the extension runs it, in the student's Banner tab). No credential ever
+ * auto-register (the extension runs it, with the student's Banner sign-in). No credential ever
  * reaches this site or the server.
  */
 import {
@@ -115,10 +115,26 @@ export function onExtensionStoreChange(
   return () => window.removeEventListener("message", onMessage);
 }
 
-/** Banner as the extension sees it. Without the extension, Banner can't be connected. */
+/** Banner as the extension sees it, checked now. Without the extension, Banner can't be connected. */
 export async function getBannerConnection(): Promise<BannerConnection> {
   if (!extensionVersion()) return "not-connected";
   return bridgeRequest<BannerConnection>({ type: "BANNER_STATUS" });
+}
+
+/** Calls `listener` when the extension sees the student sign in to or out of Banner. */
+export function onBannerChange(listener: () => void): () => void {
+  function onMessage(event: MessageEvent) {
+    const data: unknown = event.data;
+    if (
+      event.source === window &&
+      isBridgeEvent(data) &&
+      data.type === "BANNER_CHANGED"
+    ) {
+      listener();
+    }
+  }
+  window.addEventListener("message", onMessage);
+  return () => window.removeEventListener("message", onMessage);
 }
 
 /** Asks the extension to run a fresh audit, then parses the result. */
@@ -159,7 +175,7 @@ export async function disarmAutoRegister(): Promise<void> {
 /** Banner's CRN lookups take a moment each; give the whole queue time. */
 const CRN_CHECK_TIMEOUT_MS = 30_000;
 
-/** Asks the student's Banner tab whether each CRN exists in the term. */
+/** Asks Banner, with the student's sign-in, whether each CRN exists in the term. */
 export function checkCrns(term: string, crns: string[]): Promise<CrnCheck[]> {
   return bridgeRequest<CrnCheck[]>(
     { type: "AUTOREG_CHECK_CRNS", term, crns },
@@ -180,14 +196,17 @@ export function getRegistrationTime(
   );
 }
 
-/** Terms open for registration, from the student's Banner tab. */
+/** Terms open for registration, from Banner with the student's sign-in. */
 export function getBannerRegistrationTerms(): Promise<SSBTerm[]> {
   return bridgeRequest<SSBTerm[]>({ type: "BANNER_REG_TERMS" });
 }
 
-/** The student's saved Banner plans. */
-export function getBannerPlans(): Promise<SSBGetPlansResponse> {
-  return bridgeRequest<SSBGetPlansResponse>({ type: "BANNER_REG_PLANS" });
+/**
+ * The student's saved Banner plans for `term`. Banner lists them only once
+ * registration for the term is open, so this fails before then.
+ */
+export function getBannerPlans(term: string): Promise<SSBGetPlansResponse> {
+  return bridgeRequest<SSBGetPlansResponse>({ type: "BANNER_REG_PLANS", term });
 }
 
 /** Calls `listener` when auto-register changes in the extension (armed, ran, edited). */

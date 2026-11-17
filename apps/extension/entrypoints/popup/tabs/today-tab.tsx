@@ -1,10 +1,5 @@
 import { useEffect, useId, useState } from "react";
-import {
-  CircleCheckIcon,
-  CircleXIcon,
-  ExternalLinkIcon,
-  GlobeIcon,
-} from "lucide-react";
+import { CircleCheckIcon, CircleXIcon, ExternalLinkIcon } from "lucide-react";
 import { outcomeHeadline } from "@workspace/shared/lib/auto-reg-batch-result";
 import { countdown } from "@workspace/shared/lib/auto-reg-queue";
 import {
@@ -124,9 +119,10 @@ export function TodayTab({
   onOpenTab: (tab: "search" | "register") => void;
 }) {
   const auto = useAutoRegister();
-  const banner = useBannerConnection();
   const onBanner = useOnBannerPage();
   const snapshot = auto.snapshot.data;
+  // Sign-in only matters here while a run is waiting to submit.
+  const banner = useBannerConnection(!!snapshot?.armed);
   const lastRun = snapshot?.lastResult;
   const [loadedAt] = useState(() => Date.now());
   const ranRecently =
@@ -189,30 +185,7 @@ export function TodayTab({
         </Panel>
       )}
 
-      {onBanner.data === false && (
-        <Panel>
-          <h2 className="flex items-center gap-2 font-medium">
-            <GlobeIcon aria-hidden className="size-4" />
-            Open Banner registration
-          </h2>
-          <p className="text-muted-foreground">
-            Auto-register submits through Temple's Banner registration page,
-            signed in, in a tab like this one.
-          </p>
-          <Button
-            size="sm"
-            variant="outline"
-            className="self-start"
-            onClick={() => void openUrl(BANNER_REGISTRATION_URL)}
-          >
-            Open Temple Banner
-            <ExternalLinkIcon data-icon="inline-end" />
-          </Button>
-        </Panel>
-      )}
-      {onBanner.data === true && (
-        <BannerTabCard signedOut={banner.data === "signed-out"} />
-      )}
+      {onBanner.data === true && <BannerTabCard />}
 
       {term ? (
         <PlanCard term={term} onSearch={() => onOpenTab("search")} />
@@ -230,7 +203,7 @@ function enhancedSummary(sections: number, inPlan: number): string {
 }
 
 /** The Banner tab under the popup, and the one switch for the page overlay. */
-function BannerTabCard({ signedOut }: { signedOut: boolean }) {
+function BannerTabCard() {
   const settings = useStoreDocument("settings");
   const status = useOverlayStatus(true);
   const switchId = useId();
@@ -241,11 +214,7 @@ function BannerTabCard({ signedOut }: { signedOut: boolean }) {
     <section className="flex flex-col gap-2 rounded-2xl bg-muted/60 px-3 py-2.5 text-xs">
       <p>
         <span className="font-medium">On this tab:</span>{" "}
-        {signedOut
-          ? "Banner, signed out"
-          : sections > 0
-            ? "Banner class search"
-            : "Banner registration"}
+        {sections > 0 ? "Banner class search" : "Banner registration"}
       </p>
       {current.bannerOverlay && sections > 0 && (
         <p className="text-foreground/70">

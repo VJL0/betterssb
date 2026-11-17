@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   buildResultRecord,
   failedResultRecord,
-  isExecuteRegistrationResult,
   isResultRecord,
   outcomeHeadline,
 } from "./auto-reg-batch-result";
@@ -176,28 +175,6 @@ describe("buildResultRecord", () => {
     const record = buildResultRecord(null, [], [], AT);
     expect(record.ok).toBe(false);
     expect(record.summary).toBe("0 registered, 0 failed");
-  });
-});
-
-describe("isExecuteRegistrationResult", () => {
-  it("accepts the content script's run result", () => {
-    expect(
-      isExecuteRegistrationResult({
-        stagingFailures: [{ crn: "99999", message: "Invalid CRN" }],
-        batchResponse: null,
-      }),
-    ).toBe(true);
-  });
-
-  it("rejects anything else", () => {
-    expect(isExecuteRegistrationResult(null)).toBe(false);
-    expect(isExecuteRegistrationResult({ stagingFailures: [] })).toBe(false);
-    expect(
-      isExecuteRegistrationResult({
-        stagingFailures: [{ crn: 99999 }],
-        batchResponse: null,
-      }),
-    ).toBe(false);
   });
 });
 
