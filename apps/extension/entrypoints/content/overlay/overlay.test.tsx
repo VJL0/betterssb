@@ -2,18 +2,20 @@ import { act, render, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { RmpRating } from "@workspace/api-client";
-import { emptyPlan } from "@workspace/shared/lib/plan";
-import { DEFAULT_SETTINGS, planKey } from "@workspace/shared/lib/store";
-import type { PlannedSection } from "@workspace/shared/types/store";
+import { DEFAULT_SETTINGS } from "@workspace/shared/lib/store";
 import { extensionStore } from "@/lib/local-store";
-import { bannerResultsHtml } from "@/test/banner-results";
+import { bannerResultsHtml, bannerRowsHtml } from "@/test/banner-results";
 import { answerBackground } from "@/test/popup";
 import { OverlayApp } from "./overlay-app";
-import { createRowWatcher } from "./row-watcher";
-import { createShadowHost, HOST_TAG, LAYER_SLOT } from "./shadow-host";
+import { createRatingSlotWatcher } from "./rating-slots";
+import {
+  createShadowHost,
+  HOST_TAG,
+  LAYER_SLOT,
+  RATING_SLOT,
+} from "./shadow-host";
 
 const NOW = "2026-10-17T12:00:00.000Z";
-const TERM = "202703";
 
 const LOVELACE: RmpRating = {
   professorName: "Ada Lovelace",
@@ -26,51 +28,19 @@ const LOVELACE: RmpRating = {
   rmpUrl: "https://www.ratemyprofessors.com/professor/1",
 } as RmpRating;
 
-function plannedSection(
-  crn: string,
-  courseCode: string,
-  days: string,
-  start: number,
-  end: number,
-): PlannedSection {
-  return {
-    crn,
-    courseId: courseCode.replace(" ", ""),
-    courseCode,
-    section: "001",
-    title: "",
-    credits: 4,
-    scheduleType: "Lecture",
-    instructor: "",
-    meetings: [
-      { days, start, end, location: "", startDate: null, endDate: null },
-    ],
-    addedAt: NOW,
-  };
-}
-
 async function seedSettings(bannerOverlay = true) {
   await extensionStore.set("settings", {
     ...DEFAULT_SETTINGS,
-    term: TERM,
     bannerOverlay,
     updatedAt: NOW,
   });
 }
 
-async function seedPlan(sections: PlannedSection[]) {
-  await extensionStore.set(planKey(TERM), {
-    ...emptyPlan(TERM, "2027 Spring"),
-    sections,
-    colorOrder: Object.fromEntries(sections.map((s, i) => [s.courseId, i])),
-  });
-}
-
-/** The rendered content of every overlay host of a slot, in page order. */
-function slotsOf(slot: string): HTMLElement[] {
+/** What each rating host renders, in page order. */
+function ratings(): HTMLElement[] {
   return [
     ...document.querySelectorAll<HTMLElement>(
-      `${HOST_TAG}[data-slot="${slot}"]`,
+      `${HOST_TAG}[data-slot="${RATING_SLOT}"]`,
     ),
   ].map((host) => host.shadowRoot!.lastElementChild as HTMLElement);
 }
@@ -84,7 +54,7 @@ function renderOverlay() {
   render(
     <QueryClientProvider client={queryClient}>
       <OverlayApp
-        watcher={createRowWatcher("")}
+        watcher={createRatingSlotWatcher("")}
         popupContainer={layer.container}
       />
     </QueryClientProvider>,
@@ -96,23 +66,8 @@ function renderOverlay() {
 describe("Banner overlay", () => {
   beforeEach(() => {
     document.body.innerHTML = bannerResultsHtml([
-      {
-        id: "1",
-        crn: "41207",
-        course: "CIS 2168",
-        section: "001",
-        instructors: ["Ada Lovelace"],
-      },
-      {
-        id: "2",
-        crn: "50001",
-        course: "CIS 2107",
-        section: "002",
-        instructors: ["Alan Turing"],
-        meetings: [
-          { days: ["Tuesday", "Thursday"], time: "10:00 AM - 11:20 AM" },
-        ],
-      },
+      ["Ada Lovelace", "Alan Turing"],
+      [],
     ]);
     answerBackground({
       FETCH_RATING: ({ name }) => (name === "Ada Lovelace" ? LOVELACE : null),
@@ -123,11 +78,11 @@ describe("Banner overlay", () => {
     document.body.innerHTML = "";
   });
 
-  it("adds a rating beside each instructor", async () => {
+  it("adds a rating before each instructor", async () => {
     await seedSettings();
     renderOverlay();
-    await waitFor(() => expect(slotsOf("rating")).toHaveLength(2));
-    const [lovelace, turing] = slotsOf("rating");
+    await waitFor(() => expect(ratings()).toHaveLength(2));
+    const [lovelace, turing] = ratings();
     await waitFor(() =>
       expect(lovelace!.textContent).toMatch(/^4\.4 rating for Ada Lovelace/),
     );
@@ -140,41 +95,24 @@ describe("Banner overlay", () => {
     expect(link.previousElementSibling?.localName).toBe(HOST_TAG);
   });
 
-  it("tags planned and conflicting sections", async () => {
-    await seedSettings();
-    await seedPlan([plannedSection("41207", "CIS 2168", "TR", 570, 650)]);
-    renderOverlay();
-    await waitFor(() =>
-      expect(slotsOf("tags")[0]!.textContent).toBe("In your plan"),
-    );
-    expect(slotsOf("tags")[1]!.textContent).toBe(
-      "Conflicts with your plan: overlaps CIS 2168 · 001, TR 10:00",
-    );
-  });
-
   it("adds nothing when the setting is off, and clears up when it's turned off", async () => {
     await seedSettings(false);
-    await seedPlan([plannedSection("41207", "CIS 2168", "TR", 570, 650)]);
     renderOverlay();
     await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
-    expect(document.querySelectorAll(HOST_TAG)).toHaveLength(1); // the layer
+    expect(ratings()).toHaveLength(0);
     await act(() => seedSettings(true));
-    await waitFor(() => expect(slotsOf("tags")).toHaveLength(2));
+    await waitFor(() => expect(ratings()).toHaveLength(2));
     await act(() => seedSettings(false));
-    await waitFor(() =>
-      expect(
-        document.querySelectorAll(`${HOST_TAG}:not([data-slot="layer"])`),
-      ).toHaveLength(0),
-    );
+    await waitFor(() => expect(ratings()).toHaveLength(0));
   });
 
   it("follows Banner when it renders another page of results", async () => {
     await seedSettings();
     renderOverlay();
-    await waitFor(() => expect(slotsOf("tags")).toHaveLength(2));
-    document.querySelector("tbody")!.innerHTML = bannerResultsHtml([
-      { id: "9", crn: "60000", course: "MATH 1041", section: "001" },
-    ]).replace(/^[\s\S]*<tbody>|<\/tbody>[\s\S]*$/g, "");
-    await waitFor(() => expect(slotsOf("tags")).toHaveLength(1));
+    await waitFor(() => expect(ratings()).toHaveLength(2));
+    document.querySelector("tbody")!.innerHTML = bannerRowsHtml([
+      ["Grace Hopper"],
+    ]);
+    await waitFor(() => expect(ratings()).toHaveLength(1));
   });
 });

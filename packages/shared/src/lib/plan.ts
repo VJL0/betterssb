@@ -190,7 +190,7 @@ export interface PlanConflict {
 }
 
 /** Where two sections' meetings overlap: the shared days and the overlapping minutes. */
-export interface MeetingOverlap {
+interface MeetingOverlap {
   days: WeekDay[];
   start: number;
   end: number;
@@ -222,42 +222,8 @@ export function planConflicts(
   return conflicts;
 }
 
-/** A section from outside the plan, such as a row on a Banner page. */
-export interface OutsideSection extends Pick<
-  PlannedSection,
-  "crn" | "meetings"
-> {
-  /** Null when the page doesn't say which course the section is. */
-  courseCode: string | null;
-}
-
-export interface PlanClash {
-  planned: PlannedSection;
-  overlap: MeetingOverlap;
-}
-
-/**
- * The planned sections a section would clash with if it were added. A
- * section already in the plan clashes with nothing new, and other sections
- * of its own course are alternatives to it, not clashes.
- */
-export function clashesWithPlan(
-  section: OutsideSection,
-  planned: readonly PlannedSection[],
-): PlanClash[] {
-  if (planned.some((p) => p.crn === section.crn)) return [];
-  return planned.flatMap((p) => {
-    if (section.courseCode && p.courseCode === section.courseCode) return [];
-    const overlap = sectionOverlap(section, p);
-    return overlap ? [{ planned: p, overlap }] : [];
-  });
-}
-
 /** The first pair of meetings, one from each section, that overlap. */
-export function sectionOverlap(
-  a: HasMeetings,
-  b: HasMeetings,
-): MeetingOverlap | null {
+function sectionOverlap(a: HasMeetings, b: HasMeetings): MeetingOverlap | null {
   for (const ma of a.meetings) {
     for (const mb of b.meetings) {
       if (

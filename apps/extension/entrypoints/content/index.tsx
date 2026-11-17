@@ -4,7 +4,7 @@ import { BANNER_PAGES } from "@/lib/temple-urls";
 import { restartBannerPageTimer } from "./keep-alive";
 
 /**
- * Banner pages: the ratings and plan overlay. Banner calls themselves run
+ * Banner pages: the ratings overlay. Banner calls themselves run
  * in the background with the student's cookies, so this tab isn't needed for
  * them; it only restarts its idle timer while a run is armed.
  */

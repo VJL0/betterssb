@@ -7,7 +7,6 @@ import {
   splitCourseCode,
   emptyPlan,
   planConflicts,
-  clashesWithPlan,
   planCourseColor,
   planCredits,
   plannedSectionFrom,
@@ -224,53 +223,6 @@ describe("planConflicts", () => {
         planned("1", "A", { meetings: [meeting("", null, null)] }),
         planned("2", "B"),
       ]),
-    ).toEqual([]);
-  });
-});
-
-describe("clashesWithPlan", () => {
-  const plan = [
-    planned("41207", "CIS 2168", { meetings: [meeting("TR", 570, 650)] }),
-    planned("41300", "MATH 1041", { meetings: [meeting("MWF", 600, 650)] }),
-  ];
-
-  it("names the planned section a page row overlaps, with the shared days", () => {
-    const clashes = clashesWithPlan(
-      {
-        crn: "50001",
-        courseCode: "CIS 2107",
-        meetings: [meeting("TR", 600, 680)],
-      },
-      plan,
-    );
-    expect(
-      clashes.map((c) => [c.planned.crn, c.overlap.days, c.overlap.start]),
-    ).toEqual([["41207", ["T", "R"], 600]]);
-  });
-
-  it("treats another section of a planned course as an alternative", () => {
-    expect(
-      clashesWithPlan(
-        {
-          crn: "41208",
-          courseCode: "CIS 2168",
-          meetings: [meeting("TR", 570, 650)],
-        },
-        plan,
-      ),
-    ).toEqual([]);
-  });
-
-  it("finds nothing for a section that's already planned", () => {
-    expect(
-      clashesWithPlan(
-        {
-          crn: "41207",
-          courseCode: "CIS 2168",
-          meetings: [meeting("MWF", 600, 650)],
-        },
-        plan,
-      ),
     ).toEqual([]);
   });
 });
