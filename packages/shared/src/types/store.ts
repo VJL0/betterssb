@@ -85,7 +85,7 @@ export interface UserSettings {
   startTerm: string | null;
   program: SelectedProgram | null;
   keyboardShortcuts: boolean;
-  /** Ratings and plan tags on Banner's own pages. */
+  /** Ratings on Banner's own pages. */
   bannerOverlay: boolean;
   updatedAt: string;
 }

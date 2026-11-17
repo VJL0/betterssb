@@ -137,11 +137,11 @@ function ExtensionSection() {
       description={
         extensionInstalled
           ? undefined
-          : "Needed for DARS, auto-register and Banner extras."
+          : "Needed for DARS, auto-register and Banner ratings."
       }
     >
       {extensionInstalled ? (
-        <BannerExtrasSwitch />
+        <BannerRatingsSwitch />
       ) : (
         EXTENSION_INSTALL_URL && (
           <ButtonLink href={EXTENSION_INSTALL_URL} className="self-start">
@@ -153,15 +153,15 @@ function ExtensionSection() {
   );
 }
 
-function BannerExtrasSwitch() {
+function BannerRatingsSwitch() {
   const { settings, update } = useSettings();
   const switchId = useId();
   return (
     <Field orientation="horizontal">
       <FieldContent>
-        <FieldLabel htmlFor={switchId}>Show extras on Banner</FieldLabel>
+        <FieldLabel htmlFor={switchId}>Show ratings on Banner</FieldLabel>
         <FieldDescription>
-          Rate My Professors scores, open seats and time conflicts in Banner.
+          Rate My Professors scores before instructors in Banner's class search.
         </FieldDescription>
       </FieldContent>
       <Switch
