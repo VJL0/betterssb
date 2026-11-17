@@ -23,11 +23,15 @@ export function loginUrl(returnTo: string): string {
   return `${LOGIN_PATH}?${new URLSearchParams({ next: returnTo })}`;
 }
 
-const AUTH_ERRORS: Record<string, string> = {
+const AUTH_ERRORS = {
   access_denied: "Sign-in was cancelled.",
   account_disabled: "This account has been disabled.",
   failed: "Sign-in failed. Please try again.",
 };
+
+function isAuthError(code: string): code is keyof typeof AUTH_ERRORS {
+  return Object.hasOwn(AUTH_ERRORS, code);
+}
 
 /** The signed-in user, or null if there's no valid session. */
 export async function fetchCurrentUser(): Promise<User | null> {
@@ -56,5 +60,5 @@ export function takeAuthError(): string | null {
   if (code == null) return null;
   url.searchParams.delete("auth_error");
   window.history.replaceState(null, "", url);
-  return AUTH_ERRORS[code] ?? AUTH_ERRORS.failed;
+  return isAuthError(code) ? AUTH_ERRORS[code] : AUTH_ERRORS.failed;
 }
