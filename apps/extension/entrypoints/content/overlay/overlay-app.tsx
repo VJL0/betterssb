@@ -1,36 +1,27 @@
 import { useEffect, useMemo, useSyncExternalStore } from "react";
-import { clashesWithPlan } from "@workspace/shared/lib/plan";
+import { clashesWithPlan, type PlanClash } from "@workspace/shared/lib/plan";
 import { planKey, settingsOrDefaults } from "@workspace/shared/lib/store";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { useStoreDocument } from "@/hooks/use-store-document";
-import { PlanDock, type PageClash } from "./plan-dock";
 import { RowOverlay } from "./row-overlay";
 import type { OverlayRow, RowWatcher } from "./row-watcher";
-
-function rowLabel(row: OverlayRow): string {
-  return row.courseCode
-    ? `${row.courseCode} · ${row.section}`
-    : `CRN ${row.crn}`;
-}
 
 function pageClashesOf(
   rows: readonly OverlayRow[],
   plan: TermPlan | null,
-): Map<string, PageClash> {
-  const byCrn = new Map<string, PageClash>();
+): Map<string, PlanClash[]> {
+  const byCrn = new Map<string, PlanClash[]>();
   if (!plan) return byCrn;
   for (const row of rows) {
     const clashes = clashesWithPlan(row, plan.sections);
-    if (clashes.length > 0) {
-      byCrn.set(row.crn, { crn: row.crn, label: rowLabel(row), clashes });
-    }
+    if (clashes.length > 0) byCrn.set(row.crn, clashes);
   }
   return byCrn;
 }
 
 /**
- * E3.1 Banner overlay: ratings beside instructors, plan and conflict tags
- * under titles, and the plan dock.
+ * E3.1 Banner overlay: ratings beside instructors, and plan and conflict
+ * tags under titles.
  * The one Banner-pages setting turns all of it off.
  */
 export function OverlayApp({
@@ -82,13 +73,10 @@ function PageOverlay({
           key={`${index}:${row.crn}`}
           row={row}
           inPlan={planned.has(row.crn)}
-          clashes={clashes.get(row.crn)?.clashes ?? []}
+          clashes={clashes.get(row.crn) ?? []}
           popupContainer={popupContainer}
         />
       ))}
-      {plan && plan.sections.length > 0 && (
-        <PlanDock plan={plan} pageClashes={[...clashes.values()]} />
-      )}
     </>
   );
 }

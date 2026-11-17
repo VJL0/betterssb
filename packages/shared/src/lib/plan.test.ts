@@ -8,7 +8,6 @@ import {
   emptyPlan,
   planConflicts,
   clashesWithPlan,
-  describeMeetings,
   planCourseColor,
   planCredits,
   plannedSectionFrom,
@@ -273,22 +272,6 @@ describe("clashesWithPlan", () => {
         plan,
       ),
     ).toEqual([]);
-  });
-});
-
-describe("describeMeetings", () => {
-  it("lists each timed meeting", () => {
-    expect(
-      describeMeetings({
-        meetings: [meeting("TR", 570, 650), meeting("W", 780, 890)],
-      }),
-    ).toBe("TR 9:30–10:50 AM · W 1:00–2:50 PM");
-  });
-
-  it("says when nothing has a set time", () => {
-    expect(describeMeetings({ meetings: [meeting("", null, null)] })).toBe(
-      "No set time",
-    );
   });
 });
 

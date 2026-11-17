@@ -9,12 +9,7 @@ import {
   courseColor,
   type CourseColor,
 } from "./course-colors";
-import {
-  formatTimeRange,
-  parseClockTime,
-  parseDays,
-  type WeekDay,
-} from "./meeting-times";
+import { parseClockTime, parseDays, type WeekDay } from "./meeting-times";
 import { meetingTimeToDays, primaryInstructorName } from "./sections";
 import type { ClassSection } from "@workspace/api-client";
 
@@ -284,15 +279,4 @@ export function sectionOverlap(
     }
   }
   return null;
-}
-
-/** "TR 9:30–10:50 AM · W 1:00–2:50 PM", or "No set time" for online or TBA sections. */
-export function describeMeetings(section: HasMeetings): string {
-  const timed = section.meetings.filter(
-    (m) => m.start !== null && m.end !== null && m.days,
-  );
-  if (timed.length === 0) return "No set time";
-  return timed
-    .map((m) => `${m.days} ${formatTimeRange(m.start!, m.end!)}`)
-    .join(" · ");
 }

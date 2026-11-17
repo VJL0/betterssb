@@ -13,7 +13,7 @@ import { askBackground } from "@/lib/ask-background";
 import type { OverlayRow, RatingSlot } from "./row-watcher";
 
 /** "CIS 2168 · 001, TR 9:30" */
-export function clashSummary({ planned, overlap }: PlanClash): string {
+function clashSummary({ planned, overlap }: PlanClash): string {
   return `${planned.courseCode} · ${planned.section}, ${overlap.days.join("")} ${formatClock(overlap.start)}`;
 }
 

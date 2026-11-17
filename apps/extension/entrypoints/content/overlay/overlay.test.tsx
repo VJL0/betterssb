@@ -1,5 +1,4 @@
-import { act, render, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { act, render, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { RmpRating } from "@workspace/api-client";
@@ -82,7 +81,7 @@ function renderOverlay() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  const view = render(
+  render(
     <QueryClientProvider client={queryClient}>
       <OverlayApp
         watcher={createRowWatcher("")}
@@ -92,7 +91,6 @@ function renderOverlay() {
     // As in production: the app lives in the page-level layer.
     { container: layer.container },
   );
-  return { ...view, dock: () => within(layer.container) };
 }
 
 describe("Banner overlay", () => {
@@ -152,29 +150,6 @@ describe("Banner overlay", () => {
     expect(slotsOf("tags")[1]!.textContent).toBe(
       "Conflicts with your plan: overlaps CIS 2168 · 001, TR 10:00",
     );
-  });
-
-  it("shows the plan and this page's conflicts in the dock", async () => {
-    const user = userEvent.setup();
-    await seedSettings();
-    await seedPlan([plannedSection("41207", "CIS 2168", "TR", 570, 650)]);
-    const { dock } = renderOverlay();
-    const toggle = await dock().findByRole("button", {
-      name: /Spring plan · 4 cr/,
-    });
-    expect(toggle.textContent).toContain("1 conflict");
-    expect(toggle.getAttribute("aria-expanded")).toBe("false");
-    await user.click(toggle);
-    expect(
-      dock().getByText(
-        "CIS 2107 · 002 on this page overlaps CIS 2168 · 001, TR 10:00.",
-      ),
-    ).toBeTruthy();
-    expect(
-      dock()
-        .getByRole("link", { name: "Open in BetterSSB" })
-        .getAttribute("href"),
-    ).toBe("http://localhost:3000/plan");
   });
 
   it("adds nothing when the setting is off, and clears up when it's turned off", async () => {

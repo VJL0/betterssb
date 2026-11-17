@@ -1,6 +1,6 @@
 /** Every element the overlay adds to a Banner page is one of these. */
 export const HOST_TAG = "betterssb-overlay";
-/** The page-level host for the plan dock and popups. */
+/** The page-level host for popups. */
 export const LAYER_SLOT = "layer";
 
 /**

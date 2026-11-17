@@ -8,7 +8,7 @@ import { createShadowHost, LAYER_SLOT } from "./shadow-host";
 
 /**
  * Starts the Banner overlay. One React root lives in a page-level shadow host
- * (the plan dock and popups); ratings and tags render through portals
+ * (for popups); ratings and tags render through portals
  * into small shadow roots inside Banner's own table cells.
  */
 export function startOverlay(): void {
