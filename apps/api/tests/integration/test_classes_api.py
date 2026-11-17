@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 
 import pytest
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 
 from app.main import app
 from app.modules.classes.router import get_class_search_service

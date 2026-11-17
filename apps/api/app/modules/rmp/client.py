@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
-import httpx
+import httpx2
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ class RosterPage:
 class RMPClient:
     """Low-level HTTP adapter for the RateMyProfessors GraphQL API."""
 
-    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    def __init__(self, transport: httpx2.AsyncBaseTransport | None = None) -> None:
         self._transport = transport
 
     async def roster_page(self, after: str | None = None) -> RosterPage:
@@ -85,7 +85,7 @@ class RMPClient:
             },
         }
         try:
-            async with httpx.AsyncClient(
+            async with httpx2.AsyncClient(
                 timeout=REQUEST_TIMEOUT_SECONDS, transport=self._transport
             ) as client:
                 resp = await client.post(GRAPHQL_URL, json=payload, headers=_HEADERS)

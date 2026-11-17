@@ -2,6 +2,7 @@ import json
 from contextlib import aclosing
 
 import httpx
+import httpx2
 import pytest
 from pydantic_ai.exceptions import ModelHTTPError
 from pydantic_ai.messages import ModelResponse, TextPart
@@ -10,6 +11,7 @@ from sentry_sdk.tracing import Span
 
 from app.modules.chatbot import client as client_module
 from app.modules.chatbot.client import (
+    ADVISOR_TIMEOUT_SECONDS,
     FALLBACK_MODEL,
     PRIMARY_MODEL,
     AdvisorClient,
@@ -48,18 +50,40 @@ def groq_chunk(text=None, finish=None):
     )
 
 
+def as_httpx(response: httpx2.Response) -> httpx.Response:
+    """The same reply for Groq's client, which is built on the original httpx."""
+    return httpx.Response(
+        response.status_code,
+        headers=response.headers.multi_items(),
+        content=response.content,
+    )
+
+
 @pytest.fixture
 def mock_provider(monkeypatch):
+    """Answer both providers' requests with `handler`, which returns httpx2 replies."""
     clients = []
-    original = httpx.AsyncClient
 
     def install(handler):
-        def create(**kwargs):
-            client = original(transport=httpx.MockTransport(handler), **kwargs)
+        def google_client():
+            client = httpx2.AsyncClient(
+                timeout=ADVISOR_TIMEOUT_SECONDS, transport=httpx2.MockTransport(handler)
+            )
             clients.append(client)
             return client
 
-        monkeypatch.setattr(client_module, "AsyncClient", create)
+        def groq_client():
+            client = httpx.AsyncClient(
+                timeout=ADVISOR_TIMEOUT_SECONDS,
+                transport=httpx.MockTransport(
+                    lambda request: as_httpx(handler(request))
+                ),
+            )
+            clients.append(client)
+            return client
+
+        monkeypatch.setattr(client_module, "google_http_client", google_client)
+        monkeypatch.setattr(client_module, "groq_http_client", groq_client)
         return clients
 
     return install
@@ -71,10 +95,10 @@ async def test_google_deadline_meets_provider_minimum(mock_provider):
     def handler(request):
         deadline = float(request.headers["X-Server-Timeout"])
         if deadline < minimum_deadline_seconds:
-            return httpx.Response(
+            return httpx2.Response(
                 400, json={"error": {"code": 400, "message": "Deadline too short"}}
             )
-        return httpx.Response(200, text=google_chunk("OK", "STOP"))
+        return httpx2.Response(200, text=google_chunk("OK", "STOP"))
 
     mock_provider(handler)
     assert [
@@ -100,15 +124,15 @@ async def test_sticks_to_preferred_provider_and_recovers(
         hosts.append(request.url.host)
         request_bodies.append(json.loads(request.content))
         if request.url.host == preferred_host:
-            return httpx.Response(
+            return httpx2.Response(
                 503,
                 json={
                     "error": {"code": 503, "status": "UNAVAILABLE", "message": "Busy"}
                 },
             )
         if request.url.host == google_host:
-            return httpx.Response(200, text=google_chunk("Recovered", "STOP"))
-        return httpx.Response(
+            return httpx2.Response(200, text=google_chunk("Recovered", "STOP"))
+        return httpx2.Response(
             200, text=groq_chunk("Recovered", "stop") + "data: [DONE]\n\n"
         )
 
@@ -137,7 +161,7 @@ async def test_successful_groq_chat_does_not_probe_gemini(mock_provider):
 
     def handler(request):
         hosts.append(request.url.host)
-        return httpx.Response(
+        return httpx2.Response(
             200, text=groq_chunk("Hello", "stop") + "data: [DONE]\n\n"
         )
 
@@ -157,10 +181,10 @@ async def test_fallback_and_provider_settings(mock_provider, status):
     def handler(request):
         requests.append(request)
         if "googleapis" in request.url.host:
-            return httpx.Response(
+            return httpx2.Response(
                 status, json={"error": {"code": status, "message": "Unavailable"}}
             )
-        return httpx.Response(
+        return httpx2.Response(
             200,
             text=groq_chunk("Fallback reply")
             + groq_chunk(finish="stop")
@@ -198,7 +222,7 @@ async def test_request_errors_do_not_fallback(mock_provider, status):
 
     def handler(request):
         hosts.append(request.url.host)
-        return httpx.Response(
+        return httpx2.Response(
             status, json={"error": {"code": status, "message": "Failed"}}
         )
 
@@ -217,7 +241,7 @@ async def test_finish_and_partial_reply(mock_provider, finish):
 
     def handler(request):
         hosts.append(request.url.host)
-        return httpx.Response(
+        return httpx2.Response(
             200, text=google_chunk("Hello") + google_chunk(finish=finish)
         )
 
@@ -243,7 +267,7 @@ async def test_finish_and_partial_reply(mock_provider, finish):
 
 async def test_cancellation_closes_client(mock_provider):
     clients = mock_provider(
-        lambda request: httpx.Response(
+        lambda request: httpx2.Response(
             200, text=google_chunk("Hello") + google_chunk(" world", "STOP")
         )
     )
@@ -259,7 +283,7 @@ async def test_missing_fallback_key_keeps_primary(mock_provider):
 
     def handler(request):
         hosts.append(request.url.host)
-        return httpx.Response(404, json={"error": {"code": 404, "message": "Missing"}})
+        return httpx2.Response(404, json={"error": {"code": 404, "message": "Missing"}})
 
     mock_provider(handler)
     with pytest.raises(ModelHTTPError):
@@ -277,7 +301,7 @@ async def test_both_providers_failing_ends_reply(mock_provider):
 
     def handler(request):
         hosts.append(request.url.host)
-        return httpx.Response(404, json={"error": {"code": 404, "message": "Missing"}})
+        return httpx2.Response(404, json={"error": {"code": 404, "message": "Missing"}})
 
     clients = mock_provider(handler)
     client = AdvisorClient("google-test", "groq-test")
@@ -290,7 +314,9 @@ async def test_both_providers_failing_ends_reply(mock_provider):
 
 
 async def test_empty_reply_is_rejected(mock_provider):
-    mock_provider(lambda request: httpx.Response(200, text=google_chunk(finish="STOP")))
+    mock_provider(
+        lambda request: httpx2.Response(200, text=google_chunk(finish="STOP"))
+    )
     from pydantic_ai.exceptions import UnexpectedModelBehavior
 
     with pytest.raises((ValueError, UnexpectedModelBehavior)):
@@ -318,7 +344,7 @@ async def test_thinking_is_not_sent_as_reply_text(mock_provider):
         + "\n\n"
     )
     mock_provider(
-        lambda request: httpx.Response(
+        lambda request: httpx2.Response(
             200, text=thinking + google_chunk("Answer", "STOP")
         )
     )

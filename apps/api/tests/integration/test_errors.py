@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
-from httpx import ASGITransport, AsyncClient
+from httpx2 import ASGITransport, AsyncClient
 
 from app.core.errors import add_error_handlers
 from app.core.security import SECURITY_HEADERS

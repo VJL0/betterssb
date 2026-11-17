@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-import httpx
+import httpx2
 import pytest
 
 from app.modules.classes.client import (
@@ -40,42 +40,42 @@ class FakeBanner:
     """Records requests and answers like Banner's public class search."""
 
     def __init__(self, search_body: object | None = None, status: int = 200) -> None:
-        self.requests: list[httpx.Request] = []
+        self.requests: list[httpx2.Request] = []
         self.search_body = search_body or json.loads(
             (FIXTURES_DIR / "class_search.json").read_text()
         )
         self.status = status
         self.sessions = 0
 
-    def handler(self, request: httpx.Request) -> httpx.Response:
+    def handler(self, request: httpx2.Request) -> httpx2.Response:
         self.requests.append(request)
         if self.status != 200:
-            return httpx.Response(self.status)
+            return httpx2.Response(self.status)
         path = request.url.path
         if path.endswith("/term/search"):
             self.sessions += 1
-            return httpx.Response(
+            return httpx2.Response(
                 200,
                 json={"fwdURL": "/classSearch/classSearch"},
                 headers={"Set-Cookie": f"JSESSIONID=s{self.sessions}; Path=/"},
             )
         if path.endswith("/searchResults/searchResults"):
-            return httpx.Response(200, json=self.search_body)
+            return httpx2.Response(200, json=self.search_body)
         if path.endswith("/classSearch/getTerms"):
-            return httpx.Response(
+            return httpx2.Response(
                 200, json=[{"code": "202703", "description": "2027 Spring"}]
             )
         if path.endswith("/classSearch/get_subject"):
-            return httpx.Response(
+            return httpx2.Response(
                 200,
                 json=[
                     {"code": "CIS", "description": "Computer &amp; Information Science"}
                 ],
             )
         if path.endswith("/classSearch/get_campus"):
-            return httpx.Response(200, json=[{"code": "MN", "description": "Main"}])
+            return httpx2.Response(200, json=[{"code": "MN", "description": "Main"}])
         if path.endswith("/classSearch/get_partOfTerm"):
-            return httpx.Response(
+            return httpx2.Response(
                 200,
                 json=[
                     {
@@ -86,7 +86,7 @@ class FakeBanner:
             )
         if path.endswith("/classSearch/get_instructor"):
             # Banner numbers instructors per session, so codes differ between searches.
-            return httpx.Response(
+            return httpx2.Response(
                 200,
                 json=[
                     {"code": f"{self.sessions}01", "description": "Nahed Hamid"},
@@ -97,11 +97,11 @@ class FakeBanner:
                     },
                 ],
             )
-        return httpx.Response(404)
+        return httpx2.Response(404)
 
     def service(self, cache: MemoryCache | None = None) -> ClassSearchService:
         client = BannerClassSearchClient(
-            BASE_URL, transport=httpx.MockTransport(self.handler)
+            BASE_URL, transport=httpx2.MockTransport(self.handler)
         )
         return ClassSearchService(client, cache)
 
@@ -209,10 +209,10 @@ class TestSearch:
             await banner.service().search(FILTERS)
 
     async def test_transport_errors_raise_unavailable(self):
-        def fail(request: httpx.Request) -> httpx.Response:
-            raise httpx.ConnectTimeout("timed out", request=request)
+        def fail(request: httpx2.Request) -> httpx2.Response:
+            raise httpx2.ConnectTimeout("timed out", request=request)
 
-        client = BannerClassSearchClient(BASE_URL, transport=httpx.MockTransport(fail))
+        client = BannerClassSearchClient(BASE_URL, transport=httpx2.MockTransport(fail))
         with pytest.raises(ClassSearchUnavailable):
             await ClassSearchService(client, None).search(FILTERS)
 

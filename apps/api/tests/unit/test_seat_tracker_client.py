@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import httpx
+import httpx2
 import pytest
 
 from app.modules.seat_tracker.client import (
@@ -85,13 +85,13 @@ class TestParseEnrollment:
 
 class TestClient:
     async def test_posts_the_term_and_crn(self):
-        requests: list[httpx.Request] = []
+        requests: list[httpx2.Request] = []
 
-        def handler(request: httpx.Request) -> httpx.Response:
+        def handler(request: httpx2.Request) -> httpx2.Response:
             requests.append(request)
-            return httpx.Response(200, text=enrollment_fragment())
+            return httpx2.Response(200, text=enrollment_fragment())
 
-        client = BannerSectionClient(transport=httpx.MockTransport(handler))
+        client = BannerSectionClient(transport=httpx2.MockTransport(handler))
         await client.enrollment("202703", "50067")
 
         [request] = requests
@@ -100,7 +100,7 @@ class TestClient:
 
     async def test_an_http_error_is_unavailable(self):
         client = BannerSectionClient(
-            transport=httpx.MockTransport(lambda _: httpx.Response(503))
+            transport=httpx2.MockTransport(lambda _: httpx2.Response(503))
         )
         with pytest.raises(SectionUnavailable):
             await client.details("202703", "50067")
