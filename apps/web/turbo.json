@@ -1,0 +1,12 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      // typecheck reads the route types `next typegen` writes to .next/types,
+      // and `next build` clears .next first. Run in parallel, the build
+      // deletes them while tsc is reading them.
+      "dependsOn": ["$TURBO_EXTENDS$", "typecheck"]
+    }
+  }
+}
