@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-import httpx
+import httpx2
 import pytest
 
 from app.modules.rmp.client import (
@@ -33,13 +33,13 @@ class TestRosterPage:
     async def test_lists_temples_main_campus_a_page_at_a_time(self):
         sent: list[dict] = []
 
-        def handler(request: httpx.Request) -> httpx.Response:
+        def handler(request: httpx2.Request) -> httpx2.Response:
             sent.append(json.loads(request.content))
-            return httpx.Response(
+            return httpx2.Response(
                 200, json=roster_response([{"firstName": "Jane"}], "cursor-1")
             )
 
-        client = RMPClient(transport=httpx.MockTransport(handler))
+        client = RMPClient(transport=httpx2.MockTransport(handler))
         page = await client.roster_page(after="cursor-0")
 
         assert TEMPLE_SCHOOL_ID == "U2Nob29sLTk5OQ=="  # School-999, Philadelphia
@@ -53,17 +53,17 @@ class TestRosterPage:
 
     async def test_last_page_has_no_cursor(self):
         client = RMPClient(
-            transport=httpx.MockTransport(
-                lambda _: httpx.Response(200, json=roster_response([], None))
+            transport=httpx2.MockTransport(
+                lambda _: httpx2.Response(200, json=roster_response([], None))
             )
         )
         assert (await client.roster_page()).next_cursor is None
 
     @pytest.mark.parametrize(
         "response",
-        [httpx.Response(503), httpx.Response(200, json={"errors": [{}]})],
+        [httpx2.Response(503), httpx2.Response(200, json={"errors": [{}]})],
     )
-    async def test_failures_raise_unavailable(self, response: httpx.Response):
-        client = RMPClient(transport=httpx.MockTransport(lambda _: response))
+    async def test_failures_raise_unavailable(self, response: httpx2.Response):
+        client = RMPClient(transport=httpx2.MockTransport(lambda _: response))
         with pytest.raises(RMPUnavailable):
             await client.roster_page()

@@ -15,7 +15,7 @@ os.environ.setdefault("GOOGLE_CLIENT_ID", "test-client-id.apps.googleusercontent
 os.environ.setdefault("GOOGLE_CLIENT_SECRET", "test-client-secret")
 
 import pytest
-from httpx import ASGITransport, AsyncClient
+from httpx2 import ASGITransport, AsyncClient
 
 from app.main import app
 from app.modules.schedule.schemas import SchedulePreferences, Section
@@ -25,7 +25,7 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 @pytest.fixture()
 async def client():
-    # HTTPS, or httpx won't send Secure cookies.
+    # HTTPS, or httpx2 won't send Secure cookies.
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="https://test"
     ) as ac:

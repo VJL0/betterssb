@@ -15,7 +15,7 @@ from urllib.parse import parse_qs, urlparse
 import httpx2
 import pytest
 from authlib.integrations.starlette_client import StarletteOAuth2App
-from httpx import AsyncClient, Response
+from httpx2 import AsyncClient, Response
 from itsdangerous import TimestampSigner
 from joserfc import jwt
 from joserfc.jwk import KeySet, RSAKey

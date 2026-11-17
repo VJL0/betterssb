@@ -13,7 +13,7 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
-import httpx
+import httpx2
 
 logger = logging.getLogger(__name__)
 
@@ -124,13 +124,13 @@ _EMPTY_SEARCH: dict[str, Any] = {"success": True, "totalCount": 0, "data": []}
 
 class BannerClassSearchClient:
     def __init__(
-        self, base_url: str, *, transport: httpx.AsyncBaseTransport | None = None
+        self, base_url: str, *, transport: httpx2.AsyncBaseTransport | None = None
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._transport = transport
 
-    def _session(self) -> httpx.AsyncClient:
-        return httpx.AsyncClient(
+    def _session(self) -> httpx2.AsyncClient:
+        return httpx2.AsyncClient(
             base_url=self._base_url,
             timeout=REQUEST_TIMEOUT_SECONDS,
             transport=self._transport,
@@ -173,7 +173,7 @@ class BannerClassSearchClient:
                 )
                 response.raise_for_status()
                 body = response.json()
-            except (httpx.HTTPError, ValueError) as exc:
+            except (httpx2.HTTPError, ValueError) as exc:
                 logger.warning("Banner class search failed: %s", exc)
                 raise ClassSearchUnavailable from exc
         if not isinstance(body, dict) or body.get("success") is not True:
@@ -188,7 +188,7 @@ class BannerClassSearchClient:
                 response = await session.get(path, params=params)
                 response.raise_for_status()
                 return response.json()
-            except (httpx.HTTPError, ValueError) as exc:
+            except (httpx2.HTTPError, ValueError) as exc:
                 logger.warning("Banner %s failed: %s", path, exc)
                 raise ClassSearchUnavailable from exc
 
@@ -203,7 +203,7 @@ def _lookup_params(term: str, query: str = "") -> dict[str, str]:
 
 
 async def _instructor_codes(
-    session: httpx.AsyncClient, filters: SearchFilters
+    session: httpx2.AsyncClient, filters: SearchFilters
 ) -> list[str]:
     """Instructor codes only work in the session that looked them up."""
     words = _name_words(filters.instructor)

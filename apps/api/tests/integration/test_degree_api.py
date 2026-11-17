@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-import httpx
+import httpx2
 import pytest
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 
 from app.main import app
 from app.modules.degree.router import get_bulletin_service
@@ -70,7 +70,7 @@ class TestProgramsRoute:
         assert f"{MISSING_YEAR} Bulletin" in resp.json()["detail"]
 
     async def test_reports_outages_as_bad_gateway(self, client: AsyncClient):
-        failing = FakeBulletin({ARCHIVED_INDEX_PATH: httpx.Response(503)})
+        failing = FakeBulletin({ARCHIVED_INDEX_PATH: httpx2.Response(503)})
         app.dependency_overrides[get_bulletin_service] = lambda: failing.service()
         try:
             resp = await client.get(

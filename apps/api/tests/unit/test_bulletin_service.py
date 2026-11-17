@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from urllib.parse import urlsplit
 
-import httpx
+import httpx2
 import pytest
 
 from app.modules.degree.client import (
@@ -52,26 +52,26 @@ ARCHIVED_CIS_PATH = f"{ARCHIVED_SUBJECTS_PATH}cis/"
 class FakeBulletin:
     """Records requests and serves saved Bulletin pages by path."""
 
-    def __init__(self, pages: dict[str, httpx.Response] | None = None) -> None:
-        self.requests: list[httpx.Request] = []
+    def __init__(self, pages: dict[str, httpx2.Response] | None = None) -> None:
+        self.requests: list[httpx2.Request] = []
         self.pages = pages or {
-            ARCHIVED_INDEX_PATH: httpx.Response(200, text=ARCHIVED_INDEX_HTML),
-            CURRENT_INDEX_PATH: httpx.Response(200, text=CURRENT_INDEX_HTML),
-            PROGRAM_PATH: httpx.Response(200, text=PROGRAM_HTML),
-            f"/archives/{ARCHIVED_YEAR}{POPUP_PATH}": httpx.Response(
+            ARCHIVED_INDEX_PATH: httpx2.Response(200, text=ARCHIVED_INDEX_HTML),
+            CURRENT_INDEX_PATH: httpx2.Response(200, text=CURRENT_INDEX_HTML),
+            PROGRAM_PATH: httpx2.Response(200, text=PROGRAM_HTML),
+            f"/archives/{ARCHIVED_YEAR}{POPUP_PATH}": httpx2.Response(
                 200, text=COURSE_POPUP_XML
             ),
-            POPUP_PATH: httpx.Response(200, text=COURSE_POPUP_XML),
-            ARCHIVED_SUBJECTS_PATH: httpx.Response(200, text=SUBJECTS_HTML),
-            ARCHIVED_CIS_PATH: httpx.Response(200, text=SUBJECT_COURSES_HTML),
+            POPUP_PATH: httpx2.Response(200, text=COURSE_POPUP_XML),
+            ARCHIVED_SUBJECTS_PATH: httpx2.Response(200, text=SUBJECTS_HTML),
+            ARCHIVED_CIS_PATH: httpx2.Response(200, text=SUBJECT_COURSES_HTML),
         }
 
-    def handler(self, request: httpx.Request) -> httpx.Response:
+    def handler(self, request: httpx2.Request) -> httpx2.Response:
         self.requests.append(request)
-        return self.pages.get(request.url.path, httpx.Response(404))
+        return self.pages.get(request.url.path, httpx2.Response(404))
 
     def service(self, cache: MemoryCache | None = None) -> BulletinService:
-        client = BulletinClient(BASE_URL, transport=httpx.MockTransport(self.handler))
+        client = BulletinClient(BASE_URL, transport=httpx2.MockTransport(self.handler))
         return BulletinService(client, cache)
 
     def paths(self) -> list[str]:
@@ -204,14 +204,14 @@ class TestPrograms:
     async def test_a_page_without_programs_is_an_outage_and_isnt_cached(self):
         cache = MemoryCache()
         bulletin = FakeBulletin(
-            {ARCHIVED_INDEX_PATH: httpx.Response(200, text="<html></html>")}
+            {ARCHIVED_INDEX_PATH: httpx2.Response(200, text="<html></html>")}
         )
         with pytest.raises(BulletinUnavailable):
             await bulletin.service(cache).programs(ARCHIVED_YEAR)
         assert cache.values == {}
 
     async def test_server_errors_are_outages(self):
-        bulletin = FakeBulletin({ARCHIVED_INDEX_PATH: httpx.Response(503)})
+        bulletin = FakeBulletin({ARCHIVED_INDEX_PATH: httpx2.Response(503)})
         with pytest.raises(BulletinUnavailable):
             await bulletin.service().programs(ARCHIVED_YEAR)
 
@@ -262,7 +262,7 @@ class TestRequirements:
     async def test_follows_redirects_on_the_bulletin(self):
         slashless = PROGRAM_PATH.rstrip("/")
         bulletin = FakeBulletin()
-        bulletin.pages[slashless] = httpx.Response(
+        bulletin.pages[slashless] = httpx2.Response(
             301, headers={"Location": PROGRAM_URL}
         )
         program = await bulletin.service().requirements(f"{BASE_URL}{slashless}")
@@ -271,7 +271,7 @@ class TestRequirements:
     async def test_refuses_redirects_off_the_bulletin(self):
         bulletin = FakeBulletin(
             {
-                PROGRAM_PATH: httpx.Response(
+                PROGRAM_PATH: httpx2.Response(
                     302, headers={"Location": "https://example.com/"}
                 )
             }

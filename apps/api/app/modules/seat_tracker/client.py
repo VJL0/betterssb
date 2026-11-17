@@ -9,7 +9,7 @@ import logging
 import re
 from dataclasses import dataclass
 
-import httpx
+import httpx2
 from bs4 import BeautifulSoup
 
 from app.modules.classes.client import (
@@ -104,7 +104,7 @@ class BannerSectionClient:
         self,
         base_url: str = TEMPLE_SSB_BASE_URL,
         *,
-        transport: httpx.AsyncBaseTransport | None = None,
+        transport: httpx2.AsyncBaseTransport | None = None,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._transport = transport
@@ -118,7 +118,7 @@ class BannerSectionClient:
     async def _fragment(self, path: str, term: str, crn: str) -> str:
         async with (
             _banner_slots,
-            httpx.AsyncClient(
+            httpx2.AsyncClient(
                 base_url=self._base_url,
                 timeout=REQUEST_TIMEOUT_SECONDS,
                 transport=self._transport,
@@ -130,7 +130,7 @@ class BannerSectionClient:
                     path, data={"term": term, "courseReferenceNumber": crn}
                 )
                 response.raise_for_status()
-            except httpx.HTTPError as exc:
+            except httpx2.HTTPError as exc:
                 logger.warning("Banner %s failed for %s: %s", path, crn, exc)
                 raise SectionUnavailable from exc
         return response.text

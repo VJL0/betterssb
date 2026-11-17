@@ -6,9 +6,9 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-import httpx
+import httpx2
 import pytest
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.main import app
@@ -33,17 +33,19 @@ class FakeBanner:
         self.down = False
 
     def client(self) -> BannerSectionClient:
-        return BannerSectionClient(transport=httpx.MockTransport(self._handle))
+        return BannerSectionClient(transport=httpx2.MockTransport(self._handle))
 
-    def _handle(self, request: httpx.Request) -> httpx.Response:
+    def _handle(self, request: httpx2.Request) -> httpx2.Response:
         if self.down:
-            return httpx.Response(503)
-        crn = dict(httpx.QueryParams(request.content.decode()))["courseReferenceNumber"]
+            return httpx2.Response(503)
+        crn = dict(httpx2.QueryParams(request.content.decode()))[
+            "courseReferenceNumber"
+        ]
         if crn not in self.seats:
-            return httpx.Response(200, text="<section></section>")
+            return httpx2.Response(200, text="<section></section>")
         if request.url.path.endswith("getClassDetails"):
-            return httpx.Response(200, text=DETAILS_FRAGMENT)
-        return httpx.Response(200, text=enrollment_fragment(seats=self.seats[crn]))
+            return httpx2.Response(200, text=DETAILS_FRAGMENT)
+        return httpx2.Response(200, text=enrollment_fragment(seats=self.seats[crn]))
 
 
 class FakeMailer:
@@ -89,11 +91,11 @@ async def student(client: AsyncClient, db: async_sessionmaker) -> AsyncClient:
     return client
 
 
-async def watch(client: AsyncClient, crn: str = CRN) -> httpx.Response:
+async def watch(client: AsyncClient, crn: str = CRN) -> httpx2.Response:
     return await client.post("/api/seat-watches", json={"term": TERM, "crn": crn})
 
 
-async def run_check(client: AsyncClient) -> httpx.Response:
+async def run_check(client: AsyncClient) -> httpx2.Response:
     return await client.get(
         "/api/seat-watches/check",
         headers={"Authorization": f"Bearer {CRON_SECRET}"},

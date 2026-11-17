@@ -3,8 +3,9 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from http import HTTPStatus
 
+import httpx
+import httpx2
 import sentry_sdk
-from httpx import AsyncClient
 from pydantic_ai.direct import model_request_stream
 from pydantic_ai.exceptions import ModelHTTPError
 from pydantic_ai.messages import (
@@ -42,24 +43,35 @@ def should_fallback(error: Exception) -> bool:
     )
 
 
+def google_http_client() -> httpx2.AsyncClient:
+    # Google derives its server deadline from this timeout; the default 5s is rejected.
+    return httpx2.AsyncClient(timeout=ADVISOR_TIMEOUT_SECONDS)
+
+
+def groq_http_client() -> httpx.AsyncClient:
+    # Groq's SDK only accepts the original httpx client, not httpx2.
+    return httpx.AsyncClient(timeout=ADVISOR_TIMEOUT_SECONDS)
+
+
 def advisor_model(
     google_api_key: str,
     groq_api_key: str,
-    http_client: AsyncClient,
+    google_client: httpx2.AsyncClient,
+    groq_client: httpx.AsyncClient,
     *,
     preferred_provider: ChatProvider = "gemini",
     effort: ThinkingEffort = "low",
 ) -> Model:
     primary = GoogleModel(
         PRIMARY_MODEL,
-        provider=GoogleProvider(api_key=google_api_key, http_client=http_client),
+        provider=GoogleProvider(api_key=google_api_key, http_client=google_client),
         settings=GoogleModelSettings(google_thinking_config={"thinking_level": effort}),
     )
     if not groq_api_key:
         return primary
     fallback = GroqModel(
         FALLBACK_MODEL,
-        provider=GroqProvider(api_key=groq_api_key, http_client=http_client),
+        provider=GroqProvider(api_key=groq_api_key, http_client=groq_client),
         settings=GroqModelSettings(
             groq_reasoning_effort=effort, groq_reasoning_format="hidden"
         ),
@@ -130,12 +142,15 @@ class AdvisorClient:
             span.set_data(SPANDATA.GEN_AI_REQUEST_MODEL, requested_model)
             span.set_data(SPANDATA.GEN_AI_REQUEST_REASONING_LEVEL, self._effort)
             span.set_data(SPANDATA.GEN_AI_RESPONSE_STREAMING, True)
-            # Google derives its server deadline from this timeout; the default 5s is rejected.
-            async with AsyncClient(timeout=ADVISOR_TIMEOUT_SECONDS) as http_client:
+            async with (
+                google_http_client() as google_client,
+                groq_http_client() as groq_client,
+            ):
                 model = advisor_model(
                     self._google_api_key,
                     self._groq_api_key,
-                    http_client,
+                    google_client,
+                    groq_client,
                     preferred_provider=self._preferred_provider,
                     effort=self._effort,
                 )
