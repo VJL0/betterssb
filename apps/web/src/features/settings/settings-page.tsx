@@ -37,20 +37,17 @@ import { useStoreDocument, useStoreState } from "@/lib/store/store-context";
 import { downloadStoreExport } from "./export-data";
 
 function SettingsSection({
-  id,
   title,
   description,
   children,
 }: {
-  id: string;
   title: string;
   description?: string;
   children: ReactNode;
 }) {
-  const headingId = `${id}-heading`;
+  const headingId = useId();
   return (
     <Card
-      id={id}
       aria-labelledby={headingId}
       className="gap-4 p-5"
       render={<section />}
@@ -81,7 +78,7 @@ export function SettingsPage() {
 
 function TermSection() {
   return (
-    <SettingsSection id="term" title="Term and major">
+    <SettingsSection title="Term and major">
       <Field>
         {/* The select names itself; this is the visible heading. */}
         <FieldTitle>Term</FieldTitle>
@@ -104,7 +101,7 @@ function KeyboardSection() {
   const { settings, update } = useSettings();
   const switchId = useId();
   return (
-    <SettingsSection id="keyboard" title="Keyboard">
+    <SettingsSection title="Keyboard">
       <Field orientation="horizontal">
         <FieldLabel htmlFor={switchId}>Keyboard shortcuts</FieldLabel>
         <Switch
@@ -133,24 +130,24 @@ function KeyboardSection() {
 
 function ExtensionSection() {
   const extensionInstalled = useExtensionInstalled();
-  if (extensionInstalled) {
-    return (
-      <SettingsSection id="extension" title="Chrome extension">
-        <BannerExtrasSwitch />
-      </SettingsSection>
-    );
-  }
   // Its options only take effect through the extension, so they wait for it.
   return (
     <SettingsSection
-      id="extension"
       title="Chrome extension"
-      description="Needed for DARS, auto-register and Banner extras."
+      description={
+        extensionInstalled
+          ? undefined
+          : "Needed for DARS, auto-register and Banner extras."
+      }
     >
-      {EXTENSION_INSTALL_URL && (
-        <ButtonLink href={EXTENSION_INSTALL_URL} className="self-start">
-          Add the extension
-        </ButtonLink>
+      {extensionInstalled ? (
+        <BannerExtrasSwitch />
+      ) : (
+        EXTENSION_INSTALL_URL && (
+          <ButtonLink href={EXTENSION_INSTALL_URL} className="self-start">
+            Add the extension
+          </ButtonLink>
+        )
       )}
     </SettingsSection>
   );
@@ -193,7 +190,7 @@ function DataSection() {
   }
 
   return (
-    <SettingsSection id="data" title="Your data" description={where}>
+    <SettingsSection title="Your data" description={where}>
       <DataRow
         title="Download a copy"
         action={
@@ -218,7 +215,6 @@ function DataSection() {
         }
         action={
           <ConfirmButton
-            label="Delete"
             accessibleName="Delete advisor chats"
             disabled={!opened || !threads.value?.length}
             title="Delete all advisor chats?"
@@ -235,7 +231,6 @@ function DataSection() {
         title="Delete everything"
         action={
           <ConfirmButton
-            label="Delete"
             accessibleName="Delete everything"
             destructive
             disabled={!opened}
@@ -273,8 +268,7 @@ function DataRow({
 }
 
 interface ConfirmButtonProps {
-  label: string;
-  /** Full name for assistive tech, starting with `label` (WCAG 2.5.3). */
+  /** Full name for assistive tech, starting with "Delete" (WCAG 2.5.3). */
   accessibleName: string;
   title: string;
   description: string;
@@ -286,7 +280,6 @@ interface ConfirmButtonProps {
 
 /** Irreversible actions are confirmed in an AlertDialog; nothing else is. */
 function ConfirmButton({
-  label,
   accessibleName,
   title,
   description,
@@ -324,7 +317,7 @@ function ConfirmButton({
         }
       >
         <Trash2Icon data-icon="inline-start" />
-        {label}
+        Delete
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
