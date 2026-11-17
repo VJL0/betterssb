@@ -50,8 +50,7 @@ betterssb/
 │   │       ├── core/                  # Config, database, security, errors, OpenAPI
 │   │       └── shared/                # Cross-cutting schemas
 │   │
-│   ├── ellucian-api/  # Mock Ellucian SSB API (FastAPI), for development
-│   └── seat-tracker/  # Standalone seat watcher (ntfy), separate from the app
+│   └── ellucian-api/  # Mock Ellucian SSB API (FastAPI), for development
 │
 └── packages/
     ├── api-client/    # TypeScript client generated from the API's OpenAPI schema (Hey API)

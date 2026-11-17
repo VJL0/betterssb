@@ -23,7 +23,7 @@
     "ai": "catalog:",
     "class-variance-authority": "catalog:",
     "lucide-react": "catalog:",
-    "next": "^16.4.2",
+    "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "rehype-harden": "catalog:",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@next/eslint-plugin-next": "^16.4.2",
+    "@next/eslint-plugin-next": "catalog:",
     "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/eslint-plugin-query": "^5.104.4",
     "@testing-library/react": "catalog:",
