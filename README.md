@@ -43,14 +43,12 @@ betterssb/
 │   │   ├── lib/                       # Banner client, results reader, storage, messaging
 │   │   └── hooks/                     # React hooks shared by the popup and overlay
 │   │
-│   ├── api/           # API server (FastAPI + Python 3.14)
-│   │   └── app/
-│   │       ├── api/                   # App router & shared route dependencies
-│   │       ├── modules/               # Per-feature routers, services, schemas, external clients
-│   │       ├── core/                  # Config, database, security, errors, OpenAPI
-│   │       └── shared/                # Cross-cutting schemas
-│   │
-│   └── ellucian-api/  # Mock Ellucian SSB API (FastAPI), for development
+│   └── api/           # API server (FastAPI + Python 3.14)
+│       └── app/
+│           ├── api/                   # App router & shared route dependencies
+│           ├── modules/               # Per-feature routers, services, schemas, external clients
+│           ├── core/                  # Config, database, security, errors, OpenAPI
+│           └── shared/                # Cross-cutting schemas
 │
 └── packages/
     ├── api-client/    # TypeScript client generated from the API's OpenAPI schema (Hey API)
