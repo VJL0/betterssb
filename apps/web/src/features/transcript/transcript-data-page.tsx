@@ -33,17 +33,17 @@ export function TranscriptDataPage() {
   const json = read.data ? JSON.stringify(read.data[view], null, 2) : "";
 
   return (
-    <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="flex flex-col gap-5">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h2 className="text-lg font-semibold tracking-tight">
             Transcript data
-          </h1>
+          </h2>
           <p className="text-muted-foreground">
             Upload your transcript PDF to inspect the extracted JSON.
           </p>
         </div>
-        <ButtonLink href="/transcript" variant="outline">
+        <ButtonLink href="/records/transcript" variant="outline">
           Back to transcript
         </ButtonLink>
       </header>

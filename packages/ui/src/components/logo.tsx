@@ -29,7 +29,14 @@ export function LogoMark({ className }: { className?: string }) {
   );
 }
 
-export function Logo({ className }: { className?: string }) {
+export function Logo({
+  className,
+  markClassName,
+}: {
+  className?: string;
+  /** Styles the mark, e.g. to hide it on phones and show only the name. */
+  markClassName?: string;
+}) {
   return (
     <span
       className={cn(
@@ -37,7 +44,7 @@ export function Logo({ className }: { className?: string }) {
         className,
       )}
     >
-      <LogoMark />
+      <LogoMark className={markClassName} />
       BetterSSB
     </span>
   );

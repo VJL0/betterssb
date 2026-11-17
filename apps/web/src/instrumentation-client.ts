@@ -18,7 +18,7 @@ Sentry.init({
     Sentry.replayIntegration(),
     Sentry.browserProfilingIntegration(),
     ...SENTRY_OPTIONS.integrations,
-    // Opened from the account menu and the error page (lib/feedback.ts).
+    // Opened from the settings menu, the phone menu and the error page (lib/feedback.ts).
     Sentry.feedbackIntegration({
       autoInject: false,
       showName: false,

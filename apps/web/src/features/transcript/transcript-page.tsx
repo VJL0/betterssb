@@ -57,7 +57,7 @@ async function readTranscript(file: File): Promise<TranscriptData> {
   return savedTranscript(data);
 }
 
-/** W3.2 · Transcript: courses by term, and what each counts toward. */
+/** W3.2 · Transcript, the Records page's second tab: courses by term, and what each counts toward. */
 export function TranscriptPage() {
   const stored = useStoreDocument("transcript");
   const audit = useStoreDocument("audit").value?.audit ?? null;
@@ -87,13 +87,13 @@ export function TranscriptPage() {
     : "Your transcript PDF, read into courses and grades";
 
   return (
-    <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Transcript</h1>
+          <h2 className="text-lg font-semibold tracking-tight">Transcript</h2>
           <p className="text-muted-foreground">{subtitle}</p>
         </div>
-        <ButtonLink href="/transcript/data" variant="outline">
+        <ButtonLink href="/records/transcript/data" variant="outline">
           View transcript JSON
         </ButtonLink>
         {transcript && !replacing && (
@@ -123,9 +123,9 @@ export function TranscriptPage() {
                 className="gap-1 p-4"
                 render={<section />}
               >
-                <h2 id="gpa-heading" className="font-medium">
+                <h3 id="gpa-heading" className="font-medium">
                   GPA
-                </h2>
+                </h3>
                 <p className="flex items-baseline gap-1.5 tabular-nums">
                   <span className="text-3xl font-medium">
                     {transcript!.gpa.toFixed(2)}
@@ -134,11 +134,11 @@ export function TranscriptPage() {
                 </p>
               </Card>
             )}
-            {!audit && isPageReady("audit") && (
+            {!audit && isPageReady("records") && (
               <p className="rounded-2xl bg-muted/50 p-3">
                 Save your degree audit to see what each course counts toward.{" "}
                 <ButtonLink
-                  href="/audit"
+                  href="/records"
                   variant="link"
                   size="xs"
                   className="px-0"
@@ -271,7 +271,7 @@ function TermCard({
       render={<article />}
     >
       <header className="flex items-baseline justify-between gap-2 px-5">
-        <h2 className="text-base font-medium">{term.term}</h2>
+        <h3 className="text-base font-medium">{term.term}</h3>
         <span className="text-muted-foreground tabular-nums">
           {formatCredits(term.credits)} cr
         </span>

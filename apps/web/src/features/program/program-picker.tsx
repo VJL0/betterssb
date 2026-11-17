@@ -224,7 +224,7 @@ export function ProgramPicker() {
           <AlertTitle>Using the {shownYear} Bulletin</AlertTitle>
           <AlertDescription>
             {year} isn't online yet, so newer courses may be missing. Check your{" "}
-            <Link href="/audit" className="underline underline-offset-2">
+            <Link href="/records" className="underline underline-offset-2">
               degree audit
             </Link>
             .

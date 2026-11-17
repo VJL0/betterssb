@@ -104,7 +104,7 @@ function linesFor(group: AuditGroup, filter: Filter) {
     : group.lines.filter((line) => line.status === filter);
 }
 
-/** W3.1 · Degree audit: the saved DARS audit, requirement by requirement. */
+/** W3.1 · Degree audit, the Records page's first tab: the saved DARS audit, requirement by requirement. */
 export function AuditPage() {
   const run = useAuditRun();
   const extensionInstalled = useExtensionInstalled();
@@ -135,7 +135,7 @@ export function AuditPage() {
   );
 
   return (
-    <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="flex flex-col gap-5">
       {/* Opened by "Upload DARS file"; hidden from tab order and screen readers. */}
       <input
         ref={fileInput}
@@ -152,9 +152,7 @@ export function AuditPage() {
       />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Degree audit
-          </h1>
+          <h2 className="text-lg font-semibold tracking-tight">Degree audit</h2>
           <p className="text-muted-foreground">
             {audit && run.stored
               ? [

@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import { AppHeader } from "@/components/shell/app-header";
-import { MobileTabBar } from "@/components/shell/mobile-tab-bar";
 
-/** App pages: skip link, top bar, page, and the phone tab bar. */
+/** App pages: skip link, top bar and page. */
 export default function ShellLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-sidebar">
@@ -13,14 +12,9 @@ export default function ShellLayout({ children }: { children: ReactNode }) {
         Skip to content
       </a>
       <AppHeader />
-      <main
-        id="main"
-        tabIndex={-1}
-        className="flex-1 pb-20 outline-none sm:pb-0"
-      >
+      <main id="main" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>
-      <MobileTabBar />
     </div>
   );
 }

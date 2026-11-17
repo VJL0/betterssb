@@ -43,6 +43,7 @@ import {
 } from "@workspace/ui/components/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
 import { usePlans } from "@/hooks/use-plans";
+import { formatShortDate } from "@/lib/relative-time";
 import { useStoreDocument } from "@/lib/store/store-context";
 import {
   AdvisorContextPanel,
@@ -58,13 +59,6 @@ const SUGGESTIONS = [
   "What should I take next term?",
   "Am I on track to graduate?",
 ];
-
-function shortDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en", {
-    month: "short",
-    day: "numeric",
-  });
-}
 
 function listFormat(items: readonly string[]): string {
   return new Intl.ListFormat("en", { type: "conjunction" }).format(items);
@@ -83,7 +77,7 @@ function useAdvisorSources() {
       id: "audit",
       label: "Degree audit",
       description: audit
-        ? `${audit.audit.programTitle}, saved ${shortDate(audit.storedAt)}`
+        ? `${audit.audit.programTitle}, saved ${formatShortDate(audit.storedAt)}`
         : "No audit saved yet",
       available: !!audit,
       on: !off.has("audit"),
@@ -311,7 +305,7 @@ function ThreadList({
                 >
                   <span className="truncate font-medium">{thread.title}</span>
                   <span className="text-xs text-muted-foreground">
-                    {shortDate(thread.updatedAt)}
+                    {formatShortDate(thread.updatedAt)}
                   </span>
                 </button>
               </li>

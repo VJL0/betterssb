@@ -255,7 +255,7 @@ describe("PlanPage", () => {
       screen
         .getByRole("link", { name: "Open degree audit" })
         .getAttribute("href"),
-    ).toBe("/audit");
+    ).toBe("/records");
     expect(screen.queryByRole("heading", { name: "Still needed" })).toBeNull();
   });
 

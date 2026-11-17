@@ -147,8 +147,8 @@ export function NoAuditProgress() {
           up here, next to your plan.
         </span>
       </span>
-      {isPageReady("audit") && (
-        <ButtonLink href="/audit" variant="outline">
+      {isPageReady("records") && (
+        <ButtonLink href="/records" variant="outline">
           Open degree audit
         </ButtonLink>
       )}
