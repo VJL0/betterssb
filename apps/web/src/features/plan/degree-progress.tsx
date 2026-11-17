@@ -148,7 +148,7 @@ export function NoAuditProgress() {
         </span>
       </span>
       {isPageReady("records") && (
-        <ButtonLink href="/records" variant="outline">
+        <ButtonLink href="/records/audit" variant="outline">
           Open degree audit
         </ButtonLink>
       )}

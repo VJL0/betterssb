@@ -6,12 +6,12 @@ import type { ReactNode } from "react";
 import { formatShortDate } from "@/lib/relative-time";
 import { useStoreDocument } from "@/lib/store/store-context";
 
-const AUDIT_PATH = "/records";
+const AUDIT_PATH = "/records/audit";
 const TRANSCRIPT_PATH = "/records/transcript";
 
 /**
- * Records: the degree audit and the transcript, one tab each. Plan and the
- * advisor read both, so each tab says when it was last saved.
+ * Records: the degree audit and the transcript, a tab and a page each. Plan
+ * and the advisor read both, so each tab says when it was last saved.
  */
 export function RecordsLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();

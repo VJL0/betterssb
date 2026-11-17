@@ -11,17 +11,19 @@ function tab(name: RegExp) {
 }
 
 describe("RecordsLayout", () => {
-  it("marks the transcript tab on its page", () => {
+  it("links each tab to its page and marks the one shown", () => {
     renderPage(<RecordsLayout>{null}</RecordsLayout>, {
       route: "/records/transcript",
     });
+    expect(tab(/^Degree audit/).getAttribute("href")).toBe("/records/audit");
+    expect(tab(/^Transcript/).getAttribute("href")).toBe("/records/transcript");
     expect(tab(/^Transcript/).getAttribute("aria-current")).toBe("page");
     expect(tab(/^Degree audit/).getAttribute("aria-current")).toBeNull();
   });
 
   it("says which records are saved", async () => {
     const { store } = renderPage(<RecordsLayout>{null}</RecordsLayout>, {
-      route: "/records",
+      route: "/records/audit",
     });
     expect(tab(/^Degree audit/).getAttribute("aria-current")).toBe("page");
     expect(await screen.findAllByText("Not added yet")).toHaveLength(2);

@@ -259,7 +259,7 @@ describe("PlanPage", () => {
       screen
         .getByRole("link", { name: "Open degree audit" })
         .getAttribute("href"),
-    ).toBe("/records");
+    ).toBe("/records/audit");
     expect(screen.queryByRole("heading", { name: "Still needed" })).toBeNull();
   });
 

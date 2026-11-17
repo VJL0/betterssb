@@ -38,7 +38,6 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { isPageReady } from "@/components/shell/pages";
 import { ButtonLink } from "@/components/button-link";
 import { useStoreDocument } from "@/lib/store/store-context";
 import { GpaCard, GradeCell, WhatIfGpaPill } from "./gpa-what-if";
@@ -120,11 +119,11 @@ export function TranscriptPage() {
           {/* Above the terms on phones; beside them, in view, on wide screens. */}
           <aside className="flex flex-col gap-4 max-lg:order-first lg:sticky lg:top-24">
             <GpaCard officialGpa={transcript!.gpa} whatIf={whatIf} />
-            {!audit && isPageReady("records") && (
+            {!audit && (
               <p className="rounded-2xl bg-muted/50 p-3">
                 Save your degree audit to see what each course counts toward.{" "}
                 <ButtonLink
-                  href="/records"
+                  href="/records/audit"
                   variant="link"
                   size="xs"
                   className="px-0"

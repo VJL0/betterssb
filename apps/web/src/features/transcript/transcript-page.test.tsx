@@ -263,6 +263,16 @@ describe("TranscriptPage", () => {
     });
   });
 
+  it("links to the audit until one is saved", async () => {
+    const { store } = renderPage(<TranscriptPage />);
+    await store.set("transcript", { transcript: TRANSCRIPT, storedAt: NOW });
+    expect(
+      (
+        await screen.findByRole("link", { name: "Open degree audit" })
+      ).getAttribute("href"),
+    ).toBe("/records/audit");
+  });
+
   it("has no accessibility violations", async () => {
     const { container, store } = renderPage(<TranscriptPage />);
     await store.set("transcript", { transcript: TRANSCRIPT, storedAt: NOW });

@@ -76,7 +76,7 @@ export const APP_PAGES: readonly AppPage[] = [
   {
     id: "records",
     label: "Records",
-    path: "/records",
+    path: "/records/audit",
     icon: FolderOpenIcon,
     group: "degree",
     ready: true,

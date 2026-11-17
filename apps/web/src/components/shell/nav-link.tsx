@@ -4,14 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentProps } from "react";
 
+/** "/records/audit" → "records". */
+function section(path: string): string {
+  return path.split("/")[1] ?? "";
+}
+
 /**
- * A link marked `aria-current="page"` on its page and the pages under it;
- * style the current one with `aria-[current=page]:`.
+ * A link marked `aria-current="page"` anywhere in its section, so Records'
+ * audit link is current on the transcript too; style the current one with
+ * `aria-[current=page]:`.
  */
 export function NavLink({ href, ...props }: ComponentProps<typeof Link>) {
   const pathname = usePathname();
-  const path = href.toString();
-  const isCurrent = pathname === path || pathname.startsWith(`${path}/`);
+  const isCurrent = section(pathname) === section(href.toString());
   return (
     <Link
       href={href}

@@ -35,6 +35,13 @@ describe("AppHeader", () => {
     }
   });
 
+  it("marks Records current on both of its pages", () => {
+    renderPage(<AppHeader />, { route: "/records/transcript" });
+    const records = screen.getByRole("link", { name: "Records" });
+    expect(records.getAttribute("href")).toBe("/records/audit");
+    expect(records.getAttribute("aria-current")).toBe("page");
+  });
+
   it("leaves sign-in to the Seats page", () => {
     renderPage(<AppHeader />);
     expect(screen.queryByRole("link", { name: /Sign in/ })).toBeNull();
