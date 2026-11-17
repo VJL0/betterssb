@@ -17,7 +17,7 @@ Everything is saved on your device. There's no account yet; sign-in for sync is 
 | **Auto-register**    | Queue CRNs, pick a time, arm it; the extension submits them with your Banner sign-in when registration opens.                                                                    |
 | **Seat tracker**     | Signed in, enter a full section's CRN from the bell in the top bar; you get an email at your Google address when a seat opens, and the bell lists the classes it's waiting on.   |
 | **On Banner pages**  | Ratings before instructors, seat meters, "In your plan" and conflict tags, and a plan dock on Banner's class search. One setting turns it all off.                               |
-| **Popup**            | Your Banner sign-in, when auto-register is set to run, and a button to the website.                                                                                              |
+| **Popup**            | Your Banner sign-in, when auto-register is set to run, a button to the website, and every request the extension sent.                                                            |
 
 ## Architecture
 
@@ -59,13 +59,13 @@ betterssb/
 ### How It Works
 
 1. **Website** — Where students do the real work: search, schedule builder, planner, audit, transcript, advisor, auto-register setup and settings. Guests use all of it; data is saved in the browser (IndexedDB), or in the extension once it's installed.
-2. **Popup** — The extension's front door: one line on what it does, whether you're signed in to Banner (with a sign-in button when you're not), when an armed auto-register run is set for, and **Open BetterSSB**. Everything else, disarming included, is on the website; Chrome notifications cover a finished or failed run and a sign-out while armed.
+2. **Popup** — The extension's front door: one line on what it does, whether you're signed in to Banner (with a sign-in button when you're not), when an armed auto-register run is set for, **Open BetterSSB**, and every request the extension sent, with no filter (method, endpoint, status, site and time; repeats within five minutes are one row with a count). Everything else, disarming included, is on the website; Chrome notifications cover a finished or failed run and a sign-out while armed.
 3. **Content Script** — Runs only on Temple's Banner registration pages (`https://prd-xereg.temple.edu/StudentRegistrationSsb/*`; the URLs live in `apps/extension/lib/temple-urls.ts`). It hosts the Banner overlay, and while auto-register is armed it restarts the page's own idle-logout timer so an open Banner tab can't end the session. The overlay reads Banner's class search results grid (Browse Classes, Plan Ahead, Find Classes) and adds a Rate My Professors score before each instructor, a seat meter under Banner's seat text, "In your plan" and "Conflicts with your plan" tags under titles, and a collapsible plan dock. Each piece renders in its own shadow root, so Banner's styles and ours never mix; one setting ("Show extras on Banner" in the website's settings) turns all of it off.
 4. **Web bridge** — A content script on the website's origin that passes a fixed list of requests between the page and the extension (`packages/shared/src/lib/bridge.ts`): the shared store, Banner status, DARS runs, the auto-register queue and arming, and Banner registration terms and plans. Anything else is dropped. Its `matches` are `localhost` only until the production origin is set.
-5. **Background Service Worker** — Rating lookups for the Banner overlay, Banner calls made with the student's cookies (registration terms and plans, CRN checks, the auto-register submit; no Banner tab needed), DARS runs, the Banner sign-in check (which, while a run is armed, also keeps the session alive), auto-register (queue, arming checks, the one-shot alarm, notifications) and `chrome.storage`.
+5. **Background Service Worker** — Rating lookups for the Banner overlay, Banner calls made with the student's cookies (registration terms and plans, CRN checks, the auto-register submit; no Banner tab needed), DARS runs, the Banner sign-in check (which, while a run is armed, also keeps the session alive), auto-register (queue, arming checks, the one-shot alarm, notifications) and `chrome.storage`. Every request the extension sends goes through `lib/logged-fetch.ts`: Banner, TUportal and DARS (from its content script) with the student's sign-in, and the BetterSSB API's rating lookups, whose client takes it as its `fetch`. It logs each one's method, URL and status to the `requestLog` store document for the popup; Banner's cache-buster and session-id parameters are dropped, repeats within five minutes become one entry with a count, and only the last 500 are kept. Bodies, headers and cookies are never logged.
 6. **Backend API** — A proxy for Banner's public class search (terms, subjects, sections; cached in Redis), Rate My Professors ratings (Temple's roster in Redis, matched by name in memory and re-synced in the background when a lookup finds it a day old, with `wait_until` keeping the Vercel Function alive until the sync ends), schedule generation, DARS audit and transcript parsing, and the advisor chat.
 
-**Local-first data.** Settings, plans per term, the stored audit and transcript, and advisor threads are documents in one store (`packages/shared/src/types/store.ts`). The website keeps them in IndexedDB; with the extension installed, `chrome.storage.local` is the single copy, which the website reaches through the bridge (anything saved locally first is merged in once). The popup and the overlay read the same documents.
+**Local-first data.** Settings, plans per term, the stored audit and transcript, advisor threads and the extension's request log are documents in one store (`packages/shared/src/types/store.ts`). The website keeps them in IndexedDB; with the extension installed, `chrome.storage.local` is the single copy, which the website reaches through the bridge (anything saved locally first is merged in once). The popup and the overlay read the same documents.
 
 **Where each feature lives**
 
@@ -76,7 +76,7 @@ betterssb/
 | Degree audit, transcript, advisor            | Yes            |              | DARS run          |
 | Auto-register                                | Set up and arm | When it runs | Submits the batch |
 | Ratings, seats and plan tags on Banner pages | On/off setting |              | Yes               |
-| Banner sign-in                               |                | Yes          |                   |
+| Banner sign-in and requests sent             |                | Yes          |                   |
 
 ## Tech Stack
 

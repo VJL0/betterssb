@@ -9,6 +9,7 @@
 import { parsePriorityRegistration } from "@workspace/shared/lib/registration-time";
 import type { RegistrationTimeLookup } from "@workspace/shared/types/auto-reg";
 import { PRIORITY_REGISTRATION_URL, TUPORTAL_ORIGIN } from "@/lib/temple-urls";
+import { loggedFetch } from "@/lib/logged-fetch";
 
 /**
  * A signed-out TUportal redirects to its login (or Temple's SSO host) and
@@ -26,7 +27,7 @@ function isLoginPage(res: Response, body: string): boolean {
 export async function lookUpRegistrationTime(
   term: string,
 ): Promise<RegistrationTimeLookup> {
-  const res = await fetch(PRIORITY_REGISTRATION_URL, {
+  const res = await loggedFetch(PRIORITY_REGISTRATION_URL, {
     credentials: "include",
   });
   if (!res.ok) throw new Error(`TUportal returned HTTP ${res.status}`);

@@ -9,6 +9,7 @@ import {
   useBannerConnection,
 } from "./hooks/use-auto-register";
 import { openUrl, openWeb } from "./lib/open-web";
+import { RequestList } from "./request-list";
 
 const BANNER_STATUS: Record<
   BannerConnection,
@@ -30,7 +31,8 @@ function runTime(iso: string): string {
 
 /**
  * E1 The popup: what the extension is for, the two things only it can tell
- * (Banner sign-in and an armed run), and the way to the website.
+ * (Banner sign-in and an armed run), the way to the website, and every
+ * request it sent with the student's sign-in.
  */
 export function Home() {
   return (
@@ -42,6 +44,7 @@ export function Home() {
       <Button className="w-full" onClick={() => void openWeb("/search")}>
         Open BetterSSB
       </Button>
+      <RequestList />
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { loggedFetch } from "@/lib/logged-fetch";
+
 /**
  * Runs a degree audit in u.achieve self-service (DARS) from the content script.
  *
@@ -22,7 +24,7 @@ export class DarsSessionExpiredError extends Error {
 }
 
 async function darsFetch(path: string, init?: RequestInit): Promise<Response> {
-  const res = await fetch(path, { credentials: "same-origin", ...init });
+  const res = await loggedFetch(path, { credentials: "same-origin", ...init });
   // An expired session makes DARS redirect to the Temple SSO host (fim.temple.edu).
   if (/\/(saml|idp)\//.test(res.url) || res.url.includes("fim.")) {
     throw new DarsSessionExpiredError();
