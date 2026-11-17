@@ -24,6 +24,8 @@ const transcript: TranscriptData = {
       grade: "A",
       credits: 4,
       term: "Spring 2026",
+      category: "institution",
+      repeat: null,
     },
     {
       subject: "ENG",
@@ -32,6 +34,8 @@ const transcript: TranscriptData = {
       grade: "A",
       credits: 4,
       term: "Fall 2025",
+      category: "institution",
+      repeat: null,
     },
     {
       subject: "MATH",
@@ -40,6 +44,8 @@ const transcript: TranscriptData = {
       grade: "A-",
       credits: 4,
       term: "Spring 2026",
+      category: "institution",
+      repeat: null,
     },
     {
       subject: "KINS",
@@ -48,6 +54,8 @@ const transcript: TranscriptData = {
       grade: "A",
       credits: 2,
       term: "Transfer",
+      category: "institution",
+      repeat: null,
     },
   ],
 };

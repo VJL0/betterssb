@@ -92,7 +92,7 @@ const FEATURES: Feature[] = [
       "Every requirement marked done, in progress or needed",
       "Jump from a requirement to its sections",
     ],
-    pageId: "audit",
+    pageId: "records",
     cta: "Open the audit",
     preview: <AuditPreview />,
     previewLabel: "Degree requirements marked done, in progress and needed",

@@ -134,7 +134,7 @@ describe("ProgramPicker", () => {
     ).toBeTruthy();
     expect(screen.getByRole("link", { name: "degree audit" })).toHaveProperty(
       "pathname",
-      "/audit",
+      "/records/audit",
     );
 
     const program = screen.getByRole("combobox", {

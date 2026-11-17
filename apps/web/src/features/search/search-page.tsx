@@ -394,7 +394,7 @@ function SearchBody({
         {rail}
       </aside>
 
-      <div className="sticky bottom-20 z-30 flex justify-center sm:bottom-4 xl:hidden">
+      <div className="sticky bottom-4 z-30 flex justify-center xl:hidden">
         <Button
           size="lg"
           className="shadow-lg"

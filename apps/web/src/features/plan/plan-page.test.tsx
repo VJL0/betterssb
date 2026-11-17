@@ -206,6 +206,8 @@ describe("PlanPage", () => {
               credits: 4,
               grade: "A",
               term: "Spring 2026",
+              category: "institution",
+              repeat: null,
             },
             {
               subject: "ENG",
@@ -214,6 +216,8 @@ describe("PlanPage", () => {
               credits: 4,
               grade: "A",
               term: "Fall 2025",
+              category: "institution",
+              repeat: null,
             },
           ],
         },
@@ -255,7 +259,7 @@ describe("PlanPage", () => {
       screen
         .getByRole("link", { name: "Open degree audit" })
         .getAttribute("href"),
-    ).toBe("/audit");
+    ).toBe("/records/audit");
     expect(screen.queryByRole("heading", { name: "Still needed" })).toBeNull();
   });
 

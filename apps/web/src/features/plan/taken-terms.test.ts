@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { sampleAudit } from "@workspace/shared/testing/audit";
+import type { TranscriptData } from "@workspace/shared/lib/transcript";
 import { takenTerms } from "./taken-terms";
 
-const TRANSCRIPT = {
+const TRANSCRIPT: TranscriptData = {
   gpa: null,
   courses: [
     {
@@ -12,6 +13,8 @@ const TRANSCRIPT = {
       credits: 4,
       grade: "A",
       term: "Spring 2026",
+      category: "institution",
+      repeat: null,
     },
     {
       subject: "ENG",
@@ -20,6 +23,8 @@ const TRANSCRIPT = {
       credits: 4,
       grade: "B",
       term: "Fall 2025",
+      category: "institution",
+      repeat: null,
     },
   ],
 };

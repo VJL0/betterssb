@@ -1,25 +1,33 @@
 "use client";
 
 import { useId, useState } from "react";
-import { BellIcon, BellRingIcon, EyeIcon, XIcon } from "lucide-react";
+import { EyeIcon, LogOutIcon, UserRoundIcon, XIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { queryError, type SeatWatchResponse } from "@workspace/api-client";
 import { Button, buttonVariants } from "@workspace/ui/components/button";
+import { Card, CardContent } from "@workspace/ui/components/card";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@workspace/ui/components/empty";
 import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverDescription,
-  PopoverHeader,
-  PopoverTitle,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover";
 import { SeatMeter } from "@workspace/ui/components/seat-meter";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import { Spinner } from "@workspace/ui/components/spinner";
-import { cn } from "@workspace/ui/lib/utils";
+import { GoogleIcon } from "@/components/google-icon";
 import { useCurrentTerm } from "@/hooks/use-current-term";
+import {
+  useAuthErrorToast,
+  useCurrentUser,
+  useSignOut,
+} from "@/hooks/use-current-user";
 import { useTerms } from "@/hooks/use-terms";
-import type { User } from "@/lib/auth";
+import { loginUrl, type User } from "@/lib/auth";
 import { formatClockTime } from "@/lib/relative-time";
 import {
   useSeatWatches,
@@ -29,49 +37,68 @@ import {
 
 const CRN = /^\d{5}$/;
 
-function isOpen(watch: SeatWatchResponse): boolean {
-  return watch.seatsAvailable > 0;
+/**
+ * The seat tracker: CRNs to watch and the classes it's waiting on. A seat
+ * opening is emailed to the student's Google address, so it needs sign-in,
+ * and this is the only page that does.
+ */
+export function SeatTrackerPage() {
+  const currentUser = useCurrentUser();
+  const user = currentUser.data ?? null;
+  // A failed sign-in comes back here, the page it started on.
+  useAuthErrorToast();
+  return (
+    <div className="mx-auto flex max-w-3xl flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold tracking-tight">Seat tracker</h1>
+        <p className="text-muted-foreground">
+          Emails you when a full section opens
+        </p>
+      </div>
+      {currentUser.isPending ? (
+        <Skeleton className="h-64 rounded-3xl" />
+      ) : user ? (
+        <SeatTracker user={user} />
+      ) : (
+        <SignInToTrack />
+      )}
+    </div>
+  );
 }
 
-/**
- * The top bar's seat tracker, for signed-in students: CRNs to watch, and the
- * classes it's waiting on. A seat opening is emailed to their Google address.
- */
-export function SeatTrackerMenu({ user }: { user: User }) {
-  const watches = useSeatWatches();
-  const list = watches.data ?? [];
-  const anyOpen = list.some(isOpen);
-  const Icon = anyOpen ? BellRingIcon : BellIcon;
+function SignInToTrack() {
   return (
-    <Popover>
-      <PopoverTrigger
-        aria-label={
-          list.length ? `Seat tracker, watching ${list.length}` : "Seat tracker"
-        }
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "icon" }),
-          "relative",
-        )}
-      >
-        <Icon className={cn(anyOpen && "text-success")} />
-        {list.length > 0 && (
-          <span
-            aria-hidden
-            className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground tabular-nums"
-          >
-            {list.length}
-          </span>
-        )}
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-80 max-w-[calc(100vw-2rem)]">
-        <PopoverHeader>
-          <PopoverTitle>Seat tracker</PopoverTitle>
-          <PopoverDescription>
-            We'll email <span className="text-foreground">{user.email}</span>{" "}
-            when a full section opens.
-          </PopoverDescription>
-        </PopoverHeader>
-        <WatchCrnForm watchedCrns={list.map((w) => w.crn)} />
+    <Empty className="border border-dashed">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <UserRoundIcon />
+        </EmptyMedia>
+        <EmptyTitle>Sign in to track seats</EmptyTitle>
+        <EmptyDescription>
+          We email your Google address when a section you're watching opens.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        {/* A full-page navigation, never prefetched: the backend runs the Google sign-in. */}
+        <a
+          href={loginUrl(usePathname())}
+          className={buttonVariants({ variant: "outline" })}
+        >
+          <GoogleIcon />
+          Sign in with Google
+        </a>
+      </EmptyContent>
+    </Empty>
+  );
+}
+
+function SeatTracker({ user }: { user: User }) {
+  const watches = useSeatWatches();
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-4">
+        <SignedInAs user={user} />
+        <WatchCrnForm watchedCrns={(watches.data ?? []).map((w) => w.crn)} />
         {watches.isPending ? (
           <Spinner className="self-center" />
         ) : watches.isError ? (
@@ -79,10 +106,30 @@ export function SeatTrackerMenu({ user }: { user: User }) {
             {queryError(watches.error)?.message}
           </p>
         ) : (
-          <WatchList watches={list} />
+          <WatchList watches={watches.data} />
         )}
-      </PopoverContent>
-    </Popover>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SignedInAs({ user }: { user: User }) {
+  const signOut = useSignOut();
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <p className="min-w-0 truncate text-muted-foreground">
+        Alerts go to <span className="text-foreground">{user.email}</span>
+      </p>
+      <Button
+        variant="ghost"
+        size="sm"
+        disabled={signOut.isPending}
+        onClick={() => signOut.mutate()}
+      >
+        <LogOutIcon data-icon="inline-start" />
+        Sign out
+      </Button>
+    </div>
   );
 }
 
@@ -173,12 +220,12 @@ function WatchList({ watches }: { watches: readonly SeatWatchResponse[] }) {
       aria-labelledby="seat-tracker-waiting"
       className="flex flex-col gap-2"
     >
-      <h3
+      <h2
         id="seat-tracker-waiting"
         className="text-xs font-medium text-muted-foreground"
       >
         Waiting on {watches.length} {watches.length === 1 ? "class" : "classes"}
-      </h3>
+      </h2>
       <ul className="flex flex-col divide-y divide-border">
         {watches.map((watch) => (
           <WatchRow

@@ -1,47 +1,49 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import {
-  API,
-  http,
-  problemResponse,
-  server,
-} from "@workspace/api-client/testing";
 import { renderPage } from "@/test/render";
 import { AppHeader } from "./app-header";
 
-function signedOut() {
-  server.use(http.get(`${API}/auth/me`, () => problemResponse(401)));
-}
-
 describe("AppHeader", () => {
-  it("offers sign-in to a guest that comes back to this page", async () => {
-    signedOut();
-    renderPage(<AppHeader />, { route: "/search?q=CIS 1001" });
-    const signIn = await screen.findByRole("link", { name: "Sign in" });
-    expect(signIn.getAttribute("href")).toBe(
-      "/api/auth/google/login?next=%2Fsearch%3Fq%3DCIS%2B1001",
-    );
-  });
-
-  it("still offers sign-in when the API can't say who's signed in", async () => {
-    server.use(http.get(`${API}/auth/me`, () => problemResponse(500)));
-    renderPage(<AppHeader />);
-    expect(await screen.findByRole("link", { name: "Sign in" })).toBeTruthy();
-  });
-
-  it("shows who's signed in and signs them out", async () => {
+  it("opens settings from its menu", async () => {
     const user = userEvent.setup();
     renderPage(<AppHeader />);
     await user.click(
-      await screen.findByRole("button", { name: "Account and settings" }),
+      screen.getByRole("button", { name: "Settings and feedback" }),
     );
-    expect(await screen.findByText("Test Student")).toBeTruthy();
-    expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
+    expect(
+      (await screen.findByRole("menuitem", { name: "Settings" })).getAttribute(
+        "href",
+      ),
+    ).toBe("/settings");
+  });
 
-    await user.click(screen.getByRole("menuitem", { name: "Sign out" }));
-    await waitFor(() =>
-      expect(screen.getByRole("link", { name: "Sign in" })).toBeTruthy(),
-    );
+  it("groups the page links by what the student is doing", () => {
+    renderPage(<AppHeader />);
+    const groups = {
+      Planning: ["Search", "Schedule", "Plan"],
+      Registration: ["Register", "Seats"],
+      "Your degree": ["Records", "Advisor"],
+    };
+    for (const [group, pages] of Object.entries(groups)) {
+      const list = screen.getByRole("list", { name: group });
+      expect(
+        within(list)
+          .getAllByRole("link")
+          .map((link) => link.textContent),
+      ).toEqual(pages);
+    }
+  });
+
+  it("marks Records current on both of its pages", () => {
+    renderPage(<AppHeader />, { route: "/records/transcript" });
+    const records = screen.getByRole("link", { name: "Records" });
+    expect(records.getAttribute("href")).toBe("/records/audit");
+    expect(records.getAttribute("aria-current")).toBe("page");
+  });
+
+  it("leaves sign-in to the Seats page", () => {
+    renderPage(<AppHeader />);
+    expect(screen.queryByRole("link", { name: /Sign in/ })).toBeNull();
   });
 });

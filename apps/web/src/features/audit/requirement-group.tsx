@@ -50,7 +50,7 @@ export function RequirementGroup({
 
   return (
     <Card className="gap-0 overflow-hidden py-0" render={<article />}>
-      <h2>
+      <h3>
         <button
           type="button"
           aria-expanded={open}
@@ -82,7 +82,7 @@ export function RequirementGroup({
             )}
           />
         </button>
-      </h2>
+      </h3>
       {open && (
         <div id={listId}>
           {lines.length === 0 ? (

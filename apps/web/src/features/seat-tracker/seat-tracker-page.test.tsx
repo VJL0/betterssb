@@ -10,8 +10,8 @@ import {
   problemResponse,
   server,
 } from "@workspace/api-client/testing";
-import { AppHeader } from "@/components/shell/app-header";
 import { renderPage } from "@/test/render";
+import { SeatTrackerPage } from "./seat-tracker-page";
 
 const WATCH: SeatWatchResponse = {
   id: "watch-1",
@@ -55,71 +55,79 @@ function watching(initial: SeatWatchResponse[]) {
   return { created };
 }
 
+/** The signed-in student's tracker, once their watches have loaded. */
 async function openTracker() {
   const user = userEvent.setup();
-  renderPage(<AppHeader />);
-  await user.click(
-    await screen.findByRole("button", { name: /^Seat tracker/ }),
-  );
-  return { user, popover: await screen.findByRole("dialog") };
+  renderPage(<SeatTrackerPage />, { route: "/seats" });
+  const alerts = await screen.findByText(/^Alerts go to/);
+  await waitFor(() => expect(screen.queryByRole("status")).toBeNull());
+  return {
+    user,
+    tracker: alerts.closest<HTMLElement>("[data-slot=card-content]")!,
+  };
 }
 
-describe("SeatTrackerMenu", () => {
-  it("isn't there for guests", async () => {
+describe("SeatTrackerPage", () => {
+  it("asks guests to sign in and comes back here", async () => {
     server.use(http.get(`${API}/auth/me`, () => problemResponse(401)));
-    renderPage(<AppHeader />);
-    await screen.findByRole("link", { name: "Sign in" });
-    expect(screen.queryByRole("button", { name: /^Seat tracker/ })).toBeNull();
+    renderPage(<SeatTrackerPage />, { route: "/seats" });
+    const signIn = await screen.findByRole("link", {
+      name: "Sign in with Google",
+    });
+    expect(signIn.getAttribute("href")).toBe(
+      "/api/auth/google/login?next=%2Fseats",
+    );
+    expect(screen.queryByRole("button", { name: "Watch" })).toBeNull();
   });
 
   it("shows the classes it's waiting on and where it emails", async () => {
     watching([WATCH]);
-    const { popover } = await openTracker();
+    const { tracker } = await openTracker();
 
-    expect(within(popover).getByText("student@temple.edu")).toBeTruthy();
-    expect(within(popover).getByText("Waiting on 1 class")).toBeTruthy();
-    expect(within(popover).getByText("Software Security")).toBeTruthy();
+    expect(within(tracker).getByText("student@temple.edu")).toBeTruthy();
+    expect(within(tracker).getByText("Waiting on 1 class")).toBeTruthy();
+    expect(within(tracker).getByText("Software Security")).toBeTruthy();
     expect(
-      within(popover).getByText(
+      within(tracker).getByText(
         "Computer & Information Science 3441-702 · CRN 50067",
       ),
     ).toBeTruthy();
-    expect(within(popover).getByText("Full · waitlist 15/100")).toBeTruthy();
+    expect(within(tracker).getByText("Full · waitlist 15/100")).toBeTruthy();
   });
 
   it("watches a CRN in the current term", async () => {
     const api = watching([]);
-    const { user, popover } = await openTracker();
-    expect(within(popover).getByText(/Not watching anything yet/)).toBeTruthy();
+    const { user, tracker } = await openTracker();
+    expect(within(tracker).getByText(/Not watching anything yet/)).toBeTruthy();
 
     await user.type(
-      await within(popover).findByLabelText("CRN for Spring 2027"),
+      await within(tracker).findByLabelText("CRN for Spring 2027"),
       "41207",
     );
-    await user.click(within(popover).getByRole("button", { name: "Watch" }));
+    await user.click(within(tracker).getByRole("button", { name: "Watch" }));
 
     expect(
-      await within(popover).findByText("CRN 41207", { exact: false }),
+      await within(tracker).findByText("CRN 41207", { exact: false }),
     ).toBeTruthy();
     expect(api.created).toEqual([{ term: "202703", crn: "41207" }]);
   });
 
   it("checks the CRN before asking the API", async () => {
     const api = watching([WATCH]);
-    const { user, popover } = await openTracker();
-    const input = await within(popover).findByLabelText("CRN for Spring 2027");
+    const { user, tracker } = await openTracker();
+    const input = await within(tracker).findByLabelText("CRN for Spring 2027");
 
     await user.type(input, "123");
-    await user.click(within(popover).getByRole("button", { name: "Watch" }));
+    await user.click(within(tracker).getByRole("button", { name: "Watch" }));
     expect(
-      within(popover).getByText("A CRN is 5 digits, like 41207."),
+      within(tracker).getByText("A CRN is 5 digits, like 41207."),
     ).toBeTruthy();
 
     await user.clear(input);
     await user.type(input, "50067");
-    await user.click(within(popover).getByRole("button", { name: "Watch" }));
+    await user.click(within(tracker).getByRole("button", { name: "Watch" }));
     expect(
-      within(popover).getByText("You're already watching 50067."),
+      within(tracker).getByText("You're already watching 50067."),
     ).toBeTruthy();
     expect(api.created).toEqual([]);
   });
@@ -131,38 +139,47 @@ describe("SeatTrackerMenu", () => {
         problemResponse(404, "There's no CRN 99999 in this term."),
       ),
     );
-    const { user, popover } = await openTracker();
+    const { user, tracker } = await openTracker();
 
     await user.type(
-      await within(popover).findByLabelText("CRN for Spring 2027"),
+      await within(tracker).findByLabelText("CRN for Spring 2027"),
       "99999",
     );
-    await user.click(within(popover).getByRole("button", { name: "Watch" }));
+    await user.click(within(tracker).getByRole("button", { name: "Watch" }));
 
     expect(
-      await within(popover).findByText("There's no CRN 99999 in this term."),
+      await within(tracker).findByText("There's no CRN 99999 in this term."),
     ).toBeTruthy();
   });
 
   it("stops watching a section", async () => {
     watching([WATCH]);
-    const { user, popover } = await openTracker();
+    const { user, tracker } = await openTracker();
 
     await user.click(
-      within(popover).getByRole("button", { name: "Stop watching CRN 50067" }),
+      within(tracker).getByRole("button", { name: "Stop watching CRN 50067" }),
     );
 
     await waitFor(() =>
       expect(
-        within(popover).getByText(/Not watching anything yet/),
+        within(tracker).getByText(/Not watching anything yet/),
       ).toBeTruthy(),
     );
   });
 
   it("says when it emailed about an opening", async () => {
     watching([{ ...WATCH, seatsAvailable: 2, notifiedAt: FETCHED_AT }]);
-    const { popover } = await openTracker();
-    expect(within(popover).getByText(/^Emailed you at/)).toBeTruthy();
-    expect(within(popover).getByText("2 left")).toBeTruthy();
+    const { tracker } = await openTracker();
+    expect(within(tracker).getByText(/^Emailed you at/)).toBeTruthy();
+    expect(within(tracker).getByText("2 left")).toBeTruthy();
+  });
+
+  it("signs out from the page", async () => {
+    watching([WATCH]);
+    const { user, tracker } = await openTracker();
+    await user.click(within(tracker).getByRole("button", { name: "Sign out" }));
+    expect(
+      await screen.findByRole("link", { name: "Sign in with Google" }),
+    ).toBeTruthy();
   });
 });
