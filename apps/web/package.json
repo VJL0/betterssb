@@ -34,7 +34,7 @@
     "@eslint/js": "catalog:",
     "@next/eslint-plugin-next": "catalog:",
     "@tailwindcss/postcss": "^4.3.3",
-    "@tanstack/eslint-plugin-query": "^5.104.4",
+    "@tanstack/eslint-plugin-query": "catalog:",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",
     "@types/node": "catalog:",

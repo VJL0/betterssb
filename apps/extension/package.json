@@ -8,6 +8,7 @@
     "dev": "wxt",
     "build": "wxt build",
     "zip": "wxt zip",
+    "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "postinstall": "wxt prepare",
@@ -24,7 +25,9 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@eslint/js": "catalog:",
     "@tailwindcss/vite": "catalog:",
+    "@tanstack/eslint-plugin-query": "catalog:",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",
     "@types/react": "catalog:",
@@ -34,9 +37,12 @@
     "@wxt-dev/browser": "^0.3.5",
     "@wxt-dev/module-react": "^1.2.2",
     "axe-core": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
     "jsdom": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
     "wxt": "^0.21.4"
