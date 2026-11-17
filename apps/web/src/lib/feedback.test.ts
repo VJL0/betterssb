@@ -22,7 +22,7 @@ function stubFeedback() {
   vi.mocked(Sentry.getFeedback).mockReturnValue({
     createForm,
   } as unknown as ReturnType<typeof Sentry.getFeedback>);
-  return { form, options: () => createForm.mock.calls[0][0] };
+  return { form, options: () => createForm.mock.calls[0]![0] };
 }
 
 beforeEach(() => {

@@ -17,7 +17,9 @@ function stoppedRedirect(): Response {
 
 /** Answers each Banner request with the next response queued for its path. */
 function stubBanner(answers: Record<string, Response[]>) {
-  const fetchMock = vi.fn((url: string, _init?: RequestInit) => {
+  const fetchMock = vi.fn<
+    (url: string, init?: RequestInit) => Promise<Response>
+  >((url) => {
     const path = new URL(url).pathname.replace(
       "/StudentRegistrationSsb/ssb",
       "",

@@ -34,6 +34,7 @@
     "@types/react-dom": "catalog:",
     "@typescript/native": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "@workspace/typescript-config": "workspace:*",
     "axe-core": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "catalog:",

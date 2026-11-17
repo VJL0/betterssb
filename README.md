@@ -53,6 +53,7 @@ betterssb/
 └── packages/
     ├── api-client/    # TypeScript client generated from the API's OpenAPI schema (Hey API)
     ├── shared/        # Banner and local-store types and pure domain logic, with Vitest tests
+    ├── typescript-config/  # The base tsconfig every package extends
     └── ui/            # shadcn/ui (Base UI) components, product components and the Tailwind theme
 ```
 

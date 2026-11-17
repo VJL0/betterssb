@@ -1,7 +1,6 @@
 {
-  "extends": "./.wxt/tsconfig.json",
+  "extends": ["@workspace/typescript-config/base.json", "./.wxt/tsconfig.json"],
   "compilerOptions": {
-    "jsx": "react-jsx",
     // WXT's generated paths are relative to .wxt/, which the shadcn CLI
     // resolves against this file instead, writing components into apps/.
     "paths": {
