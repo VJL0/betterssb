@@ -21,8 +21,3 @@ export async function askBackground<T>(
     throw new Error("The extension sent an unexpected reply.");
   return data;
 }
-
-/** Tells the background worker to do something, throwing its error. */
-export async function tellBackground(msg: ExtensionMessage): Promise<void> {
-  await successfulReply(msg);
-}
