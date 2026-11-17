@@ -145,7 +145,11 @@ class TestWatches:
         banner.down = True
         assert (await watch(student)).status_code == 502
 
-    async def test_a_crn_must_be_five_digits(self, student, banner):
+    async def test_a_crn_can_be_four_digits(self, student, banner):
+        banner.seats["4354"] = 0
+        assert (await watch(student, "4354")).status_code == 201
+
+    async def test_a_crn_must_be_four_or_five_digits(self, student, banner):
         resp = await student.post(
             "/api/seat-watches", json={"term": TERM, "crn": "123"}
         )

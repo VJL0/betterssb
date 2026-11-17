@@ -4,6 +4,11 @@ import { useId, useState } from "react";
 import { EyeIcon, LogOutIcon, UserRoundIcon, XIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { queryError, type SeatWatchResponse } from "@workspace/api-client";
+import {
+  CRN_FORMAT_ERROR,
+  isCrn,
+  MAX_CRN_LENGTH,
+} from "@workspace/shared/lib/crn";
 import { Button, buttonVariants } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import {
@@ -34,8 +39,6 @@ import {
   useStopWatching,
   useWatchCrn,
 } from "./use-seat-watches";
-
-const CRN = /^\d{5}$/;
 
 /**
  * The seat tracker: CRNs to watch and the classes it's waiting on. A seat
@@ -143,7 +146,7 @@ function WatchCrnForm({ watchedCrns }: { watchedCrns: readonly string[] }) {
 
   function submit() {
     const crn = value.trim();
-    if (!CRN.test(crn)) return setError("A CRN is 5 digits, like 41207.");
+    if (!isCrn(crn)) return setError(CRN_FORMAT_ERROR);
     if (watchedCrns.includes(crn)) {
       return setError(`You're already watching ${crn}.`);
     }
@@ -174,7 +177,7 @@ function WatchCrnForm({ watchedCrns }: { watchedCrns: readonly string[] }) {
           id={id}
           inputMode="numeric"
           autoComplete="off"
-          maxLength={5}
+          maxLength={MAX_CRN_LENGTH}
           placeholder="41207"
           value={value}
           aria-invalid={shownError ? true : undefined}

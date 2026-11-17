@@ -13,6 +13,7 @@ describe("parseClassQuery", () => {
     ["linear   algebra", { kind: "keyword", keyword: "linear algebra" }],
     ["XYZ 1000", { kind: "keyword", keyword: "XYZ 1000" }],
     ["41207", { kind: "crn", crn: "41207" }],
+    ["4354", { kind: "crn", crn: "4354" }],
     [" a ", { kind: "empty" }],
   ])("reads %j", (input, expected) => {
     expect(parseClassQuery(input, SUBJECTS)).toEqual(expected);

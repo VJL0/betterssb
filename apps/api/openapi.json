@@ -3012,8 +3012,8 @@
       "SeatWatchCreate": {
         "properties": {
           "crn": {
-            "description": "Five-digit CRN",
-            "pattern": "^\\d{5}$",
+            "description": "Four- or five-digit CRN",
+            "pattern": "^\\d{4,5}$",
             "title": "Crn",
             "type": "string"
           },

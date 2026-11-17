@@ -60,7 +60,7 @@ describe("parseBridgeRequest", () => {
     [
       "a queue with a bad CRN",
       request("AUTOREG_SAVE_QUEUE", {
-        queue: { term: "202703", crns: ["4120"], scheduledRunAt: "" },
+        queue: { term: "202703", crns: ["412"], scheduledRunAt: "" },
       }),
     ],
     [

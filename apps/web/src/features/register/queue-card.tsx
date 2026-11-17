@@ -11,6 +11,11 @@ import {
 import type { ClassSection } from "@workspace/api-client";
 import { moveCrn } from "@workspace/shared/lib/auto-reg-queue";
 import { MAX_QUEUED_CRNS } from "@workspace/shared/lib/bridge";
+import {
+  CRN_FORMAT_ERROR,
+  isCrn,
+  MAX_CRN_LENGTH,
+} from "@workspace/shared/lib/crn";
 import { formatCredits } from "@workspace/shared/lib/dars";
 import type { CrnCheck } from "@workspace/shared/types/auto-reg";
 import type { SSBRegPlanHeader } from "@workspace/shared/types/ssb";
@@ -42,8 +47,6 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { queueCredits, type QueueRow } from "./queue-rows";
-
-const CRN = /^\d{5}$/;
 
 interface QueueCardProps {
   rows: readonly QueueRow[];
@@ -286,7 +289,7 @@ function AddCrn({
 
   function add() {
     const crn = value.trim();
-    if (!CRN.test(crn)) return setError("A CRN is 5 digits, like 41207.");
+    if (!isCrn(crn)) return setError(CRN_FORMAT_ERROR);
     if (crns.includes(crn)) return setError(`${crn} is already queued.`);
     if (crns.length >= MAX_QUEUED_CRNS) {
       return setError(`The queue holds up to ${MAX_QUEUED_CRNS} CRNs.`);
@@ -311,7 +314,7 @@ function AddCrn({
           id={id}
           inputMode="numeric"
           autoComplete="off"
-          maxLength={5}
+          maxLength={MAX_CRN_LENGTH}
           value={value}
           aria-invalid={error ? true : undefined}
           onChange={(e) => setValue(e.target.value)}
