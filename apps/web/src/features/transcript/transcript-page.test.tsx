@@ -164,6 +164,16 @@ describe("TranscriptPage", () => {
           category: "in_progress",
           repeat: null,
         },
+        {
+          subject: "MATH",
+          courseNumber: "1041",
+          title: "Calculus I",
+          grade: "TR",
+          credits: 4,
+          term: "Spring 2024",
+          category: "transfer",
+          repeat: null,
+        },
       ],
     };
 
@@ -205,6 +215,21 @@ describe("TranscriptPage", () => {
       expect(screen.queryByText("was B")).toBeNull();
     });
 
+    it("tries a grade on any course, transfer credit too, and puts it back", async () => {
+      const { user } = await tryGrades();
+      await user.click(
+        screen.getByRole("button", { name: "Show 1 earlier term" }),
+      );
+      await pick(user, "Grade for MATH 1041", "A");
+      // (16 + 12 + 16) / 12
+      expect(screen.getByText("3.67")).toBeTruthy();
+      expect(screen.getAllByText("was TR").length).toBeGreaterThan(0);
+
+      await pick(user, "Grade for MATH 1041", "TR");
+      expect(screen.getByText("3.50")).toBeTruthy();
+      expect(screen.queryByText("was TR")).toBeNull();
+    });
+
     it("counts an expected grade on a course in progress", async () => {
       const { user } = await tryGrades();
       await pick(user, "Expected grade for CIS 2168", "B");
@@ -212,14 +237,14 @@ describe("TranscriptPage", () => {
       expect(screen.getByText("3.33")).toBeTruthy();
     });
 
-    it("says what the open credits need for a target", async () => {
+    it("says what the courses in progress need for a target", async () => {
       const { user } = await tryGrades();
       const target = screen.getByLabelText("Target GPA");
 
       await user.type(target, "3.6");
       expect(
         screen.getByText(
-          "You need about an A average (4.00) across your 4 open credits.",
+          "You need about an A average (4.00) in the 4 credits you haven't set a grade for.",
         ),
       ).toBeTruthy();
 
@@ -227,7 +252,7 @@ describe("TranscriptPage", () => {
       await user.type(target, "3.75");
       expect(
         screen.getByText(
-          "Out of reach: straight A's across your 4 open credits give 3.67.",
+          "Out of reach: straight A's in the 4 credits you haven't set a grade for give 3.67.",
         ),
       ).toBeTruthy();
     });

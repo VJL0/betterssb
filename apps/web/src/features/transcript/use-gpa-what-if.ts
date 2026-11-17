@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import {
-  countsTowardGpa,
   gpaOf,
   gpaTotals,
   isLetterGrade,
@@ -9,35 +8,37 @@ import {
 } from "@workspace/shared/lib/gpa";
 import type { SavedCourse } from "@workspace/shared/lib/transcript";
 
-/** A what-if grade for a course, or null to leave an in-progress one open. */
-type WhatIfGrade = LetterGrade | null;
-
 export interface GpaWhatIf {
   active: boolean;
   start: () => void;
   /** Leaves what-if mode, dropping every change. */
   done: () => void;
   reset: () => void;
-  /** Whether a course's grade can be tried: a graded Temple course, or one in progress. */
-  canChange: (course: SavedCourse) => boolean;
+  /** The grade being tried for a course, or its own when none is. */
   gradeOf: (course: SavedCourse) => string;
-  setGrade: (course: SavedCourse, grade: WhatIfGrade) => void;
+  /** Tries a letter grade; the course's own grade puts it back. */
+  setGrade: (course: SavedCourse, grade: string) => void;
   changed: number;
   whatIf: GpaTotals;
   nowGpa: number | null;
   whatIfGpa: number | null;
   /** Credits in progress without an expected grade, which a target solves for. */
   openCredits: number;
+  hasCoursesInProgress: boolean;
 }
 
-type WhatIfGrades = ReadonlyMap<SavedCourse, WhatIfGrade>;
+type TriedGrades = ReadonlyMap<SavedCourse, LetterGrade>;
 
-function canChange(course: SavedCourse): boolean {
-  return course.category === "in_progress" || countsTowardGpa(course);
-}
-
-function triedGrade(grades: WhatIfGrades, course: SavedCourse): string {
-  return grades.has(course) ? (grades.get(course) ?? "") : course.grade;
+/**
+ * A course as the what-if GPA counts it. A picked letter grade counts as if
+ * earned at Temple, so it also counts for a transfer course, a W or CR, or an
+ * attempt a repeat replaced.
+ */
+function triedCourse(grades: TriedGrades, course: SavedCourse): SavedCourse {
+  const grade = grades.get(course);
+  return grade
+    ? { ...course, grade, category: "institution", repeat: null }
+    : course;
 }
 
 /**
@@ -47,13 +48,10 @@ function triedGrade(grades: WhatIfGrades, course: SavedCourse): string {
 export function useGpaWhatIf(courses: readonly SavedCourse[]): GpaWhatIf {
   const [active, setActive] = useState(false);
   // Keyed by the course itself; a re-saved transcript starts fresh.
-  const [grades, setGrades] = useState<WhatIfGrades>(new Map());
+  const [grades, setGrades] = useState<TriedGrades>(new Map());
 
   const totals = useMemo(() => {
-    const tried = courses.map((course) => ({
-      ...course,
-      grade: triedGrade(grades, course),
-    }));
+    const tried = courses.map((course) => triedCourse(grades, course));
     return {
       now: gpaTotals(courses),
       whatIf: gpaTotals(tried),
@@ -63,10 +61,6 @@ export function useGpaWhatIf(courses: readonly SavedCourse[]): GpaWhatIf {
     };
   }, [courses, grades]);
 
-  const changed = [...grades].filter(
-    ([course, grade]) => (grade ?? "") !== course.grade,
-  ).length;
-
   return {
     active,
     start: () => setActive(true),
@@ -75,14 +69,22 @@ export function useGpaWhatIf(courses: readonly SavedCourse[]): GpaWhatIf {
       setGrades(new Map());
     },
     reset: () => setGrades(new Map()),
-    canChange,
-    gradeOf: (course) => triedGrade(grades, course),
+    gradeOf: (course) => grades.get(course) ?? course.grade,
     setGrade: (course, grade) =>
-      setGrades((previous) => new Map(previous).set(course, grade)),
-    changed,
+      setGrades((previous) => {
+        const next = new Map(previous);
+        if (isLetterGrade(grade) && grade !== course.grade) {
+          next.set(course, grade);
+        } else {
+          next.delete(course);
+        }
+        return next;
+      }),
+    changed: grades.size,
     whatIf: totals.whatIf,
     nowGpa: gpaOf(totals.now),
     whatIfGpa: gpaOf(totals.whatIf),
     openCredits: totals.openCredits,
+    hasCoursesInProgress: courses.some((c) => c.category === "in_progress"),
   };
 }

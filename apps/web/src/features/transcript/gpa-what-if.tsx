@@ -6,9 +6,9 @@ import {
   GRADE_POINTS,
   LETTER_GRADES,
   gpaOf,
+  isLetterGrade,
   lowestGradeFor,
   neededAverage,
-  type LetterGrade,
 } from "@workspace/shared/lib/gpa";
 import { formatCredits } from "@workspace/shared/lib/dars";
 import type { SavedCourse } from "@workspace/shared/lib/transcript";
@@ -30,7 +30,7 @@ import {
 } from "@workspace/ui/components/select";
 import type { GpaWhatIf } from "./use-gpa-what-if";
 
-/** Stands in for "no expected grade yet" on a course in progress. */
+/** Stands in for "no grade yet" on a course in progress. */
 const NO_GRADE = "none";
 const MAX_GPA = 4;
 
@@ -38,7 +38,13 @@ const LETTER_ITEMS = LETTER_GRADES.map((letter) => ({
   value: letter,
   label: letter,
 }));
-const EXPECTED_ITEMS = [{ value: NO_GRADE, label: "—" }, ...LETTER_ITEMS];
+
+/** Letter grades, after the course's own grade when it isn't one (W, TR, none…). */
+function gradeItems(course: SavedCourse) {
+  if (isLetterGrade(course.grade)) return LETTER_ITEMS;
+  const own = course.grade || NO_GRADE;
+  return [{ value: own, label: course.grade || "—" }, ...LETTER_ITEMS];
+}
 
 function formatGpa(gpa: number | null): string {
   return gpa === null ? "—" : gpa.toFixed(2);
@@ -98,10 +104,10 @@ function WhatIfTotals({ whatIf }: { whatIf: GpaWhatIf }) {
         </span>
       </p>
       <p className="text-muted-foreground">
-        Change grades or set expected ones below. Nothing here is saved, and the
+        Pick a grade for any course below. Nothing here is saved, and the
         advisor still sees your real grades.
       </p>
-      <TargetGpa whatIf={whatIf} />
+      {whatIf.hasCoursesInProgress && <TargetGpa whatIf={whatIf} />}
       <div className="flex flex-wrap gap-2">
         {whatIf.changed > 0 && (
           <Button variant="outline" onClick={whatIf.reset}>
@@ -133,22 +139,22 @@ function TargetGpa({ whatIf }: { whatIf: GpaWhatIf }) {
         onChange={(e) => setValue(e.target.value)}
         className="w-24 tabular-nums"
       />
-      {valid && (
-        <FieldDescription aria-live="polite">
-          {targetAnswer(whatIf, target)}
-        </FieldDescription>
-      )}
+      <FieldDescription aria-live="polite">
+        {valid
+          ? targetAnswer(whatIf, target)
+          : "The average your courses in progress need to reach it"}
+      </FieldDescription>
     </Field>
   );
 }
 
-/** What it takes to reach `target` over the in-progress credits left open. */
+/** What it takes to reach `target` over the courses in progress without a grade. */
 function targetAnswer(whatIf: GpaWhatIf, target: number): string {
   const open = whatIf.openCredits;
   if (open === 0) {
-    return "Clear an expected grade on a course in progress to see what it needs.";
+    return "Set a course in progress back to — to see what it needs.";
   }
-  const credits = `your ${formatCredits(open)} open credits`;
+  const credits = `the ${formatCredits(open)} credits you haven't set a grade for`;
   const needed = neededAverage(whatIf.whatIf, open, target);
   const grade = lowestGradeFor(needed);
   if (grade === null) {
@@ -156,12 +162,12 @@ function targetAnswer(whatIf: GpaWhatIf, target: number): string {
       hours: whatIf.whatIf.hours + open,
       qualityPoints: whatIf.whatIf.qualityPoints + MAX_GPA * open,
     });
-    return `Out of reach: straight A's across ${credits} give ${formatGpa(best)}.`;
+    return `Out of reach: straight A's in ${credits} give ${formatGpa(best)}.`;
   }
   if (needed <= 0)
     return `You'll reach ${target.toFixed(2)} whatever ${credits} earn.`;
   const article = /^[AF]/.test(grade) ? "an" : "a";
-  return `You need about ${article} ${grade} average (${GRADE_POINTS[grade].toFixed(2)}) across ${credits}.`;
+  return `You need about ${article} ${grade} average (${GRADE_POINTS[grade].toFixed(2)}) in ${credits}.`;
 }
 
 /**
@@ -190,28 +196,20 @@ export function GradeCell({
   course: SavedCourse;
   whatIf: GpaWhatIf;
 }) {
-  if (!whatIf.active || !whatIf.canChange(course)) {
+  if (!whatIf.active) {
     return course.grade ? (
       <Badge variant="secondary">{course.grade}</Badge>
     ) : null;
   }
   const grade = whatIf.gradeOf(course);
+  const items = gradeItems(course);
   const inProgress = course.category === "in_progress";
-  const changed = grade !== course.grade;
-  const items = inProgress ? EXPECTED_ITEMS : LETTER_ITEMS;
   return (
     <span className="flex items-center gap-2">
       <Select
         items={items}
         value={grade || NO_GRADE}
-        onValueChange={(picked) =>
-          whatIf.setGrade(
-            course,
-            picked === NO_GRADE || picked === null
-              ? null
-              : (picked as LetterGrade),
-          )
-        }
+        onValueChange={(picked) => whatIf.setGrade(course, picked ?? "")}
       >
         <SelectTrigger
           size="sm"
@@ -228,7 +226,7 @@ export function GradeCell({
           ))}
         </SelectContent>
       </Select>
-      {changed && !inProgress && (
+      {grade !== course.grade && course.grade && (
         <span className="text-xs whitespace-nowrap text-muted-foreground">
           was {course.grade}
         </span>
