@@ -9,11 +9,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-/** What the student is doing: getting into classes, or seeing where they stand. */
-export type PageGroup = "term" | "degree";
+/** What the student is doing: planning classes, getting into them, or seeing where they stand. */
+export type PageGroup = "planning" | "registration" | "degree";
 
 export const PAGE_GROUP_LABELS: Record<PageGroup, string> = {
-  term: "This term",
+  planning: "Planning",
+  registration: "Registration",
   degree: "Your degree",
 };
 
@@ -30,14 +31,14 @@ export interface AppPage {
   ready: boolean;
 }
 
-/** Every page, in top bar order (WHeader): this term first, then the degree. */
+/** Every page, in top bar order (WHeader), group by group. */
 export const APP_PAGES: readonly AppPage[] = [
   {
     id: "search",
     label: "Search",
     path: "/search",
     icon: SearchIcon,
-    group: "term",
+    group: "planning",
     ready: true,
   },
   {
@@ -45,23 +46,7 @@ export const APP_PAGES: readonly AppPage[] = [
     label: "Schedule",
     path: "/schedule",
     icon: CalendarDaysIcon,
-    group: "term",
-    ready: true,
-  },
-  {
-    id: "register",
-    label: "Register",
-    path: "/register",
-    icon: TimerIcon,
-    group: "term",
-    ready: true,
-  },
-  {
-    id: "seats",
-    label: "Seats",
-    path: "/seats",
-    icon: EyeIcon,
-    group: "term",
+    group: "planning",
     ready: true,
   },
   {
@@ -69,7 +54,23 @@ export const APP_PAGES: readonly AppPage[] = [
     label: "Plan",
     path: "/plan",
     icon: NotebookTextIcon,
-    group: "degree",
+    group: "planning",
+    ready: true,
+  },
+  {
+    id: "register",
+    label: "Register",
+    path: "/register",
+    icon: TimerIcon,
+    group: "registration",
+    ready: true,
+  },
+  {
+    id: "seats",
+    label: "Seats",
+    path: "/seats",
+    icon: EyeIcon,
+    group: "registration",
     ready: true,
   },
   {

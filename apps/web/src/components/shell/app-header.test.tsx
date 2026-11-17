@@ -20,14 +20,19 @@ describe("AppHeader", () => {
 
   it("groups the page links by what the student is doing", () => {
     renderPage(<AppHeader />);
-    const thisTerm = screen.getByRole("list", { name: "This term" });
-    const yourDegree = screen.getByRole("list", { name: "Your degree" });
-    expect(
-      within(thisTerm).getByRole("link", { name: "Register" }),
-    ).toBeTruthy();
-    expect(
-      within(yourDegree).getByRole("link", { name: "Records" }),
-    ).toBeTruthy();
+    const groups = {
+      Planning: ["Search", "Schedule", "Plan"],
+      Registration: ["Register", "Seats"],
+      "Your degree": ["Records", "Advisor"],
+    };
+    for (const [group, pages] of Object.entries(groups)) {
+      const list = screen.getByRole("list", { name: group });
+      expect(
+        within(list)
+          .getAllByRole("link")
+          .map((link) => link.textContent),
+      ).toEqual(pages);
+    }
   });
 
   it("leaves sign-in to the Seats page", () => {
