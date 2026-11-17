@@ -1,3 +1,4 @@
+import { hasDataConsent } from "@/lib/data-consent";
 import { onMessage } from "@/lib/messaging";
 import { BANNER_PAGES } from "@/lib/temple-urls";
 import { restartBannerPageTimer } from "./keep-alive";
@@ -11,6 +12,8 @@ export default defineContentScript({
   matches: [BANNER_PAGES],
 
   async main() {
+    // The overlay sends instructor names to the API, so it waits for consent.
+    if (!(await hasDataConsent())) return;
     const { startOverlay } = await import("./overlay");
 
     onMessage((msg, sendResponse) => {
