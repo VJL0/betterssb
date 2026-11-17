@@ -1,6 +1,6 @@
 "use client";
 
-import { DownloadIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
+import { DownloadIcon, Trash2Icon } from "lucide-react";
 import { Fragment, useId, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import type { StoreKey } from "@workspace/shared/types/store";
@@ -36,15 +36,6 @@ import { EXTENSION_INSTALL_URL } from "@/lib/config";
 import { useStoreDocument, useStoreState } from "@/lib/store/store-context";
 import { downloadStoreExport } from "./export-data";
 
-const SECTIONS = [
-  { id: "account", label: "Account" },
-  { id: "term", label: "Term and major" },
-  { id: "extension", label: "Extension" },
-  { id: "banner-pages", label: "On Banner pages" },
-  { id: "keyboard", label: "Keyboard" },
-  { id: "data", label: "Data and privacy" },
-] as const;
-
 function SettingsSection({
   id,
   title,
@@ -78,59 +69,13 @@ function SettingsSection({
 /** W4.2 · Settings. Guest-only until account sync exists. */
 export function SettingsPage() {
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
+    <div className="mx-auto flex max-w-3xl flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
       <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-      <div className="flex flex-wrap items-start gap-8">
-        <nav
-          aria-label="Settings sections"
-          className="min-w-0 grow basis-44 md:sticky md:top-24"
-        >
-          <ul className="flex flex-wrap gap-0.5 md:flex-col">
-            {SECTIONS.map((s) => (
-              <li key={s.id}>
-                <a
-                  href={`#${s.id}`}
-                  className="flex min-h-8 items-center rounded-xl px-3 hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none"
-                >
-                  {s.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="flex min-w-0 grow-999 basis-140 flex-col gap-5">
-          <AccountSection />
-          <TermSection />
-          <ExtensionSection />
-          <BannerPagesSection />
-          <KeyboardSection />
-          <DataSection />
-        </div>
-      </div>
+      <TermSection />
+      <ExtensionSection />
+      <KeyboardSection />
+      <DataSection />
     </div>
-  );
-}
-
-function AccountSection() {
-  return (
-    <SettingsSection id="account" title="Account">
-      <div className="flex items-center gap-3">
-        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
-          <UserRoundIcon aria-hidden className="size-4.5" />
-        </span>
-        <span className="flex flex-col">
-          <span className="font-medium">Using BetterSSB as a guest</span>
-          <span className="text-muted-foreground">
-            No account needed. Your plans, schedules and settings stay on this
-            device.
-          </span>
-        </span>
-      </div>
-      <p className="rounded-xl bg-muted/50 px-3 py-2.5">
-        Browsers can clear site data. Download a copy under Data and privacy to
-        keep a backup.
-      </p>
-    </SettingsSection>
   );
 }
 
@@ -141,7 +86,6 @@ function TermSection() {
         {/* The select names itself; this is the visible heading. */}
         <FieldTitle>Term</FieldTitle>
         <TermSelect className="w-full sm:w-64" />
-        <FieldDescription>Also in the top bar.</FieldDescription>
       </Field>
       <ProgramPicker />
     </SettingsSection>
@@ -150,41 +94,11 @@ function TermSection() {
 
 /** Only the shortcuts that exist; the rest of the DS6 keyboard map comes later. */
 const SHORTCUTS = [
-  { keys: ["/"], action: "Focus course search" },
-  { keys: ["J", "K"], action: "Next or previous section in search results" },
-  { keys: ["A"], action: "Add or remove the focused section" },
-  { keys: ["[", "]"], action: "Previous or next generated schedule" },
+  { keys: ["/"], action: "Jump to course search" },
+  { keys: ["J", "K"], action: "Next / previous search result" },
+  { keys: ["A"], action: "Add or remove a class" },
+  { keys: ["[", "]"], action: "Previous / next schedule" },
 ] as const;
-
-function BannerPagesSection() {
-  const { settings, update } = useSettings();
-  const switchId = useId();
-  return (
-    <SettingsSection
-      id="banner-pages"
-      title="On Banner pages"
-      description="What the extension adds to Temple's Banner registration pages."
-    >
-      <Field orientation="horizontal">
-        <FieldContent>
-          <FieldLabel htmlFor={switchId}>
-            Ratings, seats and your plan
-          </FieldLabel>
-          <FieldDescription>
-            Rate My Professors scores, seat meters, plan and conflict tags, and
-            a plan panel on Banner's class search. Banner's own page stays as it
-            is when this is off.
-          </FieldDescription>
-        </FieldContent>
-        <Switch
-          id={switchId}
-          checked={settings.bannerOverlay}
-          onCheckedChange={(bannerOverlay) => void update({ bannerOverlay })}
-        />
-      </Field>
-    </SettingsSection>
-  );
-}
 
 function KeyboardSection() {
   const { settings, update } = useSettings();
@@ -192,13 +106,7 @@ function KeyboardSection() {
   return (
     <SettingsSection id="keyboard" title="Keyboard">
       <Field orientation="horizontal">
-        <FieldContent>
-          <FieldLabel htmlFor={switchId}>Single-key shortcuts</FieldLabel>
-          <FieldDescription>
-            They never fire while you type in a field. Turn them off if they get
-            in the way of a screen reader or voice control.
-          </FieldDescription>
-        </FieldContent>
+        <FieldLabel htmlFor={switchId}>Keyboard shortcuts</FieldLabel>
         <Switch
           id={switchId}
           checked={settings.keyboardShortcuts}
@@ -225,21 +133,46 @@ function KeyboardSection() {
 
 function ExtensionSection() {
   const extensionInstalled = useExtensionInstalled();
+  if (extensionInstalled) {
+    return (
+      <SettingsSection id="extension" title="Chrome extension">
+        <BannerExtrasSwitch />
+      </SettingsSection>
+    );
+  }
+  // Its options only take effect through the extension, so they wait for it.
   return (
-    <SettingsSection id="extension" title="Chrome extension">
-      <p>
-        {extensionInstalled
-          ? "Installed in this browser. Your degree audit, auto-register and Banner page overlays are ready."
-          : "Your degree audit, auto-register and Banner page overlays need the BetterSSB Chrome extension. Everything else works without it."}
-      </p>
-      {!extensionInstalled && EXTENSION_INSTALL_URL && (
-        <div className="flex flex-wrap gap-2">
-          <ButtonLink href={EXTENSION_INSTALL_URL}>
-            Add the extension
-          </ButtonLink>
-        </div>
+    <SettingsSection
+      id="extension"
+      title="Chrome extension"
+      description="Needed for DARS, auto-register and Banner extras."
+    >
+      {EXTENSION_INSTALL_URL && (
+        <ButtonLink href={EXTENSION_INSTALL_URL} className="self-start">
+          Add the extension
+        </ButtonLink>
       )}
     </SettingsSection>
+  );
+}
+
+function BannerExtrasSwitch() {
+  const { settings, update } = useSettings();
+  const switchId = useId();
+  return (
+    <Field orientation="horizontal">
+      <FieldContent>
+        <FieldLabel htmlFor={switchId}>Show extras on Banner</FieldLabel>
+        <FieldDescription>
+          Rate My Professors scores, open seats and time conflicts in Banner.
+        </FieldDescription>
+      </FieldContent>
+      <Switch
+        id={switchId}
+        checked={settings.bannerOverlay}
+        onCheckedChange={(bannerOverlay) => void update({ bannerOverlay })}
+      />
+    </Field>
   );
 }
 
@@ -249,26 +182,20 @@ function DataSection() {
   const opened = state.status === "ready" ? state.opened : null;
   const where =
     opened?.location === "extension"
-      ? "Your data is saved in the BetterSSB extension in this browser."
-      : "Your data is saved in this browser.";
+      ? "Only saved in the extension, not your Temple account."
+      : "Only saved in this browser, not your Temple account.";
 
-  async function clearAll() {
+  async function deleteAll() {
     if (!opened) return;
     const keys: StoreKey[] = await opened.store.keys();
     await Promise.all(keys.map((key) => opened.store.delete(key)));
-    toast.success("Cleared everything saved on this device");
+    toast.success("Everything deleted");
   }
 
   return (
-    <SettingsSection
-      id="data"
-      title="Data and privacy"
-      description="Your Banner password never touches BetterSSB. Registration runs in your own browser."
-    >
-      <p className="text-muted-foreground">{where}</p>
+    <SettingsSection id="data" title="Your data" description={where}>
       <DataRow
-        title="Download my data"
-        description="Plans, schedules, settings, your audit and transcript, and advisor history, as a JSON file."
+        title="Download a copy"
         action={
           <Button
             variant="outline"
@@ -283,40 +210,39 @@ function DataSection() {
         }
       />
       <DataRow
-        title="Clear advisor history"
+        title="Delete advisor chats"
         description={
           threads.value?.length
-            ? `Deletes ${threads.value.length} saved conversation${threads.value.length === 1 ? "" : "s"}.`
-            : "No saved conversations."
+            ? `${threads.value.length} saved chat${threads.value.length === 1 ? "" : "s"}.`
+            : "No saved chats."
         }
         action={
           <ConfirmButton
-            label="Clear"
-            accessibleName="Clear advisor history"
+            label="Delete"
+            accessibleName="Delete advisor chats"
             disabled={!opened || !threads.value?.length}
-            title="Clear advisor history?"
-            description="This deletes every saved advisor conversation on this device. It can't be undone."
-            confirmLabel="Clear history"
+            title="Delete all advisor chats?"
+            description="This can't be undone."
+            confirmLabel="Delete chats"
             onConfirm={async () => {
               await opened?.store.delete("advisorThreads");
-              toast.success("Advisor history cleared");
+              toast.success("Chats deleted");
             }}
           />
         }
       />
       <DataRow
-        title="Clear this device"
-        description="Deletes plans, schedules, settings, your saved audit and transcript, and advisor history."
+        title="Delete everything"
         action={
           <ConfirmButton
-            label="Clear"
-            accessibleName="Clear this device"
+            label="Delete"
+            accessibleName="Delete everything"
             destructive
             disabled={!opened}
-            title="Clear everything on this device?"
-            description="Download your data first if you might want it back. This can't be undone."
-            confirmLabel="Clear everything"
-            onConfirm={clearAll}
+            title="Delete everything?"
+            description="Download a copy first if you might want it back. This can't be undone."
+            confirmLabel="Delete"
+            onConfirm={deleteAll}
           />
         }
       />
@@ -330,14 +256,16 @@ function DataRow({
   action,
 }: {
   title: string;
-  description: string;
+  description?: string;
   action: ReactNode;
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
       <span className="flex min-w-0 grow basis-64 flex-col">
         <span className="font-medium">{title}</span>
-        <span className="text-muted-foreground">{description}</span>
+        {description && (
+          <span className="text-muted-foreground">{description}</span>
+        )}
       </span>
       {action}
     </div>

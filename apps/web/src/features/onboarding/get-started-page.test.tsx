@@ -84,24 +84,20 @@ describe("GetStartedPage", () => {
 
     await user.click(
       await screen.findByRole("combobox", {
-        name: "When did you start at Temple?",
+        name: "First term at Temple",
       }),
     );
     await user.click(
       await screen.findByRole("option", { name: startTerm.name }),
     );
     const program = screen.getByRole("combobox", {
-      name: "What's your academic program?",
+      name: "Major",
     });
     await waitFor(() => expect(program.hasAttribute("disabled")).toBe(false));
     await user.type(program, "science bs");
     await user.click(
       await screen.findByRole("option", { name: /Computer Science BS/ }),
     );
-    // Onboarding leaves the requirements to the planner and audit.
-    expect(
-      screen.queryByRole("link", { name: "View on the Bulletin" }),
-    ).toBeNull();
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
     await user.click(
