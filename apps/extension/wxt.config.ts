@@ -1,6 +1,7 @@
 import { createRequire } from "node:module";
 import { defineConfig } from "wxt";
 import tailwindcss from "@tailwindcss/vite";
+import { originMatchPattern } from "./lib/match-pattern";
 import {
   BANNER_ORIGIN,
   BANNER_PAGES,
@@ -15,11 +16,25 @@ const OVERLAY_FONT = "fonts/inter-latin-wght-normal.woff2";
 
 /** Host permission for the backend, so the popup and background can call it without CORS. */
 function apiHostPermission(): string {
-  const url = new URL(
+  return originMatchPattern(
     import.meta.env.WXT_API_ORIGIN || "http://localhost:8000",
   );
-  // Match patterns can't carry a port; this covers any port on the host.
-  return `${url.protocol}//${url.hostname}/*`;
+}
+
+/**
+ * The store zip must reach the production website and API over HTTPS: the
+ * web bridge and the API host permission come from these, and the Chrome Web
+ * Store requires user data to travel encrypted.
+ */
+function assertStoreOrigins(): void {
+  for (const name of ["WXT_API_ORIGIN", "WXT_WEB_ORIGIN"] as const) {
+    const origin: string | undefined = import.meta.env[name];
+    if (!origin?.startsWith("https://")) {
+      throw new Error(
+        `Set ${name} to the production https:// origin (in .env.production) before zipping for the Chrome Web Store.`,
+      );
+    }
+  }
 }
 
 export default defineConfig({
@@ -29,9 +44,10 @@ export default defineConfig({
   // A function so .env files are loaded before WXT_API_ORIGIN is read.
   manifest: () => ({
     name: "BetterSSB",
+    // At most 132 characters.
     description:
-      "Supercharge Temple University's Self-Service Banner registration",
-    permissions: ["storage", "alarms", "notifications", "tabs", "activeTab"],
+      "Ratings, seats and auto-register for Temple University's Self-Service Banner. Independent; not affiliated with Temple or Ellucian.",
+    permissions: ["storage", "alarms", "notifications"],
     host_permissions: [
       BANNER_PAGES,
       DARS_PAGES,
@@ -45,6 +61,7 @@ export default defineConfig({
     ],
   }),
   hooks: {
+    "zip:start": assertStoreOrigins,
     // Content scripts build as one file with every asset inlined, so the
     // overlay's font is copied as a file instead of riding along as a data URL.
     "build:publicAssets": (_wxt, files) => {

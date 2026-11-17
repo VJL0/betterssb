@@ -435,12 +435,17 @@ export function LandingPage() {
           BetterSSB is an independent student project, not affiliated with
           Ellucian or Temple University.
         </span>
-        <a
-          href={SOURCE_CODE_URL}
-          className="underline-offset-4 hover:underline"
-        >
-          Source code on GitHub
-        </a>
+        <span className="flex gap-4">
+          <Link href="/privacy" className="underline-offset-4 hover:underline">
+            Privacy policy
+          </Link>
+          <a
+            href={SOURCE_CODE_URL}
+            className="underline-offset-4 hover:underline"
+          >
+            Source code on GitHub
+          </a>
+        </span>
       </footer>
     </div>
   );

@@ -1,10 +1,11 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
 import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
 import type { BannerConnection } from "@workspace/shared/types/store";
 import { axeViolations } from "@workspace/ui/test/axe";
+import { giveDataConsent } from "@/lib/data-consent";
 import { extensionStore } from "@/lib/local-store";
 import { BANNER_ORIGIN } from "@/lib/temple-urls";
 import { answerBackground, renderPopup } from "./popup";
@@ -30,7 +31,45 @@ function background({
   });
 }
 
+describe("data disclosure", () => {
+  it("asks before anything runs, then shows the popup", async () => {
+    const user = userEvent.setup();
+    const sent = background();
+    renderPopup();
+    expect(
+      await screen.findByRole("heading", { name: "Before you start" }),
+    ).toBeTruthy();
+    expect(sent).toEqual([]);
+    await user.click(screen.getByRole("button", { name: "Agree" }));
+    expect(await screen.findByText("Signed in to Banner")).toBeTruthy();
+  });
+
+  it("opens the privacy policy", async () => {
+    const user = userEvent.setup();
+    background();
+    const create = vi.spyOn(fakeBrowser.tabs, "create");
+    renderPopup();
+    await user.click(
+      await screen.findByRole("button", { name: "Privacy policy" }),
+    );
+    expect(create).toHaveBeenCalledWith({
+      url: "http://localhost:3000/privacy",
+    });
+  });
+
+  it("has no accessibility violations", async () => {
+    background();
+    const { container } = renderPopup();
+    await screen.findByRole("heading", { name: "Before you start" });
+    expect(await axeViolations(container)).toEqual([]);
+  });
+});
+
 describe("popup", () => {
+  beforeEach(async () => {
+    await giveDataConsent();
+  });
+
   it("shows the Banner sign-in and opens the website", async () => {
     const user = userEvent.setup();
     background();

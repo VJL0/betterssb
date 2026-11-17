@@ -1,6 +1,8 @@
 import { AUTO_REG_RUN_STATE_KEY } from "@/lib/auto-reg-run-state";
 import { AUTO_REG_QUEUE_KEY } from "@/lib/auto-reg-queue-storage";
 import { BANNER_CONNECTION_KEY } from "@/lib/banner-session";
+import { WEB_ORIGIN } from "@/lib/config";
+import { originMatchPattern } from "@/lib/match-pattern";
 import { sendMessage } from "@/lib/messaging";
 import { extensionStore } from "@/lib/local-store";
 import {
@@ -83,9 +85,8 @@ function hasRequestId(data: unknown): data is { id: string } {
 }
 
 export default defineContentScript({
-  // The website. Match patterns ignore the port, so this covers any localhost dev port.
-  // Add the production web origin here before deploying.
-  matches: ["*://localhost/*", "*://127.0.0.1/*"],
+  // Only the website (WXT_WEB_ORIGIN): any page here can drive the bridge.
+  matches: [originMatchPattern(WEB_ORIGIN)],
 
   main() {
     const origin = window.location.origin;

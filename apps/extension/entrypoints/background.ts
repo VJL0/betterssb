@@ -32,6 +32,11 @@ import {
   saveAutoRegQueue,
 } from "@/lib/auto-reg-queue-storage";
 import {
+  DATA_CONSENT_KEY,
+  DATA_CONSENT_REQUIRED,
+  hasDataConsent,
+} from "@/lib/data-consent";
+import {
   onMessage,
   sendTabMessage,
   type ExtensionMessage,
@@ -57,6 +62,8 @@ const AUTO_REG_FAILED_NOTIFICATION = "betterssb:autoRegFailed";
 const BANNER_SIGNED_OUT_NOTIFICATION = "betterssb:bannerSignedOut";
 
 const NOTIFICATION_ICON = "icon/128.png";
+/** On the toolbar icon until the student agrees to the popup's data disclosure. */
+const CONSENT_NEEDED_BADGE = "!";
 const NOTIFICATION_MESSAGE_MAX_LENGTH = 220;
 
 function sleep(ms: number): Promise<void> {
@@ -407,9 +414,18 @@ async function fetchRating(name: string): Promise<ExtensionResponse> {
   return { success: true, data: matchingProfile(name, ratings) };
 }
 
+/** Points the student to the popup's data disclosure until they agree to it. */
+async function showConsentBadge(): Promise<void> {
+  const text = (await hasDataConsent()) ? "" : CONSENT_NEEDED_BADGE;
+  await browser.action.setBadgeText({ text });
+}
+
 async function handleMessage(
   msg: ExtensionMessage,
 ): Promise<ExtensionResponse> {
+  if (!(await hasDataConsent())) {
+    return { success: false, error: DATA_CONSENT_REQUIRED };
+  }
   if (msg.type.startsWith("SSB_")) return handleBannerMessage(msg);
   if (msg.type.startsWith("AUTOREG_")) return handleAutoRegMessage(msg);
   switch (msg.type) {
@@ -439,12 +455,14 @@ export default defineBackground(() => {
   });
 
   void syncAutoRegRunAlarm();
+  void showConsentBadge();
 
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
     if (AUTO_REG_RUN_STATE_KEY in changes || AUTO_REG_QUEUE_KEY in changes) {
       void syncAutoRegRunAlarm();
     }
+    if (DATA_CONSENT_KEY in changes) void showConsentBadge();
   });
 
   browser.alarms.create(AUTO_REG_REMINDER_ALARM, { periodInMinutes: 1 });
