@@ -2,7 +2,6 @@ import {
   parseClockTime,
   type WeekDay,
 } from "@workspace/shared/lib/meeting-times";
-import type { SeatCounts } from "@workspace/shared/lib/seats";
 import type { PlannedMeeting } from "@workspace/shared/types/store";
 
 /**
@@ -26,10 +25,8 @@ export interface BannerRow {
   courseCode: string | null;
   section: string | null;
   meetings: PlannedMeeting[];
-  seats: SeatCounts | null;
   instructors: BannerInstructor[];
   titleCell: Element | null;
-  statusCell: Element | null;
 }
 
 const CELL = (property: string) => `td[data-property="${property}"]`;
@@ -45,28 +42,10 @@ const DAY_LETTERS: Record<string, WeekDay> = {
   Sunday: "U",
 };
 
-const SEATS = /(-?\d+)\s+of\s+(\d+)\s+seats\s+remain/i;
-const WAITLIST = /(-?\d+)\s+of\s+(\d+)\s+waitlist\s+seats\s+remain/i;
 const TIME_RANGE =
   /(\d{1,2}):(\d{2})\s*(AM|PM)\s*-\s*(\d{1,2}):(\d{2})\s*(AM|PM)/i;
 const COURSE_SECTION = /^\s*([A-Z]{2,5})\s+(\S+?),\s*(\S+)\s*$/;
 const NOON_HOUR = 12;
-
-/** Banner's "12 of 30 seats remain. 4 of 10 waitlist seats remain." as counts. */
-export function parseSeatText(text: string): SeatCounts | null {
-  const seats = SEATS.exec(text);
-  if (!seats) return null;
-  const waitlist = WAITLIST.exec(text);
-  const waitAvailable = waitlist ? Number(waitlist[1]) : 0;
-  const waitCapacity = waitlist ? Number(waitlist[2]) : 0;
-  return {
-    seatsAvailable: Number(seats[1]),
-    maximumEnrollment: Number(seats[2]),
-    waitAvailable,
-    waitCapacity,
-    waitCount: Math.max(0, waitCapacity - waitAvailable),
-  };
-}
 
 function to24Hour(hour: string, minute: string, meridiem: string): number {
   const h = Number(hour) % NOON_HOUR;
@@ -145,7 +124,6 @@ function readRow(row: HTMLTableRowElement): BannerRow | null {
   const crn = cell("courseReferenceNumber")?.textContent?.trim() ?? "";
   if (!/^\d{4,6}$/.test(crn)) return null;
   const titleCell = cell("courseTitle");
-  const statusCell = cell("status");
   const meetingCell = cell("meetingTime");
   const course = COURSE_SECTION.exec(
     cell("subjectCourseSectionNumber")?.textContent ?? "",
@@ -157,10 +135,8 @@ function readRow(row: HTMLTableRowElement): BannerRow | null {
     courseCode: course ? `${course[1]} ${course[2]}` : null,
     section: course ? course[3]! : null,
     meetings: meetingCell ? parseMeetingCell(meetingCell) : [],
-    seats: statusCell ? parseSeatText(statusCell.textContent ?? "") : null,
     instructors: instructorsIn(cell("instructor")),
     titleCell,
-    statusCell,
   };
 }
 

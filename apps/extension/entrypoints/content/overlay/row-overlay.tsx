@@ -9,7 +9,6 @@ import { formatClock } from "@workspace/shared/lib/meeting-times";
 import type { PlanClash } from "@workspace/shared/lib/plan";
 import { Badge } from "@workspace/ui/components/badge";
 import { RmpBadge } from "@workspace/ui/components/rmp-badge";
-import { SeatMeter } from "@workspace/ui/components/seat-meter";
 import { askBackground } from "@/lib/ask-background";
 import type { OverlayRow, RatingSlot } from "./row-watcher";
 
@@ -124,20 +123,6 @@ export function RowOverlay({
       {row.ratingSlots.map((slot) => (
         <Rating key={slot.name} slot={slot} popupContainer={popupContainer} />
       ))}
-      {row.seatSlot &&
-        row.seats &&
-        createPortal(
-          // Under Banner's own seat text, never in place of it.
-          <div className="@container">
-            <SeatMeter
-              {...row.seats}
-              size="inline"
-              // The bar only where the column has room for it beside the word.
-              className="**:data-[slot=progress-track]:hidden @[7.5rem]:**:data-[slot=progress-track]:flex"
-            />
-          </div>,
-          row.seatSlot,
-        )}
       {row.tagSlot &&
         createPortal(
           <PlanTags inPlan={inPlan} clashes={clashes} />,

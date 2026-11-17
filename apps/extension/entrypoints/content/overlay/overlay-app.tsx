@@ -29,8 +29,8 @@ function pageClashesOf(
 }
 
 /**
- * E3.1 Banner overlay: ratings beside instructors, seat meters under
- * Banner's seat text, plan and conflict tags under titles, and the plan dock.
+ * E3.1 Banner overlay: ratings beside instructors, plan and conflict tags
+ * under titles, and the plan dock.
  * The one Banner-pages setting turns all of it off.
  */
 export function OverlayApp({

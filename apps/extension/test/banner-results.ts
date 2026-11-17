@@ -28,8 +28,6 @@ export interface FakeRow {
   section: string;
   title?: string;
   meetings?: FakeMeeting[];
-  seats?: [open: number, capacity: number];
-  waitlist?: [open: number, capacity: number] | null;
   instructors?: string[];
 }
 
@@ -46,13 +44,8 @@ function meetingHtml(term: string, crn: string, m: FakeMeeting): string {
 
 function rowHtml(r: FakeRow): string {
   const term = r.term ?? "202703";
-  const [open, capacity] = r.seats ?? [12, 30];
-  const waitlist = r.waitlist === undefined ? [10, 10] : r.waitlist;
-  const status = `<span class="status-bold">${open}</span> of ${capacity} seats remain.${
-    waitlist
-      ? `<br><span class="status-bold">${waitlist[0]}</span> of ${waitlist[1]} waitlist seats remain.`
-      : ""
-  }`;
+  const status =
+    '<span class="status-bold">12</span> of 30 seats remain.<br><span class="status-bold">10</span> of 10 waitlist seats remain.';
   const instructors = (r.instructors ?? ["Ada Lovelace"])
     .map(
       (name, i) =>

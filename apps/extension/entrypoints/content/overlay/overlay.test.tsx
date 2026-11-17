@@ -103,7 +103,6 @@ describe("Banner overlay", () => {
         crn: "41207",
         course: "CIS 2168",
         section: "001",
-        seats: [12, 30],
         instructors: ["Ada Lovelace"],
       },
       {
@@ -111,8 +110,6 @@ describe("Banner overlay", () => {
         crn: "50001",
         course: "CIS 2107",
         section: "002",
-        seats: [0, 24],
-        waitlist: [6, 10],
         instructors: ["Alan Turing"],
         meetings: [
           { days: ["Tuesday", "Thursday"], time: "10:00 AM - 11:20 AM" },
@@ -143,17 +140,6 @@ describe("Banner overlay", () => {
     // Right before Banner's own link, inside the same cell.
     const link = document.querySelector("a.email")!;
     expect(link.previousElementSibling?.localName).toBe(HOST_TAG);
-  });
-
-  it("puts a seat meter under Banner's seat text, keeping the text", async () => {
-    await seedSettings();
-    renderOverlay();
-    await waitFor(() => expect(slotsOf("seats")).toHaveLength(2));
-    const [open, full] = slotsOf("seats");
-    expect(open!.textContent).toContain("12 open");
-    expect(full!.textContent).toContain("Full · waitlist 4/10");
-    const status = document.querySelector('td[data-property="status"]')!;
-    expect(status.textContent).toContain("12 of 30 seats remain.");
   });
 
   it("tags planned and conflicting sections", async () => {
@@ -198,7 +184,7 @@ describe("Banner overlay", () => {
     await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
     expect(document.querySelectorAll(HOST_TAG)).toHaveLength(1); // the layer
     await act(() => seedSettings(true));
-    await waitFor(() => expect(slotsOf("seats")).toHaveLength(2));
+    await waitFor(() => expect(slotsOf("tags")).toHaveLength(2));
     await act(() => seedSettings(false));
     await waitFor(() =>
       expect(
@@ -210,10 +196,10 @@ describe("Banner overlay", () => {
   it("follows Banner when it renders another page of results", async () => {
     await seedSettings();
     renderOverlay();
-    await waitFor(() => expect(slotsOf("seats")).toHaveLength(2));
+    await waitFor(() => expect(slotsOf("tags")).toHaveLength(2));
     document.querySelector("tbody")!.innerHTML = bannerResultsHtml([
       { id: "9", crn: "60000", course: "MATH 1041", section: "001" },
     ]).replace(/^[\s\S]*<tbody>|<\/tbody>[\s\S]*$/g, "");
-    await waitFor(() => expect(slotsOf("seats")).toHaveLength(1));
+    await waitFor(() => expect(slotsOf("tags")).toHaveLength(1));
   });
 });

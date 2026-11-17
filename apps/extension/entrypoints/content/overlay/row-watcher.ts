@@ -14,7 +14,6 @@ export interface RatingSlot {
 /** A Banner section row and the empty shadow roots the overlay renders into. */
 export interface OverlayRow extends BannerRow {
   ratingSlots: RatingSlot[];
-  seatSlot: HTMLElement | null;
   tagSlot: HTMLElement | null;
 }
 
@@ -37,10 +36,6 @@ function withSlots(row: BannerRow, css: string): OverlayRow {
       // Banner's own ellipsis, which would hide a rating placed after them.
       container: hostBefore(instructor.link, "rating", css),
     })),
-    seatSlot:
-      row.statusCell && row.seats
-        ? hostInside(row.statusCell, "seats", css)
-        : null,
     tagSlot: row.titleCell ? hostInside(row.titleCell, "tags", css) : null,
   };
 }
@@ -52,7 +47,6 @@ function sameRows(a: readonly OverlayRow[], b: readonly OverlayRow[]) {
       (row, i) =>
         row.row === b[i]!.row &&
         row.crn === b[i]!.crn &&
-        row.seats?.seatsAvailable === b[i]!.seats?.seatsAvailable &&
         row.ratingSlots.length === b[i]!.ratingSlots.length,
     )
   );
