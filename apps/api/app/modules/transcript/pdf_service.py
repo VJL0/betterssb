@@ -30,7 +30,7 @@ ERROR_CODES = frozenset(
     }
 )
 INVALID_PDF_MESSAGE = "We could not read this PDF. Upload a valid, unprotected transcript PDF under 10 MiB and 100 pages."
-INCOMPLETE_MESSAGE = "We could not read the complete transcript. Open the transcript data page to review the parsing issues."
+INCOMPLETE_MESSAGE = "We couldn't read all of this transcript. Check it's the transcript PDF saved from Banner, then try again."
 
 
 def academic_data(result: PdfTranscriptData) -> AcademicTranscript:

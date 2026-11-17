@@ -35,7 +35,7 @@ export function RecordsLayout({ children }: { children: ReactNode }) {
         />
         <RecordTab
           href={TRANSCRIPT_PATH}
-          current={pathname.startsWith(TRANSCRIPT_PATH)}
+          current={pathname === TRANSCRIPT_PATH}
           label="Transcript"
           savedAt={transcript?.storedAt}
         />

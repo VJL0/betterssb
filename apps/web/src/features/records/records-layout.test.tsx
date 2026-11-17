@@ -11,9 +11,9 @@ function tab(name: RegExp) {
 }
 
 describe("RecordsLayout", () => {
-  it("marks the audit tab on /records and the transcript tab under it", () => {
+  it("marks the transcript tab on its page", () => {
     renderPage(<RecordsLayout>{null}</RecordsLayout>, {
-      route: "/records/transcript/data",
+      route: "/records/transcript",
     });
     expect(tab(/^Transcript/).getAttribute("aria-current")).toBe("page");
     expect(tab(/^Degree audit/).getAttribute("aria-current")).toBeNull();

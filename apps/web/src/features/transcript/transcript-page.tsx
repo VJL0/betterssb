@@ -97,9 +97,6 @@ export function TranscriptPage() {
           <h2 className="text-lg font-semibold tracking-tight">Transcript</h2>
           <p className="text-muted-foreground">{subtitle}</p>
         </div>
-        <ButtonLink href="/records/transcript/data" variant="outline">
-          View transcript JSON
-        </ButtonLink>
         {transcript && !replacing && (
           <Button variant="outline" onClick={() => setReplacing(true)}>
             <FileTextIcon data-icon="inline-start" />
