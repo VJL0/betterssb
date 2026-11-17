@@ -32,10 +32,10 @@ describe("SettingsPage", () => {
       ),
     ).toBeTruthy();
     expect(
-      screen.getByText("Needed for DARS, auto-register and Banner extras."),
+      screen.getByText("Needed for DARS, auto-register and Banner ratings."),
     ).toBeTruthy();
     expect(
-      screen.queryByRole("switch", { name: "Show extras on Banner" }),
+      screen.queryByRole("switch", { name: "Show ratings on Banner" }),
     ).toBeNull();
   });
 
@@ -119,10 +119,10 @@ describe("exportStore", () => {
     const user = userEvent.setup();
     const { store } = renderPage(<SettingsPage />);
     const toggle = await screen.findByRole("switch", {
-      name: "Show extras on Banner",
+      name: "Show ratings on Banner",
     });
     expect(
-      screen.queryByText("Needed for DARS, auto-register and Banner extras."),
+      screen.queryByText("Needed for DARS, auto-register and Banner ratings."),
     ).toBeNull();
     expect(toggle.getAttribute("aria-checked")).toBe("true");
     await user.click(toggle);

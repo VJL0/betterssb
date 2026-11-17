@@ -1,48 +1,74 @@
-import { useEffect, useMemo, useSyncExternalStore } from "react";
-import { clashesWithPlan } from "@workspace/shared/lib/plan";
-import { planKey, settingsOrDefaults } from "@workspace/shared/lib/store";
-import type { TermPlan } from "@workspace/shared/types/store";
+import { useEffect, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
+import { useQuery } from "@tanstack/react-query";
+import type { RmpRating } from "@workspace/api-client";
+import {
+  instructorSearchName,
+  isRmpRating,
+} from "@workspace/shared/lib/instructors";
+import { settingsOrDefaults } from "@workspace/shared/lib/store";
+import { RmpBadge } from "@workspace/ui/components/rmp-badge";
 import { useStoreDocument } from "@/hooks/use-store-document";
-import { PlanDock, type PageClash } from "./plan-dock";
-import { RowOverlay } from "./row-overlay";
-import type { OverlayRow, RowWatcher } from "./row-watcher";
+import { askBackground } from "@/lib/ask-background";
+import type { RatingSlot, RatingSlotWatcher } from "./rating-slots";
 
-function rowLabel(row: OverlayRow): string {
-  return row.courseCode
-    ? `${row.courseCode} · ${row.section}`
-    : `CRN ${row.crn}`;
+// The background answers null when Rate My Professors has no match.
+function isRatingReply(data: unknown): data is RmpRating | null {
+  return data === null || isRmpRating(data);
 }
 
-function pageClashesOf(
-  rows: readonly OverlayRow[],
-  plan: TermPlan | null,
-): Map<string, PageClash> {
-  const byCrn = new Map<string, PageClash>();
-  if (!plan) return byCrn;
-  for (const row of rows) {
-    const clashes = clashesWithPlan(row, plan.sections);
-    if (clashes.length > 0) {
-      byCrn.set(row.crn, { crn: row.crn, label: rowLabel(row), clashes });
-    }
-  }
-  return byCrn;
+function useRating(name: string) {
+  return useQuery({
+    queryKey: ["rmpRating", name],
+    queryFn: () =>
+      askBackground(
+        {
+          type: "FETCH_RATING",
+          payload: { name: instructorSearchName(name) },
+        },
+        isRatingReply,
+      ),
+    // A rating doesn't change while the page is open.
+    staleTime: Infinity,
+  });
+}
+
+function Rating({
+  slot,
+  popupContainer,
+}: {
+  slot: RatingSlot;
+  popupContainer: HTMLElement;
+}) {
+  const rating = useRating(slot.name);
+  // Nothing while loading or when the lookup fails: Banner's name stands alone.
+  if (!rating.isSuccess) return null;
+  return createPortal(
+    <RmpBadge
+      rating={rating.data}
+      instructorName={slot.name}
+      popupContainer={popupContainer}
+      compact
+      className="mr-1"
+    />,
+    slot.container,
+  );
 }
 
 /**
- * E3.1 Banner overlay: ratings beside instructors, seat meters under
- * Banner's seat text, plan and conflict tags under titles, and the plan dock.
- * The one Banner-pages setting turns all of it off.
+ * E3.1 Banner overlay: a Rate My Professors rating before each instructor.
+ * The Banner-pages setting turns it off.
  */
 export function OverlayApp({
   watcher,
   popupContainer,
 }: {
-  watcher: RowWatcher;
+  watcher: RatingSlotWatcher;
   popupContainer: HTMLElement;
 }) {
   const settings = useStoreDocument("settings");
-  const { bannerOverlay, term } = settingsOrDefaults(settings.value);
-  const enabled = settings.loaded && bannerOverlay;
+  const enabled =
+    settings.loaded && settingsOrDefaults(settings.value).bannerOverlay;
 
   useEffect(() => {
     if (!enabled) return;
@@ -50,45 +76,15 @@ export function OverlayApp({
     return () => watcher.stop();
   }, [enabled, watcher]);
 
-  const rows = useSyncExternalStore(watcher.subscribe, watcher.getSnapshot);
-  // The page's own term first: the student may be browsing another term.
-  const pageTerm = rows.find((row) => row.term)?.term ?? term ?? "";
+  const slots = useSyncExternalStore(watcher.subscribe, watcher.getSnapshot);
 
-  return enabled ? (
-    <PageOverlay rows={rows} term={pageTerm} popupContainer={popupContainer} />
-  ) : null;
-}
-
-function PageOverlay({
-  rows,
-  term,
-  popupContainer,
-}: {
-  rows: readonly OverlayRow[];
-  term: string;
-  popupContainer: HTMLElement;
-}) {
-  const plan = useStoreDocument(planKey(term)).value;
-  const planned = useMemo(
-    () => new Set(plan?.sections.map((s) => s.crn)),
-    [plan],
-  );
-  const clashes = useMemo(() => pageClashesOf(rows, plan), [rows, plan]);
-
-  return (
-    <>
-      {rows.map((row, index) => (
-        <RowOverlay
-          key={`${index}:${row.crn}`}
-          row={row}
-          inPlan={planned.has(row.crn)}
-          clashes={clashes.get(row.crn)?.clashes ?? []}
+  return enabled
+    ? slots.map((slot, index) => (
+        <Rating
+          key={`${index}:${slot.name}`}
+          slot={slot}
           popupContainer={popupContainer}
         />
-      ))}
-      {plan && plan.sections.length > 0 && (
-        <PlanDock plan={plan} pageClashes={[...clashes.values()]} />
-      )}
-    </>
-  );
+      ))
+    : null;
 }
