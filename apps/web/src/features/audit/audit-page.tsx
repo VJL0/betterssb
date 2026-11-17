@@ -49,7 +49,7 @@ import {
 } from "@workspace/ui/components/tabs";
 import { isPageReady } from "@/components/shell/pages";
 import { ButtonLink } from "@/components/button-link";
-import { useBannerConnection } from "@/hooks/use-banner-connection";
+import { useExtensionInstalled } from "@/hooks/use-extension-installed";
 import { usePlans } from "@/hooks/use-plans";
 import { useStoreDocument } from "@/lib/store/store-context";
 import { RequirementGroup } from "./requirement-group";
@@ -107,7 +107,7 @@ function linesFor(group: AuditGroup, filter: Filter) {
 /** W3.1 · Degree audit: the saved DARS audit, requirement by requirement. */
 export function AuditPage() {
   const run = useAuditRun();
-  const { extensionInstalled } = useBannerConnection();
+  const extensionInstalled = useExtensionInstalled();
   const fileInput = useRef<HTMLInputElement>(null);
   const audit = run.stored?.audit ?? null;
 

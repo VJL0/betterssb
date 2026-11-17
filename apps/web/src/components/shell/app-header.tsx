@@ -19,12 +19,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { BannerBadge } from "@/components/banner-status";
 import { Logo } from "@workspace/ui/components/logo";
 import { cn } from "@workspace/ui/lib/utils";
 import { TermSelect } from "@/components/term-select";
 import { SeatTrackerMenu } from "@/features/seat-tracker/seat-tracker-menu";
-import { useBannerConnection } from "@/hooks/use-banner-connection";
 import {
   useAuthErrorToast,
   useCurrentUser,
@@ -43,7 +41,6 @@ import {
 
 /** The web top bar (DS4 WHeader). Below 640 px the page links move to the tab bar. */
 export function AppHeader() {
-  const banner = useBannerConnection();
   const currentUser = useCurrentUser();
   const user = currentUser.data ?? null;
   useAuthErrorToast();
@@ -75,7 +72,6 @@ export function AppHeader() {
         </nav>
         {/* Below 640 px these drop to a second row, leaving Sign in beside the logo. */}
         <div className="order-last ml-auto flex flex-wrap items-center gap-2 sm:order-none">
-          <BannerBadge connection={banner.connection} />
           <TermSelect />
           <span
             className="hidden items-center gap-1.5 text-xs text-muted-foreground xl:flex"

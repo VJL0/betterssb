@@ -39,6 +39,7 @@ export function installFakeBridge({
 } = {}) {
   const data = new Map(Object.entries(documents)) as Map<StoreKey, unknown>;
   const auto = { current: { ...autoRegister } };
+  let bannerConnection = banner;
   const origin = window.location.origin;
   document.documentElement.dataset.betterssbExtension = "9.9.9";
 
@@ -72,7 +73,7 @@ export function installFakeBridge({
     const { id, request } = parsed;
     switch (request.type) {
       case "BANNER_STATUS":
-        return reply(id, { success: true, data: banner });
+        return reply(id, { success: true, data: bannerConnection });
       case "STORE_KEYS":
         return reply(id, { success: true, data: [...data.keys()] });
       case "STORE_GET":
@@ -138,6 +139,11 @@ export function installFakeBridge({
     data,
     auto,
     emitChange,
+    /** The student signs in to or out of Banner, as the extension sees it. */
+    setBanner(connection: BannerConnection) {
+      bannerConnection = connection;
+      post({ source: BRIDGE_SOURCE, dir: "event", type: "BANNER_CHANGED" });
+    },
     uninstall() {
       window.removeEventListener("message", onMessage);
       delete document.documentElement.dataset.betterssbExtension;

@@ -102,7 +102,7 @@ const FEATURES: Feature[] = [
     tab: "Auto-register",
     need: "extension",
     title: "Register the second your window opens",
-    body: "Queue your CRNs. At the time you set, the extension submits them in your own signed-in Banner tab.",
+    body: "Queue your CRNs. At the time you set, the extension submits them with your own Banner sign-in.",
     points: [
       "Checks Banner, the term and your CRNs before arming",
       "A result for every CRN when it runs",
@@ -386,7 +386,7 @@ export function LandingPage() {
               {[
                 [
                   "Banner stays in Banner",
-                  "BetterSSB never sees your Temple password. Auto-register runs in your own signed-in Banner tab.",
+                  "BetterSSB never sees your Temple password. Auto-register runs with your own Banner sign-in, in your browser.",
                 ],
                 [
                   "Saved in your browser",

@@ -1,5 +1,6 @@
 import { AUTO_REG_RUN_STATE_KEY } from "@/lib/auto-reg-run-state";
 import { AUTO_REG_QUEUE_KEY } from "@/lib/auto-reg-queue-storage";
+import { BANNER_CONNECTION_KEY } from "@/lib/banner-session";
 import { sendMessage } from "@/lib/messaging";
 import { extensionStore } from "@/lib/local-store";
 import {
@@ -65,7 +66,10 @@ async function handle(request: BridgeRequest): Promise<Reply> {
     case "BANNER_REG_TERMS":
       return sendMessage({ type: "SSB_REG_GET_TERMS", payload: {} });
     case "BANNER_REG_PLANS":
-      return sendMessage({ type: "SSB_REG_GET_PLANS", payload: {} });
+      return sendMessage({
+        type: "SSB_REG_GET_PLANS",
+        payload: { term: request.term },
+      });
   }
 }
 
@@ -108,6 +112,15 @@ export default defineContentScript({
           source: BRIDGE_SOURCE,
           dir: "event",
           type: "AUTOREG_CHANGED",
+        };
+        window.postMessage(event, origin);
+      }
+      // The student signed in to or out of Banner.
+      if (BANNER_CONNECTION_KEY in changes) {
+        const event: BridgeEvent = {
+          source: BRIDGE_SOURCE,
+          dir: "event",
+          type: "BANNER_CHANGED",
         };
         window.postMessage(event, origin);
       }

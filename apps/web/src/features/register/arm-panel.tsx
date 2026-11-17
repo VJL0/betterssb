@@ -130,7 +130,7 @@ export function ArmPanel({
 
       <p className="text-sm text-primary-foreground/80">
         {armed
-          ? `BetterSSB will submit ${sections} in your Banner tab at ${when}. Keep Chrome open, Banner signed in and the computer awake.`
+          ? `BetterSSB will submit ${sections} at ${when} and keeps you signed in to Banner until then. Keep Chrome open and the computer awake.`
           : (blocker ??
             "Everything is ready. Arm now so the queue goes in the second your window opens.")}
       </p>
@@ -179,7 +179,7 @@ export function ArmPanel({
             <AlertDialogDescription>
               {armed
                 ? "Nothing will be submitted. You can arm again any time before your window opens."
-                : `BetterSSB will submit ${sections} at ${when} in your open Banner tab. Keep the computer awake and Banner signed in.`}
+                : `BetterSSB will submit ${sections} at ${when} and keeps you signed in to Banner until then. Keep Chrome open and the computer awake.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

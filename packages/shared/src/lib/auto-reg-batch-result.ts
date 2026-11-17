@@ -36,32 +36,13 @@ export interface StagingFailure {
   message: string;
 }
 
-/** What the content script answers SSB_AUTO_REGISTER_RUN with. */
+/** What the background's registration submit returns. */
 export interface ExecuteRegistrationResult {
   stagingFailures: StagingFailure[];
   batchResponse: unknown;
 }
 
-// ── Type guards for data from Banner, the content script and storage ────────
-
-function isStagingFailure(value: unknown): value is StagingFailure {
-  return (
-    isRecord(value) &&
-    typeof value.crn === "string" &&
-    typeof value.message === "string"
-  );
-}
-
-export function isExecuteRegistrationResult(
-  value: unknown,
-): value is ExecuteRegistrationResult {
-  return (
-    isRecord(value) &&
-    "batchResponse" in value &&
-    Array.isArray(value.stagingFailures) &&
-    value.stagingFailures.every(isStagingFailure)
-  );
-}
+// ── Type guards for data from Banner and storage ────────────────────────────
 
 function isBatchUpdateItem(value: unknown): value is BatchUpdateItem {
   return (
@@ -258,7 +239,7 @@ export function buildResultRecord(
   };
 }
 
-/** The record for a run that failed before Banner answered, e.g. with no Banner tab open. */
+/** The record for a run that failed before Banner answered, e.g. when signed out. */
 export function failedResultRecord(
   error: string,
   at: string,

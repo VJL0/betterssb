@@ -17,6 +17,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 import { BANNER_REGISTRATION_URL } from "@/lib/temple-urls";
+import type { BannerConnection } from "@workspace/shared/types/store";
 import {
   useAutoRegister,
   useBannerConnection,
@@ -25,10 +26,17 @@ import { useStoreDocument } from "@/hooks/use-store-document";
 import { openUrl, openWeb } from "../lib/open-web";
 
 const BANNER_WORDS = {
-  connected: "Open and signed in",
+  connected: "Signed in",
   "signed-out": "Signed out",
-  "not-connected": "Not open",
+  "not-connected": "Can't reach Banner",
 } as const;
+
+function bannerWords(connection: BannerConnection, armed: boolean): string {
+  // While armed, the extension keeps Banner signed in until the run.
+  return connection === "connected" && armed
+    ? "Signed in · kept signed in until the run"
+    : BANNER_WORDS[connection];
+}
 
 function when(value: string): string {
   return new Date(value).toLocaleString("en", {
@@ -164,8 +172,12 @@ export function RegisterTab() {
                 : "Not set"}
               {snapshot.armed && " · armed"}
             </dd>
-            <dt className="text-muted-foreground">Banner tab</dt>
-            <dd>{banner.data ? BANNER_WORDS[banner.data] : "Checking…"}</dd>
+            <dt className="text-muted-foreground">Banner</dt>
+            <dd>
+              {banner.data
+                ? bannerWords(banner.data, snapshot.armed)
+                : "Checking…"}
+            </dd>
           </dl>
         </TabsContent>
       </Tabs>

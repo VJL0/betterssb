@@ -33,7 +33,6 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
 import { templeTermName } from "@workspace/shared/lib/terms";
-import type { BannerConnection } from "@workspace/shared/types/store";
 import { firstReadyPath } from "@/components/shell/pages";
 import {
   ProgramPicker,
@@ -41,15 +40,15 @@ import {
   useBulletinPrograms,
 } from "@/features/program/program-picker";
 import { Logo } from "@workspace/ui/components/logo";
-import { useBannerConnection } from "@/hooks/use-banner-connection";
+import { useExtensionInstalled } from "@/hooks/use-extension-installed";
 import { useSettings } from "@/hooks/use-settings";
 import { useTerms, type Term } from "@/hooks/use-terms";
-import { BANNER_REGISTRATION_URL, EXTENSION_INSTALL_URL } from "@/lib/config";
+import { EXTENSION_INSTALL_URL } from "@/lib/config";
 
 const STEPS = [
   { id: "term", label: "Term" },
   { id: "program", label: "Program" },
-  { id: "banner", label: "Banner · optional" },
+  { id: "extension", label: "Extension · optional" },
 ] as const;
 
 type StepId = (typeof STEPS)[number]["id"];
@@ -84,7 +83,7 @@ function GetStarted({ step }: { step: StepId }) {
 
   const { settings, status, update } = useSettings();
   const terms = useTerms();
-  const banner = useBannerConnection();
+  const extensionInstalled = useExtensionInstalled();
 
   // The term waits for Continue; the program step saves as it's picked, like Settings.
   const [draftTerm, setDraftTerm] = useState<string | null | undefined>();
@@ -150,13 +149,12 @@ function GetStarted({ step }: { step: StepId }) {
             {step === "program" && (
               <ProgramStep
                 onBack={() => goTo("term")}
-                onContinue={() => goTo("banner")}
+                onContinue={() => goTo("extension")}
               />
             )}
-            {step === "banner" && (
-              <BannerStep
-                connection={banner.connection}
-                extensionInstalled={banner.extensionInstalled}
+            {step === "extension" && (
+              <ExtensionStep
+                extensionInstalled={extensionInstalled}
                 onBack={() => goTo("program")}
                 onFinish={() => router.push(firstReadyPath())}
               />
@@ -166,7 +164,7 @@ function GetStarted({ step }: { step: StepId }) {
 
         <SetupSummary
           termName={terms.terms.find((t) => t.code === term)?.name}
-          connection={banner.connection}
+          extensionInstalled={extensionInstalled}
         />
       </main>
       <p className="px-4 pb-8 text-center text-xs text-muted-foreground">
@@ -341,20 +339,17 @@ function StatusRow({
   title,
   description,
   action,
-  dimmed,
 }: {
   done: boolean;
   title: string;
   description: string;
   action?: ReactNode;
-  dimmed?: boolean;
 }) {
   const Icon = done ? CircleCheckIcon : CircleDashedIcon;
   return (
     <li
       className={cn(
         "flex items-center gap-3 rounded-2xl px-3.5 py-3 ring-1 ring-border ring-inset",
-        dimmed && "opacity-60",
       )}
     >
       <Icon
@@ -373,24 +368,20 @@ function StatusRow({
   );
 }
 
-function BannerStep({
-  connection,
+function ExtensionStep({
   extensionInstalled,
   onBack,
   onFinish,
 }: {
-  connection: BannerConnection | null;
   extensionInstalled: boolean;
   onBack: () => void;
   onFinish: () => void;
 }) {
-  const connected = connection === "connected";
   return (
     <div className="flex flex-col gap-5">
-      <StepHeading title="Connect Banner when you're ready">
-        Optional, and you can connect later from Settings. Your degree audit,
-        auto-register and Banner page overlays run through the Chrome extension,
-        inside your own Banner tab. Your Banner login stays with Banner.
+      <StepHeading title="Add the Chrome extension when you're ready">
+        Optional, and you can add it later from Settings. Your degree audit,
+        auto-register and Banner page overlays run through the Chrome extension.
       </StepHeading>
       <ul className="flex flex-col gap-2">
         <StatusRow
@@ -418,37 +409,13 @@ function BannerStep({
             )
           }
         />
-        <StatusRow
-          done={connected}
-          dimmed={!extensionInstalled}
-          title={connected ? "Banner connected" : "Sign in to Banner once"}
-          description={
-            connected
-              ? "Live data from your Banner session is on"
-              : connection === "signed-out"
-                ? "Banner signed you out. Sign in again in any tab."
-                : "In a normal tab. The extension notices and connects."
-          }
-          action={
-            extensionInstalled &&
-            !connected && (
-              <ButtonLink
-                variant="outline"
-                size="sm"
-                href={BANNER_REGISTRATION_URL}
-              >
-                Open Banner
-              </ButtonLink>
-            )
-          }
-        />
       </ul>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Button type="button" variant="ghost" size="lg" onClick={onBack}>
           Back
         </Button>
         <Button type="button" size="lg" onClick={onFinish}>
-          {connected ? "Start planning" : "Skip for now"}
+          {extensionInstalled ? "Start planning" : "Skip for now"}
         </Button>
       </div>
     </div>
@@ -457,10 +424,10 @@ function BannerStep({
 
 function SetupSummary({
   termName,
-  connection,
+  extensionInstalled,
 }: {
   termName: string | undefined;
-  connection: BannerConnection | null;
+  extensionInstalled: boolean;
 }) {
   // The program as the picker shows it, so one saved from another year's Bulletin reads as not chosen.
   const { settings, selectedOption } = useBulletinPrograms();
@@ -473,13 +440,9 @@ function SetupSummary({
     ["Started", startTermName ?? "Not chosen", !!startTermName],
     ["Program", programName ?? "Not chosen", !!programName],
     [
-      "Banner",
-      connection === "connected"
-        ? "Connected"
-        : connection === "signed-out"
-          ? "Signed out"
-          : "Not connected",
-      connection === "connected",
+      "Extension",
+      extensionInstalled ? "Installed" : "Not installed",
+      extensionInstalled,
     ],
     ["Account", "Not needed", false],
   ];

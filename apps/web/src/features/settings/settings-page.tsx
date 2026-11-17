@@ -28,19 +28,18 @@ import {
 import { Kbd } from "@workspace/ui/components/kbd";
 import { Switch } from "@workspace/ui/components/switch";
 import { Spinner } from "@workspace/ui/components/spinner";
-import { BannerBadge } from "@/components/banner-status";
 import { ProgramPicker } from "@/features/program/program-picker";
 import { TermSelect } from "@/components/term-select";
-import { useBannerConnection } from "@/hooks/use-banner-connection";
+import { useExtensionInstalled } from "@/hooks/use-extension-installed";
 import { useSettings } from "@/hooks/use-settings";
-import { BANNER_REGISTRATION_URL, EXTENSION_INSTALL_URL } from "@/lib/config";
+import { EXTENSION_INSTALL_URL } from "@/lib/config";
 import { useStoreDocument, useStoreState } from "@/lib/store/store-context";
 import { downloadStoreExport } from "./export-data";
 
 const SECTIONS = [
   { id: "account", label: "Account" },
   { id: "term", label: "Term and major" },
-  { id: "banner", label: "Banner" },
+  { id: "extension", label: "Extension" },
   { id: "banner-pages", label: "On Banner pages" },
   { id: "keyboard", label: "Keyboard" },
   { id: "data", label: "Data and privacy" },
@@ -102,7 +101,7 @@ export function SettingsPage() {
         <div className="flex min-w-0 grow-999 basis-140 flex-col gap-5">
           <AccountSection />
           <TermSection />
-          <BannerSection />
+          <ExtensionSection />
           <BannerPagesSection />
           <KeyboardSection />
           <DataSection />
@@ -224,43 +223,22 @@ function KeyboardSection() {
   );
 }
 
-function BannerSection() {
-  const { connection, extensionInstalled } = useBannerConnection();
-  const explanation = !extensionInstalled
-    ? "Your degree audit, auto-register and Banner page overlays need the BetterSSB Chrome extension. Everything else works without it."
-    : connection === "connected"
-      ? "The extension can reach your Banner tab. Your Banner login stays with Banner."
-      : connection === "signed-out"
-        ? "Banner signed you out. Sign in again in any tab and BetterSSB reconnects on its own."
-        : "Open Banner registration in a tab and sign in. The extension notices and connects.";
-
+function ExtensionSection() {
+  const extensionInstalled = useExtensionInstalled();
   return (
-    <SettingsSection
-      id="banner"
-      title="Banner"
-      description="Separate from BetterSSB. BetterSSB never sees your Banner password."
-    >
-      <div className="flex flex-wrap items-center gap-3">
-        <BannerBadge connection={connection} />
-        <span className="text-muted-foreground">
-          {extensionInstalled
-            ? "Extension installed"
-            : "Extension not installed"}
-        </span>
-      </div>
-      <p>{explanation}</p>
-      <div className="flex flex-wrap gap-2">
-        {extensionInstalled && connection !== "connected" && (
-          <ButtonLink variant="outline" href={BANNER_REGISTRATION_URL}>
-            Open Banner
-          </ButtonLink>
-        )}
-        {!extensionInstalled && EXTENSION_INSTALL_URL && (
+    <SettingsSection id="extension" title="Chrome extension">
+      <p>
+        {extensionInstalled
+          ? "Installed in this browser. Your degree audit, auto-register and Banner page overlays are ready."
+          : "Your degree audit, auto-register and Banner page overlays need the BetterSSB Chrome extension. Everything else works without it."}
+      </p>
+      {!extensionInstalled && EXTENSION_INSTALL_URL && (
+        <div className="flex flex-wrap gap-2">
           <ButtonLink href={EXTENSION_INSTALL_URL}>
             Add the extension
           </ButtonLink>
-        )}
-      </div>
+        </div>
+      )}
     </SettingsSection>
   );
 }

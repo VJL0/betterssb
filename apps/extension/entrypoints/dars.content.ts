@@ -1,4 +1,4 @@
-import { onContentMessage } from "@/lib/messaging";
+import { onMessage } from "@/lib/messaging";
 import { runAudit, DarsSessionExpiredError } from "@/lib/dars-api";
 import { DARS_PAGES } from "@/lib/temple-urls";
 
@@ -11,7 +11,7 @@ export default defineContentScript({
   matches: [DARS_PAGES],
 
   main() {
-    onContentMessage(async (msg, sendResponse) => {
+    onMessage(async (msg, sendResponse) => {
       if (msg.type !== "DARS_RUN_AUDIT") return;
       try {
         const html = await runAudit();

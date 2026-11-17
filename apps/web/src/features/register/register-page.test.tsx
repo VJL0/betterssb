@@ -131,20 +131,33 @@ describe("RegisterPage", () => {
     expect(screen.queryByRole("textbox", { name: "Add CRN" })).toBeNull();
   });
 
-  it("won't arm without a Banner tab", async () => {
+  it("won't arm while Banner is signed out", async () => {
     install({
-      banner: "not-connected",
+      banner: "signed-out",
       autoRegister: { term: "202703", crns: ["41207"], scheduledRunAt: FUTURE },
     });
     renderPage(<RegisterPage />);
     expect(
-      await screen.findByText("Can't arm: no Banner tab is open"),
+      await screen.findByText("Can't arm: Banner is signed out"),
     ).toBeTruthy();
     expect(
       screen
         .getByRole("button", { name: "Arm auto-register" })
         .hasAttribute("disabled"),
     ).toBe(true);
+  });
+
+  it("follows Banner live as it signs out", async () => {
+    const fake = install({
+      autoRegister: { term: "202703", crns: ["41207"], scheduledRunAt: FUTURE },
+    });
+    renderPage(<RegisterPage />);
+    expect(await screen.findByText("Signed in to Banner")).toBeTruthy();
+
+    fake.setBanner("signed-out");
+    expect(
+      await screen.findByText("Can't arm: Banner is signed out"),
+    ).toBeTruthy();
   });
 
   it("fills an empty submit time from TUportal", async () => {
