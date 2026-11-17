@@ -15,6 +15,7 @@ import { courseCode } from "@workspace/shared/lib/plan";
 import {
   savedTranscript,
   transcriptTerms,
+  type SavedCourse,
   type TranscriptData,
   type TranscriptTerm,
 } from "@workspace/shared/lib/transcript";
@@ -24,7 +25,6 @@ import {
   AlertTitle,
 } from "@workspace/ui/components/alert";
 import { Card } from "@workspace/ui/components/card";
-import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
@@ -41,10 +41,13 @@ import {
 import { isPageReady } from "@/components/shell/pages";
 import { ButtonLink } from "@/components/button-link";
 import { useStoreDocument } from "@/lib/store/store-context";
+import { GpaCard, GradeCell, WhatIfGpaPill } from "./gpa-what-if";
 import { checkPdfSize, TranscriptPdfSteps } from "./transcript-pdf";
+import { useGpaWhatIf, type GpaWhatIf } from "./use-gpa-what-if";
 
 /** Terms shown before "Show earlier terms". */
 const RECENT_TERMS = 3;
+const NO_COURSES: SavedCourse[] = [];
 async function readTranscript(file: File): Promise<TranscriptData> {
   checkPdfSize(file);
   const { data } = await parseTranscriptPdf({
@@ -74,6 +77,7 @@ export function TranscriptPage() {
   });
 
   const transcript = stored.value?.transcript ?? null;
+  const whatIf = useGpaWhatIf(transcript?.courses ?? NO_COURSES);
   const showForm = !transcript || replacing;
   const terms = transcript ? transcriptTerms(transcript) : [];
   const subtitle = transcript
@@ -115,25 +119,10 @@ export function TranscriptPage() {
         />
       ) : (
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <Terms terms={terms} audit={audit} />
-          <aside className="flex flex-col gap-4">
-            {transcript!.gpa !== null && (
-              <Card
-                aria-labelledby="gpa-heading"
-                className="gap-1 p-4"
-                render={<section />}
-              >
-                <h3 id="gpa-heading" className="font-medium">
-                  GPA
-                </h3>
-                <p className="flex items-baseline gap-1.5 tabular-nums">
-                  <span className="text-3xl font-medium">
-                    {transcript!.gpa.toFixed(2)}
-                  </span>
-                  <span className="text-muted-foreground">overall</span>
-                </p>
-              </Card>
-            )}
+          <Terms terms={terms} audit={audit} whatIf={whatIf} />
+          {/* Above the terms on phones; beside them, in view, on wide screens. */}
+          <aside className="flex flex-col gap-4 max-lg:order-first lg:sticky lg:top-24">
+            <GpaCard officialGpa={transcript!.gpa} whatIf={whatIf} />
             {!audit && isPageReady("records") && (
               <p className="rounded-2xl bg-muted/50 p-3">
                 Save your degree audit to see what each course counts toward.{" "}
@@ -149,8 +138,9 @@ export function TranscriptPage() {
             )}
             <p className="flex gap-2 text-xs text-muted-foreground">
               <ShieldCheckIcon aria-hidden className="size-4 shrink-0" />
-              Only course codes, titles, credits and grades are kept, on this
-              device. The PDF isn't stored.
+              Only each course's code, title, credits, grade and whether it
+              counts toward your GPA are kept, on this device. The PDF isn't
+              stored.
             </p>
           </aside>
         </div>
@@ -221,9 +211,11 @@ function UploadForm({
 function Terms({
   terms,
   audit,
+  whatIf,
 }: {
   terms: readonly TranscriptTerm[];
   audit: Audit | null;
+  whatIf: GpaWhatIf;
 }) {
   const [showAll, setShowAll] = useState(false);
   const shown = showAll ? terms : terms.slice(0, RECENT_TERMS);
@@ -231,7 +223,7 @@ function Terms({
   return (
     <section aria-label="Courses by term" className="flex flex-col gap-4">
       {shown.map((term) => (
-        <TermCard key={term.term} term={term} audit={audit} />
+        <TermCard key={term.term} term={term} audit={audit} whatIf={whatIf} />
       ))}
       {earlier > 0 && (
         <Button
@@ -242,6 +234,7 @@ function Terms({
           Show {earlier} earlier {earlier === 1 ? "term" : "terms"}
         </Button>
       )}
+      {whatIf.active && <WhatIfGpaPill whatIf={whatIf} />}
     </section>
   );
 }
@@ -249,9 +242,11 @@ function Terms({
 function TermCard({
   term,
   audit,
+  whatIf,
 }: {
   term: TranscriptTerm;
   audit: Audit | null;
+  whatIf: GpaWhatIf;
 }) {
   const rows = term.courses.map((course) => {
     const code = courseCode(course.subject, course.courseNumber);
@@ -261,7 +256,7 @@ function TermCard({
       title: course.title,
       countsToward: audit ? requirementFor(audit, code) : null,
       credits: formatCredits(course.credits),
-      grade: course.grade,
+      course,
     };
   });
   return (
@@ -282,7 +277,7 @@ function TermCard({
           <li key={row.key} className="flex flex-col gap-1 py-2.5">
             <span className="flex items-center justify-between gap-2">
               <span className="font-medium">{row.code}</span>
-              <Badge variant="secondary">{row.grade}</Badge>
+              <GradeCell course={row.course} whatIf={whatIf} />
             </span>
             <span>{row.title}</span>
             <span className="text-xs text-muted-foreground">
@@ -319,7 +314,7 @@ function TermCard({
                   {row.credits}
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{row.grade}</Badge>
+                  <GradeCell course={row.course} whatIf={whatIf} />
                 </TableCell>
               </TableRow>
             ))}

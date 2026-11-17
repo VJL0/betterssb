@@ -36,7 +36,7 @@ const PARSED: AcademicTranscript = {
 };
 
 describe("savedTranscript", () => {
-  it("keeps only courses and GPA, with terms named season first", () => {
+  it("keeps courses, what decides their GPA hours, and the GPA, with terms named season first", () => {
     const saved = savedTranscript(PARSED);
     expect(saved).toEqual({
       gpa: 3.44,
@@ -48,6 +48,8 @@ describe("savedTranscript", () => {
           grade: "A",
           credits: 4,
           term: "Fall 2024",
+          category: "institution",
+          repeat: null,
         },
         {
           subject: "CIS",
@@ -56,6 +58,8 @@ describe("savedTranscript", () => {
           grade: "B",
           credits: 4,
           term: "Spring 2025",
+          category: "institution",
+          repeat: null,
         },
       ],
     });

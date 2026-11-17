@@ -28,6 +28,8 @@ const TRANSCRIPT: TranscriptData = {
       grade: "A",
       credits: 4,
       term: "Spring 2026",
+      category: "institution",
+      repeat: null,
     },
     {
       subject: "ENG",
@@ -36,6 +38,8 @@ const TRANSCRIPT: TranscriptData = {
       grade: "A",
       credits: 4,
       term: "Fall 2025",
+      category: "institution",
+      repeat: null,
     },
   ],
 };
@@ -142,6 +146,96 @@ describe("TranscriptPage", () => {
     );
     const eng = screen.getByRole("row", { name: /ENG 0802/ });
     expect(within(eng).getAllByRole("cell")[2]!.textContent).toBe("—");
+  });
+
+  describe("what-if grades", () => {
+    const WITH_COURSE_IN_PROGRESS: TranscriptData = {
+      gpa: 3.5,
+      courses: [
+        { ...TRANSCRIPT.courses[0]!, grade: "A" },
+        { ...TRANSCRIPT.courses[1]!, grade: "B" },
+        {
+          subject: "CIS",
+          courseNumber: "2168",
+          title: "Data Structures",
+          grade: "",
+          credits: 4,
+          term: "Fall 2026",
+          category: "in_progress",
+          repeat: null,
+        },
+      ],
+    };
+
+    async function tryGrades() {
+      const user = userEvent.setup();
+      const view = renderPage(<TranscriptPage />);
+      await view.store.set("transcript", {
+        transcript: WITH_COURSE_IN_PROGRESS,
+        storedAt: NOW,
+      });
+      await user.click(
+        await screen.findByRole("button", { name: "Try other grades" }),
+      );
+      return { user, ...view };
+    }
+
+    async function pick(
+      user: ReturnType<typeof userEvent.setup>,
+      picker: string,
+      grade: string,
+    ) {
+      await user.click(screen.getAllByRole("combobox", { name: picker })[0]!);
+      await user.click(await screen.findByRole("option", { name: grade }));
+    }
+
+    it("tries a grade without saving it", async () => {
+      const { user, store } = await tryGrades();
+      expect(screen.getByText("from 3.50 now")).toBeTruthy();
+
+      await pick(user, "Grade for ENG 0802", "A");
+      expect(screen.getByText("4.00")).toBeTruthy();
+      expect(screen.getAllByText("was B").length).toBeGreaterThan(0);
+      expect((await store.get("transcript"))?.transcript).toEqual(
+        WITH_COURSE_IN_PROGRESS,
+      );
+
+      await user.click(screen.getByRole("button", { name: "Done" }));
+      expect(screen.getByText("3.50")).toBeTruthy();
+      expect(screen.queryByText("was B")).toBeNull();
+    });
+
+    it("counts an expected grade on a course in progress", async () => {
+      const { user } = await tryGrades();
+      await pick(user, "Expected grade for CIS 2168", "B");
+      // (16 + 12 + 12) / 12
+      expect(screen.getByText("3.33")).toBeTruthy();
+    });
+
+    it("says what the open credits need for a target", async () => {
+      const { user } = await tryGrades();
+      const target = screen.getByLabelText("Target GPA");
+
+      await user.type(target, "3.6");
+      expect(
+        screen.getByText(
+          "You need about an A average (4.00) across your 4 open credits.",
+        ),
+      ).toBeTruthy();
+
+      await user.clear(target);
+      await user.type(target, "3.75");
+      expect(
+        screen.getByText(
+          "Out of reach: straight A's across your 4 open credits give 3.67.",
+        ),
+      ).toBeTruthy();
+    });
+
+    it("has no accessibility violations while trying grades", async () => {
+      const { container } = await tryGrades();
+      expect(await axeViolations(container)).toEqual([]);
+    });
   });
 
   it("has no accessibility violations", async () => {

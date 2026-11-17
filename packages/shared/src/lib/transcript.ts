@@ -1,22 +1,36 @@
-import type {
-  AcademicTranscript,
-  TranscriptCourse,
-} from "@workspace/api-client";
+import type { AcademicCourse, AcademicTranscript } from "@workspace/api-client";
 import { formatTermName } from "./terms";
 
 const SEASON_ORDER = ["winter", "spring", "summer", "fall"];
 const TERM_LABEL = /^(winter|spring|summer|fall)\b.*?(\d{4})$/i;
 
-/** What's kept from a transcript: course codes, titles, credits, grades and the GPA. */
+/**
+ * A course as it's kept: its code, title, credits and grade, whether it was
+ * taken at Temple, transferred in or is in progress, and Banner's repeat flag,
+ * which together say whether it counts toward the GPA.
+ */
+export type SavedCourse = Pick<
+  AcademicCourse,
+  | "subject"
+  | "courseNumber"
+  | "title"
+  | "grade"
+  | "credits"
+  | "term"
+  | "category"
+  | "repeat"
+>;
+
+/** What's kept from a transcript: its courses and the GPA. */
 export interface TranscriptData {
-  courses: TranscriptCourse[];
+  courses: SavedCourse[];
   gpa: number | null;
 }
 
 export interface TranscriptTerm {
   /** As the transcript names it, e.g. "Fall 2024". */
   term: string;
-  courses: TranscriptCourse[];
+  courses: SavedCourse[];
   credits: number;
 }
 
@@ -40,7 +54,7 @@ function newestFirst(a: TranscriptTerm, b: TranscriptTerm): number {
 
 /** Courses grouped by term, newest first. Terms it can't date keep their order, last. */
 export function transcriptTerms(data: TranscriptData): TranscriptTerm[] {
-  const byTerm = new Map<string, TranscriptCourse[]>();
+  const byTerm = new Map<string, SavedCourse[]>();
   for (const course of data.courses) {
     byTerm.set(course.term, [...(byTerm.get(course.term) ?? []), course]);
   }
@@ -65,6 +79,8 @@ export function savedTranscript(
       grade: course.grade,
       credits: course.credits,
       term: formatTermName(course.term),
+      category: course.category,
+      repeat: course.repeat,
     })),
     gpa: transcript.gpa,
   };

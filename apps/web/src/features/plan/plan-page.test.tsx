@@ -206,6 +206,8 @@ describe("PlanPage", () => {
               credits: 4,
               grade: "A",
               term: "Spring 2026",
+              category: "institution",
+              repeat: null,
             },
             {
               subject: "ENG",
@@ -214,6 +216,8 @@ describe("PlanPage", () => {
               credits: 4,
               grade: "A",
               term: "Fall 2025",
+              category: "institution",
+              repeat: null,
             },
           ],
         },
