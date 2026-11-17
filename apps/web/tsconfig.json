@@ -1,28 +1,9 @@
 {
+  "extends": "@workspace/typescript-config/base.json",
   "compilerOptions": {
-    "target": "es2023",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "module": "esnext",
     "types": ["node"],
-    "skipLibCheck": true,
-
-    /* Bundler mode (Next.js requires allowJs, esModuleInterop and resolveJsonModule) */
-    "moduleResolution": "bundler",
-    "allowJs": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
     "incremental": true,
-    "jsx": "react-jsx",
     "plugins": [{ "name": "next" }],
-
-    /* Linting (unused code is ESLint's job; tsc would also flag Next's generated types) */
-    "strict": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": ["./src/*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"]
@@ -33,8 +14,6 @@
     "src",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "*.ts",
-    "*.mjs"
-  ],
-  "exclude": ["node_modules"]
+    "*.ts"
+  ]
 }

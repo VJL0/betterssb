@@ -27,6 +27,7 @@
     "@hey-api/openapi-ts": "0.99.0",
     "@tanstack/react-query": "catalog:",
     "@typescript/native": "catalog:",
+    "@workspace/typescript-config": "workspace:*",
     "eslint": "catalog:",
     "globals": "catalog:",
     "msw": "^3.0.3",

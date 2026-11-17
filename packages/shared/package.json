@@ -20,6 +20,7 @@
   "devDependencies": {
     "@eslint/js": "catalog:",
     "@typescript/native": "catalog:",
+    "@workspace/typescript-config": "workspace:*",
     "eslint": "catalog:",
     "globals": "catalog:",
     "typescript": "catalog:",

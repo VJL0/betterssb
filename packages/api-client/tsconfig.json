@@ -1,15 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "skipLibCheck": true,
-    "strict": true,
-    // The extension compiles this code with noUncheckedIndexedAccess, so check it here too.
-    "noUncheckedIndexedAccess": true,
-    "verbatimModuleSyntax": true,
-    "noEmit": true
-  },
+  "extends": "@workspace/typescript-config/base.json",
   "include": ["src", "openapi-ts.config.ts"]
 }
