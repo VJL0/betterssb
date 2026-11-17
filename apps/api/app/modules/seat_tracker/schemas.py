@@ -9,7 +9,7 @@ from pydantic import Field
 from app.shared.schemas import BaseSchema
 
 TermCode = Annotated[str, Field(pattern=r"^\d{6}$", description="Banner term code")]
-Crn = Annotated[str, Field(pattern=r"^\d{5}$", description="Five-digit CRN")]
+Crn = Annotated[str, Field(pattern=r"^\d{4,5}$", description="Four- or five-digit CRN")]
 
 
 class SeatWatchCreate(BaseSchema):

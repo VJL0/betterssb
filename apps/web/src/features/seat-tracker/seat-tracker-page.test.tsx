@@ -120,7 +120,7 @@ describe("SeatTrackerPage", () => {
     await user.type(input, "123");
     await user.click(within(tracker).getByRole("button", { name: "Watch" }));
     expect(
-      within(tracker).getByText("A CRN is 5 digits, like 41207."),
+      within(tracker).getByText("A CRN is 4 or 5 digits, like 41207."),
     ).toBeTruthy();
 
     await user.clear(input);

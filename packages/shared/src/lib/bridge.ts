@@ -6,6 +6,7 @@
  */
 import type { AutoRegQueue } from "../types/auto-reg";
 import type { StoreDocument, StoreKey } from "../types/store";
+import { isCrn } from "./crn";
 import { isRecord } from "./guards";
 import { isStoreDocument, isStoreKey } from "./store";
 
@@ -48,7 +49,6 @@ export type BridgeEvent =
 
 /** A queue can hold at most this many CRNs (Banner's add limit is far lower). */
 export const MAX_QUEUED_CRNS = 30;
-const CRN = /^\d{5}$/;
 const TERM_CODE = /^\d{6}$/;
 // `datetime-local`: 2026-11-14T07:00 or with seconds.
 const LOCAL_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/;
@@ -57,7 +57,7 @@ function isCrnList(value: unknown): value is string[] {
   return (
     Array.isArray(value) &&
     value.length <= MAX_QUEUED_CRNS &&
-    value.every((crn) => typeof crn === "string" && CRN.test(crn)) &&
+    value.every((crn) => typeof crn === "string" && isCrn(crn)) &&
     new Set(value).size === value.length
   );
 }
@@ -66,7 +66,7 @@ function isTermCode(value: unknown): value is string {
   return typeof value === "string" && TERM_CODE.test(value);
 }
 
-/** A queue the extension may save: a term, unique 5-digit CRNs, and a time. */
+/** A queue the extension may save: a term, unique CRNs, and a time. */
 export function parseAutoRegQueue(value: unknown): AutoRegQueue | null {
   if (!isRecord(value)) return null;
   const v = value;

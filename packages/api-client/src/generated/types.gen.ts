@@ -1738,7 +1738,7 @@ export type SeatWatchCreate = {
   /**
    * Crn
    *
-   * Five-digit CRN
+   * Four- or five-digit CRN
    */
   crn: string;
   /**

@@ -1,3 +1,5 @@
+import { isCrn } from "./crn";
+
 /**
  * Reads what a student types in the search box. Banner's public search filters
  * by subject, subject + course number, or keyword; it can't look up a CRN.
@@ -11,7 +13,6 @@ export type ClassQuery =
 
 const COURSE = /^([A-Za-z]{2,5})\s*-?\s*(\d{4}[A-Za-z]?)$/;
 const SUBJECT_ONLY = /^[A-Za-z]{2,5}$/;
-const CRN = /^\d{5}$/;
 const MIN_KEYWORD_LENGTH = 2;
 
 /**
@@ -36,6 +37,6 @@ export function parseClassQuery(
   if (SUBJECT_ONLY.test(text) && subjects.has(text.toUpperCase())) {
     return { kind: "subject", subject: text.toUpperCase() };
   }
-  if (CRN.test(text)) return { kind: "crn", crn: text };
+  if (isCrn(text)) return { kind: "crn", crn: text };
   return { kind: "keyword", keyword: text };
 }

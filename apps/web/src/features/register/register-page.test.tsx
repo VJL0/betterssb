@@ -99,7 +99,9 @@ describe("RegisterPage", () => {
     renderPage(<RegisterPage />);
     const input = await screen.findByRole("textbox", { name: "Add CRN" });
     await user.type(input, "123{Enter}");
-    expect(screen.getByText("A CRN is 5 digits, like 41207.")).toBeTruthy();
+    expect(
+      screen.getByText("A CRN is 4 or 5 digits, like 41207."),
+    ).toBeTruthy();
     await user.clear(input);
     await user.type(input, "52018{Enter}");
     await waitFor(() => expect(fake.auto.current.crns).toEqual(["52018"]));
