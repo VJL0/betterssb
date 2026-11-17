@@ -21,8 +21,3 @@ export const TUPORTAL_ORIGIN = "https://tuportal6.temple.edu";
 export const TUPORTAL_PAGES = `${TUPORTAL_ORIGIN}/*`;
 /** TUportal's priority registration countdown: the student's registration time per term. */
 export const PRIORITY_REGISTRATION_URL = `${TUPORTAL_ORIGIN}/html/TEMPLE/apps/tup/Countdown/PriorityRegistration/PriorityRegistration.jsp`;
-
-/** Whether `url` is one of Banner's registration pages, as `BANNER_PAGES` matches them. */
-export function isBannerPage(url: string): boolean {
-  return url.startsWith(`${BANNER_ORIGIN}/StudentRegistrationSsb/`);
-}

@@ -37,7 +37,6 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { useSettings } from "@/hooks/use-settings";
-import { ProgramRequirements } from "./program-requirements";
 
 /** Matches shown while searching; the full list is about 900 programs. */
 const PROGRAMS_SHOWN = 50;
@@ -89,22 +88,16 @@ export function useBulletinPrograms() {
     options,
     shownYear,
     standIn,
-    selected,
     selectedOption,
   };
 }
 
 /**
  * Two steps: the term the student started at Temple suggests a Bulletin year,
- * and that year's programs fill a searchable list. The pick and its
- * requirements come straight from the Bulletin, linked for reference.
+ * and that year's programs fill a searchable list, linked to the Bulletin for
+ * reference. The program's requirements are left to the planner and audit.
  */
-export function ProgramPicker({
-  showRequirements = true,
-}: {
-  /** Onboarding leaves the requirements to the planner and audit. */
-  showRequirements?: boolean;
-}) {
+export function ProgramPicker() {
   const {
     settings,
     update,
@@ -113,7 +106,6 @@ export function ProgramPicker({
     options,
     shownYear,
     standIn,
-    selected,
     selectedOption,
   } = useBulletinPrograms();
   // The popup is only rendered once opened, so the prerendered page never shows this list.
@@ -125,9 +117,7 @@ export function ProgramPicker({
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(14rem,100%),1fr))] gap-4">
         <Field>
-          <FieldTitle id={startTermId}>
-            When did you start at Temple?
-          </FieldTitle>
+          <FieldTitle id={startTermId}>First term at Temple</FieldTitle>
           <Select
             items={startTerms.map((t) => ({ value: t.code, label: t.name }))}
             value={settings.startTerm}
@@ -150,16 +140,12 @@ export function ProgramPicker({
             </SelectContent>
           </Select>
           <FieldDescription>
-            {year
-              ? `Suggests the ${year} Bulletin. Your official catalog year is on your degree audit.`
-              : "Your first term picks which year's Bulletin to use."}
+            Sets which year's degree requirements apply to you.
           </FieldDescription>
         </Field>
 
         <Field data-disabled={!year}>
-          <FieldLabel htmlFor={programId}>
-            What's your academic program?
-          </FieldLabel>
+          <FieldLabel htmlFor={programId}>Major</FieldLabel>
           <Combobox
             items={options}
             value={selectedOption}
@@ -190,16 +176,16 @@ export function ProgramPicker({
               className="w-full"
               placeholder={
                 !year
-                  ? "Choose a start term first"
+                  ? "Pick your first term"
                   : programs.isPending
-                    ? "Loading programs…"
-                    : "Search programs"
+                    ? "Loading…"
+                    : "Search majors"
               }
               disabled={!programs.isSuccess}
               showClear={selectedOption !== null}
             />
             <ComboboxContent>
-              <ComboboxEmpty>No programs match.</ComboboxEmpty>
+              <ComboboxEmpty>No matches</ComboboxEmpty>
               <ComboboxList>
                 {(program: BulletinProgram) => (
                   <ComboboxItem key={program.url} value={program}>
@@ -217,7 +203,7 @@ export function ProgramPicker({
           </Combobox>
           {programs.data && (
             <FieldDescription>
-              {options.length} programs from the{" "}
+              From the{" "}
               <a
                 href={programs.data.sourceUrl}
                 target="_blank"
@@ -235,15 +221,13 @@ export function ProgramPicker({
       {standIn && (
         <Alert variant="info">
           <InfoIcon />
-          <AlertTitle>Showing the {shownYear} Bulletin</AlertTitle>
+          <AlertTitle>Using the {shownYear} Bulletin</AlertTitle>
           <AlertDescription>
-            The {year} Bulletin isn't online, so these programs and requirements
-            come from {shownYear}, the closest earlier year. Courses added in{" "}
-            {year} may be missing. Your{" "}
+            {year} isn't online yet, so newer courses may be missing. Check your{" "}
             <Link href="/audit" className="underline underline-offset-2">
-              degree audit (DARS)
-            </Link>{" "}
-            shows what counts for you.
+              degree audit
+            </Link>
+            .
           </AlertDescription>
         </Alert>
       )}
@@ -255,13 +239,9 @@ export function ProgramPicker({
           <AlertDescription>
             {queryError(programs.error)?.message ??
               "Couldn't load programs from the Bulletin."}{" "}
-            Try another start term, or reload to try again.
+            Reload to try again.
           </AlertDescription>
         </Alert>
-      )}
-
-      {showRequirements && selected && (
-        <ProgramRequirements url={selected.url} />
       )}
     </div>
   );

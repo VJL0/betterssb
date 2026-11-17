@@ -8,7 +8,13 @@ import { SettingsPage } from "./settings-page";
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  delete document.documentElement.dataset.betterssbExtension;
 });
+
+/** The marker the extension sets on the page when it's installed. */
+function installExtension() {
+  document.documentElement.dataset.betterssbExtension = "9.9.9";
+}
 
 const THREAD = {
   id: "t1",
@@ -18,23 +24,27 @@ const THREAD = {
 };
 
 describe("SettingsPage", () => {
-  it("explains guest mode and that Banner needs the extension", async () => {
+  it("says where data is saved and that Banner needs the extension", async () => {
     renderPage(<SettingsPage />);
-    expect(await screen.findByText("Using BetterSSB as a guest")).toBeTruthy();
     expect(
-      screen.getByText(/need the BetterSSB Chrome extension/),
+      await screen.findByText(
+        "Only saved in this browser, not your Temple account.",
+      ),
     ).toBeTruthy();
     expect(
-      screen.getByText("Your data is saved in this browser."),
+      screen.getByText("Needed for DARS, auto-register and Banner extras."),
     ).toBeTruthy();
+    expect(
+      screen.queryByRole("switch", { name: "Show extras on Banner" }),
+    ).toBeNull();
   });
 
-  it("clears advisor history only after confirming", async () => {
+  it("deletes advisor chats only after confirming", async () => {
     const user = userEvent.setup();
     const { store } = renderPage(<SettingsPage />);
     await store.set("advisorThreads", [THREAD]);
     const clear = await screen.findByRole("button", {
-      name: "Clear advisor history",
+      name: "Delete advisor chats",
     });
     await waitFor(() => expect(clear.hasAttribute("disabled")).toBe(false));
 
@@ -44,7 +54,7 @@ describe("SettingsPage", () => {
 
     await user.click(clear);
     await user.click(
-      await screen.findByRole("button", { name: "Clear history" }),
+      await screen.findByRole("button", { name: "Delete chats" }),
     );
     await waitFor(async () =>
       expect(await store.get("advisorThreads")).toBeNull(),
@@ -52,7 +62,7 @@ describe("SettingsPage", () => {
     await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
   });
 
-  it("clears everything on the device", async () => {
+  it("deletes everything in the browser", async () => {
     const user = userEvent.setup();
     const { store } = renderPage(<SettingsPage />);
     await store.set("advisorThreads", [THREAD]);
@@ -66,17 +76,17 @@ describe("SettingsPage", () => {
       updatedAt: "2026-10-17T00:00:00.000Z",
     });
     await user.click(
-      await screen.findByRole("button", { name: "Clear this device" }),
+      await screen.findByRole("button", { name: "Delete everything" }),
     );
-    await user.click(
-      await screen.findByRole("button", { name: "Clear everything" }),
-    );
+    await user.click(await screen.findByRole("button", { name: "Delete" }));
     await waitFor(async () => expect(await store.keys()).toEqual([]));
   });
 
   it("has no axe violations", async () => {
     const { container } = renderPage(<SettingsPage />);
-    await screen.findByText("Using BetterSSB as a guest");
+    await screen.findByText(
+      "Only saved in this browser, not your Temple account.",
+    );
     expect(await axeViolations(container)).toEqual([]);
   });
 });
@@ -95,7 +105,7 @@ describe("exportStore", () => {
     const user = userEvent.setup();
     const { store } = renderPage(<SettingsPage />);
     const toggle = await screen.findByRole("switch", {
-      name: "Single-key shortcuts",
+      name: "Keyboard shortcuts",
     });
     expect(toggle.getAttribute("aria-checked")).toBe("true");
     await user.click(toggle);
@@ -105,11 +115,15 @@ describe("exportStore", () => {
   });
 
   it("turns the Banner page overlay off", async () => {
+    installExtension();
     const user = userEvent.setup();
     const { store } = renderPage(<SettingsPage />);
     const toggle = await screen.findByRole("switch", {
-      name: "Ratings, seats and your plan",
+      name: "Show extras on Banner",
     });
+    expect(
+      screen.queryByText("Needed for DARS, auto-register and Banner extras."),
+    ).toBeNull();
     expect(toggle.getAttribute("aria-checked")).toBe("true");
     await user.click(toggle);
     await waitFor(async () =>

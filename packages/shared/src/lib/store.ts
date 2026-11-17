@@ -18,6 +18,7 @@ const SINGLE_KEYS: ReadonlySet<string> = new Set([
   "transcript",
   "advisorThreads",
   "planPreferences",
+  "requestLog",
 ]);
 const TERM_CODE = /^\d{6}$/;
 
@@ -150,6 +151,7 @@ export function mergeDocuments(
       return Array.isArray(a) && Array.isArray(b) ? mergeThreads(a, b) : a;
     case "settings":
     case "planPreferences":
+    case "requestLog":
       return "updatedAt" in a && "updatedAt" in b
         ? newerOf<StoreDocument & { updatedAt: string }>(
             a,

@@ -1,5 +1,4 @@
 import { onMessage } from "@/lib/messaging";
-import { overlayStatus } from "@/lib/overlay-status";
 import { BANNER_PAGES } from "@/lib/temple-urls";
 import { restartBannerPageTimer } from "./keep-alive";
 
@@ -16,9 +15,6 @@ export default defineContentScript({
 
     onMessage((msg, sendResponse) => {
       switch (msg.type) {
-        case "OVERLAY_STATUS":
-          sendResponse({ success: true, data: overlayStatus() });
-          return;
         case "BANNER_RESTART_TIMER":
           restartBannerPageTimer();
           sendResponse({ success: true });

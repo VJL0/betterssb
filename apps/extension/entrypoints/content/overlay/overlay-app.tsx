@@ -3,7 +3,6 @@ import { clashesWithPlan } from "@workspace/shared/lib/plan";
 import { planKey, settingsOrDefaults } from "@workspace/shared/lib/store";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { useStoreDocument } from "@/hooks/use-store-document";
-import { setOverlayStatus } from "@/lib/overlay-status";
 import { PlanDock, type PageClash } from "./plan-dock";
 import { RowOverlay } from "./row-overlay";
 import type { OverlayRow, RowWatcher } from "./row-watcher";
@@ -75,12 +74,6 @@ function PageOverlay({
     [plan],
   );
   const clashes = useMemo(() => pageClashesOf(rows, plan), [rows, plan]);
-
-  useEffect(() => {
-    const inPlan = rows.filter((row) => planned.has(row.crn)).length;
-    setOverlayStatus({ sections: rows.length, inPlan });
-    return () => setOverlayStatus(null);
-  }, [rows, planned]);
 
   return (
     <>

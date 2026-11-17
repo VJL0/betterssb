@@ -18,7 +18,6 @@ export interface MessagePayloads {
   AUTOREG_DISARM: NoPayload;
   AUTOREG_CHECK_CRNS: { term: string; crns: string[] };
   AUTOREG_REGISTRATION_TIME: { term: string };
-  OVERLAY_STATUS: NoPayload;
 }
 
 export type MessageType = keyof MessagePayloads;

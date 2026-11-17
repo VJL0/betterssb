@@ -126,8 +126,28 @@ export interface PlanPreferences {
   updatedAt: string;
 }
 
+/** One request the extension sent: to Banner, TUportal or DARS with the student's sign-in, or to the BetterSSB API. */
+export interface RequestLogEntry {
+  method: string;
+  /** The full URL, minus the cache-busting and session-id parameters. */
+  url: string;
+  /** The HTTP status; 0 for a redirect Banner wasn't followed through, null when it never answered. */
+  status: number | null;
+  /** When it was sent, or the latest of the repeats `count` stands for. */
+  at: string;
+  /** How many identical requests this entry stands for, when more than one. */
+  count?: number;
+}
+
+/** The extension's requests, newest first. Only the extension writes it. */
+export interface RequestLog {
+  entries: RequestLogEntry[];
+  updatedAt: string;
+}
+
 export interface StoreDocuments {
   settings: UserSettings;
+  requestLog: RequestLog;
   audit: StoredAudit;
   transcript: StoredTranscript;
   advisorThreads: AdvisorThread[];

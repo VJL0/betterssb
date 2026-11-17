@@ -1,24 +1,14 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { fakeBrowser } from "wxt/testing/fake-browser";
-import { API, http, HttpResponse, server } from "@workspace/api-client/testing";
-import {
-  addSection,
-  emptyPlan,
-  plannedSectionFrom,
-} from "@workspace/shared/lib/plan";
-import { DEFAULT_SETTINGS } from "@workspace/shared/lib/store";
-import { sampleAudit } from "@workspace/shared/testing/audit";
-import { classSection } from "@workspace/shared/testing/class-section";
 import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
-import type { StoreDocuments, StoreKey } from "@workspace/shared/types/store";
+import type { BannerConnection } from "@workspace/shared/types/store";
 import { axeViolations } from "@workspace/ui/test/axe";
 import { extensionStore } from "@/lib/local-store";
+import { BANNER_ORIGIN } from "@/lib/temple-urls";
 import { answerBackground, renderPopup } from "./popup";
 
-const NOW = "2026-10-17T12:00:00.000Z";
-const SPRING = { code: "202703", description: "2027 Spring" };
 const NOT_ARMED: AutoRegSnapshot = {
   term: "202703",
   crns: [],
@@ -27,168 +17,93 @@ const NOT_ARMED: AutoRegSnapshot = {
   lastResult: null,
 };
 
-async function seed<K extends StoreKey>(key: K, value: StoreDocuments[K]) {
-  await extensionStore.set(key, value);
-}
-
-async function savedSettings() {
-  await seed("settings", {
-    ...DEFAULT_SETTINGS,
-    term: "202703",
-    updatedAt: NOW,
-  });
-}
-
-function api() {
-  server.use(
-    http.get(`${API}/classes/search`, () =>
-      HttpResponse.json({
-        totalCount: 1,
-        fetchedAt: NOW,
-        sections: [classSection()],
-      }),
-    ),
-  );
-}
-
-function background(snapshot: Partial<AutoRegSnapshot> = {}) {
+function background({
+  banner = "connected",
+  snapshot = {},
+}: {
+  banner?: BannerConnection;
+  snapshot?: Partial<AutoRegSnapshot>;
+} = {}) {
   return answerBackground({
     AUTOREG_GET: () => ({ ...NOT_ARMED, ...snapshot }),
-    AUTOREG_DISARM: () => undefined,
-    BANNER_STATUS: () => "connected",
+    BANNER_STATUS: () => banner,
   });
 }
 
 describe("popup", () => {
-  it("opens to the tabs before anything is saved", async () => {
-    api();
-    background();
-    renderPopup();
-    expect(
-      await screen.findByRole("navigation", { name: "Popup sections" }),
-    ).toBeTruthy();
-  });
-
-  it("shows the armed countdown on Today and disarms", async () => {
+  it("shows the Banner sign-in and opens the website", async () => {
     const user = userEvent.setup();
-    api();
-    const sent = background({
-      armed: true,
-      crns: ["41207", "41311"],
-      scheduledRunAt: "2030-11-14T07:00",
-    });
-    await savedSettings();
-    renderPopup();
-    expect(await screen.findByText(/Armed · Nov 14/)).toBeTruthy();
-    expect(
-      screen.getByText("2 CRNs queued · keep this computer awake"),
-    ).toBeTruthy();
-    await user.click(screen.getByRole("button", { name: "Disarm" }));
-    await waitFor(() =>
-      expect(sent.map((m) => m.type)).toContain("AUTOREG_DISARM"),
-    );
-  });
-
-  it("lists the term's plan with live seats", async () => {
-    api();
     background();
-    await savedSettings();
-    await seed(
-      "plan:202703",
-      addSection(
-        emptyPlan("202703", "Spring 2027"),
-        plannedSectionFrom(classSection(), NOW),
-        NOW,
-      ),
-    );
-    renderPopup();
-    expect(await screen.findByText("CIS 2168 · 001")).toBeTruthy();
-    expect(await screen.findByText("12 open")).toBeTruthy();
-  });
-
-  it("searches and adds a section to the plan", async () => {
-    const user = userEvent.setup();
-    api();
-    background();
-    await savedSettings();
-    renderPopup();
-    await user.click(await screen.findByRole("button", { name: "Search" }));
-    await user.type(
-      screen.getByRole("searchbox", { name: "Search sections" }),
-      "CIS 2168",
-    );
-    await user.click(
-      await screen.findByRole(
-        "button",
-        { name: "Add CIS 2168 001 to plan" },
-        { timeout: 3_000 },
-      ),
-    );
-    await waitFor(async () =>
-      expect(
-        (await extensionStore.get("plan:202703"))?.sections.map((s) => s.crn),
-      ).toEqual(["41207"]),
-    );
-  });
-
-  it("sends arming to the website from Register", async () => {
-    const user = userEvent.setup();
-    api();
-    background({ crns: ["41207"] });
-    await savedSettings();
     const create = vi.spyOn(fakeBrowser.tabs, "create");
     renderPopup();
-    await user.click(await screen.findByRole("button", { name: "Register" }));
-    expect(await screen.findByText("CRN 41207")).toBeTruthy();
-    await user.click(screen.getByRole("button", { name: /Arm in BetterSSB/ }));
+    expect(await screen.findByText("Signed in to Banner")).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "Open BetterSSB" }));
     expect(create).toHaveBeenCalledWith({
-      url: "http://localhost:3000/register",
+      url: "http://localhost:3000/search",
     });
   });
 
-  it("summarizes the saved audit", async () => {
-    const user = userEvent.setup();
-    api();
-    background();
-    await savedSettings();
-    await seed("audit", { audit: sampleAudit(), storedAt: NOW });
+  it("offers a sign-in when Banner signed the student out", async () => {
+    background({ banner: "signed-out" });
     renderPopup();
-    await user.click(await screen.findByRole("button", { name: "Audit" }));
-    const needed = await screen.findByRole("heading", { name: /Still needed/ });
+    expect(await screen.findByText("Signed out of Banner")).toBeTruthy();
     expect(
-      within(needed.parentElement!).getByText("Writing intensive"),
+      screen.getByRole("button", { name: "Sign in to Banner" }),
     ).toBeTruthy();
-    expect(screen.getByText("Computer Science BS")).toBeTruthy();
   });
 
-  it("turns the Banner page overlay off from a Banner tab", async () => {
-    const user = userEvent.setup();
-    api();
-    background();
-    await savedSettings();
-    const bannerWindow = await fakeBrowser.windows.create({ focused: true });
-    await fakeBrowser.tabs.create({
-      windowId: bannerWindow!.id,
-      url: "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/classSearch/classSearch",
-      active: true,
+  it("shows when an armed run will register", async () => {
+    background({
+      snapshot: {
+        armed: true,
+        crns: ["41207"],
+        scheduledRunAt: "2030-11-14T07:00",
+      },
     });
     renderPopup();
-    const toggle = await screen.findByRole("switch", {
-      name: "Ratings and seats on Banner pages",
-    });
-    expect(toggle.getAttribute("aria-checked")).toBe("true");
-    await user.click(toggle);
-    await waitFor(async () =>
-      expect((await extensionStore.get("settings"))?.bannerOverlay).toBe(false),
-    );
+    expect(
+      await screen.findByText("Auto-register set for Nov 14, 7:00 AM"),
+    ).toBeTruthy();
   });
 
-  it("has no accessibility violations on Today", async () => {
-    api();
+  it("lists the requests sent with the student's sign-in", async () => {
     background();
-    await savedSettings();
+    const today = (hour: number, minute: number) => {
+      const date = new Date();
+      date.setHours(hour, minute, 0, 0);
+      return date.toISOString();
+    };
+    await extensionStore.set("requestLog", {
+      updatedAt: today(14, 14),
+      entries: [
+        {
+          method: "GET",
+          url: `${BANNER_ORIGIN}/StudentRegistrationSsb/ssb/searchResults/getSectionDetailsFromCRN?courseReferenceNumber=41207&term=202703`,
+          status: 500,
+          at: today(14, 14),
+        },
+        {
+          method: "GET",
+          url: `${BANNER_ORIGIN}/StudentRegistrationSsb/ssb/selfServiceMenu/data`,
+          status: 200,
+          at: today(9, 30),
+          count: 31,
+        },
+      ],
+    });
+    renderPopup();
+    const failed = await screen.findByText("getSectionDetailsFromCRN");
+    expect(within(failed.closest("li")!).getByText("500").className).toContain(
+      "text-destructive",
+    );
+    expect(screen.getByText("data")).toBeTruthy();
+    expect(screen.getByText("Banner · 9:30 AM · 31 times")).toBeTruthy();
+  });
+
+  it("has no accessibility violations", async () => {
+    background();
     const { container } = renderPopup();
-    await screen.findByText("Spring 2027 plan");
+    await screen.findByText("Signed in to Banner");
     expect(await axeViolations(container)).toEqual([]);
   });
 });

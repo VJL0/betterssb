@@ -13,6 +13,8 @@ export interface ApiClientOptions {
    * cross-origin and must still send the HttpOnly session cookie.
    */
   credentials?: RequestCredentials;
+  /** Sends the requests; the extension passes one that logs each for its popup. */
+  fetch?: typeof fetch;
 }
 
 let errorInterceptor: number | null = null;
@@ -33,8 +35,10 @@ function errorMessageOf(options: object): string | undefined {
 export function configureApiClient({
   origin = "",
   credentials = "same-origin",
+  fetch,
 }: ApiClientOptions = {}): void {
-  client.setConfig({ baseUrl: origin.replace(/\/+$/, ""), credentials });
+  // The client falls back to the global fetch when none is given.
+  client.setConfig({ baseUrl: origin.replace(/\/+$/, ""), credentials, fetch });
   if (errorInterceptor === null) {
     errorInterceptor = client.interceptors.error.use(
       (error, response, request, options) =>

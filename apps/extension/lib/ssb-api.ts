@@ -17,6 +17,7 @@ import type {
 } from "@workspace/shared/types/ssb";
 import type { ExecuteRegistrationResult } from "@workspace/shared/lib/auto-reg-batch-result";
 import { BANNER_ORIGIN } from "@/lib/temple-urls";
+import { loggedFetch } from "@/lib/logged-fetch";
 
 const SSB_BASE = `${BANNER_ORIGIN}/StudentRegistrationSsb/ssb`;
 /**
@@ -63,7 +64,7 @@ let _uniqueSessionId: string | null = null;
  * followed: Banner only redirects a signed-out session, to Temple's sign-in.
  */
 async function bannerFetch(path: string, init: RequestInit = {}) {
-  const res = await fetch(`${SSB_BASE}${path}`, {
+  const res = await loggedFetch(`${SSB_BASE}${path}`, {
     ...init,
     credentials: "include",
     redirect: "manual",

@@ -261,7 +261,7 @@ function ProgramStep({
         your program is shared with the advisor only if you choose. You can
         change both later in Settings.
       </StepHeading>
-      <ProgramPicker showRequirements={false} />
+      <ProgramPicker />
       {showError && !chosen && (
         <FieldError>Choose your start term and program to continue.</FieldError>
       )}

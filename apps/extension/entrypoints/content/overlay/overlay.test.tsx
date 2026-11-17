@@ -7,7 +7,6 @@ import { emptyPlan } from "@workspace/shared/lib/plan";
 import { DEFAULT_SETTINGS, planKey } from "@workspace/shared/lib/store";
 import type { PlannedSection } from "@workspace/shared/types/store";
 import { extensionStore } from "@/lib/local-store";
-import { overlayStatus } from "@/lib/overlay-status";
 import { bannerResultsHtml } from "@/test/banner-results";
 import { answerBackground } from "@/test/popup";
 import { OverlayApp } from "./overlay-app";
@@ -167,7 +166,6 @@ describe("Banner overlay", () => {
     expect(slotsOf("tags")[1]!.textContent).toBe(
       "Conflicts with your plan: overlaps CIS 2168 · 001, TR 10:00",
     );
-    expect(overlayStatus()).toEqual({ sections: 2, inPlan: 1 });
   });
 
   it("shows the plan and this page's conflicts in the dock", async () => {

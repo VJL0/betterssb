@@ -64,14 +64,9 @@ async function renderStartedIn(startTerm: string | null) {
 describe("ProgramPicker", () => {
   it("waits for a start term before listing programs", async () => {
     await renderStartedIn(null);
-    expect(
-      await screen.findByText(/first term picks which year's Bulletin/),
-    ).toBeTruthy();
-    expect(
-      screen
-        .getByRole("combobox", { name: "What's your academic program?" })
-        .hasAttribute("disabled"),
-    ).toBe(true);
+    const program = await screen.findByRole("combobox", { name: "Major" });
+    expect(program.getAttribute("placeholder")).toBe("Pick your first term");
+    expect(program.hasAttribute("disabled")).toBe(true);
   });
 
   it("suggests a Bulletin year from the start term", async () => {
@@ -79,18 +74,13 @@ describe("ProgramPicker", () => {
     const { store } = await renderStartedIn(null);
     await user.click(
       await screen.findByRole("combobox", {
-        name: "When did you start at Temple?",
+        name: "First term at Temple",
       }),
     );
     await user.click(
       await screen.findByRole("option", { name: START_TERM.name }),
     );
 
-    expect(
-      await screen.findByText(`Suggests the ${BULLETIN_YEAR} Bulletin`, {
-        exact: false,
-      }),
-    ).toBeTruthy();
     await waitFor(async () =>
       expect((await store.get("settings"))?.startTerm).toBe(START_TERM.code),
     );
@@ -102,11 +92,11 @@ describe("ProgramPicker", () => {
     );
   });
 
-  it("saves the program and shows its requirements with the source", async () => {
+  it("saves the program", async () => {
     const user = userEvent.setup();
     const { store, container } = await renderStartedIn(START_TERM.code);
     const program = await screen.findByRole("combobox", {
-      name: "What's your academic program?",
+      name: "Major",
     });
     await waitFor(() => expect(program.hasAttribute("disabled")).toBe(false));
 
@@ -124,12 +114,6 @@ describe("ProgramPicker", () => {
       }),
     );
     expect((await store.get("settings"))?.major).toBe("Computer Science BS");
-    expect(
-      await screen.findByRole("heading", { name: "Computer Science BS" }),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("link", { name: "View on the Bulletin" }),
-    ).toHaveProperty("href", PROGRAM_URL);
     expect(await axeViolations(container)).toEqual([]);
   });
 
@@ -141,19 +125,20 @@ describe("ProgramPicker", () => {
     const { store } = await renderStartedIn(START_TERM.code);
 
     expect(
-      await screen.findByText(`Showing the ${PREVIOUS_YEAR} Bulletin`),
+      await screen.findByText(`Using the ${PREVIOUS_YEAR} Bulletin`),
     ).toBeTruthy();
     expect(
-      screen.getByText(`The ${BULLETIN_YEAR} Bulletin isn't online`, {
+      screen.getByText(`${BULLETIN_YEAR} isn't online yet`, {
         exact: false,
       }),
     ).toBeTruthy();
-    expect(
-      screen.getByRole("link", { name: "degree audit (DARS)" }),
-    ).toHaveProperty("pathname", "/audit");
+    expect(screen.getByRole("link", { name: "degree audit" })).toHaveProperty(
+      "pathname",
+      "/audit",
+    );
 
     const program = screen.getByRole("combobox", {
-      name: "What's your academic program?",
+      name: "Major",
     });
     await waitFor(() => expect(program.hasAttribute("disabled")).toBe(false));
     await user.type(program, "science bs");
@@ -165,9 +150,6 @@ describe("ProgramPicker", () => {
         PREVIOUS_YEAR,
       ),
     );
-    expect(
-      await screen.findByRole("heading", { name: "Computer Science BS" }),
-    ).toBeTruthy();
   });
 
   it("shows no stand-in notice when the suggested year is online", async () => {
@@ -175,7 +157,7 @@ describe("ProgramPicker", () => {
     expect(
       await screen.findByRole("link", { name: `${BULLETIN_YEAR} Bulletin` }),
     ).toBeTruthy();
-    expect(screen.queryByText(/^Showing the/)).toBeNull();
+    expect(screen.queryByText(/^Using the/)).toBeNull();
   });
 
   it("explains when a year's Bulletin isn't online", async () => {
