@@ -1503,20 +1503,6 @@ export type PlanYear = {
 };
 
 /**
- * PrereqCheckRequest
- */
-export type PrereqCheckRequest = {
-  /**
-   * Completed
-   */
-  completed: Array<TranscriptCourse>;
-  /**
-   * Required
-   */
-  required: Array<string>;
-};
-
-/**
  * Problem
  *
  * RFC 9457 problem details. `detail`, when present, is safe to show users.
@@ -2213,36 +2199,6 @@ export type SuggestedPlan = {
    * Years
    */
   years: Array<PlanYear>;
-};
-
-/**
- * TranscriptCourse
- */
-export type TranscriptCourse = {
-  /**
-   * Coursenumber
-   */
-  courseNumber: string;
-  /**
-   * Credits
-   */
-  credits: number;
-  /**
-   * Grade
-   */
-  grade: string;
-  /**
-   * Subject
-   */
-  subject: string;
-  /**
-   * Term
-   */
-  term: string;
-  /**
-   * Title
-   */
-  title: string;
 };
 
 /**
@@ -3319,41 +3275,6 @@ export type DeleteSeatWatchResponses = {
 
 export type DeleteSeatWatchResponse =
   DeleteSeatWatchResponses[keyof DeleteSeatWatchResponses];
-
-export type CheckPrerequisitesData = {
-  body: PrereqCheckRequest;
-  path?: never;
-  query?: never;
-  url: "/api/transcript/check-prereqs";
-};
-
-export type CheckPrerequisitesErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type CheckPrerequisitesError =
-  CheckPrerequisitesErrors[keyof CheckPrerequisitesErrors];
-
-export type CheckPrerequisitesResponses = {
-  /**
-   * Response Check Prerequisites
-   *
-   * Successful Response
-   */
-  200: {
-    [key: string]: boolean;
-  };
-};
-
-export type CheckPrerequisitesResponse =
-  CheckPrerequisitesResponses[keyof CheckPrerequisitesResponses];
 
 export type ParseTranscriptPdfData = {
   /**

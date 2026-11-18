@@ -10,15 +10,3 @@ class TranscriptCourse(BaseSchema):
     grade: str
     credits: float
     term: str
-
-
-class DegreeRequirement(BaseSchema):
-    name: str
-    required_courses: list[str]
-    completed_courses: list[str]
-    remaining_courses: list[str]
-
-
-class PrereqCheckRequest(BaseSchema):
-    completed: list[TranscriptCourse]
-    required: list[str]

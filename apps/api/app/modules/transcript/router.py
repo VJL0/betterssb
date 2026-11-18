@@ -4,21 +4,8 @@ from fastapi import APIRouter, Body, HTTPException
 
 from app.modules.transcript.pdf_schemas import AcademicTranscript, TranscriptInspection
 from app.modules.transcript.pdf_service import INCOMPLETE_MESSAGE, inspect_pdf
-from app.modules.transcript.schemas import PrereqCheckRequest
-from app.modules.transcript.service import TranscriptService
 
 router = APIRouter(prefix="/transcript", tags=["transcript"])
-
-_service = TranscriptService()
-
-
-@router.post("/check-prereqs", response_model=dict[str, bool])
-def check_prerequisites(body: PrereqCheckRequest) -> dict[str, bool]:
-    """Check which prerequisite courses have been completed."""
-    return _service.check_prerequisites(
-        completed=body.completed,
-        required=body.required,
-    )
 
 
 @router.post("/parse-pdf", response_model=AcademicTranscript)

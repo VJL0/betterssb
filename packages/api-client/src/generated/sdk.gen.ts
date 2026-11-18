@@ -13,9 +13,6 @@ import type {
   ChatData,
   ChatErrors,
   ChatResponses,
-  CheckPrerequisitesData,
-  CheckPrerequisitesErrors,
-  CheckPrerequisitesResponses,
   CreateSeatWatchData,
   CreateSeatWatchErrors,
   CreateSeatWatchResponses,
@@ -491,31 +488,6 @@ export const deleteSeatWatch = <ThrowOnError extends boolean = true>(
     DeleteSeatWatchErrors,
     ThrowOnError
   >({ url: "/api/seat-watches/{watch_id}", ...options });
-
-/**
- * Check Prerequisites
- *
- * Check which prerequisite courses have been completed.
- */
-export const checkPrerequisites = <ThrowOnError extends boolean = true>(
-  options: Options<CheckPrerequisitesData, ThrowOnError>,
-): RequestResult<
-  CheckPrerequisitesResponses,
-  CheckPrerequisitesErrors,
-  ThrowOnError
-> =>
-  (options.client ?? client).post<
-    CheckPrerequisitesResponses,
-    CheckPrerequisitesErrors,
-    ThrowOnError
-  >({
-    url: "/api/transcript/check-prereqs",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
 
 /**
  * Parse Transcript Pdf

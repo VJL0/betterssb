@@ -9,7 +9,6 @@ import {
 
 import { client } from "../client.gen";
 import {
-  checkPrerequisites,
   createSeatWatch,
   deleteSeatWatch,
   generateSchedules,
@@ -36,9 +35,6 @@ import {
   searchSections,
 } from "../sdk.gen";
 import type {
-  CheckPrerequisitesData,
-  CheckPrerequisitesError,
-  CheckPrerequisitesResponse,
   CreateSeatWatchData,
   CreateSeatWatchError,
   CreateSeatWatchResponse,
@@ -835,35 +831,6 @@ export const deleteSeatWatchMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await deleteSeatWatch({
-        ...options,
-        ...fnOptions,
-        throwOnError: true,
-      });
-      return data;
-    },
-  };
-  return mutationOptions;
-};
-
-/**
- * Check Prerequisites
- *
- * Check which prerequisite courses have been completed.
- */
-export const checkPrerequisitesMutation = (
-  options?: Partial<Options<CheckPrerequisitesData>>,
-): UseMutationOptions<
-  CheckPrerequisitesResponse,
-  CheckPrerequisitesError,
-  Options<CheckPrerequisitesData>
-> => {
-  const mutationOptions: UseMutationOptions<
-    CheckPrerequisitesResponse,
-    CheckPrerequisitesError,
-    Options<CheckPrerequisitesData>
-  > = {
-    mutationFn: async (fnOptions) => {
-      const { data } = await checkPrerequisites({
         ...options,
         ...fnOptions,
         throwOnError: true,

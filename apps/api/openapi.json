@@ -2425,30 +2425,6 @@
         "title": "PlanYear",
         "type": "object"
       },
-      "PrereqCheckRequest": {
-        "properties": {
-          "completed": {
-            "items": {
-              "$ref": "#/components/schemas/TranscriptCourse"
-            },
-            "title": "Completed",
-            "type": "array"
-          },
-          "required": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Required",
-            "type": "array"
-          }
-        },
-        "required": [
-          "completed",
-          "required"
-        ],
-        "title": "PrereqCheckRequest",
-        "type": "object"
-      },
       "Problem": {
         "description": "RFC 9457 problem details. `detail`, when present, is safe to show users.",
         "properties": {
@@ -3623,44 +3599,6 @@
           "footnotes"
         ],
         "title": "SuggestedPlan",
-        "type": "object"
-      },
-      "TranscriptCourse": {
-        "properties": {
-          "courseNumber": {
-            "title": "Coursenumber",
-            "type": "string"
-          },
-          "credits": {
-            "title": "Credits",
-            "type": "number"
-          },
-          "grade": {
-            "title": "Grade",
-            "type": "string"
-          },
-          "subject": {
-            "title": "Subject",
-            "type": "string"
-          },
-          "term": {
-            "title": "Term",
-            "type": "string"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          }
-        },
-        "required": [
-          "subject",
-          "courseNumber",
-          "title",
-          "grade",
-          "credits",
-          "term"
-        ],
-        "title": "TranscriptCourse",
         "type": "object"
       },
       "TranscriptDiagnostic": {
@@ -5587,62 +5525,6 @@
         "summary": "Delete Seat Watch",
         "tags": [
           "seat-tracker"
-        ]
-      }
-    },
-    "/api/transcript/check-prereqs": {
-      "post": {
-        "description": "Check which prerequisite courses have been completed.",
-        "operationId": "check_prerequisites",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PrereqCheckRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "type": "boolean"
-                  },
-                  "title": "Response Check Prerequisites",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "Check Prerequisites",
-        "tags": [
-          "transcript"
         ]
       }
     },

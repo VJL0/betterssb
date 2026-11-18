@@ -5,7 +5,6 @@
  */
 import { http, HttpResponse } from "msw/http";
 import type {
-  CheckPrerequisitesResponse,
   GenerateSchedulesResponse,
   GetCourseDescriptionResponse,
   GetMeResponse,
@@ -286,10 +285,6 @@ export const handlers = [
   http.post<never, never, GenerateSchedulesResponse>(
     `${API}/schedule/generate`,
     () => HttpResponse.json([]),
-  ),
-  http.post<never, never, CheckPrerequisitesResponse>(
-    `${API}/transcript/check-prereqs`,
-    () => HttpResponse.json({}),
   ),
   http.post<never, never, ParseTranscriptPdfResponse>(
     `${API}/transcript/parse-pdf`,
