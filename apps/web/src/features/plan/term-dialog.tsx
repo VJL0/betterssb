@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState, type SubmitEvent } from "react";
 import {
   TEMPLE_SEASONS,
   splitTempleTerm,
@@ -74,7 +74,7 @@ function TermForm({
   const unchanged = code === editing?.code;
   const alreadyPlanned = !unchanged && taken.has(code);
 
-  function submit(event: FormEvent) {
+  function submit(event: SubmitEvent) {
     event.preventDefault();
     if (alreadyPlanned || unchanged) return;
     onSubmit(code, name);
