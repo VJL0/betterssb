@@ -19,6 +19,7 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
+import { formatDateTime } from "@/lib/relative-time";
 
 const TICK_MS = 1_000;
 
@@ -27,6 +28,8 @@ export type CheckState = "ok" | "warn" | "bad" | "pending";
 export interface ArmCheck {
   label: string;
   state: CheckState;
+  /** Where the student fixes it, when that's a page elsewhere. */
+  href?: string;
 }
 
 const CHECK_ICON = {
@@ -40,23 +43,12 @@ const CHECK_ICON = {
   },
 } as const satisfies Record<CheckState, unknown>;
 
-export function formatRunAt(scheduledRunAt: string): string {
-  return new Date(scheduledRunAt).toLocaleString("en", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-}
-
 interface ArmPanelProps {
   armed: boolean;
   scheduledRunAt: string;
   crnCount: number;
   checks: readonly ArmCheck[];
-  /** Why it can't be armed, or null when it can. */
-  blocker: string | null;
+  canArm: boolean;
   pending: boolean;
   onArm: () => Promise<unknown>;
   onDisarm: () => Promise<unknown>;
@@ -76,20 +68,19 @@ function Countdown({ target }: { target: number }) {
   );
 }
 
-/** W4.1 "now" panel: armed state, time left and the pre-arm checks. */
 export function ArmPanel({
   armed,
   scheduledRunAt,
   crnCount,
   checks,
-  blocker,
+  canArm,
   pending,
   onArm,
   onDisarm,
 }: ArmPanelProps) {
   const [open, setOpen] = useState(false);
   const target = scheduledRunAt ? new Date(scheduledRunAt).getTime() : NaN;
-  const when = scheduledRunAt ? formatRunAt(scheduledRunAt) : null;
+  const when = scheduledRunAt ? formatDateTime(scheduledRunAt) : null;
   const sections = `${crnCount} ${crnCount === 1 ? "CRN" : "CRNs"}`;
 
   async function confirm() {
@@ -117,25 +108,18 @@ export function ArmPanel({
               armed ? "bg-success" : "bg-primary-foreground/50",
             )}
           />
-          {armed ? "Armed" : "Not armed"}
+          {armed ? "On" : "Off"}
         </h2>
         {when && (
           <span className="text-sm text-primary-foreground/80">
-            Submits {when}
+            Registers you {when}
           </span>
         )}
       </div>
 
       {Number.isFinite(target) && <Countdown target={target} />}
 
-      <p className="text-sm text-primary-foreground/80">
-        {armed
-          ? `BetterSSB will submit ${sections} at ${when} and keeps you signed in to Banner until then. Keep Chrome open and the computer awake.`
-          : (blocker ??
-            "Everything is ready. Arm now so the queue goes in the second your window opens.")}
-      </p>
-
-      <ul aria-label="Before arming" className="grid gap-2 sm:grid-cols-2">
+      <ul aria-label="Before turning on" className="grid gap-2 sm:grid-cols-2">
         {checks.map((check) => {
           const { icon: Icon, className, word } = CHECK_ICON[check.state];
           return (
@@ -146,7 +130,18 @@ export function ArmPanel({
               />
               <span>
                 <span className="sr-only">{word}: </span>
-                {check.label}
+                {check.href ? (
+                  <a
+                    href={check.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline underline-offset-2"
+                  >
+                    {check.label}
+                  </a>
+                ) : (
+                  check.label
+                )}
               </span>
             </li>
           );
@@ -163,23 +158,23 @@ export function ArmPanel({
                 armed &&
                   "border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10",
               )}
-              disabled={pending || (!armed && blocker !== null)}
+              disabled={pending || (!armed && !canArm)}
             />
           }
         >
-          {armed ? "Disarm" : "Arm auto-register"}
+          {armed ? "Turn off" : "Turn on auto-register"}
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
               {armed
-                ? "Disarm auto-register?"
-                : `Arm auto-register for ${when}?`}
+                ? "Turn off auto-register?"
+                : `Turn on auto-register for ${when}?`}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {armed
-                ? "Nothing will be submitted. You can arm again any time before your window opens."
-                : `BetterSSB will submit ${sections} at ${when} and keeps you signed in to Banner until then. Keep Chrome open and the computer awake.`}
+                ? "Nothing will be registered unless you turn it on again."
+                : `BetterSSB registers your ${sections} then. Keep Chrome open and the computer awake.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -189,7 +184,7 @@ export function ArmPanel({
               disabled={pending}
               onClick={() => void confirm()}
             >
-              {armed ? "Disarm" : "Arm"}
+              {armed ? "Turn off" : "Turn on"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

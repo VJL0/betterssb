@@ -1,7 +1,5 @@
 import { useId, useState, type RefObject } from "react";
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
   ChevronDownIcon,
   ListPlusIcon,
   LockIcon,
@@ -9,7 +7,6 @@ import {
   XIcon,
 } from "lucide-react";
 import type { ClassSection } from "@workspace/api-client";
-import { moveCrn } from "@workspace/shared/lib/auto-reg-queue";
 import { MAX_QUEUED_CRNS } from "@workspace/shared/lib/bridge";
 import {
   CRN_FORMAT_ERROR,
@@ -17,7 +14,6 @@ import {
   MAX_CRN_LENGTH,
 } from "@workspace/shared/lib/crn";
 import { formatCredits } from "@workspace/shared/lib/dars";
-import type { CrnCheck } from "@workspace/shared/types/auto-reg";
 import type { SSBRegPlanHeader } from "@workspace/shared/types/ssb";
 import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
@@ -31,7 +27,6 @@ import {
 import {
   Empty,
   EmptyContent,
-  EmptyDescription,
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty";
@@ -53,7 +48,10 @@ interface QueueCardProps {
   armed: boolean;
   /** Live sections by CRN, for seats now. */
   sectionsByCrn: ReadonlyMap<string, ClassSection>;
-  checks: readonly CrnCheck[];
+  /** CRNs whose course is still being looked up. */
+  lookingUp: ReadonlySet<string>;
+  /** CRNs Banner has no section for in the term. */
+  notFound: ReadonlySet<string>;
   /** CRNs in the student's plan for this term. */
   planCrns: readonly string[];
   termName: string;
@@ -68,12 +66,13 @@ function withAdded(current: readonly string[], add: readonly string[]) {
   return next.slice(0, MAX_QUEUED_CRNS);
 }
 
-/** W4.1 queue: the CRNs submitted, in order. Read-only while armed. */
+/** Read-only while auto-register is on. */
 export function QueueCard({
   rows,
   armed,
   sectionsByCrn,
-  checks,
+  lookingUp,
+  notFound,
   planCrns,
   termName,
   bannerPlans,
@@ -82,9 +81,6 @@ export function QueueCard({
 }: QueueCardProps) {
   const crns = rows.map((r) => r.crn);
   const credits = queueCredits(rows);
-  const notFound = new Set(
-    checks.filter((c) => c.found === false).map((c) => c.crn),
-  );
   const fromPlan = planCrns.filter((crn) => !crns.includes(crn));
   const plansWithCourses = bannerPlans.filter((p) => p.planCourses.length > 0);
 
@@ -136,13 +132,12 @@ export function QueueCard({
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="queue-heading" className="text-base font-medium">
-          Queue
+          Classes to register
         </h2>
         {rows.length > 0 && (
           <span className="text-muted-foreground tabular-nums">
             {rows.length} {rows.length === 1 ? "CRN" : "CRNs"}
-            {credits > 0 && ` · ${formatCredits(credits)} credit hours`} ·
-            submitted in this order
+            {credits > 0 && ` · ${formatCredits(credits)} credits`}
           </span>
         )}
       </div>
@@ -150,7 +145,7 @@ export function QueueCard({
       {armed && (
         <p className="flex items-center gap-2 rounded-2xl bg-muted/60 px-3 py-2">
           <LockIcon aria-hidden className="size-4 shrink-0" />
-          The queue is locked while armed. Disarm to edit.
+          Turn off auto-register to change your classes.
         </p>
       )}
 
@@ -165,10 +160,7 @@ export function QueueCard({
       {rows.length === 0 ? (
         <Empty className="border border-dashed">
           <EmptyHeader>
-            <EmptyTitle>No sections queued yet</EmptyTitle>
-            <EmptyDescription>
-              Add CRNs from your plan or a Banner plan, or type them in above.
-            </EmptyDescription>
+            <EmptyTitle>No classes added yet</EmptyTitle>
           </EmptyHeader>
           {sources && <EmptyContent>{sources}</EmptyContent>}
         </Empty>
@@ -179,76 +171,41 @@ export function QueueCard({
             <Table className="min-w-160">
               <TableHeader>
                 <TableRow>
-                  <TableHead scope="col">#</TableHead>
                   <TableHead scope="col">Course</TableHead>
                   <TableHead scope="col">CRN</TableHead>
-                  <TableHead scope="col">Meets</TableHead>
-                  <TableHead scope="col">Seats now</TableHead>
+                  <TableHead scope="col">Open seats</TableHead>
                   <TableHead scope="col">
-                    <span className="sr-only">Order and remove</span>
+                    <span className="sr-only">Remove</span>
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rows.map((row, i) => {
+                {rows.map((row) => {
                   const live = sectionsByCrn.get(row.crn);
                   const name = row.code
                     ? `${row.code} ${row.section ?? ""}`.trim()
-                    : `CRN ${row.crn}`;
+                    : (row.title ?? `CRN ${row.crn}`);
                   return (
                     <TableRow key={row.crn}>
-                      <TableCell className="tabular-nums">{i + 1}</TableCell>
                       <TableCell className="whitespace-normal">
-                        {row.code ? (
-                          <span className="flex flex-col">
-                            <span className="font-medium">
-                              {row.code}
-                              {row.section && ` · ${row.section}`}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {row.title}
-                            </span>
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Not in a plan
-                          </span>
-                        )}
+                        <CourseName
+                          row={row}
+                          lookingUp={lookingUp.has(row.crn)}
+                        />
                       </TableCell>
                       <TableCell className="tabular-nums">
                         <span className="flex items-center gap-2">
                           {row.crn}
                           {notFound.has(row.crn) && (
-                            <Badge variant="destructive">Not in Banner</Badge>
+                            <Badge variant="destructive">CRN not found</Badge>
                           )}
                         </span>
-                      </TableCell>
-                      <TableCell className="whitespace-normal">
-                        {row.meets ?? "—"}
                       </TableCell>
                       <TableCell>
                         {live ? <SeatMeter {...live} size="sm" /> : "—"}
                       </TableCell>
                       <TableCell>
-                        <span className="flex justify-end gap-0.5">
-                          <Button
-                            variant="ghost"
-                            size="icon-xs"
-                            aria-label={`Move ${name} up`}
-                            disabled={armed || i === 0}
-                            onClick={() => onChange(moveCrn(crns, i, -1))}
-                          >
-                            <ArrowUpIcon />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon-xs"
-                            aria-label={`Move ${name} down`}
-                            disabled={armed || i === rows.length - 1}
-                            onClick={() => onChange(moveCrn(crns, i, 1))}
-                          >
-                            <ArrowDownIcon />
-                          </Button>
+                        <span className="flex justify-end">
                           <Button
                             variant="ghost"
                             size="icon-xs"
@@ -274,6 +231,31 @@ export function QueueCard({
   );
 }
 
+function CourseName({ row, lookingUp }: { row: QueueRow; lookingUp: boolean }) {
+  if (row.title === null) {
+    return (
+      <span className="text-muted-foreground">
+        {lookingUp ? "Looking up…" : "Unknown course"}
+      </span>
+    );
+  }
+  return (
+    <span className="flex flex-col">
+      {row.code && (
+        <span className="font-medium">
+          {row.code}
+          {row.section && ` · ${row.section}`}
+        </span>
+      )}
+      <span
+        className={row.code ? "text-xs text-muted-foreground" : "font-medium"}
+      >
+        {row.title}
+      </span>
+    </span>
+  );
+}
+
 function AddCrn({
   inputRef,
   crns,
@@ -290,9 +272,9 @@ function AddCrn({
   function add() {
     const crn = value.trim();
     if (!isCrn(crn)) return setError(CRN_FORMAT_ERROR);
-    if (crns.includes(crn)) return setError(`${crn} is already queued.`);
+    if (crns.includes(crn)) return setError(`${crn} is already added.`);
     if (crns.length >= MAX_QUEUED_CRNS) {
-      return setError(`The queue holds up to ${MAX_QUEUED_CRNS} CRNs.`);
+      return setError(`You can add up to ${MAX_QUEUED_CRNS} CRNs.`);
     }
     setError(null);
     setValue("");
