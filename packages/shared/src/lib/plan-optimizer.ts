@@ -1,5 +1,5 @@
 /**
- * "Optimize plan": places what the audit still needs into the student's
+ * "Auto-fill plan": places what the audit still needs into the student's
  * terms. A course goes after the courses it needs first, and among the
  * courses ready for a term the student's priority comes first, then the
  * courses that hold up the longest chain of others, then those that unlock
@@ -13,7 +13,7 @@ import type {
 } from "../types/store";
 import type { NeededPart, NeededRequirement } from "./dars";
 import { addCourse, courseKey, emptyPlan, splitCourseCode } from "./plan";
-import { entryCredits, termEntries } from "./planner";
+import { entryCredits, plannedTermByCourse, termEntries } from "./planner";
 import { nextTerms, splitTempleTerm, templeTermName } from "./terms";
 
 export const DEFAULT_PLAN_PREFERENCES: Omit<PlanPreferences, "updatedAt"> = {
@@ -82,9 +82,8 @@ export interface CatalogCourse {
 export interface OptimizeInput {
   /** Requirements the audit still needs and no term has yet. */
   requirements: readonly NeededRequirement[];
-  /** Every term's plan. */
   plans: readonly TermPlan[];
-  /** The first term that can take courses, a Temple term code. */
+  /** The first term that can take courses, as a Banner term code. */
   firstTerm: string;
   /** A course's Bulletin entry, or null when it isn't known (yet). */
   catalog: (code: string) => CatalogCourse | null;
@@ -171,17 +170,6 @@ function slotCredits(part: PlanPart): number[] {
     slots.push(Math.min(DEFAULT_COURSE_CREDITS, left));
   }
   return slots;
-}
-
-/** Each planned course's term, by course key. */
-function plannedTerms(plans: readonly TermPlan[]): Map<string, string> {
-  const terms = new Map<string, string>();
-  for (const plan of plans) {
-    for (const entry of termEntries(plan)) {
-      if (entry.code && !terms.has(entry.key)) terms.set(entry.key, plan.term);
-    }
-  }
-  return terms;
 }
 
 type Candidate = Omit<
@@ -316,7 +304,7 @@ function courseLevel(course: OptimizerCourse): number {
 
 /** The courses an optimizer run places, ranked, before any term is chosen. */
 export function optimizerCourses(input: OptimizeInput): OptimizerCourse[] {
-  const planned = plannedTerms(input.plans);
+  const planned = plannedTermByCourse(input.plans);
   const unavailable = new Set([...input.completed, ...planned.keys()]);
   const candidates = input.requirements
     .filter((r) => input.preferences.priorities[r.code] !== "skip")

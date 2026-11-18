@@ -4,7 +4,6 @@ import {
   countdown,
   crnLookupResult,
   isAutoRegSnapshot,
-  moveCrn,
 } from "./auto-reg-queue";
 
 const NOW = new Date("2026-10-17T12:00:00").getTime();
@@ -22,10 +21,10 @@ describe("armProblem", () => {
   it.each([
     [{ ...queue, term: "" }, "Choose a term."],
     [{ ...queue, crns: [] }, "Add at least one CRN."],
-    [{ ...queue, scheduledRunAt: "" }, "Set when to submit."],
+    [{ ...queue, scheduledRunAt: "" }, "Set your registration time."],
     [
       { ...queue, scheduledRunAt: "2026-10-01T07:00" },
-      "The submit time has passed. Pick a time ahead.",
+      "That time has passed. Pick a later one.",
     ],
   ])("explains what's missing", (q, problem) => {
     expect(armProblem(q, NOW)).toBe(problem);
@@ -34,21 +33,26 @@ describe("armProblem", () => {
 
 describe("crnLookupResult", () => {
   it("reads found and not found", () => {
+    // Banner's answer for CRN 31752 (data/ssb/Register for classes Fall 2026.har).
     expect(
-      crnLookupResult("41207", {
+      crnLookupResult({
+        subject: "CIS",
+        courseTitle: "Foundations of Machine Learning",
+        sequenceNumber: "001",
+        courseNumber: "4526",
+        responseDisplay: "Foundations of Machine Learning CIS 4526, 001",
+        olr: false,
+        projectionError: false,
         success: true,
-        model: { courseReferenceNumber: "41207" },
       }),
     ).toBe(true);
-    expect(crnLookupResult("41207", { courseReferenceNumber: 41207 })).toBe(
-      true,
-    );
-    expect(crnLookupResult("41207", { success: false })).toBe(false);
+    expect(crnLookupResult({ success: false })).toBe(false);
   });
 
   it("is null when the answer is unreadable", () => {
-    expect(crnLookupResult("41207", "<html>")).toBeNull();
-    expect(crnLookupResult("41207", {})).toBeNull();
+    expect(crnLookupResult("<html>")).toBeNull();
+    expect(crnLookupResult({})).toBeNull();
+    expect(crnLookupResult({ success: true })).toBeNull();
   });
 });
 
@@ -58,13 +62,6 @@ describe("countdown", () => {
     expect(countdown(target, NOW)).toBe("28d 14h 06m 12s");
     expect(countdown(NOW + 65_000, NOW)).toBe("0h 01m 05s");
     expect(countdown(NOW, NOW)).toBeNull();
-  });
-});
-
-describe("moveCrn", () => {
-  it("moves within bounds only", () => {
-    expect(moveCrn(["a", "b", "c"], 2, -1)).toEqual(["a", "c", "b"]);
-    expect(moveCrn(["a", "b"], 0, -1)).toEqual(["a", "b"]);
   });
 });
 

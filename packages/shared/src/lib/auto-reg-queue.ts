@@ -15,24 +15,23 @@ const SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
 export function armProblem(queue: AutoRegQueue, now: number): string | null {
   if (!queue.term) return "Choose a term.";
   if (queue.crns.length === 0) return "Add at least one CRN.";
-  if (!queue.scheduledRunAt) return "Set when to submit.";
+  if (!queue.scheduledRunAt) return "Set your registration time.";
   const at = new Date(queue.scheduledRunAt).getTime();
-  if (!Number.isFinite(at)) return "Set when to submit.";
-  if (at <= now) return "The submit time has passed. Pick a time ahead.";
+  if (!Number.isFinite(at)) return "Set your registration time.";
+  if (at <= now) return "That time has passed. Pick a later one.";
   return null;
 }
 
 /**
- * Whether Banner's section-by-CRN lookup found `crn`. Banner answers
- * `{ success: false }` for an unknown CRN; an answer this can't read is null
- * rather than a guess.
+ * Whether Banner's section-by-CRN lookup found the CRN. Banner answers the
+ * section's course (`{ courseTitle, subject, …, success: true }`) or
+ * `{ success: false }`; an answer this can't read is null rather than a guess.
  */
-export function crnLookupResult(crn: string, answer: unknown): boolean | null {
+export function crnLookupResult(answer: unknown): boolean | null {
   if (!isRecord(answer)) return null;
   if (answer.success === false) return false;
-  const section = isRecord(answer.model) ? answer.model : answer;
-  if ("courseReferenceNumber" in section) {
-    return String(section.courseReferenceNumber) === crn;
+  if (answer.success === true && typeof answer.courseTitle === "string") {
+    return true;
   }
   return null;
 }
@@ -50,21 +49,6 @@ export function countdown(target: number, now: number): string | null {
   return days > 0 ? `${days}d ${time}` : time;
 }
 
-/** Moves the CRN at `from` by `by` places, staying in bounds. */
-export function moveCrn(
-  crns: readonly string[],
-  from: number,
-  by: number,
-): string[] {
-  const to = from + by;
-  if (to < 0 || to >= crns.length) return [...crns];
-  const next = [...crns];
-  const [crn] = next.splice(from, 1);
-  next.splice(to, 0, crn!);
-  return next;
-}
-
-/** Whether the extension's AUTOREG_GET reply is a snapshot of the queue. */
 export function isAutoRegSnapshot(value: unknown): value is AutoRegSnapshot {
   return (
     isRecord(value) &&

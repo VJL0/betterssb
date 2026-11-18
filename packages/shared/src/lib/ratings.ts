@@ -1,10 +1,10 @@
 import type { RmpRating } from "@workspace/api-client";
 import { instructorSearchName } from "./instructors";
 
-export const HIGH_RATING_MIN = 4;
+const HIGH_RATING_MIN = 4;
 /** Temple University's main campus on Rate My Professors. */
 const TEMPLE_RMP_SCHOOL_ID = 999;
-export const MID_RATING_MIN = 3;
+const MID_RATING_MIN = 3;
 
 /** Rate My Professors score bands from the design: 4.0+, 3.0–3.9, under 3.0, no profile. */
 export type RatingBand = "high" | "mid" | "low" | "none";

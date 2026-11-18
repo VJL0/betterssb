@@ -1,7 +1,5 @@
 import { isRecord } from "./guards";
 
-// ── Types matching the real Banner submitRegistration/batch response ─────────
-
 export interface BatchMessage {
   message: string;
   type: "success" | "error" | string;
@@ -29,20 +27,15 @@ export interface BatchUpdateItem {
   messageType: string | null;
 }
 
-// ── Staging (addCRNRegistrationItems) failure record ────────────────────────
-
 export interface StagingFailure {
   crn: string;
   message: string;
 }
 
-/** What the background's registration submit returns. */
 export interface ExecuteRegistrationResult {
   stagingFailures: StagingFailure[];
   batchResponse: unknown;
 }
-
-// ── Type guards for data from Banner and storage ────────────────────────────
 
 function isBatchUpdateItem(value: unknown): value is BatchUpdateItem {
   return (
@@ -67,8 +60,6 @@ function batchHours(
   return typeof hours === "string" ? hours : null;
 }
 
-// ── Per-CRN result line for the UI ──────────────────────────────────────────
-
 export type CrnOutcome = "registered" | "waitlisted" | "failed";
 
 /** The badge each outcome shows; tones match `StatusTone` in @workspace/ui. */
@@ -85,8 +76,6 @@ export interface CrnResultLine {
   detail: string;
 }
 
-// ── Full result record persisted to storage ─────────────────────────────────
-
 export interface AutoRegBatchResultRecord {
   at: string;
   ok: boolean;
@@ -100,8 +89,6 @@ export interface AutoRegBatchResultRecord {
   summary: string;
   error?: string;
 }
-
-// ── Builder ─────────────────────────────────────────────────────────────────
 
 /** Banner's `statusIndicator` for rows that got a seat or a waitlist spot. */
 const OUTCOME_BY_STATUS_INDICATOR: Record<string, CrnOutcome> = {
@@ -286,7 +273,6 @@ function isCrnResultLine(value: unknown): value is CrnResultLine {
   );
 }
 
-/** Whether a stored or relayed value is a run's result record. */
 export function isResultRecord(
   value: unknown,
 ): value is AutoRegBatchResultRecord {

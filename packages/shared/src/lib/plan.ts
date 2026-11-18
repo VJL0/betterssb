@@ -49,6 +49,16 @@ export function splitCourseCode(
   };
 }
 
+/** The subjects of these course codes, most-named first; ties keep their first order. */
+export function subjectsByFrequency(codes: readonly string[]): string[] {
+  const counts = new Map<string, number>();
+  for (const code of codes) {
+    const subject = splitCourseCode(code)?.subject;
+    if (subject) counts.set(subject, (counts.get(subject) ?? 0) + 1);
+  }
+  return [...counts].sort((a, b) => b[1] - a[1]).map(([subject]) => subject);
+}
+
 function toMinutes(time: string | null): number | null {
   if (!time) return null;
   const minutes = parseClockTime(time);

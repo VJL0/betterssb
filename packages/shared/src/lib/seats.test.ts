@@ -36,7 +36,7 @@ describe("seatStatus", () => {
       seatStatus(counts({ waitCount: 4, waitAvailable: 6 })),
     ).toMatchObject({
       tone: "destructive",
-      label: "Full · waitlist 4/10",
+      label: "Full · 4 of 10 waitlisted",
       enrolled: 40,
     });
   });

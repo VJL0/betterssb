@@ -11,15 +11,12 @@ import type { CreditTotals } from "./dars";
 export const PART_TIME_BELOW = 12;
 export const APPROVAL_ABOVE = 18;
 
-export interface TermEntry {
+export interface TermEntry extends Pick<
+  PlannedCourse,
+  "code" | "title" | "credits" | "requirement"
+> {
   /** The course key ("CIS2168"), or a placeholder's id. */
   key: string;
-  /** "CIS 2168", or null for a placeholder like "CIS elective". */
-  code: string | null;
-  title: string;
-  credits: number | null;
-  /** The audit requirement it fills, if any. */
-  requirement: string | null;
   /** True when it has sections in the plan, not only a course entry. */
   scheduled: boolean;
 }
@@ -59,6 +56,21 @@ export function termEntries(plan: TermPlan): TermEntry[] {
     });
   }
   return [...entries.values()];
+}
+
+/** The first term each planned course is in, by course key, named by `label`. */
+export function plannedTermByCourse(
+  plans: readonly TermPlan[],
+  label: (plan: TermPlan) => string = (plan) => plan.term,
+): Map<string, string> {
+  const terms = new Map<string, string>();
+  for (const plan of plans) {
+    for (const entry of termEntries(plan)) {
+      if (entry.code && !terms.has(entry.key))
+        terms.set(entry.key, label(plan));
+    }
+  }
+  return terms;
 }
 
 /** Whether a term already has a course, planned or with sections. */

@@ -39,7 +39,7 @@ export function isSupportScheduleType(scheduleType: string): boolean {
   return SUPPORT_SCHEDULE_TYPE.test(scheduleType);
 }
 
-/** Banner meeting days as one letter each, in week order (R = Thursday, U = Sunday). */
+/** A meeting time's days as Banner writes them, e.g. "TR". */
 export function meetingTimeToDays(mt: DayFlags): string {
   let days = "";
   if (mt.monday) days += "M";

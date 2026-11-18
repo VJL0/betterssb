@@ -18,7 +18,7 @@ export const DAY_NAMES: Record<WeekDay, string> = {
   U: "Sunday",
 };
 
-/** Day letters of a Banner days string ("TR"), in week order, ignoring unknown letters. */
+/** The week days in Banner days like "TR", in order; unknown letters are skipped. */
 export function parseDays(days: string): WeekDay[] {
   const present = new Set(days.toUpperCase().split(""));
   return WEEK_DAYS.filter((d) => present.has(d));

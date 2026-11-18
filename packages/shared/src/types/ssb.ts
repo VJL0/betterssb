@@ -3,16 +3,12 @@
  * Derived from HAR capture of prd-xereg.temple.edu.
  */
 
-// ── Terms ───────────────────────────────────────────────────
-
 export interface SSBCodeDescription {
   code: string;
   description: string;
 }
 
 export type SSBTerm = SSBCodeDescription;
-
-// ── Section / search results ────────────────────────────────────────────────
 
 export interface SSBFaculty {
   bannerId: string;
@@ -93,15 +89,11 @@ export interface SSBSection {
   sectionAttributes: { code: string; description: string }[];
 }
 
-// ── Plan Ahead ──────────────────────────────────────────────────────────────
-
 export interface SSBPlanAction {
   description: string;
   isDeleteAction: boolean;
   planCourseStatus: string;
 }
-
-// ── Class Registration (Register / Add-Drop) ────────────────────────────────
 
 export interface SSBRegPlanCourse {
   activeIndicator: boolean;
@@ -175,13 +167,7 @@ export interface SSBAddCRNRegistrationResponse {
   anyAuthorizationRequired: unknown[];
 }
 
-/**
- * Payload for POST /classRegistration/submitRegistration/batch.
- *
- * The `update` array holds the full RegistrationTemporaryView model objects
- * returned by `addCRNRegistrationItems`.
- * The client passes these through opaquely.
- */
+/** `update` carries the models `addCRNRegistrationItems` returned, unchanged. */
 export interface SSBSubmitRegistrationBatchPayload {
   create: unknown[];
   update: unknown[];
