@@ -34,6 +34,9 @@ import type {
   GetProgramRequirementsData,
   GetProgramRequirementsErrors,
   GetProgramRequirementsResponses,
+  GetSectionData,
+  GetSectionErrors,
+  GetSectionResponses,
   InspectTranscriptPdfData,
   InspectTranscriptPdfErrors,
   InspectTranscriptPdfResponses,
@@ -204,6 +207,20 @@ export const searchSections = <ThrowOnError extends boolean = true>(
     SearchSectionsErrors,
     ThrowOnError
   >({ url: "/api/classes/search", ...options });
+
+/**
+ * Get Section
+ *
+ * The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.
+ */
+export const getSection = <ThrowOnError extends boolean = true>(
+  options: Options<GetSectionData, ThrowOnError>,
+): RequestResult<GetSectionResponses, GetSectionErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    GetSectionResponses,
+    GetSectionErrors,
+    ThrowOnError
+  >({ url: "/api/classes/sections/{crn}", ...options });
 
 /**
  * List Subjects

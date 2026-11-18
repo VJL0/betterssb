@@ -16,6 +16,7 @@ import {
   getCourseDescription,
   getMe,
   getProgramRequirements,
+  getSection,
   inspectTranscriptPdf,
   listAttributes,
   listBulletinPrograms,
@@ -56,6 +57,9 @@ import type {
   GetProgramRequirementsData,
   GetProgramRequirementsError,
   GetProgramRequirementsResponse,
+  GetSectionData,
+  GetSectionError,
+  GetSectionResponse,
   InspectTranscriptPdfData,
   InspectTranscriptPdfError,
   InspectTranscriptPdfResponse,
@@ -400,6 +404,33 @@ export const searchSectionsInfiniteOptions = (
   );
   return opts as Omit<typeof opts, "initialData">;
 };
+
+export const getSectionQueryKey = (options: Options<GetSectionData>) =>
+  createQueryKey("getSection", options);
+
+/**
+ * Get Section
+ *
+ * The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.
+ */
+export const getSectionOptions = (options: Options<GetSectionData>) =>
+  queryOptions<
+    GetSectionResponse,
+    GetSectionError,
+    GetSectionResponse,
+    ReturnType<typeof getSectionQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getSection({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getSectionQueryKey(options),
+  });
 
 export const listSubjectsQueryKey = (options: Options<ListSubjectsData>) =>
   createQueryKey("listSubjects", options);
