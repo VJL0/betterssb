@@ -299,9 +299,8 @@ function ConfirmButton({
       toast.error(
         err instanceof Error ? err.message : "That didn't work. Try again.",
       );
-    } finally {
-      setPending(false);
     }
+    setPending(false);
   }
 
   return (

@@ -315,6 +315,10 @@ interface AttributeChecklistProps {
   scrolls?: boolean;
 }
 
+function descriptionOf(attribute: CodeDescription): string {
+  return attribute.description;
+}
+
 /** Banner attributes to check; sections need any one checked code. */
 function AttributeChecklist({
   legend,
@@ -322,7 +326,7 @@ function AttributeChecklist({
   attributes,
   checked,
   onChange,
-  label = (attribute) => attribute.description,
+  label = descriptionOf,
   scrolls = false,
 }: AttributeChecklistProps) {
   const ids = useId();

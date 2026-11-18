@@ -3,7 +3,7 @@ import type { UIMessage } from "ai";
 import type { ChatRequest } from "@workspace/api-client";
 import { Chat, useChat } from "@ai-sdk/react";
 import { threadTitle } from "@workspace/shared/lib/advisor-context";
-import type { AdvisorThread } from "@workspace/shared/types/store";
+import type { AdvisorThread, LocalStore } from "@workspace/shared/types/store";
 import { useStoreDocument, useStoreState } from "@/lib/store/store-context";
 import {
   advisorTransport,
@@ -14,6 +14,24 @@ import {
 
 const NO_THREADS: AdvisorThread[] = [];
 type SaveStatus = "saving" | "unsaved" | null;
+
+/**
+ * Puts `thread` first among the saved ones. Rereads the list first, since
+ * another tab may have saved since, and skips the write once `isStale`.
+ */
+async function storeThread(
+  store: LocalStore | null,
+  thread: AdvisorThread,
+  isStale: () => boolean,
+) {
+  if (!store) throw new Error("Storage unavailable");
+  const latest = (await store.get("advisorThreads")) ?? [];
+  if (isStale()) return;
+  await store.set("advisorThreads", [
+    thread,
+    ...latest.filter((item) => item.id !== thread.id),
+  ]);
+}
 
 /** AI SDK owns active messages and requests; completed conversations live in our local store. */
 export function useAdvisor() {
@@ -65,27 +83,25 @@ export function useAdvisor() {
   }
 
   async function save(thread: AdvisorThread, owner: Chat<UIMessage>) {
-    if (active.current !== owner || !mounted.current) return;
+    const isStale = () => active.current !== owner || !mounted.current;
+    if (isStale()) return;
     setSaveStatus("saving");
-    try {
-      if (storage.status !== "ready") throw new Error("Storage unavailable");
-      const latest = (await storage.opened.store.get("advisorThreads")) ?? [];
-      if (active.current !== owner || !mounted.current) return;
-      await storage.opened.store.set("advisorThreads", [
-        thread,
-        ...latest.filter((item) => item.id !== thread.id),
-      ]);
-      if (active.current !== owner || !mounted.current) return;
-      unsaved.current = null;
-      setSelected(thread.id);
-      setQuestion(null);
-      setSaveStatus(null);
-      setLocalError(null);
-    } catch {
-      if (active.current !== owner || !mounted.current) return;
+    const store = storage.status === "ready" ? storage.opened.store : null;
+    const saved = await storeThread(store, thread, isStale).then(
+      () => true,
+      () => false,
+    );
+    if (isStale()) return;
+    if (!saved) {
       setSaveStatus("unsaved");
       setLocalError(new Error("Your reply is ready, but couldn't be saved."));
+      return;
     }
+    unsaved.current = null;
+    setSelected(thread.id);
+    setQuestion(null);
+    setSaveStatus(null);
+    setLocalError(null);
   }
 
   function send(

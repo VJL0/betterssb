@@ -28,7 +28,7 @@ interface CourseRowProps {
 /** A course in the side panel: drag it onto a term, or add it to the chosen one. */
 export function CourseRow({
   course,
-  name = course.code ?? course.title,
+  name,
   subtitle,
   credits,
   status,
@@ -36,10 +36,11 @@ export function CourseRow({
   onAdd,
   details,
 }: CourseRowProps) {
+  const rowName = name ?? course.code ?? course.title;
   const detailsId = useId();
   const [open, setOpen] = useState(false);
   const { setNodeRef, setActivatorNodeRef, attributes, listeners, isDragging } =
-    useCourseDrag({ kind: "course", course }, name);
+    useCourseDrag({ kind: "course", course }, rowName);
 
   return (
     <li
@@ -54,11 +55,11 @@ export function CourseRow({
         <DragHandle
           setActivatorNodeRef={setActivatorNodeRef}
           attributes={attributes}
-          label={`Move ${name} to a term`}
+          label={`Move ${rowName} to a term`}
         />
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="flex items-baseline justify-between gap-2">
-            <span className="font-medium">{name}</span>
+            <span className="font-medium">{rowName}</span>
             {credits && (
               <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
                 {credits}
@@ -80,7 +81,7 @@ export function CourseRow({
             size="icon-xs"
             aria-expanded={open}
             aria-controls={detailsId}
-            aria-label={`About ${name}`}
+            aria-label={`About ${rowName}`}
             onClick={() => setOpen(!open)}
           >
             <ChevronDownIcon className={cn(open && "rotate-180")} />
@@ -90,7 +91,7 @@ export function CourseRow({
           variant="outline"
           size="icon-xs"
           disabled={!targetName}
-          aria-label={`Add ${name} to ${targetName ?? "a term"}`}
+          aria-label={`Add ${rowName} to ${targetName ?? "a term"}`}
           onClick={onAdd}
         >
           <PlusIcon />

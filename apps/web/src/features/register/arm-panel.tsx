@@ -83,12 +83,8 @@ export function ArmPanel({
   const when = scheduledRunAt ? formatDateTime(scheduledRunAt) : null;
   const sections = `${crnCount} ${crnCount === 1 ? "CRN" : "CRNs"}`;
 
-  async function confirm() {
-    try {
-      await (armed ? onDisarm() : onArm());
-    } finally {
-      setOpen(false);
-    }
+  function confirm() {
+    return (armed ? onDisarm() : onArm()).finally(() => setOpen(false));
   }
 
   return (
