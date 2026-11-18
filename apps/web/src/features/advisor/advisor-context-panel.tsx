@@ -19,7 +19,7 @@ export interface ContextSource {
   on: boolean;
 }
 
-/** W3.3 aside: which of the student's records go with each question. */
+/** Which of the student's records go with each question. */
 export function AdvisorContextPanel({
   sources,
   onToggle,
@@ -34,15 +34,9 @@ export function AdvisorContextPanel({
       className="gap-4 p-4"
       render={<aside />}
     >
-      <div className="flex flex-col gap-0.5">
-        <h2 id={`${ids}-heading`} className="text-base font-medium">
-          What the advisor sees
-        </h2>
-        <p className="text-muted-foreground">
-          What's on is sent with each question. Turn off anything you don't want
-          used.
-        </p>
-      </div>
+      <h2 id={`${ids}-heading`} className="text-base font-medium">
+        What the advisor sees
+      </h2>
       {sources.map((source) => (
         <Field key={source.id} orientation="horizontal">
           <FieldContent>
@@ -60,8 +54,7 @@ export function AdvisorContextPanel({
         </Field>
       ))}
       <p className="text-xs text-muted-foreground">
-        BetterSSB isn't your official advisor. Check degree decisions with your
-        college's advising office.
+        This isn't your academic advisor. Check big decisions with them.
       </p>
     </Card>
   );

@@ -24,7 +24,6 @@ export function setTestUrl(path: string): void {
   listeners.forEach((listener) => listener());
 }
 
-/** The path the page is on now. */
 export function testPathname(): string {
   return current.pathname;
 }

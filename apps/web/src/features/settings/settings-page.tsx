@@ -63,7 +63,7 @@ function SettingsSection({
   );
 }
 
-/** W4.2 · Settings. Guest-only until account sync exists. */
+/** Guest-only until account sync exists. */
 export function SettingsPage() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
@@ -89,7 +89,6 @@ function TermSection() {
   );
 }
 
-/** Only the shortcuts that exist; the rest of the DS6 keyboard map comes later. */
 const SHORTCUTS = [
   { keys: ["/"], action: "Jump to course search" },
   { keys: ["J", "K"], action: "Next / previous search result" },

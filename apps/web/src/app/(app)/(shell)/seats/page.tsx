@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import { NOT_INDEXED } from "@/lib/metadata";
 import { SeatTrackerPage } from "@/features/seat-tracker/seat-tracker-page";
 
 export const metadata: Metadata = {
   title: "Seat tracker",
-  // Shows the student's own watched sections, so there's nothing here to index.
-  robots: { index: false },
+  robots: NOT_INDEXED,
 };
 
 export default SeatTrackerPage;

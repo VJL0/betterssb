@@ -92,7 +92,9 @@ describe("SeatTrackerPage", () => {
         "Computer & Information Science 3441-702 · CRN 50067",
       ),
     ).toBeTruthy();
-    expect(within(tracker).getByText("Full · waitlist 15/100")).toBeTruthy();
+    expect(
+      within(tracker).getByText("Full · 15 of 100 waitlisted"),
+    ).toBeTruthy();
   });
 
   it("watches a CRN in the current term", async () => {

@@ -31,7 +31,7 @@ export interface AppPage {
   ready: boolean;
 }
 
-/** Every page, in top bar order (WHeader), group by group. */
+/** Every page, in top bar order, group by group. */
 export const APP_PAGES: readonly AppPage[] = [
   {
     id: "search",

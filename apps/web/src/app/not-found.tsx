@@ -1,6 +1,5 @@
 import { CompassIcon } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   Empty,
   EmptyContent,
@@ -9,7 +8,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty";
-import { Logo } from "@workspace/ui/components/logo";
+import { StandaloneHeader } from "@/components/standalone-header";
 import { ButtonLink } from "@/components/button-link";
 import { firstReadyPath } from "@/components/shell/pages";
 
@@ -22,14 +21,7 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <div className="min-h-dvh bg-sidebar text-sm text-foreground">
-      <header className="mx-auto flex min-h-18 max-w-5xl items-center px-4 sm:px-8">
-        <Link
-          href="/"
-          className="rounded-2xl focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none"
-        >
-          <Logo />
-        </Link>
-      </header>
+      <StandaloneHeader />
       <main className="px-4 py-12">
         <Empty>
           <EmptyHeader>

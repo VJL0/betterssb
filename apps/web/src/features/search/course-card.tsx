@@ -1,3 +1,4 @@
+import { creditsLabel } from "@workspace/shared/lib/dars";
 import { CheckIcon, PlusIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { shortInstructorName } from "@workspace/shared/lib/instructors";
@@ -149,7 +150,6 @@ function PlanButton({
   );
 }
 
-/** One course from the search, with its sections as a table (stacked rows on phones). */
 export function CourseCard({
   sections,
   plan,
@@ -188,7 +188,7 @@ export function CourseCard({
         </h3>
         {credits != null && (
           <span className="text-muted-foreground tabular-nums">
-            {credits} cr
+            {creditsLabel(credits)}
           </span>
         )}
       </header>

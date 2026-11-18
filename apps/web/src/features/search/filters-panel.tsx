@@ -83,7 +83,6 @@ export function FiltersPanel({
       <Field orientation="horizontal">
         <FieldContent>
           <FieldLabel htmlFor={`${ids}-open`}>Open sections only</FieldLabel>
-          <FieldDescription>Hide full and closed</FieldDescription>
         </FieldContent>
         <Switch
           id={`${ids}-open`}
@@ -203,7 +202,7 @@ export function FiltersPanel({
         )}
       </FilterGroup>
 
-      <FilterGroup title="Where and how">
+      <FilterGroup title="Campus and format">
         <FieldSet className="gap-2">
           <FieldLegend variant="label" className="mb-1">
             Format
@@ -212,7 +211,6 @@ export function FiltersPanel({
             multiple
             variant="outline"
             spacing={1}
-            aria-describedby={`${ids}-format-help`}
             value={filters.formats}
             onValueChange={(formats) => set({ formats: formats as Format[] })}
             className="grid w-full grid-cols-2"
@@ -227,9 +225,6 @@ export function FiltersPanel({
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
-          <FieldDescription id={`${ids}-format-help`}>
-            Async classes have no scheduled meetings.
-          </FieldDescription>
         </FieldSet>
 
         <OptionSelect
@@ -287,7 +282,6 @@ export function FiltersPanel({
   );
 }
 
-/** A titled run of related filters, ruled off from the one above. */
 function FilterGroup({
   title,
   children,
@@ -318,7 +312,6 @@ interface AttributeChecklistProps {
   checked: string[];
   onChange: (checked: string[]) => void;
   label?: (attribute: CodeDescription) => string;
-  /** Cap the list's height, for long lists. */
   scrolls?: boolean;
 }
 
@@ -383,7 +376,6 @@ interface ScoreSliderProps {
   fill: "start" | "end";
   /** True when it filters nothing, so the track stays plain. */
   isAny: boolean;
-  /** Captions under the track's two ends. */
   ends: [string, string];
   valueText: (value: number) => string;
   onChange: (value: number) => void;

@@ -12,7 +12,7 @@ export const FORMATS = {
   inPerson: { label: "In person", methods: ["CLAS", "LAB", "STDO", "CBL"] },
   hybrid: { label: "Hybrid", methods: ["HYBR", "HYB2"] },
   live: { label: "Live online", methods: ["VIRT", "VRT2", "VIDEO"] },
-  async: { label: "Async online", methods: ["OLL"] },
+  async: { label: "Self-paced", methods: ["OLL"] },
 } as const;
 export type Format = keyof typeof FORMATS;
 

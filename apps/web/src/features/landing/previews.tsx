@@ -1,3 +1,4 @@
+import { creditsLabel } from "@workspace/shared/lib/dars";
 import type { ReactNode } from "react";
 import { Card } from "@workspace/ui/components/card";
 import { CourseBadge } from "@workspace/ui/components/course-badge";
@@ -57,7 +58,7 @@ export function SearchPreview() {
         <CourseBadge code={SAMPLE_COURSE.code} />
         <span className="font-medium">{SAMPLE_COURSE.title}</span>
         <span className="text-muted-foreground">
-          {SAMPLE_COURSE.credits} cr
+          {creditsLabel(SAMPLE_COURSE.credits)}
         </span>
       </div>
       <ul className="flex flex-col divide-y divide-border">
@@ -102,7 +103,9 @@ export function PlannerPreview() {
           <h4 className="flex justify-between font-medium">
             {term.name}
             <span className="text-muted-foreground tabular-nums">
-              {term.courses.reduce((sum, c) => sum + c.credits, 0)} cr
+              {creditsLabel(
+                term.courses.reduce((sum, c) => sum + c.credits, 0),
+              )}
             </span>
           </h4>
           <ul className="flex flex-col gap-2">
@@ -110,7 +113,7 @@ export function PlannerPreview() {
               <li key={c.code} className="flex items-center justify-between">
                 <CourseBadge code={c.code} color={c.color} />
                 <span className="text-muted-foreground tabular-nums">
-                  {c.credits} cr
+                  {creditsLabel(c.credits)}
                 </span>
               </li>
             ))}
@@ -162,7 +165,7 @@ export function RegisterPreview() {
     <div className="flex flex-col gap-3 text-sm">
       <div className="flex flex-col gap-1 rounded-2xl bg-primary p-4 text-primary-foreground">
         <span className="text-xs font-medium">
-          Armed · submits Nov 14 at 7:00:00 AM
+          On · registers you Nov 14 at 7:00:00 AM
         </span>
         <span className="text-3xl font-medium tabular-nums">28d 14h 06m</span>
       </div>

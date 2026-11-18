@@ -91,7 +91,6 @@ function statsFor(
   ];
 }
 
-/** The chosen schedule: a week, a day-by-day list, or a side-by-side comparison. */
 export function SelectedSchedule({
   option,
   index,
@@ -168,7 +167,7 @@ export function SelectedSchedule({
         </dl>
 
         <TabsContent value="week" className="flex flex-col gap-3">
-          {/* Phones get one day at a time (W-Mobile); the week needs 640px. */}
+          {/* Phones get one day at a time; the week needs 640px. */}
           <DayAgenda className="sm:hidden" blocks={blocks} days={WEEKDAYS} />
           <WeekCalendar
             aria-label={`Schedule ${index + 1} week`}

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import { NOT_INDEXED } from "@/lib/metadata";
 import { SchedulePage } from "@/features/schedule/schedule-page";
 
 export const metadata: Metadata = {
   title: "Schedule builder",
-  // Shows the student's own saved data, so there's nothing here to index.
-  robots: { index: false },
+  robots: NOT_INDEXED,
 };
 
 export default SchedulePage;

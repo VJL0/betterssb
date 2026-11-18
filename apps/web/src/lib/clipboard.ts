@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 
-/** Copies text and says whether it worked; some browsers block clipboard access. */
+/** Copies text and shows a toast either way; some browsers block clipboard access. */
 export async function copyText(text: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);

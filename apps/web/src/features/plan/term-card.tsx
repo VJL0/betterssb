@@ -15,7 +15,7 @@ import {
   termEntries,
   type TermEntry,
 } from "@workspace/shared/lib/planner";
-import { formatCredits } from "@workspace/shared/lib/dars";
+import { creditsLabel } from "@workspace/shared/lib/dars";
 import type { TermPlan } from "@workspace/shared/types/store";
 import { Card } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
@@ -62,7 +62,7 @@ function loadNote(
 ): { text: string; className: string } {
   if (credits > APPROVAL_ABOVE) {
     return {
-      text: `Over ${APPROVAL_ABOVE} cr needs approval`,
+      text: `Over ${creditsLabel(APPROVAL_ABOVE)} needs approval`,
       className: "text-destructive",
     };
   }
@@ -71,14 +71,13 @@ function loadNote(
   }
   if (credits > 0 && credits < PART_TIME_BELOW) {
     return {
-      text: `Under ${PART_TIME_BELOW} cr is part-time`,
+      text: `Under ${creditsLabel(PART_TIME_BELOW)} is part-time`,
       className: "text-warning",
     };
   }
   return { text: "", className: "" };
 }
 
-/** One term in the planner: its courses, credit load and an add target. */
 export function TermCard({
   plan,
   status,
@@ -119,7 +118,7 @@ export function TermCard({
                 credits > APPROVAL_ABOVE && "text-destructive",
               )}
             >
-              {formatCredits(credits)} cr
+              {creditsLabel(credits)}
             </span>
             {!readOnly && (
               <DropdownMenu>
@@ -206,7 +205,6 @@ interface TermEntryItemProps {
   onRemove: () => void;
 }
 
-/** A course in a term, which can be dragged to another term. */
 function TermEntryItem({
   plan,
   entry,
@@ -258,7 +256,7 @@ function TermEntryItem({
           <span className="font-medium">{label}</span>
           {entry.credits !== null && (
             <span className="text-muted-foreground tabular-nums">
-              {formatCredits(entry.credits)} cr
+              {creditsLabel(entry.credits)}
             </span>
           )}
         </span>

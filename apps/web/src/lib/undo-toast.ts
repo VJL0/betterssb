@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 
-/** DS3: a change made in one click can be undone for six seconds. */
+/** A change made in one click can be undone for six seconds. */
 const UNDO_MS = 6_000;
 
 export function undoToast(message: string, onUndo: () => void): void {

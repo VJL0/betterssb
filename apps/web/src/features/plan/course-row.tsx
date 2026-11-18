@@ -14,7 +14,7 @@ interface CourseRowProps {
   name?: string;
   /** The line under the name: a course's title, or a requirement's options. */
   subtitle?: string;
-  /** "3 cr" or "1-4 cr". */
+  /** "3 credits" or "1-4 credits". */
   credits: string | null;
   /** Where the course already is, such as "In Fall 2027" or "On your audit". */
   status: string | null;

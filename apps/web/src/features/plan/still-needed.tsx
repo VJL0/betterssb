@@ -1,6 +1,6 @@
 import {
-  formatCredits,
   type NeededRequirement,
+  creditsLabel,
 } from "@workspace/shared/lib/dars";
 import { splitCourseCode } from "@workspace/shared/lib/plan";
 import type { NewCourse } from "./course-drag";
@@ -36,7 +36,7 @@ function requirementCourse(requirement: NeededRequirement): NewCourse {
   };
 }
 
-/** W2.3 panel tab: requirements from the audit that still need a term. */
+/** Panel tab: requirements from the audit that still need a term. */
 export function StillNeeded({
   requirements,
   anyNeeded,
@@ -65,7 +65,7 @@ export function StillNeeded({
             credits={
               requirement.credits === null
                 ? null
-                : `${formatCredits(requirement.credits)} cr`
+                : `${creditsLabel(requirement.credits)}`
             }
             status={null}
             targetName={targetName}

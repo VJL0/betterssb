@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import { NOT_INDEXED } from "@/lib/metadata";
 import { PlanPage } from "@/features/plan/plan-page";
 
 export const metadata: Metadata = {
   title: "Semester planner",
-  // Shows the student's own saved data, so there's nothing here to index.
-  robots: { index: false },
+  robots: NOT_INDEXED,
 };
 
 export default PlanPage;

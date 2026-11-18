@@ -1,5 +1,7 @@
 "use client";
 
+import { creditsLabel } from "@workspace/shared/lib/dars";
+
 import { useQuery } from "@tanstack/react-query";
 import { CircleXIcon, SearchIcon } from "lucide-react";
 import { useDeferredValue, useId, useMemo, useState } from "react";
@@ -106,7 +108,7 @@ function CourseDetails({ course }: { course: CourseDescription }) {
   );
 }
 
-/** W2.3 panel tab: every course of a subject in the student's Bulletin year. */
+/** Panel tab: every course of a subject in the student's Bulletin year. */
 export function CatalogCourses({
   year,
   initialSubject,
@@ -234,7 +236,9 @@ export function CatalogCourses({
                   key={course.code}
                   course={newCourse(course)}
                   subtitle={course.title}
-                  credits={course.credits ? `${course.credits} cr` : null}
+                  credits={
+                    course.credits ? `${creditsLabel(course.credits)}` : null
+                  }
                   status={statusOf(course.code)}
                   targetName={targetName}
                   onAdd={() => onAdd(newCourse(course))}
@@ -250,7 +254,7 @@ export function CatalogCourses({
           <div className="flex flex-col gap-1 px-2 text-xs text-muted-foreground">
             {matched > shown.length && (
               <p>
-                Showing {shown.length} of {matched}. Search to narrow them down.
+                Showing {shown.length} of {matched}.
               </p>
             )}
             {graduateHidden > 0 && (

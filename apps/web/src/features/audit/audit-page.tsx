@@ -17,13 +17,16 @@ import {
   type AuditGroup,
   type LineStatus,
 } from "@workspace/shared/lib/audit-view";
-import { creditTotals, formatCredits } from "@workspace/shared/lib/dars";
+import {
+  creditTotals,
+  formatCredits,
+  creditsLabel,
+} from "@workspace/shared/lib/dars";
 import {
   auditCourseKeys,
+  plannedTermByCourse,
   projectedFinish,
-  termEntries,
 } from "@workspace/shared/lib/planner";
-import type { TermPlan } from "@workspace/shared/types/store";
 import {
   Alert,
   AlertDescription,
@@ -87,24 +90,12 @@ function runDate(audit: Audit, storedAt: string): string {
   );
 }
 
-/** The term each planned course key is in, across every term plan. */
-function plannedTermsOf(plans: readonly TermPlan[]): Map<string, string> {
-  const terms = new Map<string, string>();
-  for (const plan of plans) {
-    for (const entry of termEntries(plan)) {
-      if (entry.code) terms.set(entry.key, plan.termDescription);
-    }
-  }
-  return terms;
-}
-
 function linesFor(group: AuditGroup, filter: Filter) {
   return filter === "all"
     ? group.lines
     : group.lines.filter((line) => line.status === filter);
 }
 
-/** W3.1 · Degree audit, the Records page's first tab: the saved DARS audit, requirement by requirement. */
 export function AuditPage() {
   const run = useAuditRun();
   const extensionInstalled = useExtensionInstalled();
@@ -128,7 +119,7 @@ export function AuditPage() {
           disabled={run.running}
         >
           <RefreshCwIcon data-icon="inline-start" />
-          {audit ? "Re-run audit" : "Run audit"}
+          {audit ? "Run DARS again" : "Run DARS"}
         </Button>
       )}
     </>
@@ -153,17 +144,17 @@ export function AuditPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold tracking-tight">Degree audit</h2>
-          <p className="text-muted-foreground">
-            {audit && run.stored
-              ? [
-                  audit.programTitle,
-                  audit.catalogYear && `${audit.catalogYear} catalog`,
-                  `DARS run ${runDate(audit, run.stored.storedAt)}`,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")
-              : "What's done, in progress and still needed for your degree"}
-          </p>
+          {audit && run.stored && (
+            <p className="text-muted-foreground">
+              {[
+                audit.programTitle,
+                audit.catalogYear && `${audit.catalogYear} Bulletin`,
+                `DARS run ${runDate(audit, run.stored.storedAt)}`,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          )}
         </div>
         {audit && <div className="flex flex-wrap gap-2">{actions}</div>}
       </div>
@@ -185,7 +176,7 @@ export function AuditPage() {
       {run.loading ? (
         <Skeleton className="h-96 rounded-3xl" />
       ) : audit && run.stored ? (
-        <AuditReport audit={audit} storedAt={run.stored.storedAt} />
+        <AuditReport audit={audit} />
       ) : (
         !run.running && (
           <NoAudit actions={actions} extensionInstalled={extensionInstalled} />
@@ -236,8 +227,7 @@ function NoAudit({
         <EmptyDescription>
           {extensionInstalled
             ? "Run it in DARS with the extension, or upload a saved audit file."
-            : "Upload the audit page you saved from DARS. With the BetterSSB extension, you can run it from here instead."}{" "}
-          It's saved on this device for the planner and the advisor.
+            : "Upload the audit page you saved from DARS. With the BetterSSB extension, you can run it from here instead."}
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent className="flex-row flex-wrap justify-center">
@@ -268,14 +258,17 @@ function NoAudit({
   );
 }
 
-function AuditReport({ audit, storedAt }: { audit: Audit; storedAt: string }) {
+function AuditReport({ audit }: { audit: Audit }) {
   const { plans } = usePlans();
   const transcript = useStoreDocument("transcript").value;
   const [filter, setFilter] = useState<Filter>("all");
   const groups = useMemo(() => auditGroups(audit), [audit]);
   const counts = countLines(groups);
   const totals = creditTotals(audit);
-  const plannedTerms = useMemo(() => plannedTermsOf(plans), [plans]);
+  const plannedTerms = useMemo(
+    () => plannedTermByCourse(plans, (plan) => plan.termDescription),
+    [plans],
+  );
   const finish = totals
     ? projectedFinish(totals, plans, auditCourseKeys(audit))
     : null;
@@ -334,7 +327,7 @@ function AuditReport({ audit, storedAt }: { audit: Audit; storedAt: string }) {
             value={
               finish.onTrack
                 ? (finish.lastTerm ?? "On track")
-                : `${formatCredits(finish.shortBy)} cr`
+                : `${creditsLabel(finish.shortBy)}`
             }
             detail={finish.onTrack ? undefined : "still to plan"}
           >
@@ -408,15 +401,11 @@ function AuditReport({ audit, storedAt }: { audit: Audit; storedAt: string }) {
               <MessageCircleQuestionIcon data-icon="inline-start" />
               <span className="flex flex-col">
                 <span className="font-medium">Ask about this audit</span>
-                <span className="text-xs font-normal opacity-80">
-                  The advisor can read it if you let it.
-                </span>
               </span>
             </ButtonLink>
           )}
           <p className="text-xs text-muted-foreground">
-            Saved on this device {shortDate(storedAt)}. DARS is the official
-            record; check anything that matters with your advisor.
+            DARS is the official record.
           </p>
         </aside>
       </div>

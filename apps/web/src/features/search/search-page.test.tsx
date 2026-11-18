@@ -234,7 +234,7 @@ describe("SearchPage filters", () => {
     await user.type(input, "CIS 2168");
     const filters = await openFilters(user);
 
-    await user.click(filters.getByRole("button", { name: "Async online" }));
+    await user.click(filters.getByRole("button", { name: "Self-paced" }));
 
     const query = await lastSearch(searches, (q) =>
       q.has("instructionalMethod"),

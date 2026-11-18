@@ -9,11 +9,9 @@ interface QuickFilterBarProps {
   filters: SearchFilters;
   onChange: (filters: SearchFilters) => void;
   context: QuickFilterContext;
-  /** Opens the full filters panel. */
   onOpenFilters: () => void;
 }
 
-/** The Filters button, then one-tap shortcuts for the most used filters. */
 export function QuickFilterBar({
   filters,
   onChange,

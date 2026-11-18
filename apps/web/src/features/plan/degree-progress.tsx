@@ -27,7 +27,7 @@ function share(credits: number, total: number): string {
   return `${Math.min(credits / total, 1) * 100}%`;
 }
 
-/** W2.3 summary: credits toward the degree, from the stored audit plus the plan. */
+/** Credits toward the degree, from the stored audit plus the plan. */
 export function DegreeProgress({
   totals,
   finish,
@@ -143,8 +143,7 @@ export function NoAuditProgress() {
           See your progress toward your degree
         </span>
         <span className="text-muted-foreground">
-          Run your degree audit and its credits and remaining requirements show
-          up here, next to your plan.
+          Run DARS and your credits and what's left show up here.
         </span>
       </span>
       {isPageReady("records") && (

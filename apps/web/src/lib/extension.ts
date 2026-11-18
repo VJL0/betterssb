@@ -11,6 +11,7 @@
 import {
   BRIDGE_SOURCE,
   isBridgeEvent,
+  type BridgeEvent,
   isBridgeResponse,
   type BridgeRequest,
 } from "@workspace/shared/lib/bridge";
@@ -30,7 +31,7 @@ const AUDIT_TIMEOUT_MS = 170_000;
 const DETECT_TIMEOUT_MS = 1_500;
 const DETECT_POLL_MS = 150;
 
-export class ExtensionError extends Error {
+class ExtensionError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "ExtensionError";
@@ -38,7 +39,7 @@ export class ExtensionError extends Error {
 }
 
 /** The installed extension's version, or null if it isn't present on this page. */
-export function extensionVersion(): string | null {
+function extensionVersion(): string | null {
   return document.documentElement.dataset.betterssbExtension ?? null;
 }
 
@@ -97,22 +98,26 @@ export function bridgeRequest<T>(
   });
 }
 
-/** Calls `listener` when the extension's store changes, in any tab or the popup. */
-export function onExtensionStoreChange(
-  listener: (key: StoreKey) => void,
+/** Calls `listener` with each event of `type` the extension posts to this page. */
+function onBridgeEvent<T extends BridgeEvent["type"]>(
+  type: T,
+  listener: (event: Extract<BridgeEvent, { type: T }>) => void,
 ): () => void {
   function onMessage(event: MessageEvent) {
     const data: unknown = event.data;
-    if (
-      event.source === window &&
-      isBridgeEvent(data) &&
-      data.type === "STORE_CHANGED"
-    ) {
-      listener(data.key);
+    if (event.source === window && isBridgeEvent(data) && data.type === type) {
+      listener(data as Extract<BridgeEvent, { type: T }>);
     }
   }
   window.addEventListener("message", onMessage);
   return () => window.removeEventListener("message", onMessage);
+}
+
+/** Calls `listener` when the extension's store changes, in any tab or the popup. */
+export function onExtensionStoreChange(
+  listener: (key: StoreKey) => void,
+): () => void {
+  return onBridgeEvent("STORE_CHANGED", (event) => listener(event.key));
 }
 
 /** Banner as the extension sees it, checked now. Without the extension, Banner can't be connected. */
@@ -123,18 +128,7 @@ export async function getBannerConnection(): Promise<BannerConnection> {
 
 /** Calls `listener` when the extension sees the student sign in to or out of Banner. */
 export function onBannerChange(listener: () => void): () => void {
-  function onMessage(event: MessageEvent) {
-    const data: unknown = event.data;
-    if (
-      event.source === window &&
-      isBridgeEvent(data) &&
-      data.type === "BANNER_CHANGED"
-    ) {
-      listener();
-    }
-  }
-  window.addEventListener("message", onMessage);
-  return () => window.removeEventListener("message", onMessage);
+  return onBridgeEvent("BANNER_CHANGED", listener);
 }
 
 /** Asks the extension to run a fresh audit, then parses the result. */
@@ -211,16 +205,5 @@ export function getBannerPlans(term: string): Promise<SSBGetPlansResponse> {
 
 /** Calls `listener` when auto-register changes in the extension (armed, ran, edited). */
 export function onAutoRegisterChange(listener: () => void): () => void {
-  function onMessage(event: MessageEvent) {
-    const data: unknown = event.data;
-    if (
-      event.source === window &&
-      isBridgeEvent(data) &&
-      data.type === "AUTOREG_CHANGED"
-    ) {
-      listener();
-    }
-  }
-  window.addEventListener("message", onMessage);
-  return () => window.removeEventListener("message", onMessage);
+  return onBridgeEvent("AUTOREG_CHANGED", listener);
 }

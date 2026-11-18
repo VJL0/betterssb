@@ -37,7 +37,7 @@ export type CourseMode = "any" | "planned";
 
 export interface ScheduleRules {
   days: WeekDay[];
-  /** Minutes after midnight; null for any time. */
+  /** Minutes after midnight, or null for any time. */
   startAfter: number | null;
   endBefore: number | null;
   rankBy: RankBy;
@@ -133,7 +133,7 @@ function fitsRules(
  * low. Sections without a meeting time can't be placed on a week.
  * `checkDays: false` widens the search for the "allow a day" suggestion.
  */
-export function candidateMeetings(
+function candidateMeetings(
   courses: readonly PlanCourse[],
   sectionsByCourse: ReadonlyMap<string, readonly ClassSection[]>,
   rules: ScheduleRules,

@@ -40,11 +40,7 @@ import {
   useWatchCrn,
 } from "./use-seat-watches";
 
-/**
- * The seat tracker: CRNs to watch and the classes it's waiting on. A seat
- * opening is emailed to the student's Google address, so it needs sign-in,
- * and this is the only page that does.
- */
+/** Seat emails go to the student's Google address, so this is the one page that needs sign-in. */
 export function SeatTrackerPage() {
   const currentUser = useCurrentUser();
   const user = currentUser.data ?? null;
@@ -52,12 +48,7 @@ export function SeatTrackerPage() {
   useAuthErrorToast();
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Seat tracker</h1>
-        <p className="text-muted-foreground">
-          Emails you when a full section opens
-        </p>
-      </div>
+      <h1 className="text-2xl font-semibold tracking-tight">Seat tracker</h1>
       {currentUser.isPending ? (
         <Skeleton className="h-64 rounded-3xl" />
       ) : user ? (
@@ -78,7 +69,7 @@ function SignInToTrack() {
         </EmptyMedia>
         <EmptyTitle>Sign in to track seats</EmptyTitle>
         <EmptyDescription>
-          We email your Google address when a section you're watching opens.
+          We email you when a seat opens in a full section.
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
@@ -208,12 +199,7 @@ function WatchList({ watches }: { watches: readonly SeatWatchResponse[] }) {
   const termNames = new Map(useTerms().terms.map((t) => [t.code, t.name]));
   const { term } = useCurrentTerm();
   if (watches.length === 0) {
-    return (
-      <p className="text-muted-foreground">
-        Not watching anything yet. Add a full section's CRN and we'll tell you
-        when a seat opens.
-      </p>
-    );
+    return <p className="text-muted-foreground">Not watching anything yet.</p>;
   }
   const lastChecked = watches
     .map((w) => w.checkedAt)

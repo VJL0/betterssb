@@ -11,7 +11,7 @@ const H = 60;
 
 export const color = (slot: number): CourseColor => ({ slot, hatched: false });
 
-export function sampleRating(
+function sampleRating(
   professorName: string,
   overallRating: number,
   difficulty: number,

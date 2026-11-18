@@ -6,7 +6,6 @@ import {
   CircleXIcon,
   HardDriveIcon,
 } from "lucide-react";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
 import {
@@ -39,7 +38,7 @@ import {
   programLabel,
   useBulletinPrograms,
 } from "@/features/program/program-picker";
-import { Logo } from "@workspace/ui/components/logo";
+import { StandaloneHeader } from "@/components/standalone-header";
 import { useExtensionInstalled } from "@/hooks/use-extension-installed";
 import { useSettings } from "@/hooks/use-settings";
 import { useTerms, type Term } from "@/hooks/use-terms";
@@ -58,7 +57,7 @@ function isStepId(value: string | null): value is StepId {
 }
 
 /**
- * W1.2 · Guest onboarding: term, program, then an optional Banner
+ * Guest onboarding: term, program, then an optional Banner
  * connection, as Settings has them. No account step.
  */
 export function GetStartedPage() {
@@ -104,14 +103,7 @@ function GetStarted({ step }: { step: StepId }) {
 
   return (
     <div className="min-h-dvh bg-sidebar text-sm text-foreground">
-      <header className="mx-auto flex min-h-18 max-w-5xl items-center px-4 sm:px-8">
-        <Link
-          href="/"
-          className="rounded-2xl focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none"
-        >
-          <Logo />
-        </Link>
-      </header>
+      <StandaloneHeader />
 
       <main className="mx-auto flex max-w-5xl flex-wrap items-start gap-6 px-4 pt-6 pb-16 sm:px-8">
         <div className="flex min-w-0 grow-999 basis-120 flex-col gap-4">
@@ -213,8 +205,8 @@ function TermStep({
       }}
     >
       <StepHeading title="What are you planning?">
-        BetterSSB is for Temple University students. No account needed, and you
-        can switch terms any time from the top bar.
+        For Temple University students. You can switch terms any time from the
+        top bar.
       </StepHeading>
       <FieldSet data-invalid={invalid}>
         <FieldLegend variant="label">Term</FieldLegend>
@@ -257,9 +249,7 @@ function ProgramStep({
       }}
     >
       <StepHeading title="Where are you in your degree?">
-        Your start term picks the Bulletin year your requirements come from, and
-        your program is shared with the advisor only if you choose. You can
-        change both later in Settings.
+        Your program is shared with the advisor only if you choose.
       </StepHeading>
       <ProgramPicker />
       {showError && !chosen && (
@@ -380,8 +370,7 @@ function ExtensionStep({
   return (
     <div className="flex flex-col gap-5">
       <StepHeading title="Add the Chrome extension when you're ready">
-        Optional, and you can add it later from Settings. Your degree audit,
-        auto-register and Banner page overlays run through the Chrome extension.
+        DARS, auto-register and ratings on Banner run through it.
       </StepHeading>
       <ul className="flex flex-col gap-2">
         <StatusRow

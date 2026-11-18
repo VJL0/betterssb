@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { CircleXIcon, FileTextIcon, ShieldCheckIcon } from "lucide-react";
+import { CircleXIcon, FileTextIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
   parseTranscriptPdf,
@@ -10,7 +10,7 @@ import {
   type Audit,
 } from "@workspace/api-client";
 import { requirementFor } from "@workspace/shared/lib/audit-view";
-import { formatCredits } from "@workspace/shared/lib/dars";
+import { formatCredits, creditsLabel } from "@workspace/shared/lib/dars";
 import { courseCode } from "@workspace/shared/lib/plan";
 import {
   savedTranscript,
@@ -59,7 +59,6 @@ async function readTranscript(file: File): Promise<TranscriptData> {
   return savedTranscript(data);
 }
 
-/** W3.2 · Transcript, the Records page's second tab: courses by term, and what each counts toward. */
 export function TranscriptPage() {
   const stored = useStoreDocument("transcript");
   const audit = useStoreDocument("audit").value?.audit ?? null;
@@ -79,22 +78,22 @@ export function TranscriptPage() {
   const whatIf = useGpaWhatIf(transcript?.courses ?? NO_COURSES);
   const showForm = !transcript || replacing;
   const terms = transcript ? transcriptTerms(transcript) : [];
-  const subtitle = transcript
-    ? [
-        `${transcript.courses.length} courses`,
-        `${terms.length} ${terms.length === 1 ? "term" : "terms"}`,
-        transcript.gpa !== null && `GPA ${transcript.gpa.toFixed(2)}`,
-      ]
-        .filter(Boolean)
-        .join(" · ")
-    : "Your transcript PDF, read into courses and grades";
+  const subtitle =
+    transcript &&
+    [
+      `${transcript.courses.length} courses`,
+      `${terms.length} ${terms.length === 1 ? "term" : "terms"}`,
+      transcript.gpa !== null && `GPA ${transcript.gpa.toFixed(2)}`,
+    ]
+      .filter(Boolean)
+      .join(" · ");
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold tracking-tight">Transcript</h2>
-          <p className="text-muted-foreground">{subtitle}</p>
+          {subtitle && <p className="text-muted-foreground">{subtitle}</p>}
         </div>
         {transcript && !replacing && (
           <Button variant="outline" onClick={() => setReplacing(true)}>
@@ -132,12 +131,6 @@ export function TranscriptPage() {
                 </ButtonLink>
               </p>
             )}
-            <p className="flex gap-2 text-xs text-muted-foreground">
-              <ShieldCheckIcon aria-hidden className="size-4 shrink-0" />
-              Only each course's code, title, credits, grade and whether it
-              counts toward your GPA are kept, on this device. The PDF isn't
-              stored.
-            </p>
           </aside>
         </div>
       )}
@@ -187,8 +180,7 @@ function UploadForm({
       </Field>
       <div className="flex flex-wrap items-center justify-end gap-3">
         <span className="mr-auto text-xs text-muted-foreground">
-          Only the courses and grades are kept, matched to your audit and
-          available to the advisor if you turn it on. The PDF isn't stored.
+          Only your courses and grades are kept. The PDF isn't stored.
         </span>
         {onCancel && (
           <Button type="button" variant="ghost" onClick={onCancel}>
@@ -264,10 +256,10 @@ function TermCard({
       <header className="flex items-baseline justify-between gap-2 px-5">
         <h3 className="text-base font-medium">{term.term}</h3>
         <span className="text-muted-foreground tabular-nums">
-          {formatCredits(term.credits)} cr
+          {creditsLabel(term.credits)}
         </span>
       </header>
-      {/* Under 640px tables become stacked items (W-Mobile). */}
+      {/* Under 640px tables become stacked items. */}
       <ul className="flex flex-col divide-y px-5 pb-3 sm:hidden">
         {rows.map((row) => (
           <li key={row.key} className="flex flex-col gap-1 py-2.5">
@@ -277,7 +269,7 @@ function TermCard({
             </span>
             <span>{row.title}</span>
             <span className="text-xs text-muted-foreground">
-              {row.credits} cr
+              {creditsLabel(row.credits)}
               {row.countsToward && ` · ${row.countsToward}`}
             </span>
           </li>

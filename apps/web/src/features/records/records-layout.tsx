@@ -9,10 +9,7 @@ import { useStoreDocument } from "@/lib/store/store-context";
 const AUDIT_PATH = "/records/audit";
 const TRANSCRIPT_PATH = "/records/transcript";
 
-/**
- * Records: the degree audit and the transcript, a tab and a page each. Plan
- * and the advisor read both, so each tab says when it was last saved.
- */
+/** Plan and the advisor read both records, so each tab says when it was last saved. */
 export function RecordsLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const audit = useStoreDocument("audit").value;
@@ -20,12 +17,7 @@ export function RecordsLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Records</h1>
-        <p className="text-muted-foreground">
-          Your audit and transcript, which Plan and the advisor read
-        </p>
-      </div>
+      <h1 className="text-2xl font-semibold tracking-tight">Records</h1>
       <nav aria-label="Records" className="flex gap-2 border-b border-border">
         <RecordTab
           href={AUDIT_PATH}

@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { planKey } from "@workspace/shared/lib/store";
-import type { StoreKey, TermPlan } from "@workspace/shared/types/store";
+import type {
+  LocalStore,
+  StoreKey,
+  TermPlan,
+} from "@workspace/shared/types/store";
 import { useStoreState, type DocumentStatus } from "@/lib/store/store-context";
 
 const PLAN_PREFIX = "plan:";
@@ -9,18 +13,12 @@ function isPlanKey(key: StoreKey): key is `plan:${string}` {
   return key.startsWith(PLAN_PREFIX);
 }
 
-async function loadPlans(
-  store: NonNullable<ReturnType<typeof storeOf>>,
-): Promise<TermPlan[]> {
+async function loadPlans(store: LocalStore): Promise<TermPlan[]> {
   const keys = (await store.keys()).filter(isPlanKey);
   const plans = await Promise.all(keys.map((key) => store.get(key)));
   return plans
     .filter((p): p is TermPlan => p !== null)
     .sort((a, b) => a.term.localeCompare(b.term));
-}
-
-function storeOf(state: ReturnType<typeof useStoreState>) {
-  return state.status === "ready" ? state.opened.store : null;
 }
 
 /** Every term's plan, oldest term first, kept current as any of them changes. */
@@ -31,7 +29,7 @@ export function usePlans(): {
   remove: (term: string) => Promise<void>;
 } {
   const state = useStoreState();
-  const store = storeOf(state);
+  const store = state.status === "ready" ? state.opened.store : null;
   const [plans, setPlans] = useState<TermPlan[]>([]);
   const [status, setStatus] = useState<DocumentStatus>("loading");
 

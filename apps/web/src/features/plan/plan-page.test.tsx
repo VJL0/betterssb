@@ -171,7 +171,9 @@ describe("PlanPage", () => {
     });
     await screen.findByRole("article", { name: "Fall 2027" });
     expect(screen.queryByRole("article", { name: "Spring 2025" })).toBeNull();
-    const toggle = screen.getByRole("switch", { name: "Show already taken" });
+    const toggle = screen.getByRole("switch", {
+      name: "Show courses you've taken",
+    });
     expect(toggle.getAttribute("aria-checked")).toBe("false");
 
     await user.click(toggle);
@@ -229,7 +231,7 @@ describe("PlanPage", () => {
     expect(within(fall).queryByRole("button")).toBeNull();
     expect(screen.queryByRole("article", { name: "Spring 2026" })).toBeNull();
     await user.click(
-      screen.getByRole("switch", { name: "Show already taken" }),
+      screen.getByRole("switch", { name: "Show courses you've taken" }),
     );
     const spring = await screen.findByRole("article", { name: "Spring 2026" });
     expect(within(spring).getAllByText("CIS 1051")).toHaveLength(1);
@@ -274,7 +276,9 @@ describe("PlanPage", () => {
     expect(screen.getByText("53 more credits to plan")).toBeTruthy();
     const spring = screen.getByRole("article", { name: "Spring 2027" });
     expect(within(spring).getByText("CIS 2168")).toBeTruthy();
-    expect(within(spring).getByText("Under 12 cr is part-time")).toBeTruthy();
+    expect(
+      within(spring).getByText("Under 12 credits is part-time"),
+    ).toBeTruthy();
   });
 
   it("adds a still-needed requirement to the chosen term", async () => {
@@ -455,7 +459,7 @@ describe("PlanPage", () => {
     const user = userEvent.setup();
     const { store } = await renderPlanner();
     await user.click(
-      await screen.findByRole("button", { name: "Optimize plan" }),
+      await screen.findByRole("button", { name: "Auto-fill plan" }),
     );
     const sheet = await screen.findByRole("dialog");
     await user.click(
