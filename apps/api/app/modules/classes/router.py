@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 from typing import Annotated
 
@@ -42,7 +42,7 @@ MAX_CODES = 20
 
 
 @contextmanager
-def banner_errors(not_found: str = "") -> Iterator[None]:
+def banner_errors(not_found: str = "") -> Generator[None]:
     """Banner not answering becomes a 502, and a missing CRN a 404 with `not_found`."""
     try:
         yield

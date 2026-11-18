@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 from typing import Annotated
 
@@ -42,7 +42,7 @@ _parser = BulletinParser()
 
 
 @contextmanager
-def bulletin_errors(not_found: str) -> Iterator[None]:
+def bulletin_errors(not_found: str) -> Generator[None]:
     """A missing Bulletin page answers 404 with `not_found`; an outage, 502."""
     try:
         yield
