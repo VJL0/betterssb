@@ -29,11 +29,6 @@ function runTime(iso: string): string {
   });
 }
 
-/**
- * E1 The popup: what the extension is for, the two things only it can tell
- * (Banner sign-in and an armed run), the way to the website, and every
- * request it sent with the student's sign-in.
- */
 export function Home() {
   return (
     <div className="flex flex-col gap-3">

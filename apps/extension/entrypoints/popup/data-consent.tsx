@@ -15,7 +15,7 @@ const DATA_USES = [
   ],
   [
     "Your plan and audit",
-    "Plans, the auto-register queue and the request log stay in this browser. An audit you run goes to the BetterSSB website, whose server reads it and doesn't keep it.",
+    "Plans, your auto-register classes and the request log stay in this browser. An audit you run goes to the BetterSSB website, whose server reads it and doesn't keep it.",
   ],
 ] as const;
 

@@ -84,9 +84,6 @@ function notify(id: string, title: string, message: string): void {
   });
 }
 
-// ── Banner ──────────────────────────────────────────────────────────────────
-
-/** Runs a Banner call and answers with it, the way messages are answered. */
 async function answerFromBanner(
   call: () => Promise<unknown>,
 ): Promise<ExtensionResponse> {
@@ -124,7 +121,7 @@ async function warnArmedSignOut(): Promise<void> {
   notify(
     BANNER_SIGNED_OUT_NOTIFICATION,
     "Banner signed you out",
-    "Auto-register is armed but can't submit until you sign back in to Banner.",
+    "Auto-register is on but can't register you until you sign back in to Banner.",
   );
 }
 
@@ -178,8 +175,6 @@ async function watchBannerWhileArmed(): Promise<void> {
   if ((await checkBanner()) !== "connected") return;
   await restartBannerPageTimers();
 }
-
-// ── DARS tab ────────────────────────────────────────────────────────────────
 
 /** A DARS tab is usable once it's on a `/selfservice/` page (i.e. past SSO login). */
 function isDarsReady(tab: Browser.tabs.Tab): boolean {
@@ -235,13 +230,10 @@ async function relayToDarsTab(
 
 /** Whether Banner has `crn` in the opened term, or null when it couldn't say. */
 async function lookUpCrn(crn: string, term: string): Promise<boolean | null> {
-  return ssb.getSectionDetailsFromCRN(crn, term).then(
-    (answer) => crnLookupResult(crn, answer),
-    () => null,
-  );
+  return ssb
+    .getSectionDetailsFromCRN(crn, term)
+    .then(crnLookupResult, () => null);
 }
-
-// ── Auto-register queue ─────────────────────────────────────────────────────
 
 function snapshotOf(
   queue: AutoRegQueue,
@@ -266,7 +258,7 @@ async function handleAutoRegMessage(
       if (run.armed) {
         return {
           success: false,
-          error: "Disarm auto-register to change the queue.",
+          error: "Turn off auto-register to change your classes.",
         };
       }
       await saveAutoRegQueue(msg.payload.queue);
@@ -304,8 +296,6 @@ async function handleAutoRegMessage(
       return unknownMessage(msg);
   }
 }
-
-// ── Auto-register run ───────────────────────────────────────────────────────
 
 /** Sets the one-shot run alarm; the queue is submitted only from it (single attempt). */
 async function syncAutoRegRunAlarm(): Promise<void> {
@@ -350,8 +340,8 @@ async function remindBeforeAutoRegRun(): Promise<void> {
   const shownMinutes = Math.ceil(minutesLeft);
   notify(
     AUTO_REG_REMINDER_NOTIFICATION,
-    "Registration Opening Soon!",
-    `Your registration window opens in ~${shownMinutes} minute${shownMinutes === 1 ? "" : "s"}.`,
+    "Registration starts soon",
+    `Your registration time starts in about ${shownMinutes} minute${shownMinutes === 1 ? "" : "s"}.`,
   );
 }
 
@@ -403,11 +393,9 @@ async function submitAutoRegQueue(): Promise<void> {
   notify(
     AUTO_REG_DONE_NOTIFICATION,
     record.ok ? "Auto-register complete" : "Auto-register — errors",
-    record.summary || "Batch submitted. See results in Auto-Register.",
+    record.summary || "See the results on the Register page.",
   );
 }
-
-// ── Messages ────────────────────────────────────────────────────────────────
 
 async function fetchRating(name: string): Promise<ExtensionResponse> {
   const { data: ratings } = await searchProfessors({ query: { name } });

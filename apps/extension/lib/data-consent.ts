@@ -1,11 +1,11 @@
-import { getStorageItem, setStorageItem } from "./storage";
-
 /**
  * The student's agreement to the popup's data disclosure, which the Chrome
  * Web Store's User Data Policy requires in the extension's own UI before any
  * user data is handled. Until it's given, the background answers nothing that
  * uses a Temple sign-in or the BetterSSB API, and the Banner overlay stays off.
  */
+import { getStorageItem, setStorageItem } from "./storage";
+
 export const DATA_CONSENT_KEY = "betterssb:dataConsent";
 
 export const DATA_CONSENT_REQUIRED =

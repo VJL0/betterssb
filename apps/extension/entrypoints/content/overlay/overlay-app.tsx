@@ -56,7 +56,7 @@ function Rating({
 }
 
 /**
- * E3.1 Banner overlay: a Rate My Professors rating before each instructor.
+ * The Banner overlay: a Rate My Professors rating before each instructor.
  * The Banner-pages setting turns it off.
  */
 export function OverlayApp({
