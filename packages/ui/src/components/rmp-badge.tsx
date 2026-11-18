@@ -280,5 +280,5 @@ function RmpStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-export { RmpBadge, RmpDetails, RmpPendingBadge };
+export { RmpBadge, RmpPendingBadge };
 export type { RmpBadgeProps };

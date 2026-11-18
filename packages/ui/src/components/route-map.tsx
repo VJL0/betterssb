@@ -12,7 +12,7 @@ import type { Requirement } from "@workspace/api-client";
 type AuditStatus = Requirement["status"];
 type MarkedStatus = Exclude<AuditStatus, "none">;
 
-/** Audit status words, icons and tones from the design (handoff §3). */
+/** Audit status words, icons and tones from the design. */
 const AUDIT_STATUS: Record<
   MarkedStatus,
   { label: string; icon: LucideIcon; className: string }

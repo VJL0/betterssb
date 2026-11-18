@@ -605,9 +605,6 @@ importers:
       react:
         specifier: 'catalog:'
         version: 19.3.1
-      react-day-picker:
-        specifier: ^10.0.2
-        version: 10.0.2(@types/react@19.3.0)(react@19.3.1)
       react-dom:
         specifier: 'catalog:'
         version: 19.3.1(react@19.3.1)
@@ -4469,16 +4466,6 @@ packages:
   rc9@3.1.0:
     resolution: {integrity: sha512-ufjkNVzbRHKcCOmTahZkmVsyc3W+MSk3jY03m+a7tGHkIsdVMG9l10/3HvFbWkkKzY5VFp3pkRsIo/UYgmFL7Q==}
 
-  react-day-picker@10.0.2:
-    resolution: {integrity: sha512-QetiKtZWE9Uaw/pM/SYNv6WPYOTRnSJ2puL0GgwkmUFMIwiY0dtjH1W4B7DOVXVNQM0ZOClGpH/heOfBSzWeiA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@types/react': '>=16.8.0'
-      react: '>=16.8.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-
   react-dom@19.3.1:
     resolution: {integrity: sha512-Y0bARz53lhEC1NMCASs0/j+faB/zqt3R8hpvg1e8+61ZVJ4UL0UdC4cBbXfZMcIuhrfgeILTLe+ZeBCavQPtKQ==}
     peerDependencies:
@@ -5614,7 +5601,8 @@ snapshots:
 
   '@csstools/css-tokenizer@4.0.2': {}
 
-  '@date-fns/tz@1.5.0': {}
+  '@date-fns/tz@1.5.0':
+    optional: true
 
   '@dnd-kit/accessibility@3.1.1(react@19.3.1)':
     dependencies:
@@ -7209,7 +7197,8 @@ snapshots:
     transitivePeerDependencies:
       - '@noble/hashes'
 
-  date-fns@4.4.0: {}
+  date-fns@4.4.0:
+    optional: true
 
   debounce-fn@4.0.0:
     dependencies:
@@ -8941,14 +8930,6 @@ snapshots:
     dependencies:
       defu: 6.1.7
       destr: 2.0.5
-
-  react-day-picker@10.0.2(@types/react@19.3.0)(react@19.3.1):
-    dependencies:
-      '@date-fns/tz': 1.5.0
-      date-fns: 4.4.0
-      react: 19.3.1
-    optionalDependencies:
-      '@types/react': 19.3.0
 
   react-dom@19.3.1(react@19.3.1):
     dependencies:

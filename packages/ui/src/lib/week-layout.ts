@@ -5,25 +5,23 @@ import {
 } from "@workspace/shared/lib/meeting-times";
 
 /** The web calendar shows 8 AM–6 PM unless classes fall outside it. */
-export const DEFAULT_START_HOUR = 8;
-export const DEFAULT_END_HOUR = 18;
+const DEFAULT_START_HOUR = 8;
+const DEFAULT_END_HOUR = 18;
 /** Free time this long or longer between classes is drawn as a gap. */
-export const MIN_GAP_MINUTES = 60;
+const MIN_GAP_MINUTES = 60;
 
-export interface CalendarMeeting {
-  id: string;
-  /** Banner days string, e.g. "TR". */
-  days: string;
-  /** Minutes after midnight. */
-  start: number;
-  end: number;
-  /** A hover preview: laid out beside real classes but never a conflict. */
-  ghost?: boolean;
-}
-
+/** Minutes after midnight. */
 export interface TimeSpan {
   start: number;
   end: number;
+}
+
+export interface CalendarMeeting extends TimeSpan {
+  id: string;
+  /** Banner days, e.g. "TR". */
+  days: string;
+  /** A hover preview: laid out beside real classes but never a conflict. */
+  ghost?: boolean;
 }
 
 export interface PositionedMeeting<T extends CalendarMeeting> {
@@ -41,7 +39,7 @@ export interface DayLayout<T extends CalendarMeeting> {
   gaps: TimeSpan[];
 }
 
-export function meetsOn(meeting: CalendarMeeting, day: WeekDay): boolean {
+function meetsOn(meeting: CalendarMeeting, day: WeekDay): boolean {
   return parseDays(meeting.days).includes(day);
 }
 
