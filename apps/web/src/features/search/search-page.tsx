@@ -9,7 +9,7 @@ import {
   SearchIcon,
   SearchXIcon,
 } from "lucide-react";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -222,10 +222,7 @@ function SearchBody({
   const [planOpen, setPlanOpen] = useState(false);
   const options = useSearchOptions(term.code);
 
-  const sections = useMemo(
-    () => search.result?.sections ?? [],
-    [search.result],
-  );
+  const sections = search.result?.sections ?? [];
   const ratings = useRatings(sections.map(primaryInstructorName));
   const visible = sections.filter((s) =>
     sectionPasses(s, filters, ratings.byName),
@@ -238,18 +235,16 @@ function SearchBody({
     const before = plan;
     const label = `${courseCode(section.subject, section.courseNumber)} · ${section.sequenceNumber}`;
     const planned = plannedCrns.has(section.courseReferenceNumber);
+    const message = planned
+      ? `Removed ${label} from your ${term.name} plan`
+      : `Added ${label} to your ${term.name} plan`;
     try {
       if (planned) await planState.remove(section.courseReferenceNumber);
       else
         await planState.add(
           plannedSectionFrom(section, new Date().toISOString()),
         );
-      undoToast(
-        planned
-          ? `Removed ${label} from your ${term.name} plan`
-          : `Added ${label} to your ${term.name} plan`,
-        () => void planState.restore(before),
-      );
+      undoToast(message, () => void planState.restore(before));
     } catch {
       toast.error("Couldn't save your plan. Try again.");
     }

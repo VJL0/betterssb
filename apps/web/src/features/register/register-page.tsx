@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useEffectEvent, useId, useMemo, useRef } from "react";
+import { useEffect, useEffectEvent, useId, useRef } from "react";
 import { CircleXIcon, ExternalLinkIcon, PuzzleIcon } from "lucide-react";
 import { toast } from "sonner";
 import { queryError, type ClassSection } from "@workspace/api-client";
@@ -236,34 +236,41 @@ function AutoRegister({
   const term = snapshot.term || currentTerm?.code || "";
   const registration = useBannerRegistration(connected, term);
   const bannerPlans = registration.plans.data?.plans ?? NO_BANNER_PLANS;
-  const plannedRows = useMemo(
-    () => queueRows(snapshot.crns, term, plans, bannerPlans),
-    [snapshot.crns, term, plans, bannerPlans],
-  );
+  const plannedRows = queueRows(snapshot.crns, term, plans, bannerPlans);
   const lookedUp = useLookedUpSections(
     term,
     plannedRows.filter((row) => row.title === null).map((row) => row.crn),
   );
-  const rows = useMemo(
-    () => withLookedUp(plannedRows, lookedUp.byCrn),
-    [plannedRows, lookedUp.byCrn],
-  );
-  const courses = useMemo(() => coursesOf(rows), [rows]);
-  const sections = useCourseSections(term, courses);
-  const sectionsByCrn = useMemo(
-    () =>
-      new Map<string, ClassSection>(
-        [...sections.sectionsByCourse.values()]
-          .flat()
-          .map((s) => [s.courseReferenceNumber, s]),
-      ),
-    [sections.sectionsByCourse],
+  const rows = withLookedUp(plannedRows, lookedUp.byCrn);
+  const sections = useCourseSections(term, coursesOf(rows));
+  const sectionsByCrn = new Map<string, ClassSection>(
+    [...sections.sectionsByCourse.values()]
+      .flat()
+      .map((s) => [s.courseReferenceNumber, s]),
   );
   const crnChecks = useCrnChecks(
     term,
     snapshot.crns,
     connected && !snapshot.armed,
   );
+  const queue: AutoRegQueue = {
+    term,
+    crns: snapshot.crns,
+    scheduledRunAt: snapshot.scheduledRunAt,
+  };
+
+  function save(patch: Partial<AutoRegQueue>) {
+    auto.save.mutate(
+      { ...queue, ...patch },
+      {
+        onError: (error) =>
+          toast.error(
+            queryError(error)?.message ?? "Couldn't save your classes.",
+          ),
+      },
+    );
+  }
+
   const registrationTime = useRegistrationTime(term, !snapshot.armed);
   usePrefilledRunAt(snapshot, term, registrationTime.data, (scheduledRunAt) =>
     save({ scheduledRunAt }),
@@ -287,11 +294,6 @@ function AutoRegister({
     .filter((p) => p.term === term)
     .flatMap((p) => p.sections.map((s) => s.crn));
 
-  const queue: AutoRegQueue = {
-    term,
-    crns: snapshot.crns,
-    scheduledRunAt: snapshot.scheduledRunAt,
-  };
   const canArm = connected && armProblem(queue, now) === null;
 
   const termOpen = registration.terms.data?.some((t) => t.code === term);
@@ -320,18 +322,6 @@ function AutoRegister({
         : { label: "Registration time set", state: "ok" },
     { label: "Keep Chrome open and the computer awake", state: "warn" },
   ];
-
-  function save(patch: Partial<AutoRegQueue>) {
-    auto.save.mutate(
-      { ...queue, ...patch },
-      {
-        onError: (error) =>
-          toast.error(
-            queryError(error)?.message ?? "Couldn't save your classes.",
-          ),
-      },
-    );
-  }
 
   const pending = auto.arm.isPending || auto.disarm.isPending;
   const armError = queryError(auto.arm.error);

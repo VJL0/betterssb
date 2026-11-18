@@ -29,8 +29,8 @@
 
 ## Performance
 
-- Implement proper memoization (useMemo, useCallback)
-- Use React.memo for expensive components
+- The website builds with the React Compiler, which memoizes components and hooks, so don't write useMemo, useCallback or React.memo there; keep one only where a library needs a stable reference, like a TanStack Query `combine`
+- The extension has no compiler: memoize there where a reference must stay stable or the work is expensive
 - Avoid unnecessary re-renders
 - Implement proper lazy loading
 - Use proper key props in lists

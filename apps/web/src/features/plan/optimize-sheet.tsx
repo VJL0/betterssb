@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useId } from "react";
 import { TriangleAlertIcon } from "lucide-react";
 import {
   type NeededRequirement,
@@ -126,26 +126,18 @@ function OptimizeForm({
   const creditsId = useId();
   const summersId = useId();
   const { preferences, update } = usePlanPreferences();
-  const codes = useMemo(
-    () =>
-      requirements.flatMap((r) =>
-        requirementParts(r).flatMap((p) => p.options),
-      ),
-    [requirements],
+  const codes = requirements.flatMap((r) =>
+    requirementParts(r).flatMap((p) => p.options),
   );
   const { catalog, loading } = useCatalogCourses(codes, bulletinYear);
-  const result = useMemo(
-    () =>
-      optimizePlan({
-        requirements,
-        plans,
-        firstTerm,
-        catalog,
-        completed,
-        preferences,
-      }),
-    [requirements, plans, firstTerm, catalog, completed, preferences],
-  );
+  const result = optimizePlan({
+    requirements,
+    plans,
+    firstTerm,
+    catalog,
+    completed,
+    preferences,
+  });
 
   const courses = [
     ...result.placements.map((p) => p.course),

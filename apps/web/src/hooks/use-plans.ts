@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { planKey } from "@workspace/shared/lib/store";
 import type {
   LocalStore,
@@ -55,27 +55,21 @@ export function usePlans(): {
     };
   }, [store]);
 
-  const save = useCallback(
-    async (plan: TermPlan) => {
-      if (!store) throw new Error("Your saved data isn't open yet.");
-      setPlans((current) =>
-        [...current.filter((p) => p.term !== plan.term), plan].sort((a, b) =>
-          a.term.localeCompare(b.term),
-        ),
-      );
-      await store.set(planKey(plan.term), plan);
-    },
-    [store],
-  );
+  async function save(plan: TermPlan) {
+    if (!store) throw new Error("Your saved data isn't open yet.");
+    setPlans((current) =>
+      [...current.filter((p) => p.term !== plan.term), plan].sort((a, b) =>
+        a.term.localeCompare(b.term),
+      ),
+    );
+    await store.set(planKey(plan.term), plan);
+  }
 
-  const remove = useCallback(
-    async (term: string) => {
-      if (!store) throw new Error("Your saved data isn't open yet.");
-      setPlans((current) => current.filter((p) => p.term !== term));
-      await store.delete(planKey(term));
-    },
-    [store],
-  );
+  async function remove(term: string) {
+    if (!store) throw new Error("Your saved data isn't open yet.");
+    setPlans((current) => current.filter((p) => p.term !== term));
+    await store.delete(planKey(term));
+  }
 
   return {
     plans,

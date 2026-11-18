@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { CircleXIcon } from "lucide-react";
-import { useMemo } from "react";
 import {
   queryError,
   type CourseRef,
@@ -82,10 +81,9 @@ export function ProgramCourses({
     // A published Bulletin page doesn't change.
     staleTime: Infinity,
   });
-  const groups = useMemo(
-    () => (requirements.data ? programCourseGroups(requirements.data) : []),
-    [requirements.data],
-  );
+  const groups = requirements.data
+    ? programCourseGroups(requirements.data)
+    : [];
 
   if (requirements.isPending) {
     return (

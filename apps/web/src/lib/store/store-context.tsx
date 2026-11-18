@@ -1,6 +1,5 @@
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -105,14 +104,11 @@ export function useStoreDocument<K extends StoreKey>(key: K): StoreDocument<K> {
     };
   }, [store, key]);
 
-  const save = useCallback(
-    async (next: StoreDocuments[K]) => {
-      if (!store) throw new Error("Your saved data isn't open yet.");
-      setValue(next);
-      await store.set(key, next);
-    },
-    [store, key],
-  );
+  async function save(next: StoreDocuments[K]) {
+    if (!store) throw new Error("Your saved data isn't open yet.");
+    setValue(next);
+    await store.set(key, next);
+  }
 
   if (state.status === "error") {
     return { value: null, status: "error", error: state.error, save };

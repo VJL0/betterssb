@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CalendarDaysIcon,
   CalendarPlusIcon,
@@ -135,47 +135,34 @@ function sameCrns(
 function ScheduleBuilder({ term }: { term: Term }) {
   const planState = usePlan(term.code, term.name);
   const { plan } = planState;
-  const courses = useMemo(() => planCourses(plan), [plan]);
+  const courses = planCourses(plan);
   const loaded = useCourseSections(term.code, courses);
   const [rules, setRules] = useState<ScheduleRules>(DEFAULT_RULES);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [view, setView] = useState<ScheduleView>("week");
 
   const ready = loaded.status === "ready";
-  const placement = useMemo(
-    () => placeCourses(courses, loaded.sectionsByCourse, rules, ready),
-    [courses, loaded.sectionsByCourse, rules, ready],
+  const placement = placeCourses(
+    courses,
+    loaded.sectionsByCourse,
+    rules,
+    ready,
   );
   const { meetings } = placement;
   const generated = useGeneratedSchedules(meetings, placement.widened);
 
-  const allSections = useMemo(
-    () => [...loaded.sectionsByCourse.values()].flat(),
-    [loaded.sectionsByCourse],
-  );
-  const sectionsByCrn = useMemo(
-    () => new Map(allSections.map((s) => [s.courseReferenceNumber, s])),
-    [allSections],
+  const allSections = [...loaded.sectionsByCourse.values()].flat();
+  const sectionsByCrn = new Map(
+    allSections.map((s) => [s.courseReferenceNumber, s]),
   );
   const ratings = useRatings(allSections.map(primaryInstructorName));
 
   const stale = generated.status === "error";
-  const options = useMemo(
-    () =>
-      buildOptions(
-        stale ? (generated.last?.schedules ?? []) : generated.schedules,
-        sectionsByCrn,
-        ratings.byName,
-        rules.rankBy,
-      ),
-    [
-      stale,
-      generated.last,
-      generated.schedules,
-      sectionsByCrn,
-      ratings.byName,
-      rules.rankBy,
-    ],
+  const options = buildOptions(
+    stale ? (generated.last?.schedules ?? []) : generated.schedules,
+    sectionsByCrn,
+    ratings.byName,
+    rules.rankBy,
   );
   const current = options.find((o) => o.id === selectedId) ?? options[0];
   const index = current ? options.indexOf(current) : -1;

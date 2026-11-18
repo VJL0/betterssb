@@ -1,5 +1,4 @@
 import { useQueries } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
 import type { CourseDescription } from "@workspace/api-client";
 import { listSubjectCoursesOptions } from "@workspace/api-client/query";
 import { subjectsByFrequency } from "@workspace/shared/lib/plan";
@@ -36,10 +35,7 @@ function combineSubjects(
  * courses simply have no entry.
  */
 export function useCatalogCourses(codes: readonly string[], year: string) {
-  const subjects = useMemo(
-    () => subjectsByFrequency(codes).slice(0, MAX_SUBJECTS),
-    [codes],
-  );
+  const subjects = subjectsByFrequency(codes).slice(0, MAX_SUBJECTS);
   const { entries, loading } = useQueries({
     queries: subjects.map((subject) => ({
       ...listSubjectCoursesOptions({
@@ -53,9 +49,8 @@ export function useCatalogCourses(codes: readonly string[], year: string) {
     combine: combineSubjects,
   });
 
-  const catalog = useCallback(
-    (code: string) => entries.get(code) ?? null,
-    [entries],
-  );
-  return { catalog, loading };
+  return {
+    catalog: (code: string) => entries.get(code) ?? null,
+    loading,
+  };
 }

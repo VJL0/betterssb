@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CircleXIcon,
   FileUpIcon,
@@ -262,12 +262,12 @@ function AuditReport({ audit }: { audit: Audit }) {
   const { plans } = usePlans();
   const transcript = useStoreDocument("transcript").value;
   const [filter, setFilter] = useState<Filter>("all");
-  const groups = useMemo(() => auditGroups(audit), [audit]);
+  const groups = auditGroups(audit);
   const counts = countLines(groups);
   const totals = creditTotals(audit);
-  const plannedTerms = useMemo(
-    () => plannedTermByCourse(plans, (plan) => plan.termDescription),
-    [plans],
+  const plannedTerms = plannedTermByCourse(
+    plans,
+    (plan) => plan.termDescription,
   );
   const finish = totals
     ? projectedFinish(totals, plans, auditCourseKeys(audit))

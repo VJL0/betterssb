@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   ChevronDownIcon,
   CircleXIcon,
@@ -85,34 +85,17 @@ export function PlanPage() {
   const [optimizing, setOptimizing] = useState(false);
   const [showAlreadyTaken, setShowAlreadyTaken] = useState(false);
 
-  const plans = useMemo(
-    () => withCurrentTerm(savedPlans, currentTerm),
-    [savedPlans, currentTerm],
-  );
+  const plans = withCurrentTerm(savedPlans, currentTerm);
   const audit = stored.value?.audit ?? null;
-  const history = useMemo(
-    () => takenTerms(audit, storedTranscript.value?.transcript ?? null),
-    [audit, storedTranscript.value],
-  );
+  const history = takenTerms(audit, storedTranscript.value?.transcript ?? null);
   const historyByTerm = new Map(history.map((plan) => [plan.term, plan]));
   const totals = audit ? creditTotals(audit) : null;
-  const needed = useMemo(
-    () => (audit ? neededRequirements(audit) : []),
-    [audit],
-  );
-  const unplaced = useMemo(() => {
-    const placed = placedRequirements(plans);
-    return needed.filter((r) => !placed.has(r.code));
-  }, [needed, plans]);
-  const counted = useMemo(
-    () => (audit ? auditCourseKeys(audit) : new Set<string>()),
-    [audit],
-  );
+  const needed = audit ? neededRequirements(audit) : [];
+  const placed = placedRequirements(plans);
+  const unplaced = needed.filter((r) => !placed.has(r.code));
+  const counted = audit ? auditCourseKeys(audit) : new Set<string>();
   const edits = usePlanEdits({ plans, save, remove });
-  const planned = useMemo(
-    () => plannedTermByCourse(plans, (plan) => plan.termDescription),
-    [plans],
-  );
+  const planned = plannedTermByCourse(plans, (plan) => plan.termDescription);
   const bulletinYear = bulletinYearFor(
     {
       programYear: settings.program?.bulletinYear ?? null,

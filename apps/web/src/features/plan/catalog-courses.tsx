@@ -4,7 +4,7 @@ import { creditsLabel } from "@workspace/shared/lib/dars";
 
 import { useQuery } from "@tanstack/react-query";
 import { CircleXIcon, SearchIcon } from "lucide-react";
-import { useDeferredValue, useId, useMemo, useState } from "react";
+import { useDeferredValue, useId, useState } from "react";
 import {
   queryError,
   type CodeName,
@@ -145,15 +145,10 @@ export function CatalogCourses({
   const selectedSubject =
     subjectOptions.find((s) => s.code === subject) ?? null;
   const all = courses.data?.courses;
-  const { shown, matched, graduateHidden } = useMemo(() => {
-    const found = (all ?? []).filter((c) => !query || matches(c, query));
-    const visible = showGraduate ? found : found.filter((c) => !isGraduate(c));
-    return {
-      shown: visible.slice(0, COURSES_SHOWN),
-      matched: visible.length,
-      graduateHidden: found.length - visible.length,
-    };
-  }, [all, query, showGraduate]);
+  const found = (all ?? []).filter((c) => !query || matches(c, query));
+  const visible = showGraduate ? found : found.filter((c) => !isGraduate(c));
+  const shown = visible.slice(0, COURSES_SHOWN);
+  const graduateHidden = found.length - visible.length;
 
   return (
     <div className="flex flex-col gap-3">
@@ -252,9 +247,9 @@ export function CatalogCourses({
             </p>
           )}
           <div className="flex flex-col gap-1 px-2 text-xs text-muted-foreground">
-            {matched > shown.length && (
+            {visible.length > shown.length && (
               <p>
-                Showing {shown.length} of {matched}.
+                Showing {shown.length} of {visible.length}.
               </p>
             )}
             {graduateHidden > 0 && (
