@@ -147,11 +147,6 @@ class BulletinParser:
         return program
 
 
-# ---------------------------------------------------------------------------
-# Page metadata
-# ---------------------------------------------------------------------------
-
-
 def _breadcrumb(soup: BeautifulSoup) -> list[str]:
     crumbs = soup.select_one("#breadcrumb")
     if crumbs is None:
@@ -207,11 +202,6 @@ def _program_credits(categories: list[RequirementCategory]) -> str:
         if category.total_credits and PROGRAM_LIST_RE.search(category.name):
             return category.total_credits
     return next((c.total_credits for c in categories if c.total_credits), "")
-
-
-# ---------------------------------------------------------------------------
-# Tabs and sections
-# ---------------------------------------------------------------------------
 
 
 def _tab_containers(content: Tag) -> list[Tag]:
@@ -319,11 +309,6 @@ def _links(el: Tag) -> list[Link]:
     ]
 
 
-# ---------------------------------------------------------------------------
-# Course lists and plan grids
-# ---------------------------------------------------------------------------
-
-
 def _read_tables(program: DegreeProgram, container: Tag, tab: str) -> None:
     for table in container.find_all("table"):
         classes = table.get("class") or []
@@ -394,11 +379,6 @@ def _plan_headings(table: Tag, container: Tag) -> tuple[str, str]:
         elif heading.name in ("h2", "h3"):
             return text(heading), subtitle
     return "", subtitle
-
-
-# ---------------------------------------------------------------------------
-# Sections into program fields
-# ---------------------------------------------------------------------------
 
 
 def _read_section(

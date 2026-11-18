@@ -88,11 +88,6 @@ class _Row:
     attributes: list[str] = field(default_factory=list)
 
 
-# ---------------------------------------------------------------------------
-# Rows
-# ---------------------------------------------------------------------------
-
-
 def _rows(table: Tag) -> list[_Row]:
     rows: list[_Row] = []
     for tr in table.select("tbody > tr") or table.find_all("tr"):
@@ -200,11 +195,6 @@ def _credits(value: str) -> float | None:
         return None
 
 
-# ---------------------------------------------------------------------------
-# Selections
-# ---------------------------------------------------------------------------
-
-
 def _is_selection(text_: str) -> bool:
     return bool(_SELECTION_RE.search(text_))
 
@@ -233,11 +223,6 @@ def _selection_item(text_: str, credits: str, footnotes: list[str]) -> Requireme
 
 def _number(word: str) -> int:
     return int(word) if word.isdigit() else _NUMBER_WORDS[word.lower()]
-
-
-# ---------------------------------------------------------------------------
-# Course lists
-# ---------------------------------------------------------------------------
 
 
 def parse_course_list(
@@ -402,11 +387,6 @@ def parse_lab_sequences(
             if filling:
                 options.append(_row_option(row))
     return sequences
-
-
-# ---------------------------------------------------------------------------
-# Plan grids
-# ---------------------------------------------------------------------------
 
 
 def parse_plan_grid(
