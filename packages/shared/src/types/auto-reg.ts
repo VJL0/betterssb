@@ -8,7 +8,7 @@ import type { AutoRegBatchResultRecord } from "../lib/auto-reg-batch-result";
 export interface AutoRegQueue {
   /** Banner term code, e.g. "202703". */
   term: string;
-  /** CRNs in the order they're submitted. */
+  /** CRNs as they were added. Banner gets them all in one submit. */
   crns: string[];
   /** When to submit, as a `datetime-local` value in the computer's time zone. */
   scheduledRunAt: string;

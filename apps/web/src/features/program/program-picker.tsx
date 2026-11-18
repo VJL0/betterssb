@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { CircleXIcon, InfoIcon } from "lucide-react";
 import Link from "next/link";
-import { useId, useMemo } from "react";
+import { useId } from "react";
 import { queryError, type BulletinProgram } from "@workspace/api-client";
 import { listBulletinProgramsOptions } from "@workspace/api-client/query";
 import {
@@ -68,10 +68,7 @@ export function useBulletinPrograms() {
     staleTime: Infinity,
   });
   // The index also lists programs with no page of their own, which have no requirements to show.
-  const options = useMemo(
-    () => programs.data?.programs.filter((p) => p.url) ?? NO_PROGRAMS,
-    [programs.data],
-  );
+  const options = programs.data?.programs.filter((p) => p.url) ?? NO_PROGRAMS;
   // When the suggested year isn't online, the closest earlier year stands in.
   const shownYear = programs.data?.bulletinYear ?? year;
   const standIn = programs.data !== undefined && shownYear !== year;
@@ -109,7 +106,7 @@ export function ProgramPicker() {
     selectedOption,
   } = useBulletinPrograms();
   // The popup is only rendered once opened, so the prerendered page never shows this list.
-  const startTerms = useMemo(() => startTermOptions(new Date()), []);
+  const startTerms = startTermOptions(new Date());
   const startTermId = useId();
   const programId = useId();
 

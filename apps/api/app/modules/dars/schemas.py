@@ -12,44 +12,43 @@ AuditStatus = Literal["complete", "incomplete", "in_progress", "none"]
 class Progress(BaseSchema):
     credits: float | None = None
     courses: int | None = None
-    # Course sets, like a two-course lab sequence.
     sets: int | None = None
+    """Course sets, like a two-course lab sequence."""
     subrequirements: int | None = None
     gpa: float | None = None
 
 
 class AuditCourse(BaseSchema):
     term: str
-    # The Temple Banner term code for `term` ("FL24" → "202436"), when DARS gives one.
     banner_term: str = ""
+    """The Temple Banner term code for `term` ("FL24" → "202436"), when DARS gives one."""
     course: str
     title: str = ""
     credits: float | None = None
     grade: str = ""
     in_progress: bool = False
-    # DARS's condition code column, which marks repeats and other special cases.
     condition_code: str = ""
-    # Description lines after the title, such as a transfer source ("T01008: AP314").
+    """DARS's condition code column, which marks repeats and other special cases."""
     notes: list[str] = Field(default_factory=list)
-    # Credit from another institution or exam (AP, IB).
+    """Description lines after the title, such as a transfer source ("T01008: AP314")."""
     transfer: bool = False
-    # The source of transfer credit: the institution ("T01008") and its course ("AP314").
+    """Credit from another institution or exam (AP, IB)."""
     transfer_institution: str = ""
+    """The source of transfer credit: the institution ("T01008") and its course ("AP314")."""
     transfer_course: str = ""
-    # The course it counts as ("Satisfies: AMST 0855"), usually a cross-listing.
     satisfies: str = ""
-    # An advisor waiver or substitution recorded against the requirement
-    # ("CISS.TBS-14"), not a class.
+    """The course it counts as ("Satisfies: AMST 0855"), usually a cross-listing."""
     exception: bool = False
+    """An advisor waiver or substitution recorded against the requirement ("CISS.TBS-14"), not a class."""
 
 
 class ChoiceCourse(BaseSchema):
-    # A course ("CIS 3381") or a range ("CST 2000-4999").
     course: str
-    # When it has to be taken to count: "SP19 OR AFTER", "SP10-S216".
+    """A course ("CIS 3381") or a range ("CST 2000-4999")."""
     taken: str = ""
-    # The most credits it can count for ("3381(4)").
+    """When it has to be taken to count: "SP19 OR AFTER", "SP10-S216"."""
     max_credits: float | None = None
+    """The most credits it can count for ("3381(4)")."""
 
 
 class CourseChoice(BaseSchema):
@@ -60,30 +59,30 @@ class CourseChoice(BaseSchema):
 
 class SubRequirement(BaseSchema):
     number: str = ""
-    # DARS's code for it ("CISS.TBS-13"); exceptions use it as their course.
     code: str = ""
-    # Other codes it answers to, such as a minor's shared GenEd rule ("MINORGENED").
+    """DARS's code for it ("CISS.TBS-13"); exceptions use it as their course."""
     aliases: list[str] = Field(default_factory=list)
+    """Other codes it answers to, such as a minor's shared GenEd rule ("MINORGENED")."""
     title: str = ""
     notes: list[str] = Field(default_factory=list)
     status: AuditStatus
-    # DARS's "R" marker: it has to be met even when its requirement's count is.
     required: bool = False
+    """DARS's "R" marker: it has to be met even when its requirement's count is."""
     required_credits: float | None = None
-    # Courses or sets to complete, in the unit its progress counts.
     required_count: int | None = None
+    """Courses or sets to complete, in the unit its progress counts."""
     required_gpa: float | None = None
     max_credits: float | None = None
     earned: Progress | None = None
     in_progress: Progress | None = None
     needs: Progress | None = None
     courses: list[AuditCourse] = Field(default_factory=list)
-    # Every course and range under SELECT FROM, in display order.
     select_from: list[str] = Field(default_factory=list)
-    # The same options grouped into choices, with their limits.
+    """Every course and range under SELECT FROM, in display order."""
     choices: list[CourseChoice] = Field(default_factory=list)
-    # Courses that can't count toward it.
+    """The same options grouped into choices, with their limits."""
     not_from: list[str] = Field(default_factory=list)
+    """Courses that can't count toward it."""
 
 
 class Requirement(BaseSchema):
@@ -106,8 +105,8 @@ class Requirement(BaseSchema):
 class HoursSummary(BaseSchema):
     """Credit hours from the audit's progress chart, for the degree or one category."""
 
-    # "GENED", "MAJOR", "MINOR", "ELECTIVES"; empty for the whole degree.
     category: str = ""
+    """"GENED", "MAJOR", "MINOR", "ELECTIVES"; empty for the whole degree."""
     completed_credits: float = 0.0
     in_progress_credits: float = 0.0
     unfulfilled_credits: float = 0.0
@@ -124,8 +123,8 @@ class Audit(BaseSchema):
     prepared_on: str = ""
     graduation_date: str = ""
     complete: bool | None = None
-    # The page ends with DARS's "END OF ANALYSIS" line, so nothing was cut off.
     analysis_complete: bool = False
+    """The page ends with DARS's "END OF ANALYSIS" line, so nothing was cut off."""
     degree_totals: HoursSummary | None = None
     category_totals: list[HoursSummary] = Field(default_factory=list)
     requirements: list[Requirement] = Field(default_factory=list)

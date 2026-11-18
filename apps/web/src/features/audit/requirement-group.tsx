@@ -1,3 +1,4 @@
+import { creditsLabel } from "@workspace/shared/lib/dars";
 import { useId, useState } from "react";
 import { ChevronDownIcon, SearchIcon } from "lucide-react";
 import type {
@@ -38,7 +39,7 @@ function plannedTerm(
   return null;
 }
 
-/** One DARS requirement as a collapsible card of its lines (W3.1). */
+/** One DARS requirement as a collapsible card of its lines. */
 export function RequirementGroup({
   group,
   lines,
@@ -154,7 +155,7 @@ function Line({
       <span className="col-start-2 flex items-center gap-3 whitespace-nowrap sm:col-start-3">
         {line.credits && (
           <span className="text-muted-foreground tabular-nums">
-            {line.credits} cr
+            {creditsLabel(line.credits)}
           </span>
         )}
         {findable && (

@@ -12,7 +12,7 @@ export const LONG_GAP_MINUTES = 2 * MINUTES_PER_HOUR;
 
 export interface ScheduleStats {
   daysOnCampus: WeekDay[];
-  /** Minutes after midnight of the earliest class, or null with none. */
+  /** Minutes after midnight, or null with no classes. */
   earliestStart: number | null;
   latestEnd: number | null;
   /** Total free time between classes on the same day. */
@@ -70,7 +70,6 @@ export function scheduleStats(sections: readonly Section[]): ScheduleStats {
   };
 }
 
-/** True if every meeting falls on an allowed day. */
 export function usesOnlyDays(
   sections: readonly Section[],
   allowed: ReadonlySet<WeekDay>,

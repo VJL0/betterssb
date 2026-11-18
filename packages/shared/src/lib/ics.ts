@@ -9,12 +9,12 @@ export interface CalendarMeeting {
   summary: string;
   location: string;
   description: string;
-  /** Banner days string, e.g. "TR". */
+  /** Banner days, e.g. "TR". */
   days: string;
   /** Minutes after midnight. */
   start: number;
   end: number;
-  /** First and last day of classes, "MM/DD/YYYY" as Banner sends them. */
+  /** "MM/DD/YYYY", as Banner sends it. */
   startDate: string;
   endDate: string;
 }

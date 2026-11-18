@@ -25,7 +25,6 @@ interface ScheduleSectionsTableProps {
   ratings: Ratings;
 }
 
-/** Every section in the chosen schedule, with CRNs to register with. */
 export function ScheduleSectionsTable({
   heading,
   sections,
@@ -41,7 +40,7 @@ export function ScheduleSectionsTable({
       <h2 id="schedule-sections-heading" className="px-5 text-base font-medium">
         {heading}
       </h2>
-      {/* Under 640px tables become stacked items (W-Mobile). */}
+      {/* Under 640px tables become stacked items. */}
       <ul className="flex flex-col divide-y px-5 pb-3 sm:hidden">
         {sections.map((section) => (
           <li

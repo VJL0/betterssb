@@ -23,10 +23,7 @@ from app.modules.schedule.schemas import (
     SchedulePreferences,
     Section,
 )
-from app.modules.transcript.schemas import (
-    DegreeRequirement,
-    TranscriptCourse,
-)
+from app.modules.transcript.schemas import TranscriptCourse
 
 
 class TestCourseModels:
@@ -123,15 +120,6 @@ class TestTranscriptModels:
             term="Fall 2024",
         )
         assert tc.grade == "A"
-
-    def test_degree_requirement(self):
-        dr = DegreeRequirement(
-            name="Core CS",
-            required_courses=["CIS 1068", "CIS 2168"],
-            completed_courses=["CIS 1068"],
-            remaining_courses=["CIS 2168"],
-        )
-        assert len(dr.remaining_courses) == 1
 
 
 class TestDegreeModels:

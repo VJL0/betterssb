@@ -1,35 +1,23 @@
-import { formatTimeRange } from "@workspace/shared/lib/meeting-times";
+import type { SectionSummary } from "@workspace/api-client";
 import { courseCode } from "@workspace/shared/lib/plan";
 import type { SSBRegPlanHeader } from "@workspace/shared/types/ssb";
-import type { PlannedSection, TermPlan } from "@workspace/shared/types/store";
+import type { TermPlan } from "@workspace/shared/types/store";
 
 export interface QueueRow {
   crn: string;
-  /** "CIS 2168", when a plan names the CRN. */
+  /** "CIS 2168", once a plan or Banner names the CRN. */
   code: string | null;
   /** Banner's subjectCourse ("CIS2168"), for course colors and seats. */
   courseId: string | null;
   title: string | null;
   section: string | null;
   credits: number | null;
-  /** "TR 9:30–10:50 AM", when the plan has meeting times. */
-  meets: string | null;
-}
-
-function meetsOf(section: PlannedSection): string | null {
-  const timed = section.meetings.filter(
-    (m) => m.start !== null && m.end !== null && m.days,
-  );
-  if (timed.length === 0) return null;
-  return timed
-    .map((m) => `${m.days} ${formatTimeRange(m.start!, m.end!)}`)
-    .join(", ");
 }
 
 /**
  * The queued CRNs, described from the student's saved plans for the term,
  * or from a Banner plan when that's where they came from. A typed-in CRN
- * that neither names is shown by number only.
+ * that neither names is left for `withLookedUp`.
  */
 export function queueRows(
   crns: readonly string[],
@@ -59,7 +47,6 @@ export function queueRows(
         title: section.title,
         section: section.section,
         credits: section.credits,
-        meets: meetsOf(section),
       };
     }
     const course = banner.get(crn);
@@ -71,7 +58,6 @@ export function queueRows(
         title: course.courseTitle,
         section: course.section,
         credits: course.creditHours,
-        meets: null,
       };
     }
     return {
@@ -81,12 +67,33 @@ export function queueRows(
       title: null,
       section: null,
       credits: null,
-      meets: null,
     };
   });
 }
 
-/** Credit hours for the queue, counting a course once (a lecture and its lab). */
+/**
+ * Fills in the rows no plan names from Banner's class details by CRN, so
+ * every queued section shows its course.
+ */
+export function withLookedUp(
+  rows: readonly QueueRow[],
+  lookedUp: ReadonlyMap<string, SectionSummary>,
+): QueueRow[] {
+  return rows.map((row) => {
+    const found = row.title === null ? lookedUp.get(row.crn) : undefined;
+    if (!found) return row;
+    const { subject, courseNumber } = found;
+    return {
+      ...row,
+      code: subject ? courseCode(subject, courseNumber) : null,
+      courseId: subject ? `${subject}${courseNumber}` : null,
+      title: found.title,
+      section: found.section,
+    };
+  });
+}
+
+/** Credits for the queue, counting a course once (a lecture and its lab). */
 export function queueCredits(rows: readonly QueueRow[]): number {
   const byCourse = new Map<string, number>();
   for (const row of rows) {

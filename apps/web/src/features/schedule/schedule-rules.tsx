@@ -1,3 +1,4 @@
+import { creditsLabel } from "@workspace/shared/lib/dars";
 import { useId } from "react";
 import type { CourseColor } from "@workspace/shared/lib/course-colors";
 import {
@@ -47,7 +48,6 @@ interface ScheduleRulesProps {
   ratingsReady: boolean;
 }
 
-/** The W2.2 rules card: hard limits on days and times, ranking, and per-course choices. */
 export function ScheduleRulesCard({
   rules,
   onChange,
@@ -204,7 +204,10 @@ function CourseRow({
       <span className="min-w-0 flex-1">
         {course.code}
         {course.credits !== null && (
-          <span className="text-muted-foreground"> · {course.credits} cr</span>
+          <span className="text-muted-foreground">
+            {" "}
+            · {creditsLabel(course.credits)}
+          </span>
         )}
         {note && (
           <span className="block text-xs text-muted-foreground">{note}</span>

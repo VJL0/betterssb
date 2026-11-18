@@ -9,7 +9,7 @@ import {
   classSection,
   meetingTime,
 } from "@workspace/shared/testing/class-section";
-import { queueCredits, queueRows } from "./queue-rows";
+import { queueCredits, queueRows, withLookedUp } from "./queue-rows";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
@@ -50,15 +50,53 @@ describe("queueRows", () => {
       [plan],
       [bannerPlan],
     );
-    expect(rows.map((r) => [r.crn, r.code, r.section, r.meets])).toEqual([
-      ["41207", "CIS 2168", "001", "TR 9:30–10:50 AM"],
-      ["52018", "MATH 2101", "001", null],
-      ["99999", null, null, null],
+    expect(rows.map((r) => [r.crn, r.code, r.section])).toEqual([
+      ["41207", "CIS 2168", "001"],
+      ["52018", "MATH 2101", "001"],
+      ["99999", null, null],
     ]);
   });
 
   it("ignores plans for other terms", () => {
     expect(queueRows(["41207"], "202736", [plan])[0]!.code).toBeNull();
+  });
+});
+
+describe("withLookedUp", () => {
+  const softwareSecurity = {
+    crn: "50067",
+    title: "Software Security",
+    subject: "CIS",
+    courseNumber: "3441",
+    section: "702",
+  };
+
+  it("names CRNs no plan names, and leaves planned ones alone", () => {
+    const rows = withLookedUp(
+      queueRows(["41207", "50067", "99999"], "202703", [plan]),
+      new Map([
+        ["41207", { ...softwareSecurity, crn: "41207" }],
+        ["50067", softwareSecurity],
+      ]),
+    );
+    expect(rows.map((r) => [r.crn, r.code, r.section, r.title])).toEqual([
+      ["41207", "CIS 2168", "001", "Data Structures"],
+      ["50067", "CIS 3441", "702", "Software Security"],
+      ["99999", null, null, null],
+    ]);
+    expect(rows[1]!.courseId).toBe("CIS3441");
+  });
+
+  it("keeps the title when Banner's subject has no code", () => {
+    const [row] = withLookedUp(
+      queueRows(["50067"], "202703", []),
+      new Map([["50067", { ...softwareSecurity, subject: null }]]),
+    );
+    expect([row!.code, row!.courseId, row!.title]).toEqual([
+      null,
+      null,
+      "Software Security",
+    ]);
   });
 });
 

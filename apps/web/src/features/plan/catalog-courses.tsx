@@ -1,8 +1,10 @@
 "use client";
 
+import { creditsLabel } from "@workspace/shared/lib/dars";
+
 import { useQuery } from "@tanstack/react-query";
 import { CircleXIcon, SearchIcon } from "lucide-react";
-import { useDeferredValue, useId, useMemo, useState } from "react";
+import { useDeferredValue, useId, useState } from "react";
 import {
   queryError,
   type CodeName,
@@ -106,7 +108,7 @@ function CourseDetails({ course }: { course: CourseDescription }) {
   );
 }
 
-/** W2.3 panel tab: every course of a subject in the student's Bulletin year. */
+/** Panel tab: every course of a subject in the student's Bulletin year. */
 export function CatalogCourses({
   year,
   initialSubject,
@@ -143,15 +145,10 @@ export function CatalogCourses({
   const selectedSubject =
     subjectOptions.find((s) => s.code === subject) ?? null;
   const all = courses.data?.courses;
-  const { shown, matched, graduateHidden } = useMemo(() => {
-    const found = (all ?? []).filter((c) => !query || matches(c, query));
-    const visible = showGraduate ? found : found.filter((c) => !isGraduate(c));
-    return {
-      shown: visible.slice(0, COURSES_SHOWN),
-      matched: visible.length,
-      graduateHidden: found.length - visible.length,
-    };
-  }, [all, query, showGraduate]);
+  const found = (all ?? []).filter((c) => !query || matches(c, query));
+  const visible = showGraduate ? found : found.filter((c) => !isGraduate(c));
+  const shown = visible.slice(0, COURSES_SHOWN);
+  const graduateHidden = found.length - visible.length;
 
   return (
     <div className="flex flex-col gap-3">
@@ -234,7 +231,9 @@ export function CatalogCourses({
                   key={course.code}
                   course={newCourse(course)}
                   subtitle={course.title}
-                  credits={course.credits ? `${course.credits} cr` : null}
+                  credits={
+                    course.credits ? `${creditsLabel(course.credits)}` : null
+                  }
                   status={statusOf(course.code)}
                   targetName={targetName}
                   onAdd={() => onAdd(newCourse(course))}
@@ -248,9 +247,9 @@ export function CatalogCourses({
             </p>
           )}
           <div className="flex flex-col gap-1 px-2 text-xs text-muted-foreground">
-            {matched > shown.length && (
+            {visible.length > shown.length && (
               <p>
-                Showing {shown.length} of {matched}. Search to narrow them down.
+                Showing {shown.length} of {visible.length}.
               </p>
             )}
             {graduateHidden > 0 && (

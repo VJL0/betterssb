@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   gpaOf,
   gpaTotals,
@@ -50,16 +50,14 @@ export function useGpaWhatIf(courses: readonly SavedCourse[]): GpaWhatIf {
   // Keyed by the course itself; a re-saved transcript starts fresh.
   const [grades, setGrades] = useState<TriedGrades>(new Map());
 
-  const totals = useMemo(() => {
-    const tried = courses.map((course) => triedCourse(grades, course));
-    return {
-      now: gpaTotals(courses),
-      whatIf: gpaTotals(tried),
-      openCredits: tried
-        .filter((c) => c.category === "in_progress" && !isLetterGrade(c.grade))
-        .reduce((sum, c) => sum + c.credits, 0),
-    };
-  }, [courses, grades]);
+  const tried = courses.map((course) => triedCourse(grades, course));
+  const totals = {
+    now: gpaTotals(courses),
+    whatIf: gpaTotals(tried),
+    openCredits: tried
+      .filter((c) => c.category === "in_progress" && !isLetterGrade(c.grade))
+      .reduce((sum, c) => sum + c.credits, 0),
+  };
 
   return {
     active,

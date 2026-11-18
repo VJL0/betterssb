@@ -44,8 +44,8 @@ class TranscriptField(BaseSchema):
 class TranscriptTotals(BaseSchema):
     label: str
     level: str | None = None
-    # Preserve the printed labels (including CEU Hours) and decimal precision.
     values: dict[str, str]
+    """The printed labels (CEU Hours included) and their values, decimals kept as printed."""
     source_lines: list[int]
 
 

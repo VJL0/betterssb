@@ -10,12 +10,12 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
 from app.api.deps import DbDep, SettingsDep
 from app.core.cache import Cache, cache_claim, get_cache
 from app.modules.auth.dependencies import CurrentUserDep
-from app.modules.seat_tracker import service
-from app.modules.seat_tracker.client import (
+from app.modules.classes.section_client import (
     BannerSectionClient,
     SectionNotFound,
     SectionUnavailable,
 )
+from app.modules.seat_tracker import service
 from app.modules.seat_tracker.mailer import create_mailer
 from app.modules.seat_tracker.schemas import (
     SeatCheckSummary,

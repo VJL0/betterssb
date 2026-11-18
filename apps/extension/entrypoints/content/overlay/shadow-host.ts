@@ -28,7 +28,6 @@ export interface ShadowHost {
   container: HTMLElement;
 }
 
-/** This content script's hosts and their containers. */
 const containers = new WeakMap<Element, HTMLElement>();
 
 /**

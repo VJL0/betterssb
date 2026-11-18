@@ -16,22 +16,11 @@ import {
 } from "@workspace/ui/components/table";
 import { ButtonLink } from "@/components/button-link";
 import { BANNER_REGISTRATION_URL } from "@/lib/config";
+import { formatDateTime } from "@/lib/relative-time";
 
-function ranAt(iso: string): string {
-  return new Date(iso).toLocaleString("en", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-}
-
-/** W4.1 results: the last batch's outcome, CRN by CRN. */
 export function LastRun({ result }: { result: AutoRegBatchResultRecord }) {
   const heading =
-    outcomeHeadline(result) ??
-    (result.ok ? "Submitted" : "The run didn't go through");
+    outcomeHeadline(result) ?? (result.ok ? "Submitted" : "Didn't go through");
 
   return (
     <Card
@@ -42,12 +31,12 @@ export function LastRun({ result }: { result: AutoRegBatchResultRecord }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-0.5">
           <h2 id="last-run-heading" className="text-base font-medium">
-            Last run · {heading}
+            Last attempt · {heading}
           </h2>
           <p className="text-muted-foreground">
-            Submitted {ranAt(result.at)}
+            Submitted {formatDateTime(result.at)}
             {result.registeredHours &&
-              ` · ${result.registeredHours} credit hours registered`}
+              ` · ${result.registeredHours} credits registered`}
           </p>
         </div>
         <ButtonLink href={BANNER_REGISTRATION_URL} variant="outline" size="sm">

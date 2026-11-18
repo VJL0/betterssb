@@ -243,6 +243,7 @@
         "properties": {
           "analysisComplete": {
             "default": false,
+            "description": "The page ends with DARS's \"END OF ANALYSIS\" line, so nothing was cut off.",
             "title": "Analysiscomplete",
             "type": "boolean"
           },
@@ -332,11 +333,13 @@
         "properties": {
           "bannerTerm": {
             "default": "",
+            "description": "The Temple Banner term code for `term` (\"FL24\" → \"202436\"), when DARS gives one.",
             "title": "Bannerterm",
             "type": "string"
           },
           "conditionCode": {
             "default": "",
+            "description": "DARS's condition code column, which marks repeats and other special cases.",
             "title": "Conditioncode",
             "type": "string"
           },
@@ -357,6 +360,7 @@
           },
           "exception": {
             "default": false,
+            "description": "An advisor waiver or substitution recorded against the requirement (\"CISS.TBS-14\"), not a class.",
             "title": "Exception",
             "type": "boolean"
           },
@@ -371,6 +375,7 @@
             "type": "boolean"
           },
           "notes": {
+            "description": "Description lines after the title, such as a transfer source (\"T01008: AP314\").",
             "items": {
               "type": "string"
             },
@@ -379,6 +384,7 @@
           },
           "satisfies": {
             "default": "",
+            "description": "The course it counts as (\"Satisfies: AMST 0855\"), usually a cross-listing.",
             "title": "Satisfies",
             "type": "string"
           },
@@ -393,6 +399,7 @@
           },
           "transfer": {
             "default": false,
+            "description": "Credit from another institution or exam (AP, IB).",
             "title": "Transfer",
             "type": "boolean"
           },
@@ -403,6 +410,7 @@
           },
           "transferInstitution": {
             "default": "",
+            "description": "The source of transfer credit: the institution (\"T01008\") and its course (\"AP314\").",
             "title": "Transferinstitution",
             "type": "string"
           }
@@ -431,11 +439,13 @@
         "properties": {
           "college": {
             "default": "",
+            "description": "The index's school or college code, e.g. \"ST\" for Science and Technology.",
             "title": "College",
             "type": "string"
           },
           "collegeName": {
             "default": "",
+            "description": "The index key's name for that code, e.g. \"College of Science & Technology\".",
             "title": "Collegename",
             "type": "string"
           },
@@ -445,11 +455,13 @@
           },
           "degreeName": {
             "default": "",
+            "description": "The degree symbol's meaning, e.g. \"Bachelor of Science\" for \"BS\".",
             "title": "Degreename",
             "type": "string"
           },
           "hasOptions": {
             "default": false,
+            "description": "The index marks programs with emphasis or concentration options with * or ^.",
             "title": "Hasoptions",
             "type": "boolean"
           },
@@ -462,11 +474,13 @@
           },
           "note": {
             "default": "",
+            "description": "The index's parenthetical, e.g. \"not currently accepting applications\".",
             "title": "Note",
             "type": "string"
           },
           "url": {
             "default": "",
+            "description": "Empty for a program the index lists without a page (\"Diploma\", \"PhD/MD\").",
             "title": "Url",
             "type": "string"
           }
@@ -493,6 +507,7 @@
             "type": "string"
           },
           "colleges": {
+            "description": "The index's keys: school and college codes, and degree symbols.",
             "items": {
               "$ref": "#/components/schemas/CodeName"
             },
@@ -507,6 +522,7 @@
             "type": "array"
           },
           "introduction": {
+            "description": "The paragraphs above the chart, and the pages they link.",
             "items": {
               "type": "string"
             },
@@ -521,6 +537,7 @@
             "type": "array"
           },
           "programTypes": {
+            "description": "What a major, minor, concentration and certificate are.",
             "items": {
               "$ref": "#/components/schemas/Definition"
             },
@@ -536,6 +553,7 @@
           },
           "requestedYear": {
             "default": "",
+            "description": "The year asked for. When that year's Bulletin isn't online, an earlier year stands in and `bulletin_year` says which.",
             "title": "Requestedyear",
             "type": "string"
           },
@@ -567,6 +585,7 @@
           },
           "requestedYear": {
             "default": "",
+            "description": "The year asked for, when an earlier year stands in (see BulletinProgramIndex).",
             "title": "Requestedyear",
             "type": "string"
           },
@@ -655,6 +674,7 @@
       "ChoiceCourse": {
         "properties": {
           "course": {
+            "description": "A course (\"CIS 3381\") or a range (\"CST 2000-4999\").",
             "title": "Course",
             "type": "string"
           },
@@ -667,10 +687,12 @@
                 "type": "null"
               }
             ],
+            "description": "The most credits it can count for (\"3381(4)\").",
             "title": "Maxcredits"
           },
           "taken": {
             "default": "",
+            "description": "When it has to be taken to count: \"SP19 OR AFTER\", \"SP10-S216\".",
             "title": "Taken",
             "type": "string"
           }
@@ -985,6 +1007,7 @@
           },
           "group": {
             "default": "",
+            "description": "The heading it's listed under, such as \"Temple Japan Campus\" or \"Admissions\".",
             "title": "Group",
             "type": "string"
           },
@@ -1000,6 +1023,7 @@
           },
           "title": {
             "default": "",
+            "description": "What follows the name on its line, e.g. \"Chair\", \"PhD, Faculty Advisor\".",
             "title": "Title",
             "type": "string"
           },
@@ -1042,6 +1066,7 @@
         "description": "A course's entry in the Bulletin's course descriptions.",
         "properties": {
           "attributes": {
+            "description": "Course attribute codes, e.g. \"GQ\", \"WI\", \"HO\".",
             "items": {
               "type": "string"
             },
@@ -1071,6 +1096,7 @@
           },
           "credits": {
             "default": "",
+            "description": "\"3\", or a range like \"1 to 4\".",
             "title": "Credits",
             "type": "string"
           },
@@ -1080,6 +1106,7 @@
             "type": "string"
           },
           "other": {
+            "description": "Other labelled lines the entry has.",
             "items": {
               "$ref": "#/components/schemas/Fact"
             },
@@ -1087,6 +1114,7 @@
             "type": "array"
           },
           "prerequisiteCourses": {
+            "description": "Course codes linked in the prerequisites and corequisites.",
             "items": {
               "type": "string"
             },
@@ -1104,6 +1132,7 @@
             "type": "string"
           },
           "restrictions": {
+            "description": "Enrollment restrictions by kind, e.g. \"Field of Study Restrictions\".",
             "items": {
               "$ref": "#/components/schemas/Fact"
             },
@@ -1150,6 +1179,7 @@
           },
           "group": {
             "default": "",
+            "description": "The subheading it's listed under in a long selection, e.g. \"Anthropology\".",
             "title": "Group",
             "type": "string"
           },
@@ -1172,6 +1202,7 @@
         "description": "A reference to a single course in the bulletin.",
         "properties": {
           "attributes": {
+            "description": "GenEd and other attribute codes the page tags it with, e.g. \"GW\", \"WI\".",
             "items": {
               "type": "string"
             },
@@ -1254,11 +1285,13 @@
           },
           "appliesTo": {
             "default": "",
+            "description": "Who the requirements apply to (\"…students who matriculated in academic year 2024-2025\").",
             "title": "Appliesto",
             "type": "string"
           },
           "archiveNotice": {
             "default": "",
+            "description": "The archive banner, when the page is from a past Bulletin.",
             "title": "Archivenotice",
             "type": "string"
           },
@@ -1338,11 +1371,13 @@
           },
           "labScienceTitle": {
             "default": "",
+            "description": "The heading over the lab science sequences.",
             "title": "Labsciencetitle",
             "type": "string"
           },
           "level": {
             "default": "",
+            "description": "\"Undergraduate\" or \"Graduate and Professional\", from the breadcrumb.",
             "title": "Level",
             "type": "string"
           },
@@ -1369,10 +1404,12 @@
           },
           "programPageUrl": {
             "default": "",
+            "description": "The program's page on temple.edu (\"Learn more about…\").",
             "title": "Programpageurl",
             "type": "string"
           },
           "sections": {
+            "description": "Every heading, paragraph, list and plain table on the page, by tab.",
             "items": {
               "$ref": "#/components/schemas/PageSection"
             },
@@ -1387,7 +1424,8 @@
               {
                 "type": "null"
               }
-            ]
+            ],
+            "description": "The first of `suggested_plans`."
           },
           "suggestedPlans": {
             "items": {
@@ -1569,6 +1607,7 @@
         "properties": {
           "category": {
             "default": "",
+            "description": "\"GENED\", \"MAJOR\", \"MINOR\", \"ELECTIVES\"; empty for the whole degree.",
             "title": "Category",
             "type": "string"
           },
@@ -1700,6 +1739,7 @@
         "properties": {
           "group": {
             "default": "",
+            "description": "The college or heading it's listed under.",
             "title": "Group",
             "type": "string"
           },
@@ -1724,6 +1764,7 @@
         "properties": {
           "level": {
             "default": 0,
+            "description": "Nesting depth, 0 for a top-level item.",
             "title": "Level",
             "type": "integer"
           },
@@ -1937,6 +1978,7 @@
         "description": "A paragraph, list or plain table in one of the page's tabs.",
         "properties": {
           "courses": {
+            "description": "Course codes linked in the text (\"SCTC 1001\").",
             "items": {
               "type": "string"
             },
@@ -1961,10 +2003,12 @@
           },
           "label": {
             "default": "",
+            "description": "A bold lead-in such as \"Campus Location\" or \"Application Deadline\".",
             "title": "Label",
             "type": "string"
           },
           "lines": {
+            "description": "A paragraph's lines (split where the page breaks them), without the label.",
             "items": {
               "type": "string"
             },
@@ -2012,6 +2056,7 @@
             "type": "array"
           },
           "headings": {
+            "description": "Headings from the tab's top down to this section, e.g. [\"Accelerated Programs\"].",
             "items": {
               "type": "string"
             },
@@ -2275,6 +2320,7 @@
         "description": "A single slot in the suggested academic plan grid.",
         "properties": {
           "attributes": {
+            "description": "Attribute codes on a placeholder, e.g. \"GQ\" on \"GenEd Quantitative Literacy Course\".",
             "items": {
               "type": "string"
             },
@@ -2289,7 +2335,8 @@
               {
                 "type": "null"
               }
-            ]
+            ],
+            "description": "The first option, kept for readers that show one course per slot."
           },
           "credits": {
             "default": "",
@@ -2304,6 +2351,7 @@
             "type": "array"
           },
           "options": {
+            "description": "Every option for the slot: alternatives (\"MATH 1041 or MATH 1941\") or the courses listed under \"Select one of the following:\".",
             "items": {
               "$ref": "#/components/schemas/CourseOption"
             },
@@ -2312,6 +2360,7 @@
           },
           "placeholder": {
             "default": "",
+            "description": "The slot's words when it isn't a course: \"Elective\", \"GenEd Breadth Course\", \"Select one of the following:\".",
             "title": "Placeholder",
             "type": "string"
           }
@@ -2374,30 +2423,6 @@
           "semesters"
         ],
         "title": "PlanYear",
-        "type": "object"
-      },
-      "PrereqCheckRequest": {
-        "properties": {
-          "completed": {
-            "items": {
-              "$ref": "#/components/schemas/TranscriptCourse"
-            },
-            "title": "Completed",
-            "type": "array"
-          },
-          "required": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Required",
-            "type": "array"
-          }
-        },
-        "required": [
-          "completed",
-          "required"
-        ],
-        "title": "PrereqCheckRequest",
         "type": "object"
       },
       "Problem": {
@@ -2557,6 +2582,7 @@
                 "type": "null"
               }
             ],
+            "description": "Course sets, like a two-course lab sequence.",
             "title": "Sets"
           },
           "subrequirements": {
@@ -2806,6 +2832,7 @@
             "type": "string"
           },
           "notes": {
+            "description": "The list's footnotes, in order.",
             "items": {
               "type": "string"
             },
@@ -2814,6 +2841,7 @@
           },
           "tab": {
             "default": "",
+            "description": "The page tab it's on, e.g. \"Requirements\", \"Academic Plan\".",
             "title": "Tab",
             "type": "string"
           },
@@ -2838,6 +2866,7 @@
         "description": "A named cluster of requirement items within a category.\n\nExamples: \"Computer & Information Science courses\",\n\"Computer Science Electives\", \"Mathematics\", \"Laboratory Science courses\".",
         "properties": {
           "constraints": {
+            "description": "Note rows in the group (\"Note: Satisfying the GenEd World Society…\").",
             "items": {
               "type": "string"
             },
@@ -2846,6 +2875,7 @@
           },
           "credits": {
             "default": "",
+            "description": "Credits the group's header row gives, e.g. \"18-15\" for \"Electives\".",
             "title": "Credits",
             "type": "string"
           },
@@ -2882,10 +2912,12 @@
                 "type": "null"
               }
             ],
+            "description": "How many options to pick (\"Select two of the following\" → 2).",
             "title": "Choosecount"
           },
           "chooseCredits": {
             "default": "",
+            "description": "How many credits to pick (\"Select 15-16 credits\" → \"15-16\").",
             "title": "Choosecredits",
             "type": "string"
           },
@@ -3261,6 +3293,48 @@
         "title": "Section",
         "type": "object"
       },
+      "SectionSummary": {
+        "description": "The course a CRN belongs to, from Banner's class details.",
+        "properties": {
+          "courseNumber": {
+            "title": "Coursenumber",
+            "type": "string"
+          },
+          "crn": {
+            "title": "Crn",
+            "type": "string"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Subject code, such as CIS; null if Banner's subject name matches none of the term's subjects.",
+            "title": "Subject"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "crn",
+          "title",
+          "subject",
+          "courseNumber",
+          "section"
+        ],
+        "title": "SectionSummary",
+        "type": "object"
+      },
       "SelectionType": {
         "description": "How the student fulfills a requirement item.",
         "enum": [
@@ -3274,6 +3348,7 @@
       "SubRequirement": {
         "properties": {
           "aliases": {
+            "description": "Other codes it answers to, such as a minor's shared GenEd rule (\"MINORGENED\").",
             "items": {
               "type": "string"
             },
@@ -3281,6 +3356,7 @@
             "type": "array"
           },
           "choices": {
+            "description": "The same options grouped into choices, with their limits.",
             "items": {
               "$ref": "#/components/schemas/CourseChoice"
             },
@@ -3289,6 +3365,7 @@
           },
           "code": {
             "default": "",
+            "description": "DARS's code for it (\"CISS.TBS-13\"); exceptions use it as their course.",
             "title": "Code",
             "type": "string"
           },
@@ -3341,6 +3418,7 @@
             ]
           },
           "notFrom": {
+            "description": "Courses that can't count toward it.",
             "items": {
               "type": "string"
             },
@@ -3361,6 +3439,7 @@
           },
           "required": {
             "default": false,
+            "description": "DARS's \"R\" marker: it has to be met even when its requirement's count is.",
             "title": "Required",
             "type": "boolean"
           },
@@ -3373,6 +3452,7 @@
                 "type": "null"
               }
             ],
+            "description": "Courses or sets to complete, in the unit its progress counts.",
             "title": "Requiredcount"
           },
           "requiredCredits": {
@@ -3398,6 +3478,7 @@
             "title": "Requiredgpa"
           },
           "selectFrom": {
+            "description": "Every course and range under SELECT FROM, in display order.",
             "items": {
               "type": "string"
             },
@@ -3487,11 +3568,13 @@
           },
           "name": {
             "default": "",
+            "description": "The heading above the grid, e.g. \"Bachelor of Science in Computer Science\".",
             "title": "Name",
             "type": "string"
           },
           "subtitle": {
             "default": "",
+            "description": "A subheading, e.g. \"Suggested Plan for New Students Starting in the 2024-2025 Academic Year\".",
             "title": "Subtitle",
             "type": "string"
           },
@@ -3516,44 +3599,6 @@
           "footnotes"
         ],
         "title": "SuggestedPlan",
-        "type": "object"
-      },
-      "TranscriptCourse": {
-        "properties": {
-          "courseNumber": {
-            "title": "Coursenumber",
-            "type": "string"
-          },
-          "credits": {
-            "title": "Credits",
-            "type": "number"
-          },
-          "grade": {
-            "title": "Grade",
-            "type": "string"
-          },
-          "subject": {
-            "title": "Subject",
-            "type": "string"
-          },
-          "term": {
-            "title": "Term",
-            "type": "string"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          }
-        },
-        "required": [
-          "subject",
-          "courseNumber",
-          "title",
-          "grade",
-          "credits",
-          "term"
-        ],
-        "title": "TranscriptCourse",
         "type": "object"
       },
       "TranscriptDiagnostic": {
@@ -3834,6 +3879,7 @@
             "additionalProperties": {
               "type": "string"
             },
+            "description": "The printed labels (CEU Hours included) and their values, decimals kept as printed.",
             "title": "Values",
             "type": "object"
           }
@@ -4599,6 +4645,74 @@
           }
         },
         "summary": "Search Sections",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/classes/sections/{crn}": {
+      "get": {
+        "description": "The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.",
+        "operationId": "get_section",
+        "parameters": [
+          {
+            "description": "Four- or five-digit CRN",
+            "in": "path",
+            "name": "crn",
+            "required": true,
+            "schema": {
+              "description": "Four- or five-digit CRN",
+              "pattern": "^\\d{4,5}$",
+              "title": "Crn",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Banner term code",
+            "in": "query",
+            "name": "term",
+            "required": true,
+            "schema": {
+              "description": "Banner term code",
+              "pattern": "^\\d{6}$",
+              "title": "Term",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Get Section",
         "tags": [
           "classes"
         ]
@@ -5411,62 +5525,6 @@
         "summary": "Delete Seat Watch",
         "tags": [
           "seat-tracker"
-        ]
-      }
-    },
-    "/api/transcript/check-prereqs": {
-      "post": {
-        "description": "Check which prerequisite courses have been completed.",
-        "operationId": "check_prerequisites",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PrereqCheckRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "type": "boolean"
-                  },
-                  "title": "Response Check Prerequisites",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "Check Prerequisites",
-        "tags": [
-          "transcript"
         ]
       }
     },

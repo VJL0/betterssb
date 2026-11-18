@@ -9,22 +9,31 @@ import { askBackground } from "@/lib/ask-background";
 
 const AUTO_REGISTER = ["autoRegister"] as const;
 const BANNER_CONNECTION = ["bannerConnection"] as const;
+const AUTO_REGISTER_STORAGE = [AUTO_REG_RUN_STATE_KEY, AUTO_REG_QUEUE_KEY];
+const BANNER_CONNECTION_STORAGE = [BANNER_CONNECTION_KEY];
 /** Each check asks Banner, so an open popup rechecks this often. */
 const BANNER_RECHECK_MS = 30_000;
 
-/** Auto-register as the background has it, current when it's armed, run or edited. Disarming is on the website. */
-export function useAutoRegister() {
+/** Refetches `queryKey` as soon as the background writes one of `storageKeys`. */
+function useRefetchOnStorageChange(
+  queryKey: readonly string[],
+  storageKeys: readonly string[],
+) {
   const queryClient = useQueryClient();
-
   useEffect(() => {
     const onChanged = (changes: Record<string, unknown>) => {
-      if (AUTO_REG_RUN_STATE_KEY in changes || AUTO_REG_QUEUE_KEY in changes) {
-        void queryClient.invalidateQueries({ queryKey: AUTO_REGISTER });
+      if (storageKeys.some((key) => key in changes)) {
+        void queryClient.invalidateQueries({ queryKey });
       }
     };
     browser.storage.local.onChanged.addListener(onChanged);
     return () => browser.storage.local.onChanged.removeListener(onChanged);
-  }, [queryClient]);
+  }, [queryClient, queryKey, storageKeys]);
+}
+
+/** Auto-register as the background has it, kept current as it's turned on, run or edited. */
+export function useAutoRegister() {
+  useRefetchOnStorageChange(AUTO_REGISTER, AUTO_REGISTER_STORAGE);
 
   return useQuery({
     queryKey: AUTO_REGISTER,
@@ -38,17 +47,7 @@ export function useAutoRegister() {
  * is open and as soon as the background sees a change.
  */
 export function useBannerConnection() {
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const onChanged = (changes: Record<string, unknown>) => {
-      if (BANNER_CONNECTION_KEY in changes) {
-        void queryClient.invalidateQueries({ queryKey: BANNER_CONNECTION });
-      }
-    };
-    browser.storage.local.onChanged.addListener(onChanged);
-    return () => browser.storage.local.onChanged.removeListener(onChanged);
-  }, [queryClient]);
+  useRefetchOnStorageChange(BANNER_CONNECTION, BANNER_CONNECTION_STORAGE);
 
   return useQuery({
     queryKey: BANNER_CONNECTION,

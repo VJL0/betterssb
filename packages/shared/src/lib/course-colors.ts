@@ -1,5 +1,5 @@
 /** The design system has eight course colors, --course-1 to --course-8. */
-export const COURSE_COLOR_COUNT = 8;
+const COURSE_COLOR_COUNT = 8;
 
 export interface CourseColor {
   /** 1–8, matching the --course-n token. */

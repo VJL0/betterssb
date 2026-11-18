@@ -1,10 +1,10 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useId } from "react";
 import { TriangleAlertIcon } from "lucide-react";
 import {
-  formatCredits,
   type NeededRequirement,
+  creditsLabel,
 } from "@workspace/shared/lib/dars";
 import {
   optimizePlan,
@@ -13,6 +13,7 @@ import {
   type OptimizeResult,
   type OptimizerCourse,
 } from "@workspace/shared/lib/plan-optimizer";
+import { APPROVAL_ABOVE, PART_TIME_BELOW } from "@workspace/shared/lib/planner";
 import type { PlanPriority, TermPlan } from "@workspace/shared/types/store";
 import {
   Alert,
@@ -51,8 +52,10 @@ import {
 import { useCatalogCourses } from "./use-catalog-courses";
 import { usePlanPreferences } from "./use-plan-preferences";
 
-/** Full-time is 12 credits; over 18 needs approval at Temple. */
-const CREDIT_CHOICES = [12, 13, 14, 15, 16, 17, 18];
+const CREDIT_CHOICES = Array.from(
+  { length: APPROVAL_ABOVE - PART_TIME_BELOW + 1 },
+  (_, i) => PART_TIME_BELOW + i,
+);
 const PRIORITIES: { value: PlanPriority; label: string }[] = [
   { value: "high", label: "High" },
   { value: "normal", label: "Normal" },
@@ -75,7 +78,7 @@ interface OptimizeSheetProps {
   onApply: (result: OptimizeResult) => void;
 }
 
-/** W2.3 · Optimize plan: place every still-needed requirement, prerequisites first. */
+/** Auto-fill plan: place every still-needed requirement, prerequisites first. */
 export function OptimizeSheet({
   open,
   onOpenChange,
@@ -123,26 +126,18 @@ function OptimizeForm({
   const creditsId = useId();
   const summersId = useId();
   const { preferences, update } = usePlanPreferences();
-  const codes = useMemo(
-    () =>
-      requirements.flatMap((r) =>
-        requirementParts(r).flatMap((p) => p.options),
-      ),
-    [requirements],
+  const codes = requirements.flatMap((r) =>
+    requirementParts(r).flatMap((p) => p.options),
   );
   const { catalog, loading } = useCatalogCourses(codes, bulletinYear);
-  const result = useMemo(
-    () =>
-      optimizePlan({
-        requirements,
-        plans,
-        firstTerm,
-        catalog,
-        completed,
-        preferences,
-      }),
-    [requirements, plans, firstTerm, catalog, completed, preferences],
-  );
+  const result = optimizePlan({
+    requirements,
+    plans,
+    firstTerm,
+    catalog,
+    completed,
+    preferences,
+  });
 
   const courses = [
     ...result.placements.map((p) => p.course),
@@ -161,11 +156,10 @@ function OptimizeForm({
   return (
     <>
       <SheetHeader>
-        <SheetTitle>Optimize your plan</SheetTitle>
+        <SheetTitle>Auto-fill your terms</SheetTitle>
         <SheetDescription>
-          Places what your audit still needs into your terms. A course always
-          comes after its prerequisites; among the rest, your priority goes
-          first, then the courses that hold up the most others.
+          Fills your terms with what your audit still needs. Prerequisites come
+          first, then your priorities.
         </SheetDescription>
       </SheetHeader>
 
@@ -256,8 +250,8 @@ function OptimizeForm({
                 {result.unplaced
                   .map((c) => c.course.code ?? c.course.title)
                   .join(", ")}
-                . Their prerequisites loop, or they need more terms than the
-                optimizer adds. Place them by hand.
+                . Their prerequisites loop, or they need more terms than
+                auto-fill adds. Place them by hand.
               </AlertDescription>
             </Alert>
           )}
@@ -281,7 +275,7 @@ function OptimizeForm({
                     )}
                   </span>
                   <span className="text-muted-foreground tabular-nums">
-                    +{formatCredits(credits)} cr
+                    +{creditsLabel(credits)}
                   </span>
                 </header>
                 <ul className="flex flex-col gap-1">

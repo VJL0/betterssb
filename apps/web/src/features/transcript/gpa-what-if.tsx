@@ -50,7 +50,6 @@ function formatGpa(gpa: number | null): string {
   return gpa === null ? "—" : gpa.toFixed(2);
 }
 
-/** The GPA card: the overall GPA, and the what-if one once grades are being tried. */
 export function GpaCard({
   officialGpa,
   whatIf,
@@ -103,10 +102,7 @@ function WhatIfTotals({ whatIf }: { whatIf: GpaWhatIf }) {
           from {formatGpa(whatIf.nowGpa)} now
         </span>
       </p>
-      <p className="text-muted-foreground">
-        Pick a grade for any course below. Nothing here is saved, and the
-        advisor still sees your real grades.
-      </p>
+      <p className="text-muted-foreground">Nothing here is saved.</p>
       {whatIf.hasCoursesInProgress && <TargetGpa whatIf={whatIf} />}
       <div className="flex flex-wrap gap-2">
         {whatIf.changed > 0 && (

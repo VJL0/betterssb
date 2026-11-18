@@ -1,5 +1,13 @@
-import { useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect } from "react";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+  type UseQueryResult,
+} from "@tanstack/react-query";
+import { ApiError, type SectionSummary } from "@workspace/api-client";
+import { getSectionOptions } from "@workspace/api-client/query";
 import type {
   AutoRegQueue,
   AutoRegSnapshot,
@@ -19,6 +27,9 @@ import {
 const AUTO_REGISTER = ["autoRegister"] as const;
 /** Banner's terms and plans change rarely while the page is open. */
 const BANNER_STALE_MS = 5 * 60 * 1000;
+/** A CRN names the same section all term. */
+const SECTION_STALE_MS = 24 * 60 * 60 * 1000;
+const NOT_FOUND = 404;
 
 /**
  * Auto-register as the extension has it, kept current when it's armed, run
@@ -117,5 +128,51 @@ export function useCrnChecks(
     enabled: enabled && !!term && crns.length > 0,
     staleTime: BANNER_STALE_MS,
     retry: false,
+  });
+}
+
+export interface LookedUpSections {
+  byCrn: ReadonlyMap<string, SectionSummary>;
+  /** CRNs still being looked up. */
+  pending: ReadonlySet<string>;
+  /** CRNs Banner has no section for in the term. */
+  missing: ReadonlySet<string>;
+}
+
+/** The course of each CRN, from Banner's class details; no sign-in needed. */
+export function useLookedUpSections(
+  term: string,
+  crns: readonly string[],
+): LookedUpSections {
+  const key = crns.join(",");
+  // Keyed by the CRNs alone, so the result only changes when the data does.
+  const combine = useCallback(
+    (results: UseQueryResult<SectionSummary, unknown>[]): LookedUpSections => {
+      const byCrn = new Map<string, SectionSummary>();
+      const pending = new Set<string>();
+      const missing = new Set<string>();
+      const queried = key.split(",");
+      results.forEach((result, index) => {
+        const crn = queried[index]!;
+        if (result.data) byCrn.set(crn, result.data);
+        else if (result.isPending && result.isFetching) pending.add(crn);
+        else if (
+          result.error instanceof ApiError &&
+          result.error.status === NOT_FOUND
+        ) {
+          missing.add(crn);
+        }
+      });
+      return { byCrn, pending, missing };
+    },
+    [key],
+  );
+  return useQueries({
+    queries: crns.map((crn) => ({
+      ...getSectionOptions({ path: { crn }, query: { term } }),
+      enabled: !!term,
+      staleTime: SECTION_STALE_MS,
+    })),
+    combine,
   });
 }

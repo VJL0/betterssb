@@ -10,9 +10,9 @@ import { isRecord } from "./guards";
 import { templeTermCodeFromName } from "./terms";
 
 export interface RegistrationTime {
-  /** Temple term code, e.g. "202703". */
+  /** Banner term code, e.g. "202703". */
   term: string;
-  /** When the window opens, as an ISO instant. */
+  /** When registration opens, as an ISO instant. */
   startsAt: string;
 }
 

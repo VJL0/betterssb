@@ -9,6 +9,7 @@ import {
   moveEntry,
   placedRequirements,
   plannedCredits,
+  plannedTermByCourse,
   projectedFinish,
   removeEntry,
   retermPlan,
@@ -148,6 +149,28 @@ describe("termEntries", () => {
       expect.objectContaining({ key: "b", code: null, scheduled: false }),
     ]);
     expect(entryCredits(termEntries(plan))).toBe(7);
+  });
+});
+
+describe("plannedTermByCourse", () => {
+  const spring = addSection(
+    emptyPlan("202703", "Spring 2027"),
+    section("41207", "CIS 2168"),
+    NOW,
+  );
+  const fall = addSection(
+    emptyPlan("202736", "Fall 2027"),
+    section("41300", "CIS 2168"),
+    NOW,
+  );
+
+  it("names each course's first term", () => {
+    expect(plannedTermByCourse([spring, fall])).toEqual(
+      new Map([["CIS2168", "202703"]]),
+    );
+    expect(
+      plannedTermByCourse([spring, fall], (plan) => plan.termDescription),
+    ).toEqual(new Map([["CIS2168", "Spring 2027"]]));
   });
 });
 

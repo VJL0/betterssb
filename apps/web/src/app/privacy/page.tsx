@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import type { ReactNode } from "react";
-import { Logo } from "@workspace/ui/components/logo";
+import { StandaloneHeader } from "@/components/standalone-header";
 import { SOURCE_CODE_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -41,14 +40,7 @@ function List({ items }: { items: ReactNode[] }) {
 export default function PrivacyPage() {
   return (
     <div className="min-h-dvh bg-background text-sm text-foreground">
-      <header className="mx-auto flex min-h-18 max-w-3xl items-center px-4 sm:px-8">
-        <Link
-          href="/"
-          className="rounded-2xl focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none"
-        >
-          <Logo />
-        </Link>
-      </header>
+      <StandaloneHeader className="max-w-3xl" />
       <main className="mx-auto flex max-w-3xl flex-col gap-10 px-4 pt-6 pb-16 leading-relaxed sm:px-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-semibold tracking-tight">
@@ -72,7 +64,7 @@ export default function PrivacyPage() {
             items={[
               "Your Temple sign-ins: it sends requests to Temple's Banner, DARS and TUportal with the sign-ins already in your browser, to check that you're signed in, read your registration terms, plans, registration time and degree audit, check CRNs and submit the registration you set up. These requests go straight from your browser to Temple. BetterSSB never sees your password or your Temple cookies.",
               "Banner class pages: it reads the class search results on Banner's pages to show a rating before each instructor. It sends instructor names from those pages to the BetterSSB server to look up their Rate My Professors ratings.",
-              "Stored in your browser: your plans, settings, auto-register queue and its last result, whether you're signed in to Banner, and a log of the requests it sent (method, address without session IDs, status and time; the last 500). This stays in Chrome's extension storage on your device.",
+              "Stored in your browser: your plans, settings, the CRNs you set to auto-register and their last result, whether you're signed in to Banner, and a log of the requests it sent (method, address without session IDs, status and time; the last 500). This stays in Chrome's extension storage on your device.",
               "The BetterSSB website: when it's open, the extension shares your stored plans and settings with it, and passes it Banner terms and plans and the degree audits you run, so the website can show them.",
             ]}
           />

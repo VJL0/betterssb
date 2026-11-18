@@ -8,7 +8,7 @@ import {
 } from "@workspace/shared/lib/meeting-times";
 
 interface DayStripProps extends React.ComponentProps<"span"> {
-  /** Banner days string, e.g. "TR". */
+  /** Banner days, e.g. "TR". */
   days: string;
 }
 

@@ -30,6 +30,6 @@ export const SITE_URL: string = process.env.SITE_URL || "http://localhost:3000";
 export const SITE_NAME = "BetterSSB";
 
 export const SITE_DESCRIPTION =
-  "Search every section with instructor ratings and seats, build conflict-free schedules, map your path to graduation, and register the second your window opens. Free for Temple University students.";
+  "Search every section with instructor ratings and seats, build conflict-free schedules, map your path to graduation, and register the second your registration time starts. Free for Temple University students.";
 
 export const SOURCE_CODE_URL = "https://github.com/VJL0/betterssb";

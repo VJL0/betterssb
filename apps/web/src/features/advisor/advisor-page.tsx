@@ -127,7 +127,6 @@ function useAdvisorSources() {
   };
 }
 
-/** W3.3 · AI advisor: questions about the student's degree, with chosen context. */
 export function AdvisorPage() {
   const advisor = useAdvisor();
   const records = useAdvisorSources();
@@ -162,12 +161,7 @@ export function AdvisorPage() {
   return (
     <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">AI advisor</h1>
-          <p className="text-muted-foreground">
-            Ask about requirements, prerequisites or what to take next
-          </p>
-        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">AI advisor</h1>
         <Sheet open={threadsOpen} onOpenChange={setThreadsOpen}>
           <SheetTrigger
             render={<Button variant="outline" className="lg:hidden" />}
@@ -285,9 +279,7 @@ function ThreadList({
         New chat
       </Button>
       {groups.length === 0 && (
-        <p className="px-2 text-muted-foreground">
-          Your conversations are saved on this device.
-        </p>
+        <p className="px-2 text-muted-foreground">No chats yet.</p>
       )}
       {groups.map((group) => (
         <div key={group.label} className="flex flex-col gap-1">
@@ -344,13 +336,7 @@ function Conversation({
         <span className="grid size-10 place-items-center rounded-2xl bg-muted">
           <BotIcon aria-hidden className="size-5" />
         </span>
-        <span className="flex max-w-md flex-col gap-1">
-          <span className="text-base font-medium">Ask about your degree</span>
-          <span className="text-muted-foreground">
-            Answers can use your audit, transcript and plan when you share them.
-            For anything official, confirm with your advisor.
-          </span>
-        </span>
+        <span className="text-base font-medium">Ask about your degree</span>
         <span className="flex flex-wrap justify-center gap-2">
           {SUGGESTIONS.map((s) => (
             <Button
@@ -467,7 +453,7 @@ function Composer({
             onSend();
           }
         }}
-        placeholder="Ask about requirements, prerequisites or what to take next"
+        placeholder="Ask a question"
         className="resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
       />
       <div className="flex flex-wrap items-center justify-between gap-2 px-3 pb-2">

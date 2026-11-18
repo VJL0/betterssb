@@ -9,13 +9,13 @@ import {
 
 import { client } from "../client.gen";
 import {
-  checkPrerequisites,
   createSeatWatch,
   deleteSeatWatch,
   generateSchedules,
   getCourseDescription,
   getMe,
   getProgramRequirements,
+  getSection,
   inspectTranscriptPdf,
   listAttributes,
   listBulletinPrograms,
@@ -35,9 +35,6 @@ import {
   searchSections,
 } from "../sdk.gen";
 import type {
-  CheckPrerequisitesData,
-  CheckPrerequisitesError,
-  CheckPrerequisitesResponse,
   CreateSeatWatchData,
   CreateSeatWatchError,
   CreateSeatWatchResponse,
@@ -56,6 +53,9 @@ import type {
   GetProgramRequirementsData,
   GetProgramRequirementsError,
   GetProgramRequirementsResponse,
+  GetSectionData,
+  GetSectionError,
+  GetSectionResponse,
   InspectTranscriptPdfData,
   InspectTranscriptPdfError,
   InspectTranscriptPdfResponse,
@@ -400,6 +400,33 @@ export const searchSectionsInfiniteOptions = (
   );
   return opts as Omit<typeof opts, "initialData">;
 };
+
+export const getSectionQueryKey = (options: Options<GetSectionData>) =>
+  createQueryKey("getSection", options);
+
+/**
+ * Get Section
+ *
+ * The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.
+ */
+export const getSectionOptions = (options: Options<GetSectionData>) =>
+  queryOptions<
+    GetSectionResponse,
+    GetSectionError,
+    GetSectionResponse,
+    ReturnType<typeof getSectionQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getSection({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getSectionQueryKey(options),
+  });
 
 export const listSubjectsQueryKey = (options: Options<ListSubjectsData>) =>
   createQueryKey("listSubjects", options);
@@ -804,35 +831,6 @@ export const deleteSeatWatchMutation = (
   > = {
     mutationFn: async (fnOptions) => {
       const { data } = await deleteSeatWatch({
-        ...options,
-        ...fnOptions,
-        throwOnError: true,
-      });
-      return data;
-    },
-  };
-  return mutationOptions;
-};
-
-/**
- * Check Prerequisites
- *
- * Check which prerequisite courses have been completed.
- */
-export const checkPrerequisitesMutation = (
-  options?: Partial<Options<CheckPrerequisitesData>>,
-): UseMutationOptions<
-  CheckPrerequisitesResponse,
-  CheckPrerequisitesError,
-  Options<CheckPrerequisitesData>
-> => {
-  const mutationOptions: UseMutationOptions<
-    CheckPrerequisitesResponse,
-    CheckPrerequisitesError,
-    Options<CheckPrerequisitesData>
-  > = {
-    mutationFn: async (fnOptions) => {
-      const { data } = await checkPrerequisites({
         ...options,
         ...fnOptions,
         throwOnError: true,

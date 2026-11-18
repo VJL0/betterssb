@@ -10,6 +10,12 @@ export function formatCredits(n: number | null | undefined): string {
   return Number.isInteger(n) ? String(n) : n.toFixed(1);
 }
 
+/** "1 credit", "3 credits", "1.5 credits"; text such as "1-4" passes through. */
+export function creditsLabel(credits: number | string): string {
+  const text = typeof credits === "number" ? formatCredits(credits) : credits;
+  return `${text} ${Number(credits) === 1 ? "credit" : "credits"}`;
+}
+
 /** DARS puts degree-wide credit totals on a requirement in this category. */
 export const TOTAL_HOURS_CATEGORY = "Total_Hours";
 
@@ -45,15 +51,8 @@ export interface NeededPart {
   options: string[];
 }
 
-export interface NeededRequirement {
+export interface NeededRequirement extends NeededPart {
   code: string;
-  title: string;
-  /** Credits still needed, when DARS says. */
-  credits: number | null;
-  /** Courses still needed, when DARS counts courses. */
-  courses: number | null;
-  /** Courses DARS lists as able to fill it. */
-  options: string[];
   /** Its incomplete parts; empty when DARS lists none. */
   parts: NeededPart[];
 }

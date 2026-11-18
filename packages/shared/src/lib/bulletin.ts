@@ -4,9 +4,8 @@
  * started in, but Temple sets their official catalog year, so the app only
  * ever suggests one.
  */
-
 export interface StartTerm {
-  /** Temple Banner term code: the year, then 03 Spring, 20 Summer or 36 Fall. */
+  /** Banner term code, e.g. "202436". */
   code: string;
   /** "Fall YYYY". */
   name: string;

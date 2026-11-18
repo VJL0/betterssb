@@ -23,7 +23,6 @@ function isLoginPage(res: Response, body: string): boolean {
   );
 }
 
-/** The registration time TUportal lists for `term`. */
 export async function lookUpRegistrationTime(
   term: string,
 ): Promise<RegistrationTimeLookup> {

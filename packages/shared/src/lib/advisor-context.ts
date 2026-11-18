@@ -1,5 +1,5 @@
 /**
- * The plain-text context the AI advisor gets with a question (W3.3). Each
+ * The plain-text context the AI advisor gets with a question. Each
  * part is built only from records the student chose to share.
  */
 import type { Audit } from "@workspace/api-client";

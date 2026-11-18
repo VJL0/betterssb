@@ -2,14 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { CircleXIcon } from "lucide-react";
-import { useMemo } from "react";
 import {
   queryError,
   type CourseRef,
   type DegreeProgram,
 } from "@workspace/api-client";
 import { getProgramRequirementsOptions } from "@workspace/api-client/query";
-import { formatCredits } from "@workspace/shared/lib/dars";
+import { creditsLabel } from "@workspace/shared/lib/dars";
 import { courseCode } from "@workspace/shared/lib/plan";
 import {
   Alert,
@@ -67,7 +66,7 @@ function newCourse(course: CourseRef): NewCourse {
   };
 }
 
-/** W2.3 panel tab: the courses the student's Bulletin program lists. */
+/** Panel tab: the courses the student's Bulletin program lists. */
 export function ProgramCourses({
   url,
   statusOf,
@@ -82,10 +81,9 @@ export function ProgramCourses({
     // A published Bulletin page doesn't change.
     staleTime: Infinity,
   });
-  const groups = useMemo(
-    () => (requirements.data ? programCourseGroups(requirements.data) : []),
-    [requirements.data],
-  );
+  const groups = requirements.data
+    ? programCourseGroups(requirements.data)
+    : [];
 
   if (requirements.isPending) {
     return (
@@ -138,7 +136,7 @@ export function ProgramCourses({
                   credits={
                     course.credits === null
                       ? null
-                      : `${formatCredits(course.credits)} cr`
+                      : `${creditsLabel(course.credits)}`
                   }
                   status={statusOf(code)}
                   targetName={targetName}

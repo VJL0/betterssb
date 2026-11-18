@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from "react";
 import {
   addCourse,
   addSection,
@@ -18,44 +17,24 @@ import { useStoreDocument } from "@/lib/store/store-context";
 /** One term's plan, with edits that save to the local store right away. */
 export function usePlan(term: string, termDescription: string) {
   const doc = useStoreDocument(planKey(term));
-  const plan: TermPlan = useMemo(
-    () => doc.value ?? emptyPlan(term, termDescription),
-    [doc.value, term, termDescription],
-  );
+  const plan: TermPlan = doc.value ?? emptyPlan(term, termDescription);
   const { save } = doc;
 
-  const apply = useCallback(
-    (edit: (current: TermPlan, now: string) => TermPlan) =>
-      save(edit(plan, new Date().toISOString())),
-    [save, plan],
-  );
+  const apply = (edit: (current: TermPlan, now: string) => TermPlan) =>
+    save(edit(plan, new Date().toISOString()));
 
   return {
     plan,
     status: doc.status,
-    add: useCallback(
-      (section: PlannedSection) =>
-        apply((p, now) => addSection(p, section, now)),
-      [apply],
-    ),
-    remove: useCallback(
-      (crn: string) => apply((p, now) => removeSection(p, crn, now)),
-      [apply],
-    ),
-    replaceSections: useCallback(
-      (sections: PlannedSection[]) =>
-        apply((p, now) => replaceSections(p, sections, now)),
-      [apply],
-    ),
-    addCourse: useCallback(
-      (course: PlannedCourse) => apply((p, now) => addCourse(p, course, now)),
-      [apply],
-    ),
-    removeCourse: useCallback(
-      (id: string) => apply((p, now) => removeCourse(p, id, now)),
-      [apply],
-    ),
+    add: (section: PlannedSection) =>
+      apply((p, now) => addSection(p, section, now)),
+    remove: (crn: string) => apply((p, now) => removeSection(p, crn, now)),
+    replaceSections: (sections: PlannedSection[]) =>
+      apply((p, now) => replaceSections(p, sections, now)),
+    addCourse: (course: PlannedCourse) =>
+      apply((p, now) => addCourse(p, course, now)),
+    removeCourse: (id: string) => apply((p, now) => removeCourse(p, id, now)),
     /** Puts back an earlier version, for Undo. */
-    restore: useCallback((previous: TermPlan) => save(previous), [save]),
+    restore: (previous: TermPlan) => save(previous),
   };
 }

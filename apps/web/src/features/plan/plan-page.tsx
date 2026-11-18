@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   ChevronDownIcon,
   CircleXIcon,
@@ -12,12 +12,13 @@ import { creditTotals, neededRequirements } from "@workspace/shared/lib/dars";
 import {
   courseKey,
   emptyPlan,
-  splitCourseCode,
+  subjectsByFrequency,
 } from "@workspace/shared/lib/plan";
 import {
   auditCourseKeys,
   placedRequirements,
   projectedFinish,
+  plannedTermByCourse,
   termEntries,
 } from "@workspace/shared/lib/planner";
 import { nextTerms, templeTermName } from "@workspace/shared/lib/terms";
@@ -51,16 +52,10 @@ import { TermCard, type TermStatus } from "./term-card";
 import { TermDialog } from "./term-dialog";
 import { takenTerms } from "./taken-terms";
 import { usePlanEdits } from "./use-plan-edits";
+import { formatShortDate } from "@/lib/relative-time";
 
 /** How many upcoming terms "Add term" offers. */
 const TERMS_OFFERED = 4;
-
-function auditDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en", {
-    month: "short",
-    day: "numeric",
-  });
-}
 
 /** The current term's plan stays on screen even before anything is in it. */
 function withCurrentTerm(
@@ -75,34 +70,6 @@ function withCurrentTerm(
   );
 }
 
-/** The subject most of these course codes are in, which the catalog opens with. */
-function mostCommonSubject(codes: readonly string[]): string | null {
-  const counts = new Map<string, number>();
-  for (const code of codes) {
-    const subject = splitCourseCode(code)?.subject;
-    if (subject) counts.set(subject, (counts.get(subject) ?? 0) + 1);
-  }
-  let best: string | null = null;
-  for (const [subject, count] of counts) {
-    if (best === null || count > counts.get(best)!) best = subject;
-  }
-  return best;
-}
-
-/** Each planned course's first term, by course key. */
-function plannedTerms(plans: readonly TermPlan[]): Map<string, string> {
-  const terms = new Map<string, string>();
-  for (const plan of plans) {
-    for (const entry of termEntries(plan)) {
-      if (entry.code && !terms.has(entry.key)) {
-        terms.set(entry.key, plan.termDescription);
-      }
-    }
-  }
-  return terms;
-}
-
-/** W2.3 · Semester planner: terms ahead, checked against the saved audit. */
 export function PlanPage() {
   const { term: currentTerm } = useCurrentTerm();
   const { plans: savedPlans, status, save, remove } = usePlans();
@@ -118,31 +85,17 @@ export function PlanPage() {
   const [optimizing, setOptimizing] = useState(false);
   const [showAlreadyTaken, setShowAlreadyTaken] = useState(false);
 
-  const plans = useMemo(
-    () => withCurrentTerm(savedPlans, currentTerm),
-    [savedPlans, currentTerm],
-  );
+  const plans = withCurrentTerm(savedPlans, currentTerm);
   const audit = stored.value?.audit ?? null;
-  const history = useMemo(
-    () => takenTerms(audit, storedTranscript.value?.transcript ?? null),
-    [audit, storedTranscript.value],
-  );
+  const history = takenTerms(audit, storedTranscript.value?.transcript ?? null);
   const historyByTerm = new Map(history.map((plan) => [plan.term, plan]));
   const totals = audit ? creditTotals(audit) : null;
-  const needed = useMemo(
-    () => (audit ? neededRequirements(audit) : []),
-    [audit],
-  );
-  const unplaced = useMemo(() => {
-    const placed = placedRequirements(plans);
-    return needed.filter((r) => !placed.has(r.code));
-  }, [needed, plans]);
-  const counted = useMemo(
-    () => (audit ? auditCourseKeys(audit) : new Set<string>()),
-    [audit],
-  );
+  const needed = audit ? neededRequirements(audit) : [];
+  const placed = placedRequirements(plans);
+  const unplaced = needed.filter((r) => !placed.has(r.code));
+  const counted = audit ? auditCourseKeys(audit) : new Set<string>();
   const edits = usePlanEdits({ plans, save, remove });
-  const planned = useMemo(() => plannedTerms(plans), [plans]);
+  const planned = plannedTermByCourse(plans, (plan) => plan.termDescription);
   const bulletinYear = bulletinYearFor(
     {
       programYear: settings.program?.bulletinYear ?? null,
@@ -151,10 +104,11 @@ export function PlanPage() {
     },
     new Date(),
   );
-  const initialSubject = mostCommonSubject([
-    ...plans.flatMap((p) => termEntries(p).flatMap((e) => e.code ?? [])),
-    ...needed.flatMap((r) => r.options),
-  ]);
+  const initialSubject =
+    subjectsByFrequency([
+      ...plans.flatMap((p) => termEntries(p).flatMap((e) => e.code ?? [])),
+      ...needed.flatMap((r) => r.options),
+    ])[0] ?? null;
 
   const earliestPosted = posted.terms.map((t) => t.code).sort()[0];
   const termStatus = (code: string): TermStatus =>
@@ -250,17 +204,17 @@ export function PlanPage() {
           <h1 className="text-2xl font-semibold tracking-tight">
             Semester planner
           </h1>
-          <p className="text-muted-foreground">
-            {audit && stored.value
-              ? [
-                  audit.programTitle,
-                  audit.catalogYear && `${audit.catalogYear} bulletin`,
-                  `from your ${auditDate(stored.value.storedAt)} audit`,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")
-              : "Lay out your terms ahead. Everything stays on this device."}
-          </p>
+          {audit && stored.value && (
+            <p className="text-muted-foreground">
+              {[
+                audit.programTitle,
+                audit.catalogYear && `${audit.catalogYear} Bulletin`,
+                `from your ${formatShortDate(stored.value.storedAt)} audit`,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <label className="flex items-center gap-2 px-2">
@@ -269,7 +223,7 @@ export function PlanPage() {
               onCheckedChange={setShowAlreadyTaken}
               size="sm"
             />
-            Show already taken
+            Show courses you've taken
           </label>
           {audit && firstTerm && (
             <Button
@@ -278,7 +232,7 @@ export function PlanPage() {
               onClick={() => setOptimizing(true)}
             >
               <SparklesIcon data-icon="inline-start" />
-              Optimize plan
+              Auto-fill plan
             </Button>
           )}
           <DropdownMenu>

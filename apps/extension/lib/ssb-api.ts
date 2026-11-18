@@ -33,7 +33,7 @@ const SYNC_TOKEN =
 const SIGNED_OUT_STATUSES: ReadonlySet<number> = new Set([401, 403]);
 
 /**
- * Banner wouldn't open registration for the term (no time ticket yet, holds),
+ * Banner wouldn't open registration for the term (no registration time yet, holds),
  * so its registration endpoints can't be called: called anyway, Banner ends
  * the student's session.
  */
@@ -180,8 +180,6 @@ async function ssbPostJson<T>(path: string, body: unknown): Promise<T> {
   });
 }
 
-// ── Class Registration (Register / Add-Drop) ────────────────────────────────
-
 export async function getRegistrationTerms(
   searchTerm = "",
   offset = 1,
@@ -194,7 +192,7 @@ export async function getRegistrationTerms(
   });
 }
 
-export async function saveRegistrationTerm(term: string): Promise<void> {
+async function saveRegistrationTerm(term: string): Promise<void> {
   await ssbGet("/term/saveTerm", {
     mode: "registration",
     term,
@@ -212,7 +210,7 @@ function isTermSearchAnswer(value: unknown): value is TermSearchAnswer {
   return typeof value === "object" && value !== null;
 }
 
-export async function searchRegistrationTerm(
+async function searchRegistrationTerm(
   term: string,
   altPin = "",
 ): Promise<unknown> {
@@ -272,18 +270,16 @@ export async function addCRNRegistrationItems(
   });
 }
 
-export async function submitRegistrationBatch(
+async function submitRegistrationBatch(
   payload: SSBSubmitRegistrationBatchPayload,
 ): Promise<unknown> {
   return ssbPostJson("/classRegistration/submitRegistration/batch", payload);
 }
 
 /**
- * Stages the given CRNs via addCRNRegistrationItems, then POSTs to
- * submitRegistration/batch — the commit step that finalises registration.
- *
- * Returns both staging-level failures and the raw batch response so the
- * caller can build a complete per-CRN result.
+ * Stages the CRNs (addCRNRegistrationItems), then commits them
+ * (submitRegistration/batch). Staging failures come back with the batch
+ * response, so every CRN gets a result.
  */
 export async function executeRegistrationSubmit(
   term: string,

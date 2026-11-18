@@ -58,7 +58,7 @@ function classCount(blocks: readonly WeekCalendarBlock[], day: WeekDay) {
 }
 
 /**
- * One day of classes at a time, for phones (W-Mobile): day tabs with class
+ * One day of classes at a time, for phones: day tabs with class
  * counts, then the day's classes in order with free time between them.
  */
 function DayAgenda({ blocks, days, className, ...props }: DayAgendaProps) {

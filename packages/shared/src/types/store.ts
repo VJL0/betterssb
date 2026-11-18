@@ -1,3 +1,8 @@
+/**
+ * Documents in the local-first store. The web app keeps them in IndexedDB; with
+ * the extension installed, both read and write the extension's
+ * chrome.storage.local through the bridge, so guest data is shared.
+ */
 import type {
   Audit,
   BulletinProgram,
@@ -5,20 +10,14 @@ import type {
   ChatRequest,
 } from "@workspace/api-client";
 import type { TranscriptData } from "../lib/transcript";
-/**
- * Documents in the local-first store. The web app keeps them in IndexedDB; with
- * the extension installed, both read and write the extension's
- * chrome.storage.local through the bridge, so guest data is shared.
- */
-
 export interface PlannedMeeting {
-  /** Banner days string, e.g. "TR". Empty for online and TBA. */
+  /** Banner days, e.g. "TR"; empty for online and TBA. */
   days: string;
   /** Minutes after midnight, or null with no set time. */
   start: number | null;
   end: number | null;
   location: string;
-  /** First and last day of class, as Banner sends them ("01/11/2027"). */
+  /** "MM/DD/YYYY", as Banner sends it. */
   startDate: string | null;
   endDate: string | null;
 }
@@ -81,7 +80,7 @@ export interface UserSettings {
   /** Banner term code the app opens to. */
   term: string | null;
   major: string;
-  /** Temple term code the student started in, which suggests their Bulletin year. */
+  /** Banner term code the student started in, which suggests their Bulletin year. */
   startTerm: string | null;
   program: SelectedProgram | null;
   keyboardShortcuts: boolean;
@@ -113,7 +112,7 @@ export interface AdvisorThread {
 /** How early the student wants a requirement planned, or "skip" to leave it out. */
 export type PlanPriority = "high" | "normal" | "low" | "skip";
 
-/** What "Optimize plan" remembers between runs. */
+/** What "Auto-fill plan" remembers between runs. */
 export interface PlanPreferences {
   /** By audit requirement code; a requirement without one is "normal". */
   priorities: Record<string, PlanPriority>;
@@ -157,7 +156,6 @@ export interface StoreDocuments {
 
 export type StoreKey = keyof StoreDocuments;
 
-/** Any one store document, whatever its key. */
 export type StoreDocument = StoreDocuments[StoreKey];
 
 export interface LocalStore {

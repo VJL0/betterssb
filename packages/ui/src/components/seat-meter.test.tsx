@@ -38,7 +38,7 @@ describe("SeatMeter", () => {
         waitAvailable={6}
       />,
     );
-    expect(screen.getByText("Full · waitlist 4/10")).toBeTruthy();
+    expect(screen.getByText("Full · 4 of 10 waitlisted")).toBeTruthy();
     expect((container.firstElementChild as HTMLElement).className).toContain(
       "bg-destructive",
     );

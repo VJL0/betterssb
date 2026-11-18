@@ -11,7 +11,12 @@ from pydantic import TypeAdapter
 
 from app.core.cache import ONE_DAY_SECONDS, Cache, cache_get, cache_set
 from app.modules.classes.client import BannerClassSearchClient, SearchFilters
-from app.modules.classes.schemas import ClassSearchResult, CodeDescription
+from app.modules.classes.schemas import (
+    ClassSearchResult,
+    CodeDescription,
+    SectionSummary,
+)
+from app.modules.classes.section_client import BannerSectionClient
 
 # Seats change by the minute during registration; lookups change by the term.
 SEARCH_TTL_SECONDS = 60
@@ -33,6 +38,10 @@ def _unescape(value: Any) -> Any:
     return value
 
 
+def _words(text: str) -> str:
+    return " ".join(text.split()).casefold()
+
+
 def _search_key(filters: SearchFilters) -> str:
     digest = hashlib.sha256(
         json.dumps(asdict(filters), sort_keys=True).encode()
@@ -43,8 +52,14 @@ def _search_key(filters: SearchFilters) -> str:
 class ClassSearchService:
     """Banner's public class search, cached so repeat searches don't reach Banner."""
 
-    def __init__(self, client: BannerClassSearchClient, cache: Cache | None) -> None:
+    def __init__(
+        self,
+        client: BannerClassSearchClient,
+        sections: BannerSectionClient,
+        cache: Cache | None,
+    ) -> None:
         self._client = client
+        self._sections = sections
         self._cache = cache
 
     async def terms(self) -> list[CodeDescription]:
@@ -86,6 +101,37 @@ class ClassSearchService:
             self._cache, key, result.model_dump_json(by_alias=True), SEARCH_TTL_SECONDS
         )
         return result
+
+    async def section(self, term: str, crn: str) -> SectionSummary:
+        """The course `crn` belongs to in `term`.
+
+        Raises:
+            SectionNotFound: Banner has no such CRN in the term.
+            SectionUnavailable: Banner didn't answer.
+        """
+        key = f"{CACHE_PREFIX}section:{term}:{crn}"
+        if cached := await cache_get(self._cache, key):
+            return SectionSummary.model_validate_json(cached)
+        details = await self._sections.details(term, crn)
+        summary = SectionSummary(
+            crn=crn,
+            title=details.title,
+            subject=await self._subject_code(term, details.subject),
+            course_number=details.course_number,
+            section=details.section,
+        )
+        await cache_set(
+            self._cache, key, summary.model_dump_json(by_alias=True), LOOKUP_TTL_SECONDS
+        )
+        return summary
+
+    async def _subject_code(self, term: str, name: str) -> str | None:
+        """Class details name the subject ("Computer & Information Science"), not its code."""
+        wanted = _words(name)
+        for subject in await self.subjects(term):
+            if _words(subject.description) == wanted:
+                return subject.code
+        return None
 
     async def _term_lookup(self, lookup: str, term: str) -> list[CodeDescription]:
         return await self._lookup(

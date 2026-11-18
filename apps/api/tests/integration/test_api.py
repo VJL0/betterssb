@@ -65,28 +65,6 @@ class TestScheduleRoutes:
         assert resp.status_code == 422
 
 
-class TestTranscriptRoutes:
-    async def test_check_prereqs(self, client: AsyncClient):
-        body = {
-            "completed": [
-                {
-                    "subject": "CIS",
-                    "course_number": "1068",
-                    "title": "Program Design",
-                    "grade": "A",
-                    "credits": 4.0,
-                    "term": "Fall 2024",
-                }
-            ],
-            "required": ["CIS 1068", "CIS 2168"],
-        }
-        resp = await client.post("/api/transcript/check-prereqs", json=body)
-        assert resp.status_code == 200
-        result = resp.json()
-        assert result["CIS 1068"] is True
-        assert result["CIS 2168"] is False
-
-
 class TestDegreeRoutes:
     async def test_parse_cs_bulletin(self, client: AsyncClient, bulletin_html):
         resp = await client.post(

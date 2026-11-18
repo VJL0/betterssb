@@ -10,6 +10,8 @@ class BaseSchema(BaseModel):
         validate_by_name=True,
         validate_by_alias=True,
         serialize_by_alias=True,
+        # Field docstrings become their OpenAPI descriptions.
+        use_attribute_docstrings=True,
         # Responses always include defaulted fields, so the response schema
         # marks them required and generated clients don't type them optional.
         json_schema_serialization_defaults_required=True,

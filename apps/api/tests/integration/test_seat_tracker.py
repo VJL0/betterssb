@@ -13,11 +13,11 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.main import app
 from app.modules.auth import service as auth_service
+from app.modules.classes.section_client import BannerSectionClient
 from app.modules.seat_tracker import router as seat_router
-from app.modules.seat_tracker.client import BannerSectionClient
 from app.modules.seat_tracker.mailer import Email, MailError
 from app.modules.seat_tracker.service import MAX_WATCHES_PER_USER
-from tests.unit.test_seat_tracker_client import DETAILS_FRAGMENT, enrollment_fragment
+from tests.unit.test_section_client import DETAILS_FRAGMENT, enrollment_fragment
 
 SESSION_COOKIE = "__Host-Http-sid"
 CRON_SECRET = "test-cron-secret-0123456789"

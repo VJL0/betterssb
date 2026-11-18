@@ -97,7 +97,7 @@ export function installFakeBridge({
         if (auto.current.armed) {
           return reply(id, {
             success: false,
-            error: "Disarm auto-register to change the queue.",
+            error: "Turn off auto-register to change your classes.",
           });
         }
         auto.current = { ...auto.current, ...request.queue };

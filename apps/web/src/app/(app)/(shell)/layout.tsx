@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { AppHeader } from "@/components/shell/app-header";
 
-/** App pages: skip link, top bar and page. */
 export default function ShellLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-sidebar">

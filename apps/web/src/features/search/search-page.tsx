@@ -1,5 +1,7 @@
 "use client";
 
+import { creditsLabel } from "@workspace/shared/lib/dars";
+
 import {
   CircleXIcon,
   InfoIcon,
@@ -7,7 +9,7 @@ import {
   SearchIcon,
   SearchXIcon,
 } from "lucide-react";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -98,7 +100,6 @@ const FILTER_LABEL: Record<FilterName, string> = {
   times: "time of day",
 };
 
-/** W2.1 · Course search: live sections from Banner with ratings and seats. */
 export function SearchPage() {
   const { term, status: termStatus } = useCurrentTerm();
   const [input, setInput] = useState("");
@@ -115,14 +116,7 @@ export function SearchPage() {
         <QueryFromUrl onQuery={setInput} />
       </Suspense>
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Course search
-          </h1>
-          <p className="text-muted-foreground">
-            {term ? `${term.name} · live from Banner` : "Loading terms…"}
-          </p>
-        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">Course search</h1>
         {/* The page's main action: most students arrive with a course code. */}
         <form
           role="search"
@@ -228,10 +222,7 @@ function SearchBody({
   const [planOpen, setPlanOpen] = useState(false);
   const options = useSearchOptions(term.code);
 
-  const sections = useMemo(
-    () => search.result?.sections ?? [],
-    [search.result],
-  );
+  const sections = search.result?.sections ?? [];
   const ratings = useRatings(sections.map(primaryInstructorName));
   const visible = sections.filter((s) =>
     sectionPasses(s, filters, ratings.byName),
@@ -244,18 +235,16 @@ function SearchBody({
     const before = plan;
     const label = `${courseCode(section.subject, section.courseNumber)} · ${section.sequenceNumber}`;
     const planned = plannedCrns.has(section.courseReferenceNumber);
+    const message = planned
+      ? `Removed ${label} from your ${term.name} plan`
+      : `Added ${label} to your ${term.name} plan`;
     try {
       if (planned) await planState.remove(section.courseReferenceNumber);
       else
         await planState.add(
           plannedSectionFrom(section, new Date().toISOString()),
         );
-      undoToast(
-        planned
-          ? `Removed ${label} from your ${term.name} plan`
-          : `Added ${label} to your ${term.name} plan`,
-        () => void planState.restore(before),
-      );
+      undoToast(message, () => void planState.restore(before));
     } catch {
       toast.error("Couldn't save your plan. Try again.");
     }
@@ -288,6 +277,16 @@ function SearchBody({
   const quickContext = {
     genEdCodes: options.attributes.filter(isGenEdArea).map((a) => a.code),
   };
+  const filtersPanel = (
+    <FiltersPanel
+      filters={filters}
+      onChange={setFilters}
+      options={options}
+      ratingsReady={ratings.status === "ready"}
+    />
+  );
+  const filtersAreDefault = isDefault(filters);
+  const resetFilters = () => setFilters(DEFAULT_FILTERS);
   const rail = (
     <PlanRail
       plan={plan}
@@ -314,18 +313,13 @@ function SearchBody({
           <Button
             variant="ghost"
             size="xs"
-            onClick={() => setFilters(DEFAULT_FILTERS)}
-            disabled={isDefault(filters)}
+            onClick={resetFilters}
+            disabled={filtersAreDefault}
           >
             Reset
           </Button>
         </div>
-        <FiltersPanel
-          filters={filters}
-          onChange={setFilters}
-          options={options}
-          ratingsReady={ratings.status === "ready"}
-        />
+        {filtersPanel}
       </aside>
 
       <section
@@ -400,7 +394,7 @@ function SearchBody({
           className="shadow-lg"
           onClick={() => setPlanOpen(true)}
         >
-          {term.name} plan · {planCredits(plan)} cr
+          {term.name} plan · {creditsLabel(planCredits(plan))}
         </Button>
       </div>
 
@@ -410,19 +404,14 @@ function SearchBody({
             <SheetTitle>Filters</SheetTitle>
           </SheetHeader>
           <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6">
-            <FiltersPanel
-              filters={filters}
-              onChange={setFilters}
-              options={options}
-              ratingsReady={ratings.status === "ready"}
-            />
+            {filtersPanel}
           </div>
           <SheetFooter className="flex-row border-t">
             <Button
               variant="outline"
               className="flex-1"
-              onClick={() => setFilters(DEFAULT_FILTERS)}
-              disabled={isDefault(filters)}
+              onClick={resetFilters}
+              disabled={filtersAreDefault}
             >
               Reset
             </Button>
@@ -524,8 +513,7 @@ function Results({
         <InfoIcon />
         <AlertTitle>CRN lookup isn't available here</AlertTitle>
         <AlertDescription>
-          Banner's public class search can't look up a CRN. Search by course,
-          like CIS 2168, or by subject.
+          Search by course, like CIS 2168, or by subject.
         </AlertDescription>
       </Alert>
     );
@@ -540,9 +528,7 @@ function Results({
           </EmptyMedia>
           <EmptyTitle>Search {term.name} sections</EmptyTitle>
           <EmptyDescription>
-            Type a course like CIS 2168, a subject like MATH, or a keyword, or
-            pick a GenEd area or instructor in the filters. Results come live
-            from Banner with seats and ratings.
+            Or pick a GenEd area or instructor in the filters.
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent className="flex-row flex-wrap justify-center">
@@ -624,8 +610,7 @@ function Results({
       <RatingsStatus ratings={ratings} />
       {sort !== "course" && sections.length < result.totalCount && (
         <p className="text-muted-foreground">
-          Sorted among the {sections.length} sections loaded so far. Load more
-          below to include the rest.
+          Sorted among the {sections.length} sections loaded so far.
         </p>
       )}
 
@@ -657,11 +642,13 @@ function Results({
               <SearchXIcon />
             </EmptyMedia>
             <EmptyTitle>No sections match your filters</EmptyTitle>
-            <EmptyDescription>
-              {suggestion
-                ? `Removing the ${FILTER_LABEL[suggestion.filter]} filter brings back ${suggestion.recovered} section${suggestion.recovered === 1 ? "" : "s"}.`
-                : "Your filters hide every section."}
-            </EmptyDescription>
+            {suggestion && (
+              <EmptyDescription>
+                Removing the {FILTER_LABEL[suggestion.filter]} filter brings
+                back {suggestion.recovered} section
+                {suggestion.recovered === 1 ? "" : "s"}.
+              </EmptyDescription>
+            )}
           </EmptyHeader>
           <EmptyContent className="flex-row flex-wrap justify-center">
             {suggestion && (

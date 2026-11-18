@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CalendarDaysIcon,
   CalendarPlusIcon,
@@ -79,7 +79,6 @@ function plural(count: number, one: string, many = `${one}s`): string {
   return `${count} ${count === 1 ? one : many}`;
 }
 
-/** W2.2 · Schedule builder: every conflict-free week for the plan's courses. */
 export function SchedulePage() {
   const { term, status } = useCurrentTerm();
   return (
@@ -136,47 +135,34 @@ function sameCrns(
 function ScheduleBuilder({ term }: { term: Term }) {
   const planState = usePlan(term.code, term.name);
   const { plan } = planState;
-  const courses = useMemo(() => planCourses(plan), [plan]);
+  const courses = planCourses(plan);
   const loaded = useCourseSections(term.code, courses);
   const [rules, setRules] = useState<ScheduleRules>(DEFAULT_RULES);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [view, setView] = useState<ScheduleView>("week");
 
   const ready = loaded.status === "ready";
-  const placement = useMemo(
-    () => placeCourses(courses, loaded.sectionsByCourse, rules, ready),
-    [courses, loaded.sectionsByCourse, rules, ready],
+  const placement = placeCourses(
+    courses,
+    loaded.sectionsByCourse,
+    rules,
+    ready,
   );
   const { meetings } = placement;
   const generated = useGeneratedSchedules(meetings, placement.widened);
 
-  const allSections = useMemo(
-    () => [...loaded.sectionsByCourse.values()].flat(),
-    [loaded.sectionsByCourse],
-  );
-  const sectionsByCrn = useMemo(
-    () => new Map(allSections.map((s) => [s.courseReferenceNumber, s])),
-    [allSections],
+  const allSections = [...loaded.sectionsByCourse.values()].flat();
+  const sectionsByCrn = new Map(
+    allSections.map((s) => [s.courseReferenceNumber, s]),
   );
   const ratings = useRatings(allSections.map(primaryInstructorName));
 
   const stale = generated.status === "error";
-  const options = useMemo(
-    () =>
-      buildOptions(
-        stale ? (generated.last?.schedules ?? []) : generated.schedules,
-        sectionsByCrn,
-        ratings.byName,
-        rules.rankBy,
-      ),
-    [
-      stale,
-      generated.last,
-      generated.schedules,
-      sectionsByCrn,
-      ratings.byName,
-      rules.rankBy,
-    ],
+  const options = buildOptions(
+    stale ? (generated.last?.schedules ?? []) : generated.schedules,
+    sectionsByCrn,
+    ratings.byName,
+    rules.rankBy,
   );
   const current = options.find((o) => o.id === selectedId) ?? options[0];
   const index = current ? options.indexOf(current) : -1;
@@ -211,9 +197,8 @@ function ScheduleBuilder({ term }: { term: Term }) {
             </EmptyMedia>
             <EmptyTitle>Add courses to build a schedule</EmptyTitle>
             <EmptyDescription>
-              Add a section of each course you want to take in {term.name}. The
-              builder then tries every section of those courses and shows the
-              weeks that fit together.
+              The builder tries every section of each course in your plan and
+              shows the weeks that fit together.
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
@@ -333,7 +318,6 @@ function ScheduleBuilder({ term }: { term: Term }) {
           className="flex min-w-0 flex-col gap-4 lg:col-start-2 lg:row-span-2 lg:row-start-1"
         >
           <MainState
-            term={term}
             loaded={loaded}
             generated={generated}
             placement={placement}
@@ -405,7 +389,6 @@ function foundText(
 }
 
 interface MainStateProps {
-  term: Term;
   loaded: ReturnType<typeof useCourseSections>;
   generated: GeneratedSchedules;
   placement: Placement;
@@ -416,7 +399,6 @@ interface MainStateProps {
 
 /** Whatever stands in for, or sits above, the chosen schedule. */
 function MainState({
-  term,
   loaded,
   generated,
   placement,
@@ -439,10 +421,7 @@ function MainState({
       <Alert variant="destructive">
         <CircleXIcon />
         <AlertTitle>Couldn't load sections from Banner</AlertTitle>
-        <AlertDescription>
-          Banner's class search didn't answer for {term.name}. Your plan is safe
-          on this device.
-        </AlertDescription>
+        <AlertDescription>Your plan is safe.</AlertDescription>
         <AlertAction>
           <Button variant="outline" size="sm" onClick={loaded.retry}>
             Try again
@@ -513,11 +492,12 @@ function MainState({
         <Alert variant="destructive">
           <CircleXIcon />
           <AlertTitle>Couldn't generate schedules</AlertTitle>
-          <AlertDescription>
-            The schedule service didn't answer.
-            {generated.last &&
-              ` Your last ${plural(generated.last.schedules.length, "schedule")} from ${formatClockTime(generated.last.at)} are kept below.`}
-          </AlertDescription>
+          {generated.last && (
+            <AlertDescription>
+              Your last {plural(generated.last.schedules.length, "schedule")}{" "}
+              from {formatClockTime(generated.last.at)} are kept below.
+            </AlertDescription>
+          )}
           <AlertAction>
             <Button variant="outline" size="sm" onClick={generated.retry}>
               Try again

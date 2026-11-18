@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useInfiniteQuery,
   useQuery,
@@ -123,13 +123,9 @@ export function useClassSearch(
   // Without the list every query searches by keyword, which still works.
   const subjectsSettled = subjects.isSuccess || subjects.isError;
 
-  const query: ClassQuery = useMemo(
-    () =>
-      subjectsSettled
-        ? parseClassQuery(settledInput, subjects.data ?? NO_SUBJECTS)
-        : { kind: "empty" },
-    [settledInput, subjects.data, subjectsSettled],
-  );
+  const query: ClassQuery = subjectsSettled
+    ? parseClassQuery(settledInput, subjects.data ?? NO_SUBJECTS)
+    : { kind: "empty" };
   const filters = term
     ? filtersFor(term, query, {
         ...bannerFilters,

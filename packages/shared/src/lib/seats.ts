@@ -14,14 +14,14 @@ export interface SeatCounts {
 
 export interface SeatStatus {
   tone: SeatTone;
-  /** The word shown with the meter, e.g. "12 open" or "Full · waitlist 4/10". */
+  /** The word shown with the meter, e.g. "12 open" or "Full · 4 of 10 waitlisted". */
   label: string;
   enrolled: number;
   capacity: number;
 }
 
 /**
- * Applies the design's seat rules (handoff §3). Banner reports over-enrolled
+ * Applies the design's seat rules. Banner reports over-enrolled
  * sections with negative seats; those count as full, never as open.
  */
 export function seatStatus(counts: SeatCounts): SeatStatus {
@@ -38,7 +38,7 @@ export function seatStatus(counts: SeatCounts): SeatStatus {
   if (counts.waitAvailable > 0) {
     return {
       tone: "destructive",
-      label: `Full · waitlist ${counts.waitCount}/${counts.waitCapacity}`,
+      label: `Full · ${counts.waitCount} of ${counts.waitCapacity} waitlisted`,
       enrolled,
       capacity,
     };

@@ -20,7 +20,6 @@ interface SortSelectProps {
   ratingsReady: boolean;
 }
 
-/** How to order the courses and the sections inside each. */
 export function SortSelect({ value, onChange, ratingsReady }: SortSelectProps) {
   return (
     <Select

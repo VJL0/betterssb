@@ -25,7 +25,6 @@ interface CoursePanelProps {
   programUrl: string | null;
   /** The Bulletin year courses are read from, "YYYY-YYYY". */
   bulletinYear: string;
-  /** The subject the catalog opens with. */
   initialSubject: string | null;
   /** Where a course already is, such as "In Fall 2027" or "On your audit". */
   statusOf: (code: string) => string | null;
@@ -33,7 +32,7 @@ interface CoursePanelProps {
   onAdd: (course: NewCourse) => void;
 }
 
-/** W2.3 aside: courses to plan, from the audit, the program and the whole Bulletin. */
+/** The planner's side panel: courses to plan, from the audit, the program and the whole Bulletin. */
 export function CoursePanel({
   needed,
   programUrl,

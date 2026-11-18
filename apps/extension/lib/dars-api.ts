@@ -1,13 +1,10 @@
-import { loggedFetch } from "@/lib/logged-fetch";
-
 /**
- * Runs a degree audit in u.achieve self-service (DARS) from the content script.
- *
- * Every request is same-origin on the DARS host, so the browser attaches the
- * student's existing DARS session cookie automatically — the extension never
- * reads, stores, or forwards any credential. The flow mirrors what the DARS
- * web UI does: request an audit, poll until it finishes, then read the report.
+ * Runs a DARS audit from the DARS content script, as DARS's own pages do:
+ * request one, poll until it finishes, read the report. Requests are
+ * same-origin, so the student's DARS cookie rides along and the extension
+ * never handles a credential.
  */
+import { loggedFetch } from "@/lib/logged-fetch";
 
 const BASE = "/selfservice/audit";
 const RUN_ID_RE = /name="delete_id"\s+value="(JobQueueRun!!!![^"]+)"/g;

@@ -12,6 +12,7 @@ import {
   plannedSectionFrom,
   removeSection,
   replaceSections,
+  subjectsByFrequency,
 } from "./plan";
 import type { ClassSection } from "@workspace/api-client";
 
@@ -224,6 +225,20 @@ describe("planConflicts", () => {
         planned("2", "B"),
       ]),
     ).toEqual([]);
+  });
+});
+
+describe("subjectsByFrequency", () => {
+  it("orders subjects by how often they're named, ties first come", () => {
+    expect(
+      subjectsByFrequency([
+        "MATH 1041",
+        "CIS 1068",
+        "CIS 2168",
+        "ENG 0802",
+        "bad",
+      ]),
+    ).toEqual(["CIS", "MATH", "ENG"]);
   });
 });
 

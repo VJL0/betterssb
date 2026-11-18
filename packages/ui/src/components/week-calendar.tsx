@@ -2,7 +2,6 @@ import { useId } from "react";
 import type * as React from "react";
 import { CircleXIcon, LockIcon } from "lucide-react";
 import { cn } from "cn";
-import type { CourseColor } from "@workspace/shared/lib/course-colors";
 import {
   DAY_NAMES,
   MINUTES_PER_HOUR,
@@ -22,10 +21,12 @@ import {
 import {
   blockAppearance,
   blockStyle,
+  type BlockLook,
 } from "@workspace/ui/lib/course-block-style";
 import {
   hourRange,
   layoutDay,
+  type CalendarMeeting,
   type PositionedMeeting,
   type TimeSpan,
 } from "@workspace/ui/lib/week-layout";
@@ -42,26 +43,14 @@ const NOON_HOUR = 12;
 const AXIS_PX = 52;
 const COMPACT_AXIS_PX = 30;
 
-export interface WeekCalendarBlock {
-  id: string;
-  /** Banner days string, e.g. "TR". */
-  days: string;
-  /** Minutes after midnight. */
-  start: number;
-  end: number;
+export interface WeekCalendarBlock extends CalendarMeeting, BlockLook {
   code: string;
   section: string;
   title: string;
   location?: string;
   /** Schedule type, e.g. "Lecture" or "Lab". */
   kind?: string;
-  /** `tint` for labs and recitations: a light course tint with a course-colored ring. */
-  appearance?: "solid" | "tint";
-  /** Null for a course that isn't in the plan yet. */
-  color: CourseColor | null;
   pinned?: boolean;
-  /** A hover preview from search: dashed, never a conflict. */
-  ghost?: boolean;
   /** The instructor's rating; a low one is flagged on the block. */
   rating?: number | null;
 }

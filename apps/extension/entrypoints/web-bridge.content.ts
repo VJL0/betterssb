@@ -1,3 +1,11 @@
+/**
+ * The website's way into the extension, over `window.postMessage` on the
+ * website's origin only. Just the requests `parseBridgeRequest` allows cross:
+ * DARS runs, Banner status, the shared store, Banner's registration terms and
+ * plans, the TUportal registration time and auto-register setup. No Banner
+ * registration call crosses, and the extension checks a queue before turning
+ * it on.
+ */
 import { AUTO_REG_RUN_STATE_KEY } from "@/lib/auto-reg-run-state";
 import { AUTO_REG_QUEUE_KEY } from "@/lib/auto-reg-queue-storage";
 import { BANNER_CONNECTION_KEY } from "@/lib/banner-session";
@@ -13,19 +21,6 @@ import {
   type BridgeResponse,
 } from "@workspace/shared/lib/bridge";
 import { isRecord } from "@workspace/shared/lib/guards";
-
-/**
- * Bridge between the BetterSSB website and the extension.
- *
- * Injected only on the web app's own origin. The site can run a DARS audit,
- * read the Banner connection status, read and write the shared local store
- * (so guest plans are the same in the website and the extension), read
- * Banner's registration terms and plans and the student's TUportal
- * registration time, and set up, arm and disarm auto-register. Only the
- * requests `parseBridgeRequest` allows cross; no Banner registration call
- * does, and the extension checks a queue before it can be armed.
- * Communication uses `window.postMessage` on this origin.
- */
 
 type Reply = Omit<BridgeResponse, "source" | "dir" | "id">;
 

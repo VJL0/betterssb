@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useEffectEvent, useId, useMemo, useRef } from "react";
+import { useEffect, useEffectEvent, useId, useRef } from "react";
 import { CircleXIcon, ExternalLinkIcon, PuzzleIcon } from "lucide-react";
 import { toast } from "sonner";
 import { queryError, type ClassSection } from "@workspace/api-client";
@@ -18,7 +18,6 @@ import type { SSBRegPlanHeader } from "@workspace/shared/types/ssb";
 import type { BannerConnection } from "@workspace/shared/types/store";
 import {
   Alert,
-  AlertAction,
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert";
@@ -59,16 +58,18 @@ import {
 } from "@/lib/config";
 import type { PlanCourse } from "@/features/schedule/schedule-options";
 import { useCourseSections } from "@/features/schedule/use-course-sections";
-import { ArmPanel, formatRunAt, type ArmCheck } from "./arm-panel";
+import { ArmPanel, type ArmCheck } from "./arm-panel";
 import { LastRun } from "./last-run";
 import { QueueCard } from "./queue-card";
-import { queueRows, type QueueRow } from "./queue-rows";
+import { queueRows, withLookedUp, type QueueRow } from "./queue-rows";
 import {
   useAutoRegister,
   useBannerRegistration,
   useCrnChecks,
+  useLookedUpSections,
   useRegistrationTime,
 } from "./use-auto-register";
+import { formatDateTime } from "@/lib/relative-time";
 
 /** Arm-time checks only need to notice the submit time passing. */
 const NOW_TICK_MS = 15_000;
@@ -79,16 +80,12 @@ interface TermOption {
   name: string;
 }
 
-function PageHeading({ subtitle }: { subtitle: string }) {
+function PageHeading() {
   return (
-    <div className="flex flex-col gap-1">
-      <h1 className="text-2xl font-semibold tracking-tight">Auto-register</h1>
-      <p className="text-muted-foreground">{subtitle}</p>
-    </div>
+    <h1 className="text-2xl font-semibold tracking-tight">Auto-register</h1>
   );
 }
 
-/** W4.1 · Auto-register: a CRN queue the extension submits when the window opens. */
 export function RegisterPage() {
   const banner = useBannerConnection();
   const auto = useAutoRegister(banner.extensionInstalled);
@@ -97,12 +94,12 @@ export function RegisterPage() {
     <div className="mx-auto flex max-w-360 flex-col gap-5 px-4 pt-6 pb-16 text-sm sm:px-8">
       {!banner.extensionInstalled ? (
         <>
-          <PageHeading subtitle="Registers you the second your window opens" />
+          <PageHeading />
           <NoExtension />
         </>
       ) : auto.snapshot.isError ? (
         <>
-          <PageHeading subtitle="Registers you the second your window opens" />
+          <PageHeading />
           <Alert variant="destructive">
             <CircleXIcon />
             <AlertTitle>Couldn't reach the extension</AlertTitle>
@@ -120,7 +117,7 @@ export function RegisterPage() {
         />
       ) : (
         <>
-          <PageHeading subtitle="Loading your queue…" />
+          <PageHeading />
           <Skeleton className="h-96 rounded-3xl" />
         </>
       )}
@@ -137,9 +134,8 @@ function NoExtension() {
         </EmptyMedia>
         <EmptyTitle>Auto-register runs from the extension</EmptyTitle>
         <EmptyDescription>
-          It submits your CRNs with your own Banner sign-in, so it needs the
-          BetterSSB extension in Chrome on this computer. Your queue stays in
-          this browser.
+          It registers you with your own Banner sign-in, so it needs the
+          BetterSSB extension in Chrome.
         </EmptyDescription>
       </EmptyHeader>
       {EXTENSION_INSTALL_URL && (
@@ -184,12 +180,16 @@ function bannerCheck(
       return {
         // While armed, the extension keeps Banner signed in until the run.
         label: armed
-          ? "Signed in to Banner, kept signed in until the run"
+          ? "Signed in to Banner, kept signed in until then"
           : "Signed in to Banner",
         state: "ok",
       };
     case "signed-out":
-      return { label: "Sign in to Banner", state: "bad" };
+      return {
+        label: "Sign in to Banner",
+        state: "bad",
+        href: BANNER_REGISTRATION_URL,
+      };
     case "not-connected":
       return { label: "Couldn't reach Banner", state: "bad" };
     default:
@@ -203,7 +203,7 @@ function crnCheck(
   checks: readonly CrnCheck[] | undefined,
   checking: boolean,
 ): ArmCheck {
-  if (count === 0) return { label: "No CRNs queued", state: "bad" };
+  if (count === 0) return { label: "No CRNs added", state: "bad" };
   if (!connected) return { label: "CRNs not checked yet", state: "pending" };
   if (checking || !checks) {
     return { label: "Checking CRNs with Banner…", state: "pending" };
@@ -236,26 +236,41 @@ function AutoRegister({
   const term = snapshot.term || currentTerm?.code || "";
   const registration = useBannerRegistration(connected, term);
   const bannerPlans = registration.plans.data?.plans ?? NO_BANNER_PLANS;
-  const rows = useMemo(
-    () => queueRows(snapshot.crns, term, plans, bannerPlans),
-    [snapshot.crns, term, plans, bannerPlans],
+  const plannedRows = queueRows(snapshot.crns, term, plans, bannerPlans);
+  const lookedUp = useLookedUpSections(
+    term,
+    plannedRows.filter((row) => row.title === null).map((row) => row.crn),
   );
-  const courses = useMemo(() => coursesOf(rows), [rows]);
-  const sections = useCourseSections(term, courses);
-  const sectionsByCrn = useMemo(
-    () =>
-      new Map<string, ClassSection>(
-        [...sections.sectionsByCourse.values()]
-          .flat()
-          .map((s) => [s.courseReferenceNumber, s]),
-      ),
-    [sections.sectionsByCourse],
+  const rows = withLookedUp(plannedRows, lookedUp.byCrn);
+  const sections = useCourseSections(term, coursesOf(rows));
+  const sectionsByCrn = new Map<string, ClassSection>(
+    [...sections.sectionsByCourse.values()]
+      .flat()
+      .map((s) => [s.courseReferenceNumber, s]),
   );
   const crnChecks = useCrnChecks(
     term,
     snapshot.crns,
     connected && !snapshot.armed,
   );
+  const queue: AutoRegQueue = {
+    term,
+    crns: snapshot.crns,
+    scheduledRunAt: snapshot.scheduledRunAt,
+  };
+
+  function save(patch: Partial<AutoRegQueue>) {
+    auto.save.mutate(
+      { ...queue, ...patch },
+      {
+        onError: (error) =>
+          toast.error(
+            queryError(error)?.message ?? "Couldn't save your classes.",
+          ),
+      },
+    );
+  }
+
   const registrationTime = useRegistrationTime(term, !snapshot.armed);
   usePrefilledRunAt(snapshot, term, registrationTime.data, (scheduledRunAt) =>
     save({ scheduledRunAt }),
@@ -269,31 +284,31 @@ function AutoRegister({
     : proxyTerms.terms;
   const termName =
     termOptions.find((t) => t.code === term)?.name ?? currentTerm?.name ?? term;
+  const notFound = new Set([
+    ...lookedUp.missing,
+    ...(crnChecks.data ?? [])
+      .filter((c) => c.found === false)
+      .map((c) => c.crn),
+  ]);
   const planCrns = plans
     .filter((p) => p.term === term)
     .flatMap((p) => p.sections.map((s) => s.crn));
 
-  const queue: AutoRegQueue = {
-    term,
-    crns: snapshot.crns,
-    scheduledRunAt: snapshot.scheduledRunAt,
-  };
-  const queueProblem = armProblem(queue, now);
-  const blocker = !connected
-    ? "Can't arm yet: auto-register submits with your Banner sign-in, so sign in to Banner first."
-    : queueProblem;
+  const canArm = connected && armProblem(queue, now) === null;
 
   const termOpen = registration.terms.data?.some((t) => t.code === term);
   const checks: ArmCheck[] = [
     bannerCheck(connection, snapshot.armed),
-    !connected || !registration.terms.data
-      ? { label: "Term not checked yet", state: "pending" }
-      : termOpen
-        ? { label: `${termName} is open for registration`, state: "ok" }
-        : {
-            label: `${termName} isn't open for registration in Banner`,
-            state: "bad",
-          },
+    !term
+      ? { label: "No term chosen", state: "bad" }
+      : !connected || !registration.terms.data
+        ? { label: "Term not checked yet", state: "pending" }
+        : termOpen
+          ? { label: `${termName} is open for registration`, state: "ok" }
+          : {
+              label: `${termName} isn't open for registration in Banner`,
+              state: "bad",
+            },
     crnCheck(
       snapshot.crns.length,
       connected,
@@ -301,35 +316,19 @@ function AutoRegister({
       crnChecks.isFetching,
     ),
     !snapshot.scheduledRunAt
-      ? { label: "No submit time set", state: "bad" }
+      ? { label: "No registration time set", state: "bad" }
       : new Date(snapshot.scheduledRunAt).getTime() <= now
-        ? { label: "The submit time has passed", state: "bad" }
-        : {
-            label: `Submits ${formatRunAt(snapshot.scheduledRunAt)}`,
-            state: "ok",
-          },
+        ? { label: "That time has passed", state: "bad" }
+        : { label: "Registration time set", state: "ok" },
     { label: "Keep Chrome open and the computer awake", state: "warn" },
   ];
 
-  function save(patch: Partial<AutoRegQueue>) {
-    auto.save.mutate(
-      { ...queue, ...patch },
-      {
-        onError: (error) =>
-          toast.error(queryError(error)?.message ?? "Couldn't save the queue."),
-      },
-    );
-  }
-
-  const subtitle = snapshot.scheduledRunAt
-    ? `${termName} · submits ${formatRunAt(snapshot.scheduledRunAt)}`
-    : `${termName} · set when your registration window opens`;
   const pending = auto.arm.isPending || auto.disarm.isPending;
   const armError = queryError(auto.arm.error);
 
   return (
     <>
-      <PageHeading subtitle={subtitle} />
+      <PageHeading />
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="flex min-w-0 flex-col gap-5">
           <ArmPanel
@@ -337,7 +336,7 @@ function AutoRegister({
             scheduledRunAt={snapshot.scheduledRunAt}
             crnCount={snapshot.crns.length}
             checks={checks}
-            blocker={blocker}
+            canArm={canArm}
             pending={pending}
             onArm={() => auto.arm.mutateAsync().catch(() => undefined)}
             onDisarm={() => auto.disarm.mutateAsync().catch(() => undefined)}
@@ -345,39 +344,16 @@ function AutoRegister({
           {armError && (
             <Alert variant="destructive">
               <CircleXIcon />
-              <AlertTitle>Auto-register isn't armed</AlertTitle>
+              <AlertTitle>Auto-register didn't turn on</AlertTitle>
               <AlertDescription>{armError.message}</AlertDescription>
-            </Alert>
-          )}
-          {!connected && !snapshot.armed && connection !== null && (
-            <Alert variant="warning">
-              <CircleXIcon />
-              <AlertTitle>
-                {connection === "signed-out"
-                  ? "Can't arm: Banner is signed out"
-                  : "Can't arm: couldn't reach Banner"}
-              </AlertTitle>
-              <AlertDescription>
-                {connection === "signed-out"
-                  ? "Auto-register submits with your own Banner sign-in. Sign in to Banner in any tab; you can close it afterwards."
-                  : "Check your connection. BetterSSB checks again on its own."}
-              </AlertDescription>
-              <AlertAction>
-                <ButtonLink
-                  href={BANNER_REGISTRATION_URL}
-                  variant="outline"
-                  size="sm"
-                >
-                  Open Banner
-                </ButtonLink>
-              </AlertAction>
             </Alert>
           )}
           <QueueCard
             rows={rows}
             armed={snapshot.armed}
             sectionsByCrn={sectionsByCrn}
-            checks={crnChecks.data ?? []}
+            lookingUp={lookedUp.pending}
+            notFound={notFound}
             planCrns={planCrns}
             termName={termName}
             bannerPlans={bannerPlans}
@@ -453,15 +429,13 @@ function RunAtDescription({
   const detected = portalRunAt(registrationTime);
   if (detected && sameMoment(detected, scheduledRunAt)) {
     return (
-      <FieldDescription>
-        Your registration time from TUportal, in this computer's time zone.
-      </FieldDescription>
+      <FieldDescription>Your registration time from TUportal.</FieldDescription>
     );
   }
   if (detected) {
     return (
       <FieldDescription>
-        TUportal says your window opens {formatRunAt(detected)}.{" "}
+        TUportal says your registration time is {formatDateTime(detected)}.{" "}
         {!armed && (
           <Button
             variant="link"
@@ -481,16 +455,11 @@ function RunAtDescription({
         <a href={TUPORTAL_URL} target="_blank" rel="noreferrer">
           Sign in to TUportal
         </a>{" "}
-        to fill this in from your registration time, or enter it yourself.
+        to fill this in.
       </FieldDescription>
     );
   }
-  return (
-    <FieldDescription>
-      The moment your registration window opens, from your registration status
-      in Banner, in this computer's time zone.
-    </FieldDescription>
-  );
+  return <FieldDescription>Find it in TUportal.</FieldDescription>;
 }
 
 function RunSettings({
@@ -519,7 +488,7 @@ function RunSettings({
       render={<aside />}
     >
       <h2 id={`${ids}-heading`} className="text-base font-medium">
-        Run settings
+        When to register
       </h2>
       <Field>
         <FieldLabel htmlFor={`${ids}-term`}>Term</FieldLabel>
@@ -542,7 +511,7 @@ function RunSettings({
         </Select>
       </Field>
       <Field>
-        <FieldLabel htmlFor={`${ids}-at`}>Submit at</FieldLabel>
+        <FieldLabel htmlFor={`${ids}-at`}>Register at</FieldLabel>
         <Input
           id={`${ids}-at`}
           type="datetime-local"
@@ -559,9 +528,7 @@ function RunSettings({
         />
       </Field>
       <p className="rounded-2xl bg-muted/50 p-3 text-xs text-foreground/70">
-        The queue and the armed state live in the extension in this browser. It
-        runs once, with your Banner sign-in, and doesn't retry or swap in
-        backups.
+        It registers once and doesn't retry or swap in backups.
       </p>
     </Card>
   );

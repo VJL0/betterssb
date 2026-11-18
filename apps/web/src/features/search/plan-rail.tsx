@@ -1,3 +1,4 @@
+import { creditsLabel } from "@workspace/shared/lib/dars";
 import { CalendarDaysIcon, XIcon } from "lucide-react";
 import {
   DAY_NAMES,
@@ -37,7 +38,7 @@ function meetingSummary(section: PlannedSection): string {
     .join(" · ");
 }
 
-/** The term's plan beside search results (DS3: mini-week, conflicts, next step). */
+/** The term's plan beside search results: a mini-week, conflicts and the next step. */
 export function PlanRail({ plan, termName, preview, onRemove }: PlanRailProps) {
   const credits = planCredits(plan);
   const conflicts = planConflicts(plan.sections);
@@ -59,7 +60,9 @@ export function PlanRail({ plan, termName, preview, onRemove }: PlanRailProps) {
         <h2 id="plan-rail-heading" className="font-medium">
           {termName} plan
         </h2>
-        <span className="text-muted-foreground tabular-nums">{credits} cr</span>
+        <span className="text-muted-foreground tabular-nums">
+          {creditsLabel(credits)}
+        </span>
       </div>
 
       {plan.sections.length === 0 && !preview ? (

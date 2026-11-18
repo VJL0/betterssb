@@ -1,5 +1,5 @@
 /**
- * The degree audit page's view of a DARS audit (W3.1): requirement groups
+ * The degree audit page's view of a DARS audit: requirement groups
  * with their lines marked done, in progress or needed.
  */
 import type {

@@ -58,7 +58,7 @@ const FEATURES: Feature[] = [
     points: [
       "Ranked by your days, times or instructor ratings",
       "Gaps and labs shown right on the week",
-      "Save one to your plan or queue its CRNs",
+      "Save one to your plan or add its CRNs to auto-register",
     ],
     pageId: "schedule",
     cta: "Open the schedule builder",
@@ -101,17 +101,17 @@ const FEATURES: Feature[] = [
     id: "register",
     tab: "Auto-register",
     need: "extension",
-    title: "Register the second your window opens",
-    body: "Queue your CRNs. At the time you set, the extension submits them with your own Banner sign-in.",
+    title: "Register the second your registration time starts",
+    body: "Add your CRNs. At the time you set, the extension registers you with your own Banner sign-in.",
     points: [
-      "Checks Banner, the term and your CRNs before arming",
+      "Checks Banner, the term and your CRNs before turning on",
       "A result for every CRN when it runs",
       "Your Banner password never leaves Banner",
     ],
     pageId: "register",
     cta: "Open auto-register",
     preview: <RegisterPreview />,
-    previewLabel: "A countdown to registration and a queue of three CRNs",
+    previewLabel: "A countdown to registration and three CRNs to register",
   },
   {
     id: "advisor",
@@ -200,7 +200,6 @@ function SectionHeading({
 
 const SECTION_CLASS = "mx-auto max-w-6xl px-4 pt-24 sm:px-8 sm:pt-28";
 
-/** W1.1 · The public landing page. */
 export function LandingPage() {
   return (
     <div className="min-h-dvh bg-background text-sm text-foreground">

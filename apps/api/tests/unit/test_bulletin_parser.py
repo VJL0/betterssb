@@ -27,9 +27,6 @@ def parsed_cybr(parser, bulletin_cybr_html) -> DegreeProgram:
     )
 
 
-# ── helpers ──────────────────────────────────────────────────────────────────
-
-
 def _all_items(program: DegreeProgram):
     for cat in program.categories:
         for group in cat.groups:
@@ -38,11 +35,6 @@ def _all_items(program: DegreeProgram):
 
 def _group_names(program: DegreeProgram) -> list[str]:
     return [g.name for c in program.categories for g in c.groups]
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  Computer Science BS
-# ═══════════════════════════════════════════════════════════════════════════════
 
 
 class TestCSMetadata:
@@ -167,11 +159,6 @@ class TestCSFootnotes:
         assert len(parsed_cs.footnotes) >= 1
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-#  Cybersecurity BS
-# ═══════════════════════════════════════════════════════════════════════════════
-
-
 class TestCybrMetadata:
     def test_program_name(self, parsed_cybr):
         assert "Cybersecurity" in parsed_cybr.name
@@ -282,11 +269,6 @@ class TestCybrFootnotes:
         assert len(parsed_cybr.footnotes) >= 1
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-#  Cross-program consistency
-# ═══════════════════════════════════════════════════════════════════════════════
-
-
 class TestCrossProgram:
     def test_both_in_same_college(self, parsed_cs, parsed_cybr):
         assert parsed_cs.college == parsed_cybr.college
@@ -307,11 +289,6 @@ class TestCrossProgram:
         assert len(shared) >= 1, (
             "Programs should share at least one lab science department"
         )
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  Edge cases
-# ═══════════════════════════════════════════════════════════════════════════════
 
 
 class TestEdgeCases:

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import { NOT_INDEXED } from "@/lib/metadata";
 import { RegisterPage } from "@/features/register/register-page";
 
 export const metadata: Metadata = {
   title: "Auto-register",
-  // Shows the student's own saved data, so there's nothing here to index.
-  robots: { index: false },
+  robots: NOT_INDEXED,
 };
 
 export default RegisterPage;

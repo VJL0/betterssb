@@ -11,6 +11,7 @@ import type { AutoRegSnapshot } from "@workspace/shared/types/auto-reg";
 import { axeViolations } from "@workspace/ui/test/axe";
 import { API, http, HttpResponse, server } from "@workspace/api-client/testing";
 import { classSection } from "@workspace/shared/testing/class-section";
+import { BANNER_REGISTRATION_URL } from "@/lib/config";
 import { EMPTY_AUTO_REGISTER, installFakeBridge } from "@/test/fake-bridge";
 import { renderPage } from "@/test/render";
 import { RegisterPage } from "./register-page";
@@ -22,8 +23,24 @@ const PORTAL_TIME = "2030-11-15T12:00:00.000Z";
 
 let bridge: ReturnType<typeof installFakeBridge> | null = null;
 
+const SOFTWARE_SECURITY = {
+  crn: "50067",
+  title: "Software Security",
+  subject: "CIS",
+  courseNumber: "3441",
+  section: "702",
+};
+
 beforeEach(() => {
   server.use(
+    http.get(`${API}/classes/sections/:crn`, ({ params }) =>
+      params.crn === SOFTWARE_SECURITY.crn
+        ? HttpResponse.json(SOFTWARE_SECURITY)
+        : HttpResponse.json(
+            { detail: "There's no such CRN." },
+            { status: 404 },
+          ),
+    ),
     http.get(`${API}/classes/search`, () =>
       HttpResponse.json({
         totalCount: 1,
@@ -90,7 +107,6 @@ describe("RegisterPage", () => {
     await waitFor(() => expect(fake.auto.current.crns).toEqual(["41207"]));
     expect(fake.auto.current.term).toBe("202703");
     expect(await screen.findByText("CIS 2168 · 001")).toBeTruthy();
-    expect(screen.getByText("TR 9:30–10:50 AM")).toBeTruthy();
   });
 
   it("checks a typed CRN before adding it", async () => {
@@ -105,7 +121,18 @@ describe("RegisterPage", () => {
     await user.clear(input);
     await user.type(input, "52018{Enter}");
     await waitFor(() => expect(fake.auto.current.crns).toEqual(["52018"]));
-    expect(await screen.findByText("Not in Banner")).toBeTruthy();
+    expect(await screen.findByText("CRN not found")).toBeTruthy();
+  });
+
+  it("names a typed CRN no plan has, even before registration opens", async () => {
+    const user = userEvent.setup();
+    const fake = install({ registrationTerms: [], knownCrns: [] });
+    renderPage(<RegisterPage />);
+    const input = await screen.findByRole("textbox", { name: "Add CRN" });
+    await user.type(input, "50067{Enter}");
+    await waitFor(() => expect(fake.auto.current.crns).toEqual(["50067"]));
+    expect(await screen.findByText("CIS 3441 · 702")).toBeTruthy();
+    expect(screen.getByText("Software Security")).toBeTruthy();
   });
 
   it("arms after the checks pass and confirming, then locks the queue", async () => {
@@ -114,7 +141,7 @@ describe("RegisterPage", () => {
       autoRegister: { term: "202703", crns: ["41207"] },
     });
     renderPage(<RegisterPage />);
-    const at = await screen.findByLabelText("Submit at");
+    const at = await screen.findByLabelText("Register at");
     fireEvent.change(at, { target: { value: FUTURE } });
     await waitFor(() => expect(fake.auto.current.scheduledRunAt).toBe(FUTURE));
     expect(await screen.findByText("1 of 1 CRNs found in Banner")).toBeTruthy();
@@ -122,13 +149,13 @@ describe("RegisterPage", () => {
       screen.getByText("Spring 2027 is open for registration"),
     ).toBeTruthy();
 
-    await user.click(screen.getByRole("button", { name: "Arm auto-register" }));
-    await user.click(await screen.findByRole("button", { name: "Arm" }));
+    await user.click(
+      screen.getByRole("button", { name: "Turn on auto-register" }),
+    );
+    await user.click(await screen.findByRole("button", { name: "Turn on" }));
     await waitFor(() => expect(fake.auto.current.armed).toBe(true));
     expect(
-      await screen.findByText(
-        "The queue is locked while armed. Disarm to edit.",
-      ),
+      await screen.findByText("Turn off auto-register to change your classes."),
     ).toBeTruthy();
     expect(screen.queryByRole("textbox", { name: "Add CRN" })).toBeNull();
   });
@@ -139,12 +166,13 @@ describe("RegisterPage", () => {
       autoRegister: { term: "202703", crns: ["41207"], scheduledRunAt: FUTURE },
     });
     renderPage(<RegisterPage />);
-    expect(
-      await screen.findByText("Can't arm: Banner is signed out"),
-    ).toBeTruthy();
+    const signIn = await screen.findByRole("link", {
+      name: "Sign in to Banner",
+    });
+    expect(signIn.getAttribute("href")).toBe(BANNER_REGISTRATION_URL);
     expect(
       screen
-        .getByRole("button", { name: "Arm auto-register" })
+        .getByRole("button", { name: "Turn on auto-register" })
         .hasAttribute("disabled"),
     ).toBe(true);
   });
@@ -158,7 +186,7 @@ describe("RegisterPage", () => {
 
     fake.setBanner("signed-out");
     expect(
-      await screen.findByText("Can't arm: Banner is signed out"),
+      await screen.findByRole("link", { name: "Sign in to Banner" }),
     ).toBeTruthy();
   });
 
@@ -174,9 +202,7 @@ describe("RegisterPage", () => {
       ),
     );
     expect(
-      await screen.findByText(
-        "Your registration time from TUportal, in this computer's time zone.",
-      ),
+      await screen.findByText("Your registration time from TUportal."),
     ).toBeTruthy();
   });
 
@@ -204,7 +230,7 @@ describe("RegisterPage", () => {
     });
     renderPage(<RegisterPage />);
     expect(
-      await screen.findByText(/TUportal says your window opens/),
+      await screen.findByText(/TUportal says your registration time is/),
     ).toBeTruthy();
     expect(fake.auto.current.scheduledRunAt).toBe("");
   });
@@ -260,7 +286,7 @@ describe("RegisterPage", () => {
     });
     renderPage(<RegisterPage />);
     expect(
-      await screen.findByText("Last run · 1 of 3 registered, 1 waitlisted"),
+      await screen.findByText("Last attempt · 1 of 3 registered, 1 waitlisted"),
     ).toBeTruthy();
     expect(screen.getByText("Waitlisted")).toBeTruthy();
     expect(screen.getByText("Closed section")).toBeTruthy();

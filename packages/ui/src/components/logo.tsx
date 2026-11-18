@@ -1,7 +1,7 @@
 import { cn } from "cn";
 
 /** The BetterSSB mark: two linked sections. Decorative next to the name. */
-export function LogoMark({ className }: { className?: string }) {
+function LogoMark({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 34 14"

@@ -13,7 +13,6 @@ import { ButtonLink } from "@/components/button-link";
 import { openFeedbackForm } from "@/lib/feedback";
 import { FEEDBACK_ENABLED } from "@/lib/sentry";
 
-/** A page crashed. Says so plainly and offers a reload; the rest of the app keeps working. */
 export function RouteError({ error }: { error: unknown }) {
   const detail = error instanceof Error ? error.message : null;
 

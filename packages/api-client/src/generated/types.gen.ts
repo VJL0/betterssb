@@ -144,6 +144,8 @@ export type AcademicTranscript = {
 export type Audit = {
   /**
    * Analysiscomplete
+   *
+   * The page ends with DARS's "END OF ANALYSIS" line, so nothing was cut off.
    */
   analysisComplete: boolean;
   /**
@@ -191,10 +193,14 @@ export type Audit = {
 export type AuditCourse = {
   /**
    * Bannerterm
+   *
+   * The Temple Banner term code for `term` ("FL24" → "202436"), when DARS gives one.
    */
   bannerTerm: string;
   /**
    * Conditioncode
+   *
+   * DARS's condition code column, which marks repeats and other special cases.
    */
   conditionCode: string;
   /**
@@ -207,6 +213,8 @@ export type AuditCourse = {
   credits: number | null;
   /**
    * Exception
+   *
+   * An advisor waiver or substitution recorded against the requirement ("CISS.TBS-14"), not a class.
    */
   exception: boolean;
   /**
@@ -219,10 +227,14 @@ export type AuditCourse = {
   inProgress: boolean;
   /**
    * Notes
+   *
+   * Description lines after the title, such as a transfer source ("T01008: AP314").
    */
   notes: Array<string>;
   /**
    * Satisfies
+   *
+   * The course it counts as ("Satisfies: AMST 0855"), usually a cross-listing.
    */
   satisfies: string;
   /**
@@ -235,6 +247,8 @@ export type AuditCourse = {
   title: string;
   /**
    * Transfer
+   *
+   * Credit from another institution or exam (AP, IB).
    */
   transfer: boolean;
   /**
@@ -243,6 +257,8 @@ export type AuditCourse = {
   transferCourse: string;
   /**
    * Transferinstitution
+   *
+   * The source of transfer credit: the institution ("T01008") and its course ("AP314").
    */
   transferInstitution: string;
 };
@@ -255,10 +271,14 @@ export type AuditCourse = {
 export type BulletinProgram = {
   /**
    * College
+   *
+   * The index's school or college code, e.g. "ST" for Science and Technology.
    */
   college: string;
   /**
    * Collegename
+   *
+   * The index key's name for that code, e.g. "College of Science & Technology".
    */
   collegeName: string;
   /**
@@ -267,10 +287,14 @@ export type BulletinProgram = {
   degree: string;
   /**
    * Degreename
+   *
+   * The degree symbol's meaning, e.g. "Bachelor of Science" for "BS".
    */
   degreeName: string;
   /**
    * Hasoptions
+   *
+   * The index marks programs with emphasis or concentration options with * or ^.
    */
   hasOptions: boolean;
   level: ProgramLevel;
@@ -280,10 +304,14 @@ export type BulletinProgram = {
   name: string;
   /**
    * Note
+   *
+   * The index's parenthetical, e.g. "not currently accepting applications".
    */
   note: string;
   /**
    * Url
+   *
+   * Empty for a program the index lists without a page ("Diploma", "PhD/MD").
    */
   url: string;
 };
@@ -300,6 +328,8 @@ export type BulletinProgramIndex = {
   bulletinYear: string;
   /**
    * Colleges
+   *
+   * The index's keys: school and college codes, and degree symbols.
    */
   colleges: Array<CodeName>;
   /**
@@ -308,6 +338,8 @@ export type BulletinProgramIndex = {
   degrees: Array<CodeName>;
   /**
    * Introduction
+   *
+   * The paragraphs above the chart, and the pages they link.
    */
   introduction: Array<string>;
   /**
@@ -316,6 +348,8 @@ export type BulletinProgramIndex = {
   links: Array<Link>;
   /**
    * Programtypes
+   *
+   * What a major, minor, concentration and certificate are.
    */
   programTypes: Array<Definition>;
   /**
@@ -324,6 +358,8 @@ export type BulletinProgramIndex = {
   programs: Array<BulletinProgram>;
   /**
    * Requestedyear
+   *
+   * The year asked for. When that year's Bulletin isn't online, an earlier year stands in and `bulletin_year` says which.
    */
   requestedYear: string;
   /**
@@ -344,6 +380,8 @@ export type BulletinSubjectIndex = {
   bulletinYear: string;
   /**
    * Requestedyear
+   *
+   * The year asked for, when an earlier year stands in (see BulletinProgramIndex).
    */
   requestedYear: string;
   /**
@@ -398,14 +436,20 @@ export type ChatRequest = {
 export type ChoiceCourse = {
   /**
    * Course
+   *
+   * A course ("CIS 3381") or a range ("CST 2000-4999").
    */
   course: string;
   /**
    * Maxcredits
+   *
+   * The most credits it can count for ("3381(4)").
    */
   maxCredits: number | null;
   /**
    * Taken
+   *
+   * When it has to be taken to count: "SP19 OR AFTER", "SP10-S216".
    */
   taken: string;
 };
@@ -598,6 +642,8 @@ export type Contact = {
   email: string;
   /**
    * Group
+   *
+   * The heading it's listed under, such as "Temple Japan Campus" or "Admissions".
    */
   group: string;
   /**
@@ -610,6 +656,8 @@ export type Contact = {
   phone: string;
   /**
    * Title
+   *
+   * What follows the name on its line, e.g. "Chair", "PhD, Faculty Advisor".
    */
   title: string;
   /**
@@ -638,6 +686,8 @@ export type CourseChoice = {
 export type CourseDescription = {
   /**
    * Attributes
+   *
+   * Course attribute codes, e.g. "GQ", "WI", "HO".
    */
   attributes: Array<string>;
   /**
@@ -658,6 +708,8 @@ export type CourseDescription = {
   corequisites: string;
   /**
    * Credits
+   *
+   * "3", or a range like "1 to 4".
    */
   credits: string;
   /**
@@ -666,10 +718,14 @@ export type CourseDescription = {
   description: string;
   /**
    * Other
+   *
+   * Other labelled lines the entry has.
    */
   other: Array<Fact>;
   /**
    * Prerequisitecourses
+   *
+   * Course codes linked in the prerequisites and corequisites.
    */
   prerequisiteCourses: Array<string>;
   /**
@@ -682,6 +738,8 @@ export type CourseDescription = {
   repeatability: string;
   /**
    * Restrictions
+   *
+   * Enrollment restrictions by kind, e.g. "Field of Study Restrictions".
    */
   restrictions: Array<Fact>;
   /**
@@ -711,6 +769,8 @@ export type CourseOption = {
   description: string;
   /**
    * Group
+   *
+   * The subheading it's listed under in a long selection, e.g. "Anthropology".
    */
   group: string;
   /**
@@ -727,6 +787,8 @@ export type CourseOption = {
 export type CourseRef = {
   /**
    * Attributes
+   *
+   * GenEd and other attribute codes the page tags it with, e.g. "GW", "WI".
    */
   attributes: Array<string>;
   /**
@@ -783,10 +845,14 @@ export type DegreeProgram = {
   acceleratedPrograms: Array<LinkedProgram>;
   /**
    * Appliesto
+   *
+   * Who the requirements apply to ("…students who matriculated in academic year 2024-2025").
    */
   appliesTo: string;
   /**
    * Archivenotice
+   *
+   * The archive banner, when the page is from a past Bulletin.
    */
   archiveNotice: string;
   /**
@@ -839,10 +905,14 @@ export type DegreeProgram = {
   labScienceSequences: Array<LabScienceSequence>;
   /**
    * Labsciencetitle
+   *
+   * The heading over the lab science sequences.
    */
   labScienceTitle: string;
   /**
    * Level
+   *
+   * "Undergraduate" or "Graduate and Professional", from the breadcrumb.
    */
   level: string;
   /**
@@ -863,12 +933,19 @@ export type DegreeProgram = {
   programCode: string;
   /**
    * Programpageurl
+   *
+   * The program's page on temple.edu ("Learn more about…").
    */
   programPageUrl: string;
   /**
    * Sections
+   *
+   * Every heading, paragraph, list and plain table on the page, by tab.
    */
   sections: Array<PageSection>;
+  /**
+   * The first of `suggested_plans`.
+   */
   suggestedPlan: SuggestedPlan | null;
   /**
    * Suggestedplans
@@ -967,6 +1044,8 @@ export type GeneratedSchedule = {
 export type HoursSummary = {
   /**
    * Category
+   *
+   * "GENED", "MAJOR", "MINOR", "ELECTIVES"; empty for the whole degree.
    */
   category: string;
   /**
@@ -1052,6 +1131,8 @@ export type Link = {
 export type LinkedProgram = {
   /**
    * Group
+   *
+   * The college or heading it's listed under.
    */
   group: string;
   /**
@@ -1070,6 +1151,8 @@ export type LinkedProgram = {
 export type ListItem = {
   /**
    * Level
+   *
+   * Nesting depth, 0 for a top-level item.
    */
   level: number;
   /**
@@ -1171,6 +1254,8 @@ export type MeetingTime = {
 export type PageBlock = {
   /**
    * Courses
+   *
+   * Course codes linked in the text ("SCTC 1001").
    */
   courses: Array<string>;
   /**
@@ -1183,10 +1268,14 @@ export type PageBlock = {
   kind: "paragraph" | "list" | "table";
   /**
    * Label
+   *
+   * A bold lead-in such as "Campus Location" or "Application Deadline".
    */
   label: string;
   /**
    * Lines
+   *
+   * A paragraph's lines (split where the page breaks them), without the label.
    */
   lines: Array<string>;
   /**
@@ -1211,6 +1300,8 @@ export type PageSection = {
   blocks: Array<PageBlock>;
   /**
    * Headings
+   *
+   * Headings from the tab's top down to this section, e.g. ["Accelerated Programs"].
    */
   headings: Array<string>;
   /**
@@ -1347,8 +1438,13 @@ export type PdfTranscriptData = {
 export type PlanCourse = {
   /**
    * Attributes
+   *
+   * Attribute codes on a placeholder, e.g. "GQ" on "GenEd Quantitative Literacy Course".
    */
   attributes: Array<string>;
+  /**
+   * The first option, kept for readers that show one course per slot.
+   */
   course: CourseOption | null;
   /**
    * Credits
@@ -1360,10 +1456,14 @@ export type PlanCourse = {
   footnotes: Array<string>;
   /**
    * Options
+   *
+   * Every option for the slot: alternatives ("MATH 1041 or MATH 1941") or the courses listed under "Select one of the following:".
    */
   options: Array<CourseOption>;
   /**
    * Placeholder
+   *
+   * The slot's words when it isn't a course: "Elective", "GenEd Breadth Course", "Select one of the following:".
    */
   placeholder: string;
 };
@@ -1400,20 +1500,6 @@ export type PlanYear = {
    * Year
    */
   year: number;
-};
-
-/**
- * PrereqCheckRequest
- */
-export type PrereqCheckRequest = {
-  /**
-   * Completed
-   */
-  completed: Array<TranscriptCourse>;
-  /**
-   * Required
-   */
-  required: Array<string>;
 };
 
 /**
@@ -1501,6 +1587,8 @@ export type Progress = {
   gpa: number | null;
   /**
    * Sets
+   *
+   * Course sets, like a two-course lab sequence.
    */
   sets: number | null;
   /**
@@ -1624,10 +1712,14 @@ export type RequirementCategory = {
   name: string;
   /**
    * Notes
+   *
+   * The list's footnotes, in order.
    */
   notes: Array<string>;
   /**
    * Tab
+   *
+   * The page tab it's on, e.g. "Requirements", "Academic Plan".
    */
   tab: string;
   /**
@@ -1647,10 +1739,14 @@ export type RequirementCategory = {
 export type RequirementGroup = {
   /**
    * Constraints
+   *
+   * Note rows in the group ("Note: Satisfying the GenEd World Society…").
    */
   constraints: Array<string>;
   /**
    * Credits
+   *
+   * Credits the group's header row gives, e.g. "18-15" for "Electives".
    */
   credits: string;
   /**
@@ -1676,10 +1772,14 @@ export type RequirementGroup = {
 export type RequirementItem = {
   /**
    * Choosecount
+   *
+   * How many options to pick ("Select two of the following" → 2).
    */
   chooseCount: number | null;
   /**
    * Choosecredits
+   *
+   * How many credits to pick ("Select 15-16 credits" → "15-16").
    */
   chooseCredits: string;
   /**
@@ -1926,6 +2026,36 @@ export type SectionOutput = {
 };
 
 /**
+ * SectionSummary
+ *
+ * The course a CRN belongs to, from Banner's class details.
+ */
+export type SectionSummary = {
+  /**
+   * Coursenumber
+   */
+  courseNumber: string;
+  /**
+   * Crn
+   */
+  crn: string;
+  /**
+   * Section
+   */
+  section: string;
+  /**
+   * Subject
+   *
+   * Subject code, such as CIS; null if Banner's subject name matches none of the term's subjects.
+   */
+  subject: string | null;
+  /**
+   * Title
+   */
+  title: string;
+};
+
+/**
  * SelectionType
  *
  * How the student fulfills a requirement item.
@@ -1938,14 +2068,20 @@ export type SelectionType = "required" | "select_one" | "select_n";
 export type SubRequirement = {
   /**
    * Aliases
+   *
+   * Other codes it answers to, such as a minor's shared GenEd rule ("MINORGENED").
    */
   aliases: Array<string>;
   /**
    * Choices
+   *
+   * The same options grouped into choices, with their limits.
    */
   choices: Array<CourseChoice>;
   /**
    * Code
+   *
+   * DARS's code for it ("CISS.TBS-13"); exceptions use it as their course.
    */
   code: string;
   /**
@@ -1961,6 +2097,8 @@ export type SubRequirement = {
   needs: Progress | null;
   /**
    * Notfrom
+   *
+   * Courses that can't count toward it.
    */
   notFrom: Array<string>;
   /**
@@ -1973,10 +2111,14 @@ export type SubRequirement = {
   number: string;
   /**
    * Required
+   *
+   * DARS's "R" marker: it has to be met even when its requirement's count is.
    */
   required: boolean;
   /**
    * Requiredcount
+   *
+   * Courses or sets to complete, in the unit its progress counts.
    */
   requiredCount: number | null;
   /**
@@ -1989,6 +2131,8 @@ export type SubRequirement = {
   requiredGpa: number | null;
   /**
    * Selectfrom
+   *
+   * Every course and range under SELECT FROM, in display order.
    */
   selectFrom: Array<string>;
   /**
@@ -2037,10 +2181,14 @@ export type SuggestedPlan = {
   footnotes: Array<string>;
   /**
    * Name
+   *
+   * The heading above the grid, e.g. "Bachelor of Science in Computer Science".
    */
   name: string;
   /**
    * Subtitle
+   *
+   * A subheading, e.g. "Suggested Plan for New Students Starting in the 2024-2025 Academic Year".
    */
   subtitle: string;
   /**
@@ -2051,36 +2199,6 @@ export type SuggestedPlan = {
    * Years
    */
   years: Array<PlanYear>;
-};
-
-/**
- * TranscriptCourse
- */
-export type TranscriptCourse = {
-  /**
-   * Coursenumber
-   */
-  courseNumber: string;
-  /**
-   * Credits
-   */
-  credits: number;
-  /**
-   * Grade
-   */
-  grade: string;
-  /**
-   * Subject
-   */
-  subject: string;
-  /**
-   * Term
-   */
-  term: string;
-  /**
-   * Title
-   */
-  title: string;
 };
 
 /**
@@ -2269,6 +2387,8 @@ export type TranscriptTotals = {
   sourceLines: Array<number>;
   /**
    * Values
+   *
+   * The printed labels (CEU Hours included) and their values, decimals kept as printed.
    */
   values: {
     [key: string]: string;
@@ -2594,6 +2714,49 @@ export type SearchSectionsResponses = {
 
 export type SearchSectionsResponse =
   SearchSectionsResponses[keyof SearchSectionsResponses];
+
+export type GetSectionData = {
+  body?: never;
+  path: {
+    /**
+     * Crn
+     *
+     * Four- or five-digit CRN
+     */
+    crn: string;
+  };
+  query: {
+    /**
+     * Term
+     *
+     * Banner term code
+     */
+    term: string;
+  };
+  url: "/api/classes/sections/{crn}";
+};
+
+export type GetSectionErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetSectionError = GetSectionErrors[keyof GetSectionErrors];
+
+export type GetSectionResponses = {
+  /**
+   * Successful Response
+   */
+  200: SectionSummary;
+};
+
+export type GetSectionResponse = GetSectionResponses[keyof GetSectionResponses];
 
 export type ListSubjectsData = {
   body?: never;
@@ -3112,41 +3275,6 @@ export type DeleteSeatWatchResponses = {
 
 export type DeleteSeatWatchResponse =
   DeleteSeatWatchResponses[keyof DeleteSeatWatchResponses];
-
-export type CheckPrerequisitesData = {
-  body: PrereqCheckRequest;
-  path?: never;
-  query?: never;
-  url: "/api/transcript/check-prereqs";
-};
-
-export type CheckPrerequisitesErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type CheckPrerequisitesError =
-  CheckPrerequisitesErrors[keyof CheckPrerequisitesErrors];
-
-export type CheckPrerequisitesResponses = {
-  /**
-   * Response Check Prerequisites
-   *
-   * Successful Response
-   */
-  200: {
-    [key: string]: boolean;
-  };
-};
-
-export type CheckPrerequisitesResponse =
-  CheckPrerequisitesResponses[keyof CheckPrerequisitesResponses];
 
 export type ParseTranscriptPdfData = {
   /**

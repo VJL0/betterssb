@@ -16,7 +16,6 @@ const COURSE_BG = [
 export const COURSE_HATCH_CLASS =
   "bg-[repeating-linear-gradient(135deg,transparent_0_6px,rgb(255_255_255/0.18)_6px_8px)]";
 
-/** Background class for a course's solid color. */
 export function courseBackgroundClass(color: CourseColor): string {
   return COURSE_BG[color.slot - 1] ?? COURSE_BG[0];
 }

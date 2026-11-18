@@ -34,7 +34,8 @@ export function useBannerConnection(): BannerState {
     // Checks can overlap; only the newest one's answer is kept.
     let latest = 0;
     async function check() {
-      const id = ++latest;
+      latest += 1;
+      const id = latest;
       const installed = (await waitForExtension(unmounted.signal)) !== null;
       if (unmounted.signal.aborted) return;
       const connection = await getBannerConnection().catch(

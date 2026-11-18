@@ -3,7 +3,7 @@ import { DataConsent } from "./data-consent";
 import { Home } from "./home";
 import { useDataConsent } from "./hooks/use-data-consent";
 
-/** The popup (E1): one screen, after the data disclosure; the website does the rest. */
+/** The popup: one screen, after the data disclosure; the website does the rest. */
 export default function App() {
   const consented = useDataConsent();
   return (

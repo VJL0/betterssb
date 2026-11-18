@@ -37,9 +37,6 @@ export function sendMessage(msg: ExtensionMessage): Promise<ExtensionResponse> {
   return browser.runtime.sendMessage<ExtensionMessage, ExtensionResponse>(msg);
 }
 
-/**
- * Send a message directly to a specific tab's content script.
- */
 export function sendTabMessage(
   tabId: number,
   msg: ExtensionMessage,

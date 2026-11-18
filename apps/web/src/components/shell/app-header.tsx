@@ -19,7 +19,7 @@ import { NavLink } from "./nav-link";
 import { PAGE_GROUP_LABELS, firstReadyPath, groupedPages } from "./pages";
 
 /**
- * The web top bar (DS4 WHeader): page links in their groups. Below 1024 px,
+ * The web top bar: page links in their groups. Below 1024 px,
  * where they'd no longer all fit, they move into a menu; below 640 px the
  * logo also drops its mark, keeping the bar to one row.
  */
