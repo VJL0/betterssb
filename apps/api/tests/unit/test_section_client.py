@@ -3,7 +3,7 @@ from __future__ import annotations
 import httpx2
 import pytest
 
-from app.modules.seat_tracker.client import (
+from app.modules.classes.section_client import (
     BannerSectionClient,
     Enrollment,
     SectionDetails,
@@ -27,6 +27,14 @@ DETAILS_FRAGMENT = """
     <span class="status-bold">Title:</span>
     <span id="courseTitle">Software Security</span>
 </section>
+"""
+
+# Trimmed from Banner's 500 page for a CRN the term doesn't have.
+UNKNOWN_CRN_ERROR_PAGE = """
+<meta name="errorMessage" content="Ambiguous method overloading for method
+net.hedtech.banner.student.schedule.SectionDecorator#&lt;init&gt;.
+Cannot resolve which method to invoke for [null] due to overlapping prototypes between:
+"/>
 """
 
 
@@ -101,6 +109,25 @@ class TestClient:
     async def test_an_http_error_is_unavailable(self):
         client = BannerSectionClient(
             transport=httpx2.MockTransport(lambda _: httpx2.Response(503))
+        )
+        with pytest.raises(SectionUnavailable):
+            await client.details("202703", "50067")
+
+    async def test_an_unknown_crn_is_not_found(self):
+        """Banner fails with a 500 naming a null section (checked live, Nov 2026)."""
+        client = BannerSectionClient(
+            transport=httpx2.MockTransport(
+                lambda _: httpx2.Response(500, text=UNKNOWN_CRN_ERROR_PAGE)
+            )
+        )
+        with pytest.raises(SectionNotFound):
+            await client.details("202703", "99999")
+
+    async def test_other_server_errors_are_unavailable(self):
+        client = BannerSectionClient(
+            transport=httpx2.MockTransport(
+                lambda _: httpx2.Response(500, text="<title>Banner</title>")
+            )
         )
         with pytest.raises(SectionUnavailable):
             await client.details("202703", "50067")

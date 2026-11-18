@@ -25,6 +25,9 @@ ENROLLMENT_PATH = "/searchResults/getEnrollmentInfo"
 # Each check run reads every watched CRN; Banner is shared with all of Temple.
 MAX_CONCURRENT_REQUESTS = 5
 _banner_slots = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+# Banner has no "not found" answer: for a CRN the term lacks, building the
+# section from null fails with a 500 that says so.
+_NULL_SECTION_ERROR = re.compile(r"SectionDecorator.*for \[null\]", re.DOTALL)
 
 _ENROLLMENT_LABELS = {
     "Enrollment Maximum": "maximum_enrollment",
@@ -99,6 +102,12 @@ def parse_enrollment(fragment: str) -> Enrollment:
     return Enrollment(**values)
 
 
+def _is_missing_section(error: httpx2.HTTPError) -> bool:
+    return isinstance(error, httpx2.HTTPStatusError) and bool(
+        _NULL_SECTION_ERROR.search(error.response.text)
+    )
+
+
 class BannerSectionClient:
     def __init__(
         self,
@@ -131,6 +140,8 @@ class BannerSectionClient:
                 )
                 response.raise_for_status()
             except httpx2.HTTPError as exc:
+                if _is_missing_section(exc):
+                    raise SectionNotFound from exc
                 logger.warning("Banner %s failed for %s: %s", path, crn, exc)
                 raise SectionUnavailable from exc
         return response.text

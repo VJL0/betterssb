@@ -86,3 +86,16 @@ class ClassSearchResult(BaseSchema):
     fetched_at: datetime = Field(
         description="When Banner returned this data. Seats change."
     )
+
+
+class SectionSummary(BaseSchema):
+    """The course a CRN belongs to, from Banner's class details."""
+
+    crn: str
+    title: str
+    subject: str | None = Field(
+        description="Subject code, such as CIS; null if Banner's subject name "
+        "matches none of the term's subjects."
+    )
+    course_number: str
+    section: str

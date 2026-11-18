@@ -20,9 +20,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import contains_eager
 
 from app.modules.auth.models import User
-from app.modules.seat_tracker.client import (
+from app.modules.classes.section_client import (
     BannerSectionClient,
     Enrollment,
+    SectionNotFound,
     SectionUnavailable,
 )
 from app.modules.seat_tracker.mailer import Email, Mailer, MailError
@@ -180,10 +181,11 @@ def opening_email(
 async def _read_enrollment(
     banner: BannerSectionClient, term: str, crn: str
 ) -> Enrollment | None:
-    """None when Banner fails, which leaves the watch's last counts in place."""
+    """None when Banner fails or no longer has the section, which leaves the
+    watch's last counts in place."""
     try:
         return await banner.enrollment(term, crn)
-    except SectionUnavailable:
+    except SectionUnavailable, SectionNotFound:
         return None
 
 

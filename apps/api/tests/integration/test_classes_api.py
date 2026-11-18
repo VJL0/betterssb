@@ -131,3 +131,44 @@ class TestLookupRoutes:
     async def test_parts_of_term(self, client: AsyncClient, banner):
         resp = await client.get("/api/classes/parts-of-term", params={"term": "202703"})
         assert resp.json()[0]["code"] == "07A"
+
+
+class TestSectionRoute:
+    async def test_names_the_course(self, client: AsyncClient, banner):
+        resp = await client.get(
+            "/api/classes/sections/50067", params={"term": "202703"}
+        )
+        assert resp.status_code == 200
+        assert resp.json() == {
+            "crn": "50067",
+            "title": "Software Security",
+            "subject": "CIS",
+            "courseNumber": "3441",
+            "section": "702",
+        }
+
+    async def test_unknown_crn_is_not_found(self, client: AsyncClient, banner):
+        resp = await client.get(
+            "/api/classes/sections/99999", params={"term": "202703"}
+        )
+        assert resp.status_code == 404
+        assert resp.json()["detail"] == "There's no CRN 99999 in this term."
+
+    @pytest.mark.parametrize(
+        ("crn", "term"), [("123", "202703"), ("123456", "202703"), ("50067", "2027")]
+    )
+    async def test_rejects_bad_parameters(self, client: AsyncClient, banner, crn, term):
+        resp = await client.get(f"/api/classes/sections/{crn}", params={"term": term})
+        assert resp.status_code == 422
+        assert banner.requests == []
+
+    async def test_reports_banner_outages_as_bad_gateway(self, client: AsyncClient):
+        failing = FakeBanner(status=503)
+        app.dependency_overrides[get_class_search_service] = lambda: failing.service()
+        try:
+            resp = await client.get(
+                "/api/classes/sections/50067", params={"term": "202703"}
+            )
+        finally:
+            app.dependency_overrides.pop(get_class_search_service, None)
+        assert resp.status_code == 502

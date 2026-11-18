@@ -10,14 +10,21 @@ from app.modules.classes.client import (
     ClassSearchUnavailable,
     SearchFilters,
 )
+from app.modules.classes.section_client import (
+    BannerSectionClient,
+    SectionNotFound,
+    SectionUnavailable,
+)
 from app.modules.classes.service import (
     LOOKUP_TTL_SECONDS,
     SEARCH_TTL_SECONDS,
     ClassSearchService,
 )
 from tests.conftest import FIXTURES_DIR
+from tests.unit.test_section_client import DETAILS_FRAGMENT
 
 BASE_URL = "https://banner.example.edu/StudentRegistrationSsb/ssb"
+KNOWN_CRN = "50067"
 
 
 class MemoryCache:
@@ -39,8 +46,14 @@ class MemoryCache:
 class FakeBanner:
     """Records requests and answers like Banner's public class search."""
 
-    def __init__(self, search_body: object | None = None, status: int = 200) -> None:
+    def __init__(
+        self,
+        search_body: object | None = None,
+        status: int = 200,
+        details: str = DETAILS_FRAGMENT,
+    ) -> None:
         self.requests: list[httpx2.Request] = []
+        self.details = details
         self.search_body = search_body or json.loads(
             (FIXTURES_DIR / "class_search.json").read_text()
         )
@@ -61,6 +74,9 @@ class FakeBanner:
             )
         if path.endswith("/searchResults/searchResults"):
             return httpx2.Response(200, json=self.search_body)
+        if path.endswith("/searchResults/getClassDetails"):
+            known = f"courseReferenceNumber={KNOWN_CRN}" in request.content.decode()
+            return httpx2.Response(200, text=self.details if known else "")
         if path.endswith("/classSearch/getTerms"):
             return httpx2.Response(
                 200, json=[{"code": "202703", "description": "2027 Spring"}]
@@ -100,10 +116,12 @@ class FakeBanner:
         return httpx2.Response(404)
 
     def service(self, cache: MemoryCache | None = None) -> ClassSearchService:
-        client = BannerClassSearchClient(
-            BASE_URL, transport=httpx2.MockTransport(self.handler)
+        transport = httpx2.MockTransport(self.handler)
+        return ClassSearchService(
+            BannerClassSearchClient(BASE_URL, transport=transport),
+            BannerSectionClient(BASE_URL, transport=transport),
+            cache,
         )
-        return ClassSearchService(client, cache)
 
     def paths(self) -> list[str]:
         return [
@@ -212,9 +230,14 @@ class TestSearch:
         def fail(request: httpx2.Request) -> httpx2.Response:
             raise httpx2.ConnectTimeout("timed out", request=request)
 
-        client = BannerClassSearchClient(BASE_URL, transport=httpx2.MockTransport(fail))
+        transport = httpx2.MockTransport(fail)
+        service = ClassSearchService(
+            BannerClassSearchClient(BASE_URL, transport=transport),
+            BannerSectionClient(BASE_URL, transport=transport),
+            None,
+        )
         with pytest.raises(ClassSearchUnavailable):
-            await ClassSearchService(client, None).search(FILTERS)
+            await service.search(FILTERS)
 
 
 class TestSearchFilters:
@@ -358,3 +381,43 @@ class TestLookups:
         assert banner.paths() == [path]
         assert banner.requests[0].url.params["term"] == "202703"
         assert list(cache.ttls.values()) == [LOOKUP_TTL_SECONDS]
+
+
+class TestSection:
+    async def test_names_the_course_with_its_subject_code(self):
+        summary = await FakeBanner().service().section("202703", KNOWN_CRN)
+        assert summary.model_dump(by_alias=False) == {
+            "crn": KNOWN_CRN,
+            "title": "Software Security",
+            "subject": "CIS",
+            "course_number": "3441",
+            "section": "702",
+        }
+
+    async def test_leaves_the_code_out_when_no_subject_matches(self):
+        renamed = DETAILS_FRAGMENT.replace(
+            "Computer &amp; Information Science", "Underwater Basketry"
+        )
+        summary = (
+            await FakeBanner(details=renamed).service().section("202703", KNOWN_CRN)
+        )
+        assert summary.subject is None
+        assert summary.title == "Software Security"
+
+    async def test_unknown_crn_is_not_found(self):
+        with pytest.raises(SectionNotFound):
+            await FakeBanner().service().section("202703", "99999")
+
+    async def test_banner_outage_is_unavailable(self):
+        with pytest.raises(SectionUnavailable):
+            await FakeBanner(status=503).service().section("202703", KNOWN_CRN)
+
+    async def test_caches_the_answer_for_a_day(self):
+        banner = FakeBanner()
+        cache = MemoryCache()
+        await banner.service(cache).section("202703", KNOWN_CRN)
+        before = len(banner.requests)
+        again = await banner.service(cache).section("202703", KNOWN_CRN)
+        assert again.subject == "CIS"
+        assert len(banner.requests) == before
+        assert cache.ttls["classes:section:202703:50067"] == LOOKUP_TTL_SECONDS

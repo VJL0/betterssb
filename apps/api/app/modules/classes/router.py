@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
+from contextlib import contextmanager
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from pydantic import StringConstraints
 
 from app.core.cache import Cache, get_cache
@@ -12,7 +14,16 @@ from app.modules.classes.client import (
     ClassSearchUnavailable,
     SearchFilters,
 )
-from app.modules.classes.schemas import ClassSearchResult, CodeDescription
+from app.modules.classes.schemas import (
+    ClassSearchResult,
+    CodeDescription,
+    SectionSummary,
+)
+from app.modules.classes.section_client import (
+    BannerSectionClient,
+    SectionNotFound,
+    SectionUnavailable,
+)
 from app.modules.classes.service import ClassSearchService
 
 router = APIRouter(prefix="/classes", tags=["classes"])
@@ -24,13 +35,31 @@ UNAVAILABLE = "Banner's class search isn't responding. Try again in a minute."
 TermQuery = Annotated[str, Query(pattern=r"^\d{6}$", description="Banner term code")]
 BannerCode = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9]{1,6}$")]
 CourseNumberEnd = Annotated[str | None, Query(pattern=r"^\d{1,4}$")]
+CrnPath = Annotated[
+    str, Path(pattern=r"^\d{4,5}$", description="Four- or five-digit CRN")
+]
 MAX_CODES = 20
+
+
+@contextmanager
+def banner_errors(not_found: str = "") -> Iterator[None]:
+    """Banner not answering becomes a 502, and a missing CRN a 404 with `not_found`."""
+    try:
+        yield
+    except SectionNotFound as exc:
+        raise HTTPException(status_code=404, detail=not_found) from exc
+    except (ClassSearchUnavailable, SectionUnavailable) as exc:
+        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
 
 
 def get_class_search_service(
     cache: Annotated[Cache | None, Depends(get_cache)],
 ) -> ClassSearchService:
-    return ClassSearchService(BannerClassSearchClient(TEMPLE_SSB_BASE_URL), cache)
+    return ClassSearchService(
+        BannerClassSearchClient(TEMPLE_SSB_BASE_URL),
+        BannerSectionClient(TEMPLE_SSB_BASE_URL),
+        cache,
+    )
 
 
 ServiceDep = Annotated[ClassSearchService, Depends(get_class_search_service)]
@@ -39,10 +68,8 @@ ServiceDep = Annotated[ClassSearchService, Depends(get_class_search_service)]
 @router.get("/terms", response_model=list[CodeDescription])
 async def list_terms(service: ServiceDep) -> list[CodeDescription]:
     """Terms with a published class schedule, newest first."""
-    try:
+    with banner_errors():
         return await service.terms()
-    except ClassSearchUnavailable as exc:
-        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
 
 
 @router.get("/subjects", response_model=list[CodeDescription])
@@ -52,10 +79,8 @@ async def list_subjects(
     q: Annotated[str, Query(max_length=40)] = "",
 ) -> list[CodeDescription]:
     """Subjects offered in a term, optionally filtered by code or name."""
-    try:
+    with banner_errors():
         return await service.subjects(term, q)
-    except ClassSearchUnavailable as exc:
-        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
 
 
 @router.get("/attributes", response_model=list[CodeDescription])
@@ -63,19 +88,15 @@ async def list_attributes(
     service: ServiceDep, term: TermQuery
 ) -> list[CodeDescription]:
     """Section attributes for a term, such as GenEd areas and Writing Intensive."""
-    try:
+    with banner_errors():
         return await service.attributes(term)
-    except ClassSearchUnavailable as exc:
-        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
 
 
 @router.get("/campuses", response_model=list[CodeDescription])
 async def list_campuses(service: ServiceDep, term: TermQuery) -> list[CodeDescription]:
     """Campuses with sections in a term, such as Main, Center City and Japan."""
-    try:
+    with banner_errors():
         return await service.campuses(term)
-    except ClassSearchUnavailable as exc:
-        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
 
 
 @router.get("/parts-of-term", response_model=list[CodeDescription])
@@ -83,10 +104,8 @@ async def list_parts_of_term(
     service: ServiceDep, term: TermQuery
 ) -> list[CodeDescription]:
     """Parts of a term, such as the full term and the 7-week halves, with their dates."""
-    try:
+    with banner_errors():
         return await service.parts_of_term(term)
-    except ClassSearchUnavailable as exc:
-        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
 
 
 def _codes(codes: list[str] | None) -> tuple[str, ...]:
@@ -162,7 +181,14 @@ async def search_sections(
         offset=offset,
         limit=limit,
     )
-    try:
+    with banner_errors():
         return await service.search(filters)
-    except ClassSearchUnavailable as exc:
-        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
+
+
+@router.get("/sections/{crn}", response_model=SectionSummary)
+async def get_section(
+    service: ServiceDep, crn: CrnPath, term: TermQuery
+) -> SectionSummary:
+    """The course a CRN belongs to in a term, such as CIS 3441-702 Software Security."""
+    with banner_errors(not_found=f"There's no CRN {crn} in this term."):
+        return await service.section(term, crn)
