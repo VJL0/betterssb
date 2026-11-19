@@ -12,6 +12,8 @@ import type {
 } from "@workspace/shared/types/auto-reg";
 import type { BannerConnection } from "@workspace/shared/types/store";
 import { setUpApiClient } from "@/lib/api-client";
+import { submitWithRetry } from "@/lib/auto-reg-retry";
+import { sleep } from "@/lib/sleep";
 import {
   BANNER_CONNECTION_KEY,
   isSignedInToBanner,
@@ -61,10 +63,6 @@ const NOTIFICATION_ICON = "icon/128.png";
 /** On the toolbar icon until the student agrees to the popup's data disclosure. */
 const CONSENT_NEEDED_BADGE = "!";
 const NOTIFICATION_MESSAGE_MAX_LENGTH = 220;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function unknownMessage(msg: ExtensionMessage): ExtensionResponse {
   return { success: false, error: `Unknown message type: ${msg.type}` };
@@ -272,7 +270,7 @@ async function handleAutoRegMessage(
   }
 }
 
-/** Sets the one-shot run alarm; the queue is submitted only from it (single attempt). */
+/** Sets the one-shot run alarm; the queue is submitted only from it. */
 async function syncAutoRegRunAlarm(): Promise<void> {
   await browser.alarms.clear(AUTO_REG_RUN_ALARM);
   const { armed } = await getAutoRegRunState();
@@ -327,7 +325,10 @@ async function finishAutoRegRun(
   await browser.alarms.clear(AUTO_REG_RUN_ALARM);
 }
 
-/** Submits the armed queue to Banner, once, and records the outcome. */
+/**
+ * Submits the armed queue to Banner, retrying while Banner errors, and
+ * records the outcome. The run key keeps the alarm from starting it twice.
+ */
 async function submitAutoRegQueue(): Promise<void> {
   const run = await getAutoRegRunState();
   if (!run.armed) return;
@@ -341,27 +342,28 @@ async function submitAutoRegQueue(): Promise<void> {
   if (run.dedupeRunKey === dedupeRunKey) return;
   await patchAutoRegRunState({ dedupeRunKey });
 
-  const submitted = await ssb
-    .executeRegistrationSubmit(queue.term, queue.crns)
-    .catch((err: unknown) =>
-      err instanceof Error ? err : new Error("Banner request failed"),
-    );
+  const outcome = await submitWithRetry(
+    () => ssb.executeRegistrationSubmit(queue.term, queue.crns),
+    async () => (await getAutoRegRunState()).armed,
+  );
+  if (outcome.status === "stopped") return;
   const at = new Date().toISOString();
 
-  if (submitted instanceof Error) {
-    await finishAutoRegRun(failedResultRecord(submitted.message, at));
+  if (outcome.status === "failed") {
+    await finishAutoRegRun(failedResultRecord(outcome.error.message, at));
     notify(
       AUTO_REG_FAILED_NOTIFICATION,
       "Auto-register failed",
-      submitted.message,
+      outcome.error.message,
     );
     return;
   }
 
+  const { batchResponse, stagingFailures } = outcome.result;
   const record = buildResultRecord(
-    submitted.batchResponse,
+    batchResponse,
     queue.crns,
-    submitted.stagingFailures,
+    stagingFailures,
     at,
   );
   await finishAutoRegRun(record);
@@ -428,7 +430,7 @@ export default defineBackground(() => {
     if (DATA_CONSENT_KEY in changes) void showConsentBadge();
   });
 
-  browser.alarms.create(AUTO_REG_REMINDER_ALARM, { periodInMinutes: 1 });
+  void browser.alarms.create(AUTO_REG_REMINDER_ALARM, { periodInMinutes: 1 });
 
   browser.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === AUTO_REG_REMINDER_ALARM) {
