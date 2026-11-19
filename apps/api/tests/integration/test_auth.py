@@ -118,7 +118,7 @@ async def start_login(
 ) -> dict[str, str]:
     """Start sign-in and return the query params of Google's authorization URL."""
     query = {"next": next_path} if next_path is not None else {}
-    resp = await client.get("/api/auth/google/login", params=query)
+    resp = await client.get("/api/auth/google", params=query)
     assert resp.status_code == 302
     params = {
         k: v[0] for k, v in parse_qs(urlparse(resp.headers["location"]).query).items()
@@ -147,7 +147,7 @@ class TestLogin:
     async def test_redirects_to_google_with_pkce_state_and_nonce(
         self, client: AsyncClient, google, cache
     ):
-        resp = await client.get("/api/auth/google/login")
+        resp = await client.get("/api/auth/google")
 
         assert resp.status_code == 302
         url = urlparse(resp.headers["location"])
@@ -195,7 +195,7 @@ class TestLoginErrors:
             raise httpx2.ConnectError("connection refused")
 
         app.state.google.load_server_metadata = unreachable
-        resp = await client.get("/api/auth/google/login", params=query)
+        resp = await client.get("/api/auth/google", params=query)
 
         assert resp.status_code == 303
         assert (
@@ -280,7 +280,7 @@ class TestCallback:
         # One-time handshake data is gone.
         assert cache.data == {}
 
-        me = await client.get("/api/auth/me")
+        me = await client.get("/api/users/me")
         assert me.status_code == 200
         assert me.headers["cache-control"] == "no-store"
         user = me.json()
@@ -444,7 +444,7 @@ class TestCallback:
 
 class TestSession:
     async def test_me_requires_a_session(self, client: AsyncClient, db):
-        resp = await client.get("/api/auth/me")
+        resp = await client.get("/api/users/me")
         assert resp.status_code == 401
         # RFC 9110 requires a challenge on every 401.
         assert resp.headers["www-authenticate"] == "APIKey"
@@ -458,7 +458,7 @@ class TestSession:
 
     async def test_unknown_token_is_rejected(self, client: AsyncClient, db):
         client.cookies.set(SESSION_COOKIE, "not-a-real-session")
-        resp = await client.get("/api/auth/me")
+        resp = await client.get("/api/users/me")
         assert resp.status_code == 401
 
     async def test_logout_ends_the_session_server_side(
@@ -467,13 +467,13 @@ class TestSession:
         await sign_in(client, google)
         token = client.cookies[SESSION_COOKIE]
 
-        resp = await client.post("/api/auth/logout")
+        resp = await client.delete("/api/auth/session")
         assert resp.status_code == 204
         assert "max-age=0" in set_cookie_header(resp, SESSION_COOKIE).lower()
 
         # Replaying the old cookie no longer works.
         client.cookies.set(SESSION_COOKIE, token)
-        assert (await client.get("/api/auth/me")).status_code == 401
+        assert (await client.get("/api/users/me")).status_code == 401
 
     async def test_idle_timeout(self, client: AsyncClient, db, google):
         await sign_in(client, google)
@@ -487,7 +487,7 @@ class TestSession:
             )
             await session.commit()
 
-        assert (await client.get("/api/auth/me")).status_code == 401
+        assert (await client.get("/api/users/me")).status_code == 401
 
     async def test_absolute_timeout(self, client: AsyncClient, db, google):
         await sign_in(client, google)
@@ -499,7 +499,7 @@ class TestSession:
             )
             await session.commit()
 
-        assert (await client.get("/api/auth/me")).status_code == 401
+        assert (await client.get("/api/users/me")).status_code == 401
 
     async def test_activity_extends_the_idle_window(
         self, client: AsyncClient, db, google
@@ -510,7 +510,7 @@ class TestSession:
             await session.execute(update(UserSession).values(last_seen_at=an_hour_ago))
             await session.commit()
 
-        assert (await client.get("/api/auth/me")).status_code == 200
+        assert (await client.get("/api/users/me")).status_code == 200
 
         async with db() as session:
             last_seen = (

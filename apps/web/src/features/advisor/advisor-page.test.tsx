@@ -35,16 +35,19 @@ afterEach(() => {
 function mockChat(reply = "Take CIS 4398 in the fall.", provider = "gemini") {
   const bodies: ChatRequest[] = [];
   server.use(
-    http.post<never, ChatRequest>(`${API}/chat`, async ({ request }) => {
-      bodies.push(await request.json());
-      const finish = STREAM_FINISH.replace(
-        '"finishReason":"stop"',
-        `"finishReason":"stop","messageMetadata":${JSON.stringify({ provider })}`,
-      );
-      return new HttpResponse(STREAM_START + textDelta(reply) + finish, {
-        headers: { "Content-Type": "text/event-stream" },
-      });
-    }),
+    http.post<never, ChatRequest>(
+      `${API}/advisor\\:chat`,
+      async ({ request }) => {
+        bodies.push(await request.json());
+        const finish = STREAM_FINISH.replace(
+          '"finishReason":"stop"',
+          `"finishReason":"stop","messageMetadata":${JSON.stringify({ provider })}`,
+        );
+        return new HttpResponse(STREAM_START + textDelta(reply) + finish, {
+          headers: { "Content-Type": "text/event-stream" },
+        });
+      },
+    ),
   );
   return bodies;
 }
@@ -168,7 +171,7 @@ describe("AdvisorPage", () => {
   it("keeps the question when the advisor is unavailable", async () => {
     const user = userEvent.setup();
     server.use(
-      http.post(`${API}/chat`, () =>
+      http.post(`${API}/advisor\\:chat`, () =>
         problemResponse(503, "The chat assistant is unavailable."),
       ),
     );
@@ -195,7 +198,7 @@ it("shows text before completion and saves only after done", async () => {
   const encoder = new TextEncoder();
   server.use(
     http.post(
-      `${API}/chat`,
+      `${API}/advisor\\:chat`,
       () =>
         new HttpResponse(
           new ReadableStream({
@@ -234,7 +237,7 @@ it("shows text before completion and saves only after done", async () => {
 it("stops an unfinished reply without saving it and restores the question", async () => {
   server.use(
     http.post(
-      `${API}/chat`,
+      `${API}/advisor\\:chat`,
       () =>
         new HttpResponse(
           new ReadableStream({
@@ -267,7 +270,7 @@ it("discards late events after starting a new chat", async () => {
   let output: ReadableStreamDefaultController<Uint8Array>;
   server.use(
     http.post(
-      `${API}/chat`,
+      `${API}/advisor\\:chat`,
       () =>
         new HttpResponse(
           new ReadableStream({
@@ -324,7 +327,7 @@ it("retries a failed save without generating another answer", async () => {
 it("does not save an SDK stream that closes before a finish event", async () => {
   server.use(
     http.post(
-      `${API}/chat`,
+      `${API}/advisor\\:chat`,
       () =>
         new HttpResponse(STREAM_START + textDelta("Incomplete advice"), {
           headers: { "Content-Type": "text/event-stream" },
@@ -349,7 +352,7 @@ it("does not save an SDK stream that closes before a finish event", async () => 
 it("shows SDK error events without saving partial advice", async () => {
   server.use(
     http.post(
-      `${API}/chat`,
+      `${API}/advisor\\:chat`,
       () =>
         new HttpResponse(
           STREAM_START +

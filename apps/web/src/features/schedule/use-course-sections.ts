@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useQueries, type UseQueryResult } from "@tanstack/react-query";
-import type { ClassSearchResult, ClassSection } from "@workspace/api-client";
+import type { ClassSection, SectionPage } from "@workspace/api-client";
 import { searchSectionsOptions } from "@workspace/api-client/query";
 import type { PlanCourse } from "./schedule-options";
 
@@ -24,14 +24,6 @@ interface Loaded {
   retry: () => void;
 }
 
-/** Only this exact course, whatever else the search matched. */
-function onlyCourse(courseId: string) {
-  return (result: ClassSearchResult): ClassSearchResult => ({
-    ...result,
-    sections: result.sections.filter((s) => s.subjectCourse === courseId),
-  });
-}
-
 /** Live sections from Banner for every course in the plan. */
 export function useCourseSections(
   term: string,
@@ -41,19 +33,24 @@ export function useCourseSections(
 
   // Keyed by the course ids alone, so the result only changes when the data does.
   const combine = useCallback(
-    (results: UseQueryResult<ClassSearchResult, unknown>[]): Loaded => {
+    (results: UseQueryResult<SectionPage, unknown>[]): Loaded => {
       const courseIds = ids.split(",");
       const sectionsByCourse = new Map<string, ClassSection[]>();
       const times: string[] = [];
-      results.forEach((result, index) => {
-        if (!result.data) return;
-        sectionsByCourse.set(courseIds[index]!, result.data.sections);
+      for (const [index, result] of results.entries()) {
+        if (!result.data) continue;
+        const courseId = courseIds[index]!;
+        // Only this exact course, whatever else the search matched.
+        sectionsByCourse.set(
+          courseId,
+          result.data.sections.filter((s) => s.subjectCourse === courseId),
+        );
         times.push(result.data.fetchedAt);
-      });
+      }
       return {
-        pending: results.some((r) => r.isPending && r.isFetching),
+        pending: results.some((r) => r.isLoading),
         sectionsByCourse,
-        fetchedAt: times.sort()[0] ?? null,
+        fetchedAt: times.toSorted()[0] ?? null,
         retry: () => {
           for (const r of results) if (r.isError) void r.refetch();
         },
@@ -63,18 +60,17 @@ export function useCourseSections(
   );
 
   const loaded = useQueries({
-    queries: courses.map((course) => ({
-      ...searchSectionsOptions({
+    queries: courses.map((course) =>
+      searchSectionsOptions({
+        path: { term },
         query: {
-          term,
           subject: course.subject,
           courseNumber: course.courseNumber,
           limit: SECTIONS_PER_COURSE,
         },
         meta: { errorMessage: `Couldn't load ${course.code} sections.` },
       }),
-      select: onlyCourse(course.courseId),
-    })),
+    ),
     combine,
   });
 

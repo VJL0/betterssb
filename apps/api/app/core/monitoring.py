@@ -13,7 +13,7 @@ from app.core.config import Settings
 # Errors are always sent; only this share of traces is, to stay within quota.
 TRACES_SAMPLE_RATE = 0.1
 # Advisor replies are few and costly, so every one is traced for AI monitoring.
-ADVISOR_PATH = "/api/chat"
+ADVISOR_PATH = "/api/advisor:chat"
 # Profiles ride along with sampled traces, so this doesn't add requests.
 PROFILE_SESSION_SAMPLE_RATE = 1.0
 

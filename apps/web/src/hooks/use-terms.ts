@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { queryError, type CodeDescription } from "@workspace/api-client";
+import { queryError, type TermList } from "@workspace/api-client";
 import { listTermsOptions } from "@workspace/api-client/query";
 import { formatTermName, isViewOnlyTerm } from "@workspace/shared/lib/terms";
 
@@ -19,7 +19,7 @@ type TermsState =
   | { status: "error"; terms: Term[]; error: Error };
 
 /** Past, view-only terms can't be planned or registered for. */
-function plannableTerms(terms: CodeDescription[]): Term[] {
+function plannableTerms({ terms }: TermList): Term[] {
   return terms
     .filter((t) => !isViewOnlyTerm(t.description))
     .map((t) => ({ code: t.code, name: formatTermName(t.description) }));

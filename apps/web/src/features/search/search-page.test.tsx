@@ -20,7 +20,7 @@ import { SearchPage } from "./search-page";
 
 const SEARCH_TIMEOUT = { timeout: 3_000 };
 
-const SEARCH = "GET /api/classes/search";
+const SEARCH = "GET /api/classes/terms/202703/sections";
 
 type User = ReturnType<typeof userEvent.setup>;
 
@@ -30,10 +30,10 @@ async function openFilters(user: User) {
   return within(await screen.findByRole("dialog", { name: "Filters" }));
 }
 
-/** True when the query is the one the page should send for "CIS 2168". */
-function isCis2168(query: URLSearchParams): boolean {
+/** True when the search is the one the page should send for "CIS 2168". */
+function isCis2168(term: string, query: URLSearchParams): boolean {
   return (
-    query.get("term") === "202703" &&
+    term === "202703" &&
     query.get("subject") === "CIS" &&
     query.get("courseNumber") === "2168"
   );
@@ -43,27 +43,30 @@ function isCis2168(query: URLSearchParams): boolean {
 // show the page sent the right query.
 beforeEach(() => {
   server.use(
-    http.get(`${API}/classes/search`, ({ request }) => {
-      if (!isCis2168(new URL(request.url).searchParams)) {
+    http.get<{ term: string }>(
+      `${API}/classes/terms/:term/sections`,
+      ({ params, request }) => {
+        if (!isCis2168(params.term, new URL(request.url).searchParams)) {
+          return HttpResponse.json({
+            totalCount: 0,
+            fetchedAt: FETCHED_AT,
+            sections: [],
+          });
+        }
         return HttpResponse.json({
-          totalCount: 0,
+          totalCount: 2,
           fetchedAt: FETCHED_AT,
-          sections: [],
+          sections: [
+            classSection(),
+            classSection({
+              courseReferenceNumber: "41208",
+              sequenceNumber: "002",
+              meetings: [meetingTime("MWF", "1100", "1150")],
+            }),
+          ],
         });
-      }
-      return HttpResponse.json({
-        totalCount: 2,
-        fetchedAt: FETCHED_AT,
-        sections: [
-          classSection(),
-          classSection({
-            courseReferenceNumber: "41208",
-            sequenceNumber: "002",
-            meetings: [meetingTime("MWF", "1100", "1150")],
-          }),
-        ],
-      });
-    }),
+      },
+    ),
   );
 });
 
@@ -101,8 +104,47 @@ describe("SearchPage", () => {
     );
   });
 
+  it("loads the next page with the cursor the last page gave", async () => {
+    const pages: (string | null)[] = [];
+    server.use(
+      http.get(`${API}/classes/terms/:term/sections`, ({ request }) => {
+        const cursor = new URL(request.url).searchParams.get("cursor");
+        pages.push(cursor);
+        return HttpResponse.json({
+          totalCount: 2,
+          fetchedAt: FETCHED_AT,
+          sections: [
+            cursor
+              ? classSection({ courseReferenceNumber: "41208" })
+              : classSection(),
+          ],
+          nextCursor: cursor ? null : "page-2",
+        });
+      }),
+    );
+    const user = userEvent.setup();
+    renderPage(<SearchPage />);
+    const input = await screen.findByRole("searchbox", {
+      name: "Search courses",
+    });
+    await waitFor(() => expect(input.hasAttribute("disabled")).toBe(false));
+    await user.type(input, "CIS 2168");
+
+    await user.click(
+      await screen.findByRole(
+        "button",
+        { name: "Load 1 more" },
+        SEARCH_TIMEOUT,
+      ),
+    );
+    await waitFor(() => expect(pages).toEqual([null, "page-2"]));
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: /^Load / })).toBeNull(),
+    );
+  });
+
   it("says ratings are loading while the API's first sync runs", async () => {
-    server.use(http.get(`${API}/rmp/search`, () => problemResponse(503)));
+    server.use(http.get(`${API}/professors`, () => problemResponse(503)));
     const user = userEvent.setup();
     renderPage(<SearchPage />);
     const input = await screen.findByRole("searchbox", {
@@ -137,7 +179,7 @@ describe("SearchPage", () => {
 
   it("sorts sections by most open seats", async () => {
     server.use(
-      http.get(`${API}/classes/search`, () =>
+      http.get(`${API}/classes/terms/:term/sections`, () =>
         HttpResponse.json({
           totalCount: 2,
           fetchedAt: FETCHED_AT,
@@ -206,8 +248,10 @@ describe("SearchPage filters", () => {
 
   it("searches a GenEd area with nothing typed", async () => {
     server.use(
-      http.get(`${API}/classes/attributes`, () =>
-        HttpResponse.json([{ code: "GA", description: "GenEd Arts" }]),
+      http.get(`${API}/classes/terms/:term/attributes`, () =>
+        HttpResponse.json({
+          attributes: [{ code: "GA", description: "GenEd Arts" }],
+        }),
       ),
     );
     const searches = recordRequests(SEARCH);
@@ -275,8 +319,8 @@ describe("SearchPage filters", () => {
 
   it("shows each applied filter as a chip that removes it", async () => {
     server.use(
-      http.get(`${API}/classes/campuses`, () =>
-        HttpResponse.json([{ code: "MN", description: "Main" }]),
+      http.get(`${API}/classes/terms/:term/campuses`, () =>
+        HttpResponse.json({ campuses: [{ code: "MN", description: "Main" }] }),
       ),
     );
     const searches = recordRequests(SEARCH);

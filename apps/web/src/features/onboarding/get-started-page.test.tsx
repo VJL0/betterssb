@@ -17,11 +17,13 @@ import { GetStartedPage } from "./get-started-page";
 beforeEach(() => {
   server.use(
     http.get(`${API}/classes/terms`, () =>
-      HttpResponse.json([
-        { code: "202703", description: "2027 Spring" },
-        { code: "202636", description: "2026 Fall" },
-        { code: "202536", description: "2025 Fall (View Only)" },
-      ]),
+      HttpResponse.json({
+        terms: [
+          { code: "202703", description: "2027 Spring" },
+          { code: "202636", description: "2026 Fall" },
+          { code: "202536", description: "2025 Fall (View Only)" },
+        ],
+      }),
     ),
   );
 });

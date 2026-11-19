@@ -30,13 +30,13 @@ export const API = "*/api";
 
 export const FETCHED_AT = "2026-10-17T12:00:00.000Z";
 
-const TERMS: ListTermsResponse = [
-  { code: "202703", description: "2027 Spring" },
-];
+const TERMS: ListTermsResponse = {
+  terms: [{ code: "202703", description: "2027 Spring" }],
+};
 
-const SUBJECTS: ListSubjectsResponse = [
-  { code: "CIS", description: "Computer & Information Science" },
-];
+const SUBJECTS: ListSubjectsResponse = {
+  subjects: [{ code: "CIS", description: "Computer & Information Science" }],
+};
 
 const USER: GetMeResponse = {
   id: "user-1",
@@ -196,14 +196,14 @@ const REQUIREMENTS: GetProgramRequirementsResponse = {
 };
 
 export const handlers = [
-  http.get<never, never, GetMeResponse>(`${API}/auth/me`, () =>
+  http.get<never, never, GetMeResponse>(`${API}/users/me`, () =>
     HttpResponse.json(USER),
   ),
-  http.post(
-    `${API}/auth/logout`,
+  http.delete(
+    `${API}/auth/session`,
     () => new HttpResponse(null, { status: 204 }),
   ),
-  http.post(`${API}/chat`, () => {
+  http.post(`${API}/advisor\\:chat`, () => {
     const events = [
       { type: "start", messageId: "reply" },
       { type: "text-start", id: "text" },
@@ -220,74 +220,75 @@ export const handlers = [
   http.get<never, never, ListTermsResponse>(`${API}/classes/terms`, () =>
     HttpResponse.json(TERMS),
   ),
-  http.get<never, never, ListSubjectsResponse>(`${API}/classes/subjects`, () =>
-    HttpResponse.json(SUBJECTS),
+  http.get<never, never, ListSubjectsResponse>(
+    `${API}/classes/terms/:term/subjects`,
+    () => HttpResponse.json(SUBJECTS),
   ),
   http.get<never, never, ListAttributesResponse>(
-    `${API}/classes/attributes`,
-    () => HttpResponse.json([]),
+    `${API}/classes/terms/:term/attributes`,
+    () => HttpResponse.json({ attributes: [] }),
   ),
-  http.get<never, never, ListCampusesResponse>(`${API}/classes/campuses`, () =>
-    HttpResponse.json([]),
+  http.get<never, never, ListCampusesResponse>(
+    `${API}/classes/terms/:term/campuses`,
+    () => HttpResponse.json({ campuses: [] }),
   ),
   http.get<never, never, ListPartsOfTermResponse>(
-    `${API}/classes/parts-of-term`,
-    () => HttpResponse.json([]),
+    `${API}/classes/terms/:term/parts-of-term`,
+    () => HttpResponse.json({ partsOfTerm: [] }),
   ),
-  http.get<never, never, SearchSectionsResponse>(`${API}/classes/search`, () =>
-    HttpResponse.json({ totalCount: 0, sections: [], fetchedAt: FETCHED_AT }),
+  http.get<never, never, SearchSectionsResponse>(
+    `${API}/classes/terms/:term/sections`,
+    () =>
+      HttpResponse.json({
+        totalCount: 0,
+        sections: [],
+        fetchedAt: FETCHED_AT,
+        nextCursor: null,
+      }),
   ),
-  http.post<never, never, ParseAuditResponse>(`${API}/dars/audits/parse`, () =>
-    HttpResponse.json(AUDIT),
+  http.post<never, never, ParseAuditResponse>(
+    `${API}/dars/audits\\:parse`,
+    () => HttpResponse.json(AUDIT),
   ),
   http.post<never, never, ParseBulletinResponse>(
-    `${API}/degree/parse-bulletin`,
+    `${API}/bulletins/program-requirements\\:parse`,
     () => HttpResponse.json(BULLETIN),
   ),
-  http.get<never, never, ListBulletinProgramsResponse>(
-    `${API}/degree/programs`,
-    ({ request }) =>
-      HttpResponse.json(
-        bulletinPrograms(new URL(request.url).searchParams.get("year") ?? ""),
-      ),
+  http.get<{ year: string }, never, ListBulletinProgramsResponse>(
+    `${API}/bulletins/:year/programs`,
+    ({ params }) => HttpResponse.json(bulletinPrograms(params.year)),
   ),
-  http.get<never, never, ListBulletinSubjectsResponse>(
-    `${API}/degree/subjects`,
-    ({ request }) =>
-      HttpResponse.json(
-        bulletinSubjects(new URL(request.url).searchParams.get("year") ?? ""),
-      ),
+  http.get<{ year: string }, never, ListBulletinSubjectsResponse>(
+    `${API}/bulletins/:year/subjects`,
+    ({ params }) => HttpResponse.json(bulletinSubjects(params.year)),
   ),
-  http.get<{ subject: string }, never, ListSubjectCoursesResponse>(
-    `${API}/degree/subjects/:subject/courses`,
-    ({ params, request }) =>
-      HttpResponse.json(
-        subjectCourses(
-          params.subject,
-          new URL(request.url).searchParams.get("year") ?? "",
-        ),
-      ),
+  http.get<
+    { year: string; subject: string },
+    never,
+    ListSubjectCoursesResponse
+  >(`${API}/bulletins/:year/subjects/:subject/courses`, ({ params }) =>
+    HttpResponse.json(subjectCourses(params.subject, params.year)),
   ),
   http.get<never, never, GetCourseDescriptionResponse>(
-    `${API}/degree/courses`,
+    `${API}/bulletins/:year/subjects/:subject/courses/:number`,
     () => HttpResponse.json(COURSE),
   ),
   http.get<never, never, GetProgramRequirementsResponse>(
-    `${API}/degree/requirements`,
+    `${API}/bulletins/program-requirements`,
     () => HttpResponse.json(REQUIREMENTS),
   ),
-  http.get<never, never, SearchProfessorsResponse>(`${API}/rmp/search`, () =>
-    HttpResponse.json([]),
+  http.get<never, never, SearchProfessorsResponse>(`${API}/professors`, () =>
+    HttpResponse.json({ professors: [] }),
   ),
   http.get<never, never, ListSeatWatchesResponse>(`${API}/seat-watches`, () =>
-    HttpResponse.json([]),
+    HttpResponse.json({ seatWatches: [] }),
   ),
   http.post<never, never, GenerateSchedulesResponse>(
-    `${API}/schedule/generate`,
-    () => HttpResponse.json([]),
+    `${API}/schedules\\:generate`,
+    () => HttpResponse.json({ schedules: [] }),
   ),
   http.post<never, never, ParseTranscriptPdfResponse>(
-    `${API}/transcript/parse-pdf`,
+    `${API}/transcripts\\:parse`,
     () =>
       HttpResponse.json({
         courses: [],

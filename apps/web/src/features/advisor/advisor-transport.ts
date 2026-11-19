@@ -29,7 +29,7 @@ export function storedMessages(messages: UIMessage[]): ChatMessage[] {
 export function advisorTransport(): DefaultChatTransport<UIMessage> {
   const config = client.getConfig();
   return new DefaultChatTransport({
-    api: client.buildUrl({ url: "/api/chat" }),
+    api: client.buildUrl({ url: "/api/advisor:chat" }),
     credentials: config.credentials,
     prepareSendMessagesRequest: ({ messages, body }) => ({
       body: {

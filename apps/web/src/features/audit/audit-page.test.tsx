@@ -46,7 +46,7 @@ describe("AuditPage", () => {
   it("reads an uploaded audit file and saves it", async () => {
     const user = userEvent.setup({ applyAccept: false });
     server.use(
-      http.post(`${API}/dars/audits/parse`, () =>
+      http.post(`${API}/dars/audits\\:parse`, () =>
         HttpResponse.json(sampleAudit()),
       ),
     );
@@ -132,7 +132,7 @@ describe("AuditPage", () => {
   it("keeps the saved audit when a new one can't be read", async () => {
     const user = userEvent.setup({ applyAccept: false });
     server.use(
-      http.post(`${API}/dars/audits/parse`, () =>
+      http.post(`${API}/dars/audits\\:parse`, () =>
         problemResponse(422, "This doesn't look like a DARS audit."),
       ),
     );

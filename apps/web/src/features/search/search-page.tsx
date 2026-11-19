@@ -456,7 +456,7 @@ function movePlanButtonFocus(step: 1 | -1) {
 
 /** The term's choices for the filters. Optional: search works without them. */
 function useSearchOptions(term: string): SearchOptions {
-  const query = { query: { term } };
+  const query = { path: { term } };
   const attributes = useQuery({
     ...listAttributesOptions(query),
     staleTime: SEARCH_OPTIONS_STALE_MS,
@@ -470,9 +470,9 @@ function useSearchOptions(term: string): SearchOptions {
     staleTime: SEARCH_OPTIONS_STALE_MS,
   });
   return {
-    attributes: attributes.data ?? NO_OPTIONS,
-    campuses: campuses.data ?? NO_OPTIONS,
-    partsOfTerm: partsOfTerm.data ?? NO_OPTIONS,
+    attributes: attributes.data?.attributes ?? NO_OPTIONS,
+    campuses: campuses.data?.campuses ?? NO_OPTIONS,
+    partsOfTerm: partsOfTerm.data?.partsOfTerm ?? NO_OPTIONS,
   };
 }
 
@@ -672,7 +672,7 @@ function Results({
         </div>
       )}
 
-      {sections.length < result.totalCount && (
+      {search.hasMore && (
         <Button
           variant="outline"
           className="self-center"

@@ -133,7 +133,7 @@ def test_blank_page_requests_visual_review():
 @pytest.mark.parametrize("data", [b"%PDF-1.4\ninvalid", b"", b"not a PDF"])
 async def test_invalid_pdf_api(client, data):
     response = await client.post(
-        "/api/transcript/parse-pdf",
+        "/api/transcripts:parse",
         content=data,
         headers={"Content-Type": "application/pdf"},
     )
@@ -143,7 +143,7 @@ async def test_invalid_pdf_api(client, data):
 
 async def test_pdf_api(client):
     response = await client.post(
-        "/api/transcript/parse-pdf/data",
+        "/api/transcripts:inspect",
         content=simple_pdf(b"BT /F1 12 Tf 20 750 Td (Example University) Tj ET"),
         headers={"Content-Type": "application/pdf"},
     )

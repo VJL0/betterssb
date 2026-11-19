@@ -4,10 +4,13 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Response
 from pydantic import StringConstraints
 
 from app.core.cache import Cache, get_cache
+from app.core.errors import Problem, upstream_failure_status
+from app.core.http_cache import cached_publicly, public_cache_control
+from app.core.pagination import InvalidCursor, decode_cursor, encode_cursor
 from app.modules.classes.client import (
     TEMPLE_SSB_BASE_URL,
     BannerClassSearchClient,
@@ -15,16 +18,25 @@ from app.modules.classes.client import (
     SearchFilters,
 )
 from app.modules.classes.schemas import (
-    ClassSearchResult,
-    CodeDescription,
+    AttributeList,
+    CampusList,
+    PartOfTermList,
+    SectionPage,
     SectionSummary,
+    SubjectList,
+    TermList,
 )
 from app.modules.classes.section_client import (
     BannerSectionClient,
     SectionNotFound,
     SectionUnavailable,
 )
-from app.modules.classes.service import ClassSearchService
+from app.modules.classes.service import (
+    LOOKUP_TTL_SECONDS,
+    MISSING_SECTION_TTL_SECONDS,
+    SEARCH_TTL_SECONDS,
+    ClassSearchService,
+)
 
 router = APIRouter(prefix="/classes", tags=["classes"])
 
@@ -32,7 +44,7 @@ MAX_PAGE_SIZE = 100
 DEFAULT_PAGE_SIZE = 50
 UNAVAILABLE = "Banner's class search isn't responding. Try again in a minute."
 
-TermQuery = Annotated[str, Query(pattern=r"^\d{6}$", description="Banner term code")]
+TermPath = Annotated[str, Path(pattern=r"^\d{6}$", description="Banner term code")]
 BannerCode = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9]{1,6}$")]
 CourseNumberEnd = Annotated[str | None, Query(pattern=r"^\d{1,4}$")]
 CrnPath = Annotated[
@@ -42,14 +54,20 @@ MAX_CODES = 20
 
 
 @contextmanager
-def banner_errors(not_found: str = "") -> Generator[None]:
-    """Banner not answering becomes a 502, and a missing CRN a 404 with `not_found`."""
+def banner_errors(
+    not_found: str = "", not_found_headers: dict[str, str] | None = None
+) -> Generator[None]:
+    """A missing CRN becomes a 404 with `not_found`; Banner failing, a 502 or 504."""
     try:
         yield
     except SectionNotFound as exc:
-        raise HTTPException(status_code=404, detail=not_found) from exc
+        raise HTTPException(
+            status_code=404, detail=not_found, headers=not_found_headers
+        ) from exc
     except (ClassSearchUnavailable, SectionUnavailable) as exc:
-        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
+        raise HTTPException(
+            status_code=upstream_failure_status(exc), detail=UNAVAILABLE
+        ) from exc
 
 
 def get_class_search_service(
@@ -65,57 +83,73 @@ def get_class_search_service(
 ServiceDep = Annotated[ClassSearchService, Depends(get_class_search_service)]
 
 
-@router.get("/terms", response_model=list[CodeDescription])
-async def list_terms(service: ServiceDep) -> list[CodeDescription]:
+@router.get("/terms", response_model=TermList, **cached_publicly(LOOKUP_TTL_SECONDS))
+async def list_terms(service: ServiceDep) -> TermList:
     """Terms with a published class schedule, newest first."""
     with banner_errors():
-        return await service.terms()
+        return TermList(terms=await service.terms())
 
 
-@router.get("/subjects", response_model=list[CodeDescription])
+@router.get(
+    "/terms/{term}/subjects",
+    response_model=SubjectList,
+    **cached_publicly(LOOKUP_TTL_SECONDS),
+)
 async def list_subjects(
     service: ServiceDep,
-    term: TermQuery,
+    term: TermPath,
     q: Annotated[str, Query(max_length=40)] = "",
-) -> list[CodeDescription]:
+) -> SubjectList:
     """Subjects offered in a term, optionally filtered by code or name."""
     with banner_errors():
-        return await service.subjects(term, q)
+        return SubjectList(subjects=await service.subjects(term, q))
 
 
-@router.get("/attributes", response_model=list[CodeDescription])
-async def list_attributes(
-    service: ServiceDep, term: TermQuery
-) -> list[CodeDescription]:
+@router.get(
+    "/terms/{term}/attributes",
+    response_model=AttributeList,
+    **cached_publicly(LOOKUP_TTL_SECONDS),
+)
+async def list_attributes(service: ServiceDep, term: TermPath) -> AttributeList:
     """Section attributes for a term, such as GenEd areas and Writing Intensive."""
     with banner_errors():
-        return await service.attributes(term)
+        return AttributeList(attributes=await service.attributes(term))
 
 
-@router.get("/campuses", response_model=list[CodeDescription])
-async def list_campuses(service: ServiceDep, term: TermQuery) -> list[CodeDescription]:
+@router.get(
+    "/terms/{term}/campuses",
+    response_model=CampusList,
+    **cached_publicly(LOOKUP_TTL_SECONDS),
+)
+async def list_campuses(service: ServiceDep, term: TermPath) -> CampusList:
     """Campuses with sections in a term, such as Main, Center City and Japan."""
     with banner_errors():
-        return await service.campuses(term)
+        return CampusList(campuses=await service.campuses(term))
 
 
-@router.get("/parts-of-term", response_model=list[CodeDescription])
-async def list_parts_of_term(
-    service: ServiceDep, term: TermQuery
-) -> list[CodeDescription]:
+@router.get(
+    "/terms/{term}/parts-of-term",
+    response_model=PartOfTermList,
+    **cached_publicly(LOOKUP_TTL_SECONDS),
+)
+async def list_parts_of_term(service: ServiceDep, term: TermPath) -> PartOfTermList:
     """Parts of a term, such as the full term and the 7-week halves, with their dates."""
     with banner_errors():
-        return await service.parts_of_term(term)
+        return PartOfTermList(parts_of_term=await service.parts_of_term(term))
 
 
 def _codes(codes: list[str] | None) -> tuple[str, ...]:
     return tuple(dict.fromkeys(code.upper() for code in codes or []))
 
 
-@router.get("/search", response_model=ClassSearchResult)
+@router.get(
+    "/terms/{term}/sections",
+    response_model=SectionPage,
+    **cached_publicly(SEARCH_TTL_SECONDS),
+)
 async def search_sections(
     service: ServiceDep,
-    term: TermQuery,
+    term: TermPath,
     subject: Annotated[str | None, Query(pattern=r"^[A-Za-z]{2,5}$")] = None,
     course_number: Annotated[
         str | None, Query(alias="courseNumber", pattern=r"^[0-9A-Za-z]{1,6}$")
@@ -153,10 +187,15 @@ async def search_sections(
             description="Any part of an instructor's name, in any order",
         ),
     ] = None,
-    offset: Annotated[int, Query(ge=0)] = 0,
+    cursor: Annotated[
+        str | None,
+        Query(max_length=200, description="`nextCursor` from the page before"),
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=MAX_PAGE_SIZE)] = DEFAULT_PAGE_SIZE,
-) -> ClassSearchResult:
+) -> SectionPage:
     """Sections in a term from Banner's public class search, with live seats.
+
+    The term's sections, filtered by the query parameters (a List, AIP-132).
 
     Needs a subject, keyword, attribute or instructor; the other filters
     only narrow those, since a whole-term listing is too large to serve.
@@ -166,6 +205,12 @@ async def search_sections(
             status_code=422,
             detail="Search by subject, keyword, attribute or instructor.",
         )
+    try:
+        offset = decode_cursor(cursor) if cursor else 0
+    except InvalidCursor as exc:
+        raise HTTPException(
+            status_code=422, detail="That page cursor isn't from this search."
+        ) from exc
     filters = SearchFilters(
         term=term,
         subject=(subject or "").upper(),
@@ -182,13 +227,34 @@ async def search_sections(
         limit=limit,
     )
     with banner_errors():
-        return await service.search(filters)
+        result = await service.search(filters)
+    loaded = offset + len(result.sections)
+    more = bool(result.sections) and loaded < result.total_count
+    return SectionPage(
+        **result.model_dump(),
+        next_cursor=encode_cursor(loaded) if more else None,
+    )
 
 
-@router.get("/sections/{crn}", response_model=SectionSummary)
+@router.get(
+    "/terms/{term}/sections/{crn}",
+    response_model=SectionSummary,
+    responses={404: {"model": Problem, "description": "The term has no such CRN"}},
+)
 async def get_section(
-    service: ServiceDep, crn: CrnPath, term: TermQuery
+    service: ServiceDep, term: TermPath, crn: CrnPath, response: Response
 ) -> SectionSummary:
-    """The course a CRN belongs to in a term, such as CIS 3441-702 Software Security."""
-    with banner_errors(not_found=f"There's no CRN {crn} in this term."):
-        return await service.section(term, crn)
+    """The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.
+
+    A CRN names a section only within its term, so the term is part of the path.
+    Both answers are cached for as long as the API keeps them.
+    """
+    with banner_errors(
+        not_found=f"There's no CRN {crn} in this term.",
+        not_found_headers={
+            "Cache-Control": public_cache_control(MISSING_SECTION_TTL_SECONDS)
+        },
+    ):
+        section = await service.section(term, crn)
+    response.headers["Cache-Control"] = public_cache_control(LOOKUP_TTL_SECONDS)
+    return section

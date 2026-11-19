@@ -1,6 +1,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { RmpRating } from "@workspace/api-client";
 import {
   instructorSearchName,
@@ -17,8 +17,8 @@ function isRatingReply(data: unknown): data is RmpRating | null {
   return data === null || isRmpRating(data);
 }
 
-function useRating(name: string) {
-  return useQuery({
+function ratingOptions(name: string) {
+  return queryOptions({
     queryKey: ["rmpRating", name],
     queryFn: () =>
       askBackground(
@@ -29,7 +29,7 @@ function useRating(name: string) {
         isRatingReply,
       ),
     // A rating doesn't change while the page is open.
-    staleTime: Infinity,
+    staleTime: "static",
   });
 }
 
@@ -40,7 +40,7 @@ function Rating({
   slot: RatingSlot;
   popupContainer: HTMLElement;
 }) {
-  const rating = useRating(slot.name);
+  const rating = useQuery(ratingOptions(slot.name));
   // Nothing while loading or when the lookup fails: Banner's name stands alone.
   if (!rating.isSuccess) return null;
   return createPortal(

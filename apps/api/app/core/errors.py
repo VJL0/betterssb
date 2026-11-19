@@ -10,6 +10,7 @@ from __future__ import annotations
 from http import HTTPStatus
 from typing import Any
 
+import httpx2
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -46,6 +47,20 @@ class Problem(BaseModel):
     errors: list[ProblemError] | None = Field(
         default=None, description="Validation errors (422 only)."
     )
+
+
+def upstream_failure_status(exc: BaseException) -> int:
+    """The status for an upstream service (Banner, the Bulletin) that failed.
+
+    504 Gateway Timeout when it didn't answer in time, otherwise 502 Bad Gateway
+    (RFC 9110 §15.6.5 and §15.6.3). The client errors chain the httpx error.
+    """
+    cause = exc.__cause__
+    while cause is not None:
+        if isinstance(cause, httpx2.TimeoutException):
+            return HTTPStatus.GATEWAY_TIMEOUT
+        cause = cause.__cause__
+    return HTTPStatus.BAD_GATEWAY
 
 
 def problem(

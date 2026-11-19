@@ -16,7 +16,7 @@ const UNAUTHORIZED = 401;
 export type User = UserResponse;
 
 /** A navigation, not a fetch call, so it isn't in the generated client. */
-const LOGIN_PATH = "/api/auth/google/login";
+const LOGIN_PATH = "/api/auth/google";
 
 /** Signs in, then comes back to `returnTo` (a path with its query string). */
 export function loginUrl(returnTo: string): string {
@@ -34,9 +34,12 @@ function isAuthError(code: string): code is keyof typeof AUTH_ERRORS {
 }
 
 /** The signed-in user, or null if there's no valid session. */
-export async function fetchCurrentUser(): Promise<User | null> {
+export async function fetchCurrentUser(
+  signal?: AbortSignal,
+): Promise<User | null> {
   try {
     const { data } = await getMe({
+      signal,
       meta: { errorMessage: "Couldn't check sign-in." },
     });
     return data;

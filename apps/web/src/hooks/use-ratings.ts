@@ -1,6 +1,14 @@
 import { useCallback, useMemo } from "react";
-import { useQueries, type UseQueryResult } from "@tanstack/react-query";
-import { ApiError, type RmpRating } from "@workspace/api-client";
+import {
+  queryOptions,
+  useQueries,
+  type UseQueryResult,
+} from "@tanstack/react-query";
+import {
+  ApiError,
+  type ProfessorList,
+  type RmpRating,
+} from "@workspace/api-client";
 import { searchProfessorsOptions } from "@workspace/api-client/query";
 import {
   instructorSearchName,
@@ -61,19 +69,20 @@ function statusOf(results: RatingResult[]): RatingsStatus {
   return "ready";
 }
 
-function ratingQuery(name: string) {
-  return {
+function ratingOptions(name: string) {
+  return queryOptions({
     ...searchProfessorsOptions({
       query: { name: instructorSearchName(name) },
     }),
-    select: (matches: RmpRating[]) => matchingProfile(name, matches),
+    select: ({ professors }: ProfessorList) =>
+      matchingProfile(name, professors),
     // One lookup per instructor for the life of the page.
-    staleTime: Infinity,
+    staleTime: "static",
     // Any other failed lookup shows as "no profile" now and is retried on reload.
     retry: (failureCount: number, error: unknown) =>
       isRosterSyncing(error) && failureCount < MAX_SYNC_RETRIES,
     retryDelay: SYNC_RETRY_DELAY_MS,
-  };
+  });
 }
 
 /** Temple University ratings for Banner instructor names ("Last, First"). */
@@ -100,7 +109,7 @@ export function useRatings(names: readonly string[]): Ratings {
   );
 
   return useQueries({
-    queries: wanted.map(ratingQuery),
+    queries: wanted.map(ratingOptions),
     combine,
   });
 }

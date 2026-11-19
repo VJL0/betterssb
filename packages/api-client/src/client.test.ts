@@ -71,14 +71,15 @@ function termsAnswer(response: () => Response) {
 // requests it sends (the case MSW's life-cycle events are for).
 describe("requests", () => {
   it("calls /api and leaves out query values that aren't set", async () => {
-    const sent = recordRequests("GET /api/classes/search");
+    const sent = recordRequests("GET /api/classes/terms/202703/sections");
     const built = requestsBuilt();
     await searchSections({
-      query: { term: "202703", subject: "CIS", courseNumber: undefined },
+      path: { term: "202703" },
+      query: { subject: "CIS", courseNumber: undefined },
     });
     const url = new URL(sent[0]!.url);
-    expect(url.pathname).toBe("/api/classes/search");
-    expect(url.search).toBe("?term=202703&subject=CIS");
+    expect(url.pathname).toBe("/api/classes/terms/202703/sections");
+    expect(url.search).toBe("?subject=CIS");
     expect(built[0]!.credentials).toBe("same-origin");
   });
 
@@ -95,7 +96,9 @@ describe("requests", () => {
   });
 
   it("sends a plain-text body as text", async () => {
-    const sent = recordRequests("POST /api/degree/parse-bulletin");
+    const sent = recordRequests(
+      "POST /api/bulletins/program-requirements:parse",
+    );
     await parseBulletin({ body: "<html></html>" });
     expect(sent[0]!.headers.get("Content-Type")).toBe("text/plain");
     expect(await sent[0]!.text()).toBe("<html></html>");

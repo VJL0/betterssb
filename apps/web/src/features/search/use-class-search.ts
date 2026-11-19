@@ -6,8 +6,8 @@ import {
 } from "@tanstack/react-query";
 import {
   queryError,
-  type ClassSearchResult,
-  type CodeDescription,
+  type SectionPage,
+  type SubjectList,
   type SearchSectionsData,
 } from "@workspace/api-client";
 import {
@@ -31,14 +31,13 @@ export const PAGE_SIZE = 50;
 const SUBJECTS_STALE_MS = 24 * 60 * 60 * 1000;
 const NO_SUBJECTS = new Set<string>();
 
-type SearchQuery = SearchSectionsData["query"];
+type SearchQuery = NonNullable<SearchSectionsData["query"]>;
 
 function filtersFor(
-  term: string,
   query: ClassQuery,
   filters: BannerFilters,
 ): SearchQuery | null {
-  const narrowing = { term, ...bannerQuery(filters), limit: PAGE_SIZE };
+  const narrowing = { ...bannerQuery(filters), limit: PAGE_SIZE };
   switch (query.kind) {
     case "course":
       return {
@@ -57,16 +56,15 @@ function filtersFor(
   }
 }
 
-function subjectCodes(subjects: CodeDescription[]): Set<string> {
+function subjectCodes({ subjects }: SubjectList): Set<string> {
   return new Set(subjects.map((s) => s.code.toUpperCase()));
 }
 
-function loadedCount(pages: readonly ClassSearchResult[]): number {
-  return pages.reduce((n, page) => n + page.sections.length, 0);
-}
+/** Every page loaded so far, as one. */
+export type SearchResult = Omit<SectionPage, "nextCursor">;
 
 /** Every page so far as one result. Seats are as fresh as the first page. */
-function mergePages(data: InfiniteData<ClassSearchResult>): ClassSearchResult {
+function mergePages(data: InfiniteData<SectionPage>): SearchResult {
   const first = data.pages[0]!;
   return {
     totalCount: data.pages.at(-1)!.totalCount,
@@ -81,9 +79,11 @@ export interface ClassSearch {
   query: ClassQuery;
   status: SearchStatus;
   /** Every page loaded so far. Kept after a failed refresh, marked stale. */
-  result: ClassSearchResult | null;
+  result: SearchResult | null;
   stale: boolean;
   error: Error | null;
+  /** A page the cursor says is still to come. */
+  hasMore: boolean;
   loadingMore: boolean;
   loadMore: () => void;
   refresh: () => void;
@@ -115,7 +115,7 @@ export function useClassSearch(
   const settledInput = useSettledInput(input);
   const settledInstructor = useSettledInput(bannerFilters.instructor);
   const subjects = useQuery({
-    ...listSubjectsOptions({ query: { term: term ?? "" } }),
+    ...listSubjectsOptions({ path: { term: term ?? "" } }),
     enabled: term !== null,
     staleTime: SUBJECTS_STALE_MS,
     select: subjectCodes,
@@ -127,7 +127,7 @@ export function useClassSearch(
     ? parseClassQuery(settledInput, subjects.data ?? NO_SUBJECTS)
     : { kind: "empty" };
   const filters = term
-    ? filtersFor(term, query, {
+    ? filtersFor(query, {
         ...bannerFilters,
         instructor: settledInstructor,
       })
@@ -135,15 +135,15 @@ export function useClassSearch(
 
   const search = useInfiniteQuery({
     ...searchSectionsInfiniteOptions({
-      query: filters ?? { term: term ?? "" },
+      path: { term: term ?? "" },
+      query: filters ?? {},
       meta: { errorMessage: "Couldn't search Banner's classes." },
     }),
     enabled: filters !== null,
-    initialPageParam: 0,
-    getNextPageParam: (last, pages) => {
-      const loaded = loadedCount(pages);
-      return loaded < last.totalCount ? loaded : undefined;
-    },
+    // The first page has no cursor. An object, which the generated client reads
+    // as the page's request parameters; null would count as one and crash.
+    initialPageParam: { path: { term: term ?? "" } },
+    getNextPageParam: (last) => last.nextCursor ?? undefined,
     select: mergePages,
   });
 
@@ -167,6 +167,7 @@ export function useClassSearch(
     result,
     stale: status === "error" && result !== null,
     error: filters ? queryError(search.error) : null,
+    hasMore: result !== null && search.hasNextPage,
     loadingMore: search.isFetchingNextPage,
     loadMore: () => {
       if (search.hasNextPage && !search.isFetchingNextPage) {

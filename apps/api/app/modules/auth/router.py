@@ -26,6 +26,7 @@ from app.modules.auth.service import SESSION_ABSOLUTE_TIMEOUT
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+users_router = APIRouter(prefix="/users", tags=["auth"])
 
 # Where to send the browser after sign-in, kept in the signed handshake cookie.
 RETURN_PATH_SESSION_KEY = "return_path"
@@ -69,7 +70,8 @@ async def handle_sign_in_error(request: Request, exc: SignInError) -> Response:
     return _frontend_redirect(request.app.state.settings, return_path, error=exc.reason)
 
 
-@router.get("/google/login")
+# The start and callback paths Passport.js uses for OAuth providers.
+@router.get("/google")
 async def google_login(
     request: Request,
     google: GoogleClientDep,
@@ -120,9 +122,12 @@ async def google_callback(
     return response
 
 
-@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/session", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(session_token: SessionTokenDep, db: DbDep) -> Response:
-    """Delete the session and clear its cookie."""
+    """Sign out: delete the session and clear its cookie.
+
+    Idempotent, so it answers 204 even without a session.
+    """
     if session_token:
         await service.end_session(db, session_token)
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -130,7 +135,7 @@ async def logout(session_token: SessionTokenDep, db: DbDep) -> Response:
     return response
 
 
-@router.get("/me", response_model=UserResponse)
+@users_router.get("/me", response_model=UserResponse)
 async def get_me(user: CurrentUserDep) -> UserResponse:
-    """Return the signed-in user."""
+    """The signed-in user. `me` stands for their own user."""
     return UserResponse.model_validate(user, from_attributes=True)

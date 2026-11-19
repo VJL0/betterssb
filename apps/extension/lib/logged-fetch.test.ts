@@ -73,7 +73,7 @@ describe("loggedFetch", () => {
     await expectLogged([
       {
         method: "GET",
-        url: "http://localhost:8000/api/rmp/search?name=Jane+Smith",
+        url: "http://localhost:8000/api/professors?name=Jane+Smith",
         status: 200,
       },
     ]);

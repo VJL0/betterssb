@@ -92,7 +92,9 @@ function SeatTracker({ user }: { user: User }) {
     <Card>
       <CardContent className="flex flex-col gap-4">
         <SignedInAs user={user} />
-        <WatchCrnForm watchedCrns={(watches.data ?? []).map((w) => w.crn)} />
+        <WatchCrnForm
+          watchedCrns={(watches.data?.seatWatches ?? []).map((w) => w.crn)}
+        />
         {watches.isPending ? (
           <Spinner className="self-center" />
         ) : watches.isError ? (
@@ -100,7 +102,7 @@ function SeatTracker({ user }: { user: User }) {
             {queryError(watches.error)?.message}
           </p>
         ) : (
-          <WatchList watches={watches.data} />
+          <WatchList watches={watches.data.seatWatches} />
         )}
       </CardContent>
     </Card>

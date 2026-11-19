@@ -100,7 +100,7 @@ describe("TranscriptPage", () => {
 
   it("reads an uploaded PDF into terms and saves only the courses", async () => {
     server.use(
-      http.post(`${API}/transcript/parse-pdf`, () => HttpResponse.json(PARSED)),
+      http.post(`${API}/transcripts\\:parse`, () => HttpResponse.json(PARSED)),
     );
     const { store } = renderPage(<TranscriptPage />);
     await upload();
@@ -115,7 +115,7 @@ describe("TranscriptPage", () => {
 
   it("shows why a PDF couldn't be read, and saves nothing", async () => {
     server.use(
-      http.post(`${API}/transcript/parse-pdf`, () =>
+      http.post(`${API}/transcripts\\:parse`, () =>
         problemResponse(422, "Upload a valid PDF."),
       ),
     );

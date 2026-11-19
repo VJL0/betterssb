@@ -4,6 +4,7 @@ from fastapi import APIRouter
 
 from app.core.openapi import PROBLEM_RESPONSES
 from app.modules.auth.router import router as auth_router
+from app.modules.auth.router import users_router
 from app.modules.chatbot.router import router as chatbot_router
 from app.modules.classes.router import router as classes_router
 from app.modules.dars.router import router as dars_router
@@ -25,3 +26,4 @@ api_router.include_router(rmp_router)
 api_router.include_router(schedule_router)
 api_router.include_router(seat_tracker_router)
 api_router.include_router(transcript_router)
+api_router.include_router(users_router)

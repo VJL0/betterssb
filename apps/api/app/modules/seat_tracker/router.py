@@ -5,10 +5,19 @@ import secrets
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    Header,
+    HTTPException,
+    Request,
+    Response,
+    status,
+)
 
 from app.api.deps import DbDep, SettingsDep
 from app.core.cache import Cache, cache_claim, get_cache
+from app.core.errors import upstream_failure_status
 from app.modules.auth.dependencies import CurrentUserDep
 from app.modules.classes.section_client import (
     BannerSectionClient,
@@ -20,6 +29,7 @@ from app.modules.seat_tracker.mailer import create_mailer
 from app.modules.seat_tracker.schemas import (
     SeatCheckSummary,
     SeatWatchCreate,
+    SeatWatchList,
     SeatWatchResponse,
 )
 
@@ -44,15 +54,21 @@ def _response(watch: object) -> SeatWatchResponse:
     return SeatWatchResponse.model_validate(watch, from_attributes=True)
 
 
-@router.get("", response_model=list[SeatWatchResponse])
-async def list_seat_watches(user: CurrentUserDep, db: DbDep) -> list[SeatWatchResponse]:
+@router.get("", response_model=SeatWatchList)
+async def list_seat_watches(user: CurrentUserDep, db: DbDep) -> SeatWatchList:
     """The signed-in student's watched sections, oldest first."""
-    return [_response(watch) for watch in await service.list_watches(db, user)]
+    watches = await service.list_watches(db, user)
+    return SeatWatchList(seat_watches=[_response(watch) for watch in watches])
 
 
 @router.post("", response_model=SeatWatchResponse, status_code=status.HTTP_201_CREATED)
 async def create_seat_watch(
-    body: SeatWatchCreate, user: CurrentUserDep, db: DbDep, banner: BannerDep
+    body: SeatWatchCreate,
+    user: CurrentUserDep,
+    db: DbDep,
+    banner: BannerDep,
+    request: Request,
+    response: Response,
 ) -> SeatWatchResponse:
     """Watch a CRN and email the student's Google address when a seat opens."""
     try:
@@ -75,7 +91,14 @@ async def create_seat_watch(
             detail=f"There's no CRN {body.crn} in this term.",
         ) from exc
     except SectionUnavailable as exc:
-        raise HTTPException(status_code=502, detail=UNAVAILABLE) from exc
+        raise HTTPException(
+            status_code=upstream_failure_status(exc), detail=UNAVAILABLE
+        ) from exc
+    # RFC 9110 §15.3.2: where the new watch lives. A relative reference, since the
+    # website reaches the API through its own origin.
+    response.headers["Location"] = request.app.url_path_for(
+        "get_seat_watch", watch_id=str(watch.id)
+    )
     return _response(watch)
 
 
@@ -99,9 +122,10 @@ def _require_cron_secret(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
-# Called by the scheduler, not the website, so it stays out of the client.
-@router.get(
-    "/check",
+# A custom method (AIP-136): it sends email, so it can't be a safe GET (RFC 9110
+# §9.2.1). The scheduler calls it, not the website, so it stays out of the client.
+@router.post(
+    ":check",
     response_model=SeatCheckSummary,
     include_in_schema=False,
     dependencies=[Depends(_require_cron_secret)],
@@ -125,3 +149,14 @@ async def check_seat_watches(
     )
     logger.info("Seat check: %s", summary.model_dump())
     return summary
+
+
+@router.get("/{watch_id}", response_model=SeatWatchResponse)
+async def get_seat_watch(
+    watch_id: uuid.UUID, user: CurrentUserDep, db: DbDep
+) -> SeatWatchResponse:
+    """One of the signed-in student's watched sections."""
+    watch = await service.get_watch(db, user, watch_id)
+    if watch is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return _response(watch)

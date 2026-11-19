@@ -5,10 +5,11 @@ from fastapi import APIRouter, Body, HTTPException
 from app.modules.transcript.pdf_schemas import AcademicTranscript, TranscriptInspection
 from app.modules.transcript.pdf_service import INCOMPLETE_MESSAGE, inspect_pdf
 
-router = APIRouter(prefix="/transcript", tags=["transcript"])
+router = APIRouter(prefix="/transcripts", tags=["transcripts"])
 
 
-@router.post("/parse-pdf", response_model=AcademicTranscript)
+# Custom methods (AIP-136): the PDF is read and nothing is stored.
+@router.post(":parse", response_model=AcademicTranscript)
 def parse_transcript_pdf(
     document: bytes = Body(..., media_type="application/pdf"),
 ) -> AcademicTranscript:
@@ -19,7 +20,7 @@ def parse_transcript_pdf(
     return inspection.data
 
 
-@router.post("/parse-pdf/data", response_model=TranscriptInspection)
+@router.post(":inspect", response_model=TranscriptInspection)
 def inspect_transcript_pdf(
     document: bytes = Body(..., media_type="application/pdf"),
 ) -> TranscriptInspection:

@@ -17,11 +17,15 @@ from app.modules.classes.schemas import (
     SectionSummary,
 )
 from app.modules.classes.seats import seats_left
-from app.modules.classes.section_client import BannerSectionClient
+from app.modules.classes.section_client import BannerSectionClient, SectionNotFound
 
 # Seats change by the minute during registration; lookups change by the term.
 SEARCH_TTL_SECONDS = 60
 LOOKUP_TTL_SECONDS = ONE_DAY_SECONDS
+# A CRN Banner says isn't in the term is remembered briefly, so a typo asked
+# about again doesn't reach Banner, while a section added mid-term still shows.
+MISSING_SECTION_TTL_SECONDS = 5 * 60
+_MISSING_SECTION = "missing"
 MAX_TERMS = 10
 CACHE_PREFIX = "classes:"
 
@@ -44,6 +48,12 @@ def _with_seats_left(section: dict[str, Any]) -> dict[str, Any]:
         section.get("seatsAvailable", 0), section.get("crossListAvailable")
     )
     return {**section, "seatsAvailable": seats}
+
+
+def _is_missing_marker(cached: bytes | str) -> bool:
+    """Redis answers with bytes unless decoding is turned on."""
+    text = cached.decode() if isinstance(cached, bytes) else cached
+    return text == _MISSING_SECTION
 
 
 def _search_key(filters: SearchFilters) -> str:
@@ -115,8 +125,16 @@ class ClassSearchService:
         """
         key = f"{CACHE_PREFIX}section:{term}:{crn}"
         if cached := await cache_get(self._cache, key):
+            if _is_missing_marker(cached):
+                raise SectionNotFound
             return SectionSummary.model_validate_json(cached)
-        section = await self._sections.section(term, crn)
+        try:
+            section = await self._sections.section(term, crn)
+        except SectionNotFound:
+            await cache_set(
+                self._cache, key, _MISSING_SECTION, MISSING_SECTION_TTL_SECONDS
+            )
+            raise
         summary = SectionSummary(
             crn=crn,
             title=section.title,

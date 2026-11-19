@@ -17,6 +17,7 @@ from app.modules.classes.section_client import (
 )
 from app.modules.classes.service import (
     LOOKUP_TTL_SECONDS,
+    MISSING_SECTION_TTL_SECONDS,
     SEARCH_TTL_SECONDS,
     ClassSearchService,
 )
@@ -43,6 +44,14 @@ class MemoryCache:
         return True
 
 
+class BytesCache(MemoryCache):
+    """Answers like Redis without decoding: bytes, not str."""
+
+    async def get(self, name: str) -> bytes | None:
+        value = self.values.get(name)
+        return value.encode() if value is not None else None
+
+
 class FakeBanner:
     """Records requests and answers like Banner's public class search."""
 
@@ -50,8 +59,11 @@ class FakeBanner:
         self,
         search_body: object | None = None,
         status: int = 200,
+        *,
+        times_out: bool = False,
     ) -> None:
         self.requests: list[httpx2.Request] = []
+        self.times_out = times_out
         self.search_body = search_body or json.loads(
             (FIXTURES_DIR / "class_search.json").read_text()
         )
@@ -60,6 +72,8 @@ class FakeBanner:
 
     def handler(self, request: httpx2.Request) -> httpx2.Response:
         self.requests.append(request)
+        if self.times_out:
+            raise httpx2.ReadTimeout("Banner took too long", request=request)
         if self.status != 200:
             return httpx2.Response(self.status)
         path = request.url.path
@@ -416,3 +430,32 @@ class TestSection:
         assert again.subject == "CIS"
         assert len(banner.requests) == before
         assert cache.ttls["classes:section:202703:50067"] == LOOKUP_TTL_SECONDS
+
+    async def test_caches_a_missing_crn_briefly(self):
+        """A typo asked about twice reaches Banner once; a new section shows within minutes."""
+        banner = FakeBanner()
+        cache = MemoryCache()
+        with pytest.raises(SectionNotFound):
+            await banner.service(cache).section("202703", "99999")
+        before = len(banner.requests)
+        with pytest.raises(SectionNotFound):
+            await banner.service(cache).section("202703", "99999")
+        assert len(banner.requests) == before
+        assert cache.ttls["classes:section:202703:99999"] == MISSING_SECTION_TTL_SECONDS
+
+    async def test_reads_a_cached_miss_stored_as_bytes(self):
+        banner = FakeBanner()
+        cache = BytesCache()
+        with pytest.raises(SectionNotFound):
+            await banner.service(cache).section("202703", "99999")
+        before = len(banner.requests)
+        with pytest.raises(SectionNotFound):
+            await banner.service(cache).section("202703", "99999")
+        assert len(banner.requests) == before
+
+    async def test_does_not_cache_an_outage(self):
+        banner = FakeBanner(status=503)
+        cache = MemoryCache()
+        with pytest.raises(SectionUnavailable):
+            await banner.service(cache).section("202703", KNOWN_CRN)
+        assert cache.values == {}

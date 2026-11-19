@@ -10,7 +10,7 @@ from app.modules.dars.schemas import Audit
 router = APIRouter(prefix="/dars", tags=["dars"])
 
 
-@router.post("/audits/parse", response_model=Audit)
+@router.post("/audits:parse", response_model=Audit)
 def parse_audit(
     html: Annotated[str, Body(media_type="text/html")],
 ) -> Audit:

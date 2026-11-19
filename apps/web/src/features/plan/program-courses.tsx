@@ -79,7 +79,7 @@ export function ProgramCourses({
       meta: { errorMessage: "Couldn't load requirements from the Bulletin." },
     }),
     // A published Bulletin page doesn't change.
-    staleTime: Infinity,
+    staleTime: "static",
   });
   const groups = requirements.data
     ? programCourseGroups(requirements.data)
@@ -136,7 +136,7 @@ export function ProgramCourses({
                   credits={
                     course.credits === null
                       ? null
-                      : `${creditsLabel(course.credits)}`
+                      : creditsLabel(course.credits)
                   }
                   status={statusOf(code)}
                   targetName={targetName}
