@@ -1,0 +1,13 @@
+export type * from "./attributes";
+export type * from "./catalog";
+export type * from "./codes";
+export type * from "./corequisites";
+export type * from "./course-identity";
+export type * from "./description";
+export type * from "./error-page";
+export type * from "./fees";
+export type * from "./mutual-exclusions";
+export type * from "./prerequisites";
+export type * from "./request";
+export type * from "./restrictions";
+export type * from "./syllabus";
