@@ -23,7 +23,7 @@ let lookups: string[] = [];
 function answerLookups() {
   lookups = [];
   server.use(
-    http.get(`${API}/classes/sections/:crn`, ({ params }) => {
+    http.get(`${API}/classes/terms/:term/sections/:crn`, ({ params }) => {
       lookups.push(String(params.crn));
       return params.crn === DATA_STRUCTURES.crn
         ? HttpResponse.json(DATA_STRUCTURES)
@@ -155,7 +155,7 @@ describe("AddCrn", () => {
     let answer: () => void = () => undefined;
     server.use(
       http.get(
-        `${API}/classes/sections/:crn`,
+        `${API}/classes/terms/:term/sections/:crn`,
         () =>
           new Promise<Response>((resolve) => {
             answer = () => resolve(HttpResponse.json(DATA_STRUCTURES));
@@ -178,7 +178,7 @@ describe("AddCrn", () => {
 
   it("adds a CRN Banner couldn't check, with a note", async () => {
     server.use(
-      http.get(`${API}/classes/sections/:crn`, () =>
+      http.get(`${API}/classes/terms/:term/sections/:crn`, () =>
         HttpResponse.json(
           { detail: "Banner isn't answering." },
           { status: 502 },

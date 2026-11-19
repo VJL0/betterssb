@@ -60,3 +60,7 @@ class GenerateRequest(BaseSchema):
     sections: list[Section]
     preferences: SchedulePreferences = SchedulePreferences()
     max_results: int = Field(default=5, ge=1, le=MAX_RESULTS_LIMIT)
+
+
+class GeneratedScheduleList(BaseSchema):
+    schedules: list[GeneratedSchedule]

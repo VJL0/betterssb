@@ -36,7 +36,9 @@ function watching(initial: SeatWatchResponse[]) {
   let watches = [...initial];
   const created: SeatWatchCreate[] = [];
   server.use(
-    http.get(`${API}/seat-watches`, () => HttpResponse.json(watches)),
+    http.get(`${API}/seat-watches`, () =>
+      HttpResponse.json({ seatWatches: watches }),
+    ),
     http.post<never, SeatWatchCreate>(
       `${API}/seat-watches`,
       async ({ request }) => {
@@ -69,14 +71,12 @@ async function openTracker() {
 
 describe("SeatTrackerPage", () => {
   it("asks guests to sign in and comes back here", async () => {
-    server.use(http.get(`${API}/auth/me`, () => problemResponse(401)));
+    server.use(http.get(`${API}/users/me`, () => problemResponse(401)));
     renderPage(<SeatTrackerPage />, { route: "/seats" });
     const signIn = await screen.findByRole("link", {
       name: "Sign in with Google",
     });
-    expect(signIn.getAttribute("href")).toBe(
-      "/api/auth/google/login?next=%2Fseats",
-    );
+    expect(signIn.getAttribute("href")).toBe("/api/auth/google?next=%2Fseats");
     expect(screen.queryByRole("button", { name: "Watch" })).toBeNull();
   });
 

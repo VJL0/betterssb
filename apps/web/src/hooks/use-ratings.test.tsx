@@ -44,8 +44,10 @@ function renderRatings() {
 function rosterSyncingUntilCalled(): { synced: () => void } {
   let ready = false;
   server.use(
-    http.get(`${API}/rmp/search`, () =>
-      ready ? HttpResponse.json([RATING]) : problemResponse(503),
+    http.get(`${API}/professors`, () =>
+      ready
+        ? HttpResponse.json({ professors: [RATING] })
+        : problemResponse(503),
     ),
   );
   return { synced: () => (ready = true) };
@@ -92,7 +94,7 @@ describe("useRatings", () => {
   });
 
   it("shows other failures as no profile without waiting", async () => {
-    server.use(http.get(`${API}/rmp/search`, () => problemResponse(404)));
+    server.use(http.get(`${API}/professors`, () => problemResponse(404)));
     const { result } = renderRatings();
 
     await waitFor(() =>

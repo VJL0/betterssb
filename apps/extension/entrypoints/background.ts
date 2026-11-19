@@ -375,8 +375,8 @@ async function submitAutoRegQueue(): Promise<void> {
 }
 
 async function fetchRating(name: string): Promise<ExtensionResponse> {
-  const { data: ratings } = await searchProfessors({ query: { name } });
-  return { success: true, data: matchingProfile(name, ratings) };
+  const { data } = await searchProfessors({ query: { name } });
+  return { success: true, data: matchingProfile(name, data.professors) };
 }
 
 /** Points the student to the popup's data disclosure until they agree to it. */

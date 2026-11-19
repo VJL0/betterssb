@@ -24,7 +24,7 @@ class TestProblemDetails:
         }
 
     async def test_method_not_allowed_keeps_allow_header(self, client: AsyncClient):
-        resp = await client.delete("/health")
+        resp = await client.delete("/api/health")
 
         assert resp.status_code == 405
         assert resp.headers["allow"] == "GET"
@@ -34,7 +34,7 @@ class TestProblemDetails:
         self, client: AsyncClient
     ):
         resp = await client.post(
-            "/api/schedule/generate", json={"sections": [{"crn": 1}]}
+            "/api/schedules:generate", json={"sections": [{"crn": 1}]}
         )
 
         assert resp.status_code == 422
@@ -51,7 +51,7 @@ class TestProblemDetails:
     async def test_parameter_validation_errors_name_the_parameter(
         self, client: AsyncClient
     ):
-        resp = await client.get("/api/rmp/search")
+        resp = await client.get("/api/professors")
 
         assert resp.status_code == 422
         assert resp.json()["errors"] == [

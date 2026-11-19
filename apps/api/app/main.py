@@ -5,6 +5,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from starlette.middleware.sessions import SessionMiddleware
@@ -77,6 +78,11 @@ app.add_exception_handler(SignInError, handle_sign_in_error)
 app.include_router(api_router)
 
 
-@app.get("/health", include_in_schema=False)
-def health_check() -> dict[str, str]:
-    return {"status": "ok"}
+# draft-inadarei-api-health-check. Under /api, the only paths Vercel sends here.
+@app.get("/api/health", include_in_schema=False)
+def health_check() -> JSONResponse:
+    return JSONResponse(
+        {"status": "pass"},
+        media_type="application/health+json",
+        headers={"Cache-Control": "no-store"},
+    )

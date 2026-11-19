@@ -37,6 +37,10 @@ class SeatWatchResponse(BaseSchema):
     created_at: datetime
 
 
+class SeatWatchList(BaseSchema):
+    seat_watches: list[SeatWatchResponse]
+
+
 class SeatCheckSummary(BaseSchema):
     sections: int
     failed: int

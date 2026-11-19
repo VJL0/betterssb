@@ -15,6 +15,7 @@ import {
   getCourseDescription,
   getMe,
   getProgramRequirements,
+  getSeatWatch,
   getSection,
   inspectTranscriptPdf,
   listAttributes,
@@ -53,6 +54,9 @@ import type {
   GetProgramRequirementsData,
   GetProgramRequirementsError,
   GetProgramRequirementsResponse,
+  GetSeatWatchData,
+  GetSeatWatchError,
+  GetSeatWatchResponse,
   GetSectionData,
   GetSectionError,
   GetSectionResponse,
@@ -109,7 +113,9 @@ import type {
 /**
  * Logout
  *
- * Delete the session and clear its cookie.
+ * Sign out: delete the session and clear its cookie.
+ *
+ * Idempotent, so it answers 204 even without a session.
  */
 export const logoutMutation = (
   options?: Partial<Options<LogoutData>>,
@@ -171,23 +177,26 @@ const createQueryKey = <TOptions extends Options>(
   return [params];
 };
 
-export const getMeQueryKey = (options?: Options<GetMeData>) =>
-  createQueryKey("getMe", options);
+export const getProgramRequirementsQueryKey = (
+  options: Options<GetProgramRequirementsData>,
+) => createQueryKey("getProgramRequirements", options);
 
 /**
- * Get Me
+ * Get Program Requirements
  *
- * Return the signed-in user.
+ * A program's degree requirements, parsed from its Bulletin page.
  */
-export const getMeOptions = (options?: Options<GetMeData>) =>
+export const getProgramRequirementsOptions = (
+  options: Options<GetProgramRequirementsData>,
+) =>
   queryOptions<
-    GetMeResponse,
-    GetMeError,
-    GetMeResponse,
-    ReturnType<typeof getMeQueryKey>
+    GetProgramRequirementsResponse,
+    GetProgramRequirementsError,
+    GetProgramRequirementsResponse,
+    ReturnType<typeof getProgramRequirementsQueryKey>
   >({
     queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getMe({
+      const { data } = await getProgramRequirements({
         ...options,
         ...queryKey[0],
         signal,
@@ -195,7 +204,183 @@ export const getMeOptions = (options?: Options<GetMeData>) =>
       });
       return data;
     },
-    queryKey: getMeQueryKey(options),
+    queryKey: getProgramRequirementsQueryKey(options),
+  });
+
+/**
+ * Parse Bulletin
+ *
+ * Parse a Temple University Bulletin HTML page into structured degree requirements.
+ */
+export const parseBulletinMutation = (
+  options?: Partial<Options<ParseBulletinData>>,
+): UseMutationOptions<
+  ParseBulletinResponse,
+  ParseBulletinError,
+  Options<ParseBulletinData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ParseBulletinResponse,
+    ParseBulletinError,
+    Options<ParseBulletinData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await parseBulletin({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const listBulletinProgramsQueryKey = (
+  options: Options<ListBulletinProgramsData>,
+) => createQueryKey("listBulletinPrograms", options);
+
+/**
+ * List Bulletin Programs
+ *
+ * Every program in one year's Bulletin, from its academic programs index.
+ */
+export const listBulletinProgramsOptions = (
+  options: Options<ListBulletinProgramsData>,
+) =>
+  queryOptions<
+    ListBulletinProgramsResponse,
+    ListBulletinProgramsError,
+    ListBulletinProgramsResponse,
+    ReturnType<typeof listBulletinProgramsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listBulletinPrograms({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listBulletinProgramsQueryKey(options),
+  });
+
+export const listBulletinSubjectsQueryKey = (
+  options: Options<ListBulletinSubjectsData>,
+) => createQueryKey("listBulletinSubjects", options);
+
+/**
+ * List Bulletin Subjects
+ *
+ * Every course subject in one year's Bulletin, or the closest earlier year online.
+ */
+export const listBulletinSubjectsOptions = (
+  options: Options<ListBulletinSubjectsData>,
+) =>
+  queryOptions<
+    ListBulletinSubjectsResponse,
+    ListBulletinSubjectsError,
+    ListBulletinSubjectsResponse,
+    ReturnType<typeof listBulletinSubjectsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listBulletinSubjects({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listBulletinSubjectsQueryKey(options),
+  });
+
+export const listSubjectCoursesQueryKey = (
+  options: Options<ListSubjectCoursesData>,
+) => createQueryKey("listSubjectCourses", options);
+
+/**
+ * List Subject Courses
+ *
+ * Every course one subject lists in a year's Bulletin, with descriptions and prerequisites.
+ */
+export const listSubjectCoursesOptions = (
+  options: Options<ListSubjectCoursesData>,
+) =>
+  queryOptions<
+    ListSubjectCoursesResponse,
+    ListSubjectCoursesError,
+    ListSubjectCoursesResponse,
+    ReturnType<typeof listSubjectCoursesQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listSubjectCourses({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listSubjectCoursesQueryKey(options),
+  });
+
+export const getCourseDescriptionQueryKey = (
+  options: Options<GetCourseDescriptionData>,
+) => createQueryKey("getCourseDescription", options);
+
+/**
+ * Get Course Description
+ *
+ * A course's description, credits, attributes, prerequisites and restrictions from one year's Bulletin.
+ */
+export const getCourseDescriptionOptions = (
+  options: Options<GetCourseDescriptionData>,
+) =>
+  queryOptions<
+    GetCourseDescriptionResponse,
+    GetCourseDescriptionError,
+    GetCourseDescriptionResponse,
+    ReturnType<typeof getCourseDescriptionQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getCourseDescription({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getCourseDescriptionQueryKey(options),
+  });
+
+export const listTermsQueryKey = (options?: Options<ListTermsData>) =>
+  createQueryKey("listTerms", options);
+
+/**
+ * List Terms
+ *
+ * Terms with a published class schedule, newest first.
+ */
+export const listTermsOptions = (options?: Options<ListTermsData>) =>
+  queryOptions<
+    ListTermsResponse,
+    ListTermsError,
+    ListTermsResponse,
+    ReturnType<typeof listTermsQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listTerms({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listTermsQueryKey(options),
   });
 
 export const listAttributesQueryKey = (options: Options<ListAttributesData>) =>
@@ -288,6 +473,8 @@ export const searchSectionsQueryKey = (options: Options<SearchSectionsData>) =>
  *
  * Sections in a term from Banner's public class search, with live seats.
  *
+ * The term's sections, filtered by the query parameters (a List, AIP-132).
+ *
  * Needs a subject, keyword, attribute or instructor; the other filters
  * only narrow those, since a whole-term listing is too large to serve.
  */
@@ -354,6 +541,8 @@ export const searchSectionsInfiniteQueryKey = (
  *
  * Sections in a term from Banner's public class search, with live seats.
  *
+ * The term's sections, filtered by the query parameters (a List, AIP-132).
+ *
  * Needs a subject, keyword, attribute or instructor; the other filters
  * only narrow those, since a whole-term listing is too large to serve.
  */
@@ -365,7 +554,8 @@ export const searchSectionsInfiniteOptions = (
     SearchSectionsError,
     InfiniteData<SearchSectionsResponse>,
     QueryKey<Options<SearchSectionsData>>,
-    | number
+    | string
+    | null
     | Pick<
         QueryKey<Options<SearchSectionsData>>[0],
         "body" | "headers" | "path" | "query"
@@ -383,7 +573,7 @@ export const searchSectionsInfiniteOptions = (
             ? pageParam
             : {
                 query: {
-                  offset: pageParam,
+                  cursor: pageParam,
                 },
               };
         const params = createInfiniteParams(queryKey, page);
@@ -408,6 +598,9 @@ export const getSectionQueryKey = (options: Options<GetSectionData>) =>
  * Get Section
  *
  * The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.
+ *
+ * A CRN names a section only within its term, so the term is part of the path.
+ * Both answers are cached for as long as the API keeps them.
  */
 export const getSectionOptions = (options: Options<GetSectionData>) =>
   queryOptions<
@@ -455,33 +648,6 @@ export const listSubjectsOptions = (options: Options<ListSubjectsData>) =>
     queryKey: listSubjectsQueryKey(options),
   });
 
-export const listTermsQueryKey = (options?: Options<ListTermsData>) =>
-  createQueryKey("listTerms", options);
-
-/**
- * List Terms
- *
- * Terms with a published class schedule, newest first.
- */
-export const listTermsOptions = (options?: Options<ListTermsData>) =>
-  queryOptions<
-    ListTermsResponse,
-    ListTermsError,
-    ListTermsResponse,
-    ReturnType<typeof listTermsQueryKey>
-  >({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await listTerms({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: listTermsQueryKey(options),
-  });
-
 /**
  * Parse Audit
  *
@@ -511,185 +677,6 @@ export const parseAuditMutation = (
   };
   return mutationOptions;
 };
-
-export const getCourseDescriptionQueryKey = (
-  options: Options<GetCourseDescriptionData>,
-) => createQueryKey("getCourseDescription", options);
-
-/**
- * Get Course Description
- *
- * A course's description, credits, attributes, prerequisites and restrictions from one year's Bulletin.
- */
-export const getCourseDescriptionOptions = (
-  options: Options<GetCourseDescriptionData>,
-) =>
-  queryOptions<
-    GetCourseDescriptionResponse,
-    GetCourseDescriptionError,
-    GetCourseDescriptionResponse,
-    ReturnType<typeof getCourseDescriptionQueryKey>
-  >({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getCourseDescription({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: getCourseDescriptionQueryKey(options),
-  });
-
-/**
- * Parse Bulletin
- *
- * Parse a Temple University Bulletin HTML page into structured degree requirements.
- */
-export const parseBulletinMutation = (
-  options?: Partial<Options<ParseBulletinData>>,
-): UseMutationOptions<
-  ParseBulletinResponse,
-  ParseBulletinError,
-  Options<ParseBulletinData>
-> => {
-  const mutationOptions: UseMutationOptions<
-    ParseBulletinResponse,
-    ParseBulletinError,
-    Options<ParseBulletinData>
-  > = {
-    mutationFn: async (fnOptions) => {
-      const { data } = await parseBulletin({
-        ...options,
-        ...fnOptions,
-        throwOnError: true,
-      });
-      return data;
-    },
-  };
-  return mutationOptions;
-};
-
-export const listBulletinProgramsQueryKey = (
-  options: Options<ListBulletinProgramsData>,
-) => createQueryKey("listBulletinPrograms", options);
-
-/**
- * List Bulletin Programs
- *
- * Every program in one year's Bulletin, from its academic programs index.
- */
-export const listBulletinProgramsOptions = (
-  options: Options<ListBulletinProgramsData>,
-) =>
-  queryOptions<
-    ListBulletinProgramsResponse,
-    ListBulletinProgramsError,
-    ListBulletinProgramsResponse,
-    ReturnType<typeof listBulletinProgramsQueryKey>
-  >({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await listBulletinPrograms({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: listBulletinProgramsQueryKey(options),
-  });
-
-export const getProgramRequirementsQueryKey = (
-  options: Options<GetProgramRequirementsData>,
-) => createQueryKey("getProgramRequirements", options);
-
-/**
- * Get Program Requirements
- *
- * A program's degree requirements, parsed from its Bulletin page.
- */
-export const getProgramRequirementsOptions = (
-  options: Options<GetProgramRequirementsData>,
-) =>
-  queryOptions<
-    GetProgramRequirementsResponse,
-    GetProgramRequirementsError,
-    GetProgramRequirementsResponse,
-    ReturnType<typeof getProgramRequirementsQueryKey>
-  >({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getProgramRequirements({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: getProgramRequirementsQueryKey(options),
-  });
-
-export const listBulletinSubjectsQueryKey = (
-  options: Options<ListBulletinSubjectsData>,
-) => createQueryKey("listBulletinSubjects", options);
-
-/**
- * List Bulletin Subjects
- *
- * Every course subject in one year's Bulletin, or the closest earlier year online.
- */
-export const listBulletinSubjectsOptions = (
-  options: Options<ListBulletinSubjectsData>,
-) =>
-  queryOptions<
-    ListBulletinSubjectsResponse,
-    ListBulletinSubjectsError,
-    ListBulletinSubjectsResponse,
-    ReturnType<typeof listBulletinSubjectsQueryKey>
-  >({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await listBulletinSubjects({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: listBulletinSubjectsQueryKey(options),
-  });
-
-export const listSubjectCoursesQueryKey = (
-  options: Options<ListSubjectCoursesData>,
-) => createQueryKey("listSubjectCourses", options);
-
-/**
- * List Subject Courses
- *
- * Every course one subject lists in a year's Bulletin, with descriptions and prerequisites.
- */
-export const listSubjectCoursesOptions = (
-  options: Options<ListSubjectCoursesData>,
-) =>
-  queryOptions<
-    ListSubjectCoursesResponse,
-    ListSubjectCoursesError,
-    ListSubjectCoursesResponse,
-    ReturnType<typeof listSubjectCoursesQueryKey>
-  >({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await listSubjectCourses({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: listSubjectCoursesQueryKey(options),
-  });
 
 export const searchProfessorsQueryKey = (
   options: Options<SearchProfessorsData>,
@@ -841,34 +828,32 @@ export const deleteSeatWatchMutation = (
   return mutationOptions;
 };
 
+export const getSeatWatchQueryKey = (options: Options<GetSeatWatchData>) =>
+  createQueryKey("getSeatWatch", options);
+
 /**
- * Parse Transcript Pdf
+ * Get Seat Watch
  *
- * Return academic data; report incomplete parsing through a simple error.
+ * One of the signed-in student's watched sections.
  */
-export const parseTranscriptPdfMutation = (
-  options?: Partial<Options<ParseTranscriptPdfData>>,
-): UseMutationOptions<
-  ParseTranscriptPdfResponse,
-  ParseTranscriptPdfError,
-  Options<ParseTranscriptPdfData>
-> => {
-  const mutationOptions: UseMutationOptions<
-    ParseTranscriptPdfResponse,
-    ParseTranscriptPdfError,
-    Options<ParseTranscriptPdfData>
-  > = {
-    mutationFn: async (fnOptions) => {
-      const { data } = await parseTranscriptPdf({
+export const getSeatWatchOptions = (options: Options<GetSeatWatchData>) =>
+  queryOptions<
+    GetSeatWatchResponse,
+    GetSeatWatchError,
+    GetSeatWatchResponse,
+    ReturnType<typeof getSeatWatchQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getSeatWatch({
         ...options,
-        ...fnOptions,
+        ...queryKey[0],
+        signal,
         throwOnError: true,
       });
       return data;
     },
-  };
-  return mutationOptions;
-};
+    queryKey: getSeatWatchQueryKey(options),
+  });
 
 /**
  * Inspect Transcript Pdf
@@ -898,3 +883,59 @@ export const inspectTranscriptPdfMutation = (
   };
   return mutationOptions;
 };
+
+/**
+ * Parse Transcript Pdf
+ *
+ * Return academic data; report incomplete parsing through a simple error.
+ */
+export const parseTranscriptPdfMutation = (
+  options?: Partial<Options<ParseTranscriptPdfData>>,
+): UseMutationOptions<
+  ParseTranscriptPdfResponse,
+  ParseTranscriptPdfError,
+  Options<ParseTranscriptPdfData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ParseTranscriptPdfResponse,
+    ParseTranscriptPdfError,
+    Options<ParseTranscriptPdfData>
+  > = {
+    mutationFn: async (fnOptions) => {
+      const { data } = await parseTranscriptPdf({
+        ...options,
+        ...fnOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getMeQueryKey = (options?: Options<GetMeData>) =>
+  createQueryKey("getMe", options);
+
+/**
+ * Get Me
+ *
+ * The signed-in user. `me` stands for their own user.
+ */
+export const getMeOptions = (options?: Options<GetMeData>) =>
+  queryOptions<
+    GetMeResponse,
+    GetMeError,
+    GetMeResponse,
+    ReturnType<typeof getMeQueryKey>
+  >({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getMe({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getMeQueryKey(options),
+  });

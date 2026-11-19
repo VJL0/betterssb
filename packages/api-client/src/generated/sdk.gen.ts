@@ -31,6 +31,9 @@ import type {
   GetProgramRequirementsData,
   GetProgramRequirementsErrors,
   GetProgramRequirementsResponses,
+  GetSeatWatchData,
+  GetSeatWatchErrors,
+  GetSeatWatchResponses,
   GetSectionData,
   GetSectionErrors,
   GetSectionResponses,
@@ -103,38 +106,13 @@ export type Options<
 };
 
 /**
- * Logout
- *
- * Delete the session and clear its cookie.
- */
-export const logout = <ThrowOnError extends boolean = true>(
-  options?: Options<LogoutData, ThrowOnError>,
-): RequestResult<LogoutResponses, LogoutErrors, ThrowOnError> =>
-  (options?.client ?? client).post<LogoutResponses, LogoutErrors, ThrowOnError>(
-    { url: "/api/auth/logout", ...options },
-  );
-
-/**
- * Get Me
- *
- * Return the signed-in user.
- */
-export const getMe = <ThrowOnError extends boolean = true>(
-  options?: Options<GetMeData, ThrowOnError>,
-): RequestResult<GetMeResponses, GetMeErrors, ThrowOnError> =>
-  (options?.client ?? client).get<GetMeResponses, GetMeErrors, ThrowOnError>({
-    url: "/api/auth/me",
-    ...options,
-  });
-
-/**
  * Chat
  */
 export const chat = <ThrowOnError extends boolean = true>(
   options: Options<ChatData, ThrowOnError, unknown>,
 ): Promise<ServerSentEventsResult<ChatResponses>> =>
   (options.client ?? client).sse.post<ChatResponses, ChatErrors, ThrowOnError>({
-    url: "/api/chat",
+    url: "/api/advisor:chat",
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -143,150 +121,38 @@ export const chat = <ThrowOnError extends boolean = true>(
   });
 
 /**
- * List Attributes
+ * Logout
  *
- * Section attributes for a term, such as GenEd areas and Writing Intensive.
+ * Sign out: delete the session and clear its cookie.
+ *
+ * Idempotent, so it answers 204 even without a session.
  */
-export const listAttributes = <ThrowOnError extends boolean = true>(
-  options: Options<ListAttributesData, ThrowOnError>,
-): RequestResult<ListAttributesResponses, ListAttributesErrors, ThrowOnError> =>
-  (options.client ?? client).get<
-    ListAttributesResponses,
-    ListAttributesErrors,
+export const logout = <ThrowOnError extends boolean = true>(
+  options?: Options<LogoutData, ThrowOnError>,
+): RequestResult<LogoutResponses, LogoutErrors, ThrowOnError> =>
+  (options?.client ?? client).delete<
+    LogoutResponses,
+    LogoutErrors,
     ThrowOnError
-  >({ url: "/api/classes/attributes", ...options });
+  >({ url: "/api/auth/session", ...options });
 
 /**
- * List Campuses
+ * Get Program Requirements
  *
- * Campuses with sections in a term, such as Main, Center City and Japan.
+ * A program's degree requirements, parsed from its Bulletin page.
  */
-export const listCampuses = <ThrowOnError extends boolean = true>(
-  options: Options<ListCampusesData, ThrowOnError>,
-): RequestResult<ListCampusesResponses, ListCampusesErrors, ThrowOnError> =>
-  (options.client ?? client).get<
-    ListCampusesResponses,
-    ListCampusesErrors,
-    ThrowOnError
-  >({ url: "/api/classes/campuses", ...options });
-
-/**
- * List Parts Of Term
- *
- * Parts of a term, such as the full term and the 7-week halves, with their dates.
- */
-export const listPartsOfTerm = <ThrowOnError extends boolean = true>(
-  options: Options<ListPartsOfTermData, ThrowOnError>,
+export const getProgramRequirements = <ThrowOnError extends boolean = true>(
+  options: Options<GetProgramRequirementsData, ThrowOnError>,
 ): RequestResult<
-  ListPartsOfTermResponses,
-  ListPartsOfTermErrors,
+  GetProgramRequirementsResponses,
+  GetProgramRequirementsErrors,
   ThrowOnError
 > =>
   (options.client ?? client).get<
-    ListPartsOfTermResponses,
-    ListPartsOfTermErrors,
+    GetProgramRequirementsResponses,
+    GetProgramRequirementsErrors,
     ThrowOnError
-  >({ url: "/api/classes/parts-of-term", ...options });
-
-/**
- * Search Sections
- *
- * Sections in a term from Banner's public class search, with live seats.
- *
- * Needs a subject, keyword, attribute or instructor; the other filters
- * only narrow those, since a whole-term listing is too large to serve.
- */
-export const searchSections = <ThrowOnError extends boolean = true>(
-  options: Options<SearchSectionsData, ThrowOnError>,
-): RequestResult<SearchSectionsResponses, SearchSectionsErrors, ThrowOnError> =>
-  (options.client ?? client).get<
-    SearchSectionsResponses,
-    SearchSectionsErrors,
-    ThrowOnError
-  >({ url: "/api/classes/search", ...options });
-
-/**
- * Get Section
- *
- * The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.
- */
-export const getSection = <ThrowOnError extends boolean = true>(
-  options: Options<GetSectionData, ThrowOnError>,
-): RequestResult<GetSectionResponses, GetSectionErrors, ThrowOnError> =>
-  (options.client ?? client).get<
-    GetSectionResponses,
-    GetSectionErrors,
-    ThrowOnError
-  >({ url: "/api/classes/sections/{crn}", ...options });
-
-/**
- * List Subjects
- *
- * Subjects offered in a term, optionally filtered by code or name.
- */
-export const listSubjects = <ThrowOnError extends boolean = true>(
-  options: Options<ListSubjectsData, ThrowOnError>,
-): RequestResult<ListSubjectsResponses, ListSubjectsErrors, ThrowOnError> =>
-  (options.client ?? client).get<
-    ListSubjectsResponses,
-    ListSubjectsErrors,
-    ThrowOnError
-  >({ url: "/api/classes/subjects", ...options });
-
-/**
- * List Terms
- *
- * Terms with a published class schedule, newest first.
- */
-export const listTerms = <ThrowOnError extends boolean = true>(
-  options?: Options<ListTermsData, ThrowOnError>,
-): RequestResult<ListTermsResponses, ListTermsErrors, ThrowOnError> =>
-  (options?.client ?? client).get<
-    ListTermsResponses,
-    ListTermsErrors,
-    ThrowOnError
-  >({ url: "/api/classes/terms", ...options });
-
-/**
- * Parse Audit
- *
- * Parse a DARS audit page that was already fetched — by the browser extension or saved by the
- * student (the printer-friendly `read.html`). No credential is involved; this only reads HTML.
- */
-export const parseAudit = <ThrowOnError extends boolean = true>(
-  options: Options<ParseAuditData, ThrowOnError>,
-): RequestResult<ParseAuditResponses, ParseAuditErrors, ThrowOnError> =>
-  (options.client ?? client).post<
-    ParseAuditResponses,
-    ParseAuditErrors,
-    ThrowOnError
-  >({
-    bodySerializer: null,
-    url: "/api/dars/audits/parse",
-    ...options,
-    headers: {
-      "Content-Type": "text/html",
-      ...options.headers,
-    },
-  });
-
-/**
- * Get Course Description
- *
- * A course's description, credits, attributes, prerequisites and restrictions from one year's Bulletin.
- */
-export const getCourseDescription = <ThrowOnError extends boolean = true>(
-  options: Options<GetCourseDescriptionData, ThrowOnError>,
-): RequestResult<
-  GetCourseDescriptionResponses,
-  GetCourseDescriptionErrors,
-  ThrowOnError
-> =>
-  (options.client ?? client).get<
-    GetCourseDescriptionResponses,
-    GetCourseDescriptionErrors,
-    ThrowOnError
-  >({ url: "/api/degree/courses", ...options });
+  >({ url: "/api/bulletins/program-requirements", ...options });
 
 /**
  * Parse Bulletin
@@ -302,7 +168,7 @@ export const parseBulletin = <ThrowOnError extends boolean = true>(
     ThrowOnError
   >({
     bodySerializer: null,
-    url: "/api/degree/parse-bulletin",
+    url: "/api/bulletins/program-requirements:parse",
     ...options,
     headers: {
       "Content-Type": "text/plain",
@@ -326,25 +192,7 @@ export const listBulletinPrograms = <ThrowOnError extends boolean = true>(
     ListBulletinProgramsResponses,
     ListBulletinProgramsErrors,
     ThrowOnError
-  >({ url: "/api/degree/programs", ...options });
-
-/**
- * Get Program Requirements
- *
- * A program's degree requirements, parsed from its Bulletin page.
- */
-export const getProgramRequirements = <ThrowOnError extends boolean = true>(
-  options: Options<GetProgramRequirementsData, ThrowOnError>,
-): RequestResult<
-  GetProgramRequirementsResponses,
-  GetProgramRequirementsErrors,
-  ThrowOnError
-> =>
-  (options.client ?? client).get<
-    GetProgramRequirementsResponses,
-    GetProgramRequirementsErrors,
-    ThrowOnError
-  >({ url: "/api/degree/requirements", ...options });
+  >({ url: "/api/bulletins/{year}/programs", ...options });
 
 /**
  * List Bulletin Subjects
@@ -362,7 +210,7 @@ export const listBulletinSubjects = <ThrowOnError extends boolean = true>(
     ListBulletinSubjectsResponses,
     ListBulletinSubjectsErrors,
     ThrowOnError
-  >({ url: "/api/degree/subjects", ...options });
+  >({ url: "/api/bulletins/{year}/subjects", ...options });
 
 /**
  * List Subject Courses
@@ -380,7 +228,161 @@ export const listSubjectCourses = <ThrowOnError extends boolean = true>(
     ListSubjectCoursesResponses,
     ListSubjectCoursesErrors,
     ThrowOnError
-  >({ url: "/api/degree/subjects/{subject}/courses", ...options });
+  >({ url: "/api/bulletins/{year}/subjects/{subject}/courses", ...options });
+
+/**
+ * Get Course Description
+ *
+ * A course's description, credits, attributes, prerequisites and restrictions from one year's Bulletin.
+ */
+export const getCourseDescription = <ThrowOnError extends boolean = true>(
+  options: Options<GetCourseDescriptionData, ThrowOnError>,
+): RequestResult<
+  GetCourseDescriptionResponses,
+  GetCourseDescriptionErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetCourseDescriptionResponses,
+    GetCourseDescriptionErrors,
+    ThrowOnError
+  >({
+    url: "/api/bulletins/{year}/subjects/{subject}/courses/{number}",
+    ...options,
+  });
+
+/**
+ * List Terms
+ *
+ * Terms with a published class schedule, newest first.
+ */
+export const listTerms = <ThrowOnError extends boolean = true>(
+  options?: Options<ListTermsData, ThrowOnError>,
+): RequestResult<ListTermsResponses, ListTermsErrors, ThrowOnError> =>
+  (options?.client ?? client).get<
+    ListTermsResponses,
+    ListTermsErrors,
+    ThrowOnError
+  >({ url: "/api/classes/terms", ...options });
+
+/**
+ * List Attributes
+ *
+ * Section attributes for a term, such as GenEd areas and Writing Intensive.
+ */
+export const listAttributes = <ThrowOnError extends boolean = true>(
+  options: Options<ListAttributesData, ThrowOnError>,
+): RequestResult<ListAttributesResponses, ListAttributesErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    ListAttributesResponses,
+    ListAttributesErrors,
+    ThrowOnError
+  >({ url: "/api/classes/terms/{term}/attributes", ...options });
+
+/**
+ * List Campuses
+ *
+ * Campuses with sections in a term, such as Main, Center City and Japan.
+ */
+export const listCampuses = <ThrowOnError extends boolean = true>(
+  options: Options<ListCampusesData, ThrowOnError>,
+): RequestResult<ListCampusesResponses, ListCampusesErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    ListCampusesResponses,
+    ListCampusesErrors,
+    ThrowOnError
+  >({ url: "/api/classes/terms/{term}/campuses", ...options });
+
+/**
+ * List Parts Of Term
+ *
+ * Parts of a term, such as the full term and the 7-week halves, with their dates.
+ */
+export const listPartsOfTerm = <ThrowOnError extends boolean = true>(
+  options: Options<ListPartsOfTermData, ThrowOnError>,
+): RequestResult<
+  ListPartsOfTermResponses,
+  ListPartsOfTermErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    ListPartsOfTermResponses,
+    ListPartsOfTermErrors,
+    ThrowOnError
+  >({ url: "/api/classes/terms/{term}/parts-of-term", ...options });
+
+/**
+ * Search Sections
+ *
+ * Sections in a term from Banner's public class search, with live seats.
+ *
+ * The term's sections, filtered by the query parameters (a List, AIP-132).
+ *
+ * Needs a subject, keyword, attribute or instructor; the other filters
+ * only narrow those, since a whole-term listing is too large to serve.
+ */
+export const searchSections = <ThrowOnError extends boolean = true>(
+  options: Options<SearchSectionsData, ThrowOnError>,
+): RequestResult<SearchSectionsResponses, SearchSectionsErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    SearchSectionsResponses,
+    SearchSectionsErrors,
+    ThrowOnError
+  >({ url: "/api/classes/terms/{term}/sections", ...options });
+
+/**
+ * Get Section
+ *
+ * The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.
+ *
+ * A CRN names a section only within its term, so the term is part of the path.
+ * Both answers are cached for as long as the API keeps them.
+ */
+export const getSection = <ThrowOnError extends boolean = true>(
+  options: Options<GetSectionData, ThrowOnError>,
+): RequestResult<GetSectionResponses, GetSectionErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    GetSectionResponses,
+    GetSectionErrors,
+    ThrowOnError
+  >({ url: "/api/classes/terms/{term}/sections/{crn}", ...options });
+
+/**
+ * List Subjects
+ *
+ * Subjects offered in a term, optionally filtered by code or name.
+ */
+export const listSubjects = <ThrowOnError extends boolean = true>(
+  options: Options<ListSubjectsData, ThrowOnError>,
+): RequestResult<ListSubjectsResponses, ListSubjectsErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    ListSubjectsResponses,
+    ListSubjectsErrors,
+    ThrowOnError
+  >({ url: "/api/classes/terms/{term}/subjects", ...options });
+
+/**
+ * Parse Audit
+ *
+ * Parse a DARS audit page that was already fetched — by the browser extension or saved by the
+ * student (the printer-friendly `read.html`). No credential is involved; this only reads HTML.
+ */
+export const parseAudit = <ThrowOnError extends boolean = true>(
+  options: Options<ParseAuditData, ThrowOnError>,
+): RequestResult<ParseAuditResponses, ParseAuditErrors, ThrowOnError> =>
+  (options.client ?? client).post<
+    ParseAuditResponses,
+    ParseAuditErrors,
+    ThrowOnError
+  >({
+    bodySerializer: null,
+    url: "/api/dars/audits:parse",
+    ...options,
+    headers: {
+      "Content-Type": "text/html",
+      ...options.headers,
+    },
+  });
 
 /**
  * Search Professors
@@ -401,7 +403,7 @@ export const searchProfessors = <ThrowOnError extends boolean = true>(
     SearchProfessorsResponses,
     SearchProfessorsErrors,
     ThrowOnError
-  >({ url: "/api/rmp/search", ...options });
+  >({ url: "/api/professors", ...options });
 
 /**
  * Generate Schedules
@@ -420,7 +422,7 @@ export const generateSchedules = <ThrowOnError extends boolean = true>(
     GenerateSchedulesErrors,
     ThrowOnError
   >({
-    url: "/api/schedule/generate",
+    url: "/api/schedules:generate",
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -490,30 +492,18 @@ export const deleteSeatWatch = <ThrowOnError extends boolean = true>(
   >({ url: "/api/seat-watches/{watch_id}", ...options });
 
 /**
- * Parse Transcript Pdf
+ * Get Seat Watch
  *
- * Return academic data; report incomplete parsing through a simple error.
+ * One of the signed-in student's watched sections.
  */
-export const parseTranscriptPdf = <ThrowOnError extends boolean = true>(
-  options: Options<ParseTranscriptPdfData, ThrowOnError>,
-): RequestResult<
-  ParseTranscriptPdfResponses,
-  ParseTranscriptPdfErrors,
-  ThrowOnError
-> =>
-  (options.client ?? client).post<
-    ParseTranscriptPdfResponses,
-    ParseTranscriptPdfErrors,
+export const getSeatWatch = <ThrowOnError extends boolean = true>(
+  options: Options<GetSeatWatchData, ThrowOnError>,
+): RequestResult<GetSeatWatchResponses, GetSeatWatchErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    GetSeatWatchResponses,
+    GetSeatWatchErrors,
     ThrowOnError
-  >({
-    bodySerializer: null,
-    url: "/api/transcript/parse-pdf",
-    ...options,
-    headers: {
-      "Content-Type": "application/pdf",
-      ...options.headers,
-    },
-  });
+  >({ url: "/api/seat-watches/{watch_id}", ...options });
 
 /**
  * Inspect Transcript Pdf
@@ -533,10 +523,49 @@ export const inspectTranscriptPdf = <ThrowOnError extends boolean = true>(
     ThrowOnError
   >({
     bodySerializer: null,
-    url: "/api/transcript/parse-pdf/data",
+    url: "/api/transcripts:inspect",
     ...options,
     headers: {
       "Content-Type": "application/pdf",
       ...options.headers,
     },
+  });
+
+/**
+ * Parse Transcript Pdf
+ *
+ * Return academic data; report incomplete parsing through a simple error.
+ */
+export const parseTranscriptPdf = <ThrowOnError extends boolean = true>(
+  options: Options<ParseTranscriptPdfData, ThrowOnError>,
+): RequestResult<
+  ParseTranscriptPdfResponses,
+  ParseTranscriptPdfErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    ParseTranscriptPdfResponses,
+    ParseTranscriptPdfErrors,
+    ThrowOnError
+  >({
+    bodySerializer: null,
+    url: "/api/transcripts:parse",
+    ...options,
+    headers: {
+      "Content-Type": "application/pdf",
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get Me
+ *
+ * The signed-in user. `me` stands for their own user.
+ */
+export const getMe = <ThrowOnError extends boolean = true>(
+  options?: Options<GetMeData, ThrowOnError>,
+): RequestResult<GetMeResponses, GetMeErrors, ThrowOnError> =>
+  (options?.client ?? client).get<GetMeResponses, GetMeErrors, ThrowOnError>({
+    url: "/api/users/me",
+    ...options,
   });

@@ -4,6 +4,7 @@ that emails them. Banner and Gmail are faked.
 
 from __future__ import annotations
 
+import uuid
 from collections.abc import Iterator
 
 import httpx2
@@ -99,8 +100,8 @@ async def watch(client: AsyncClient, crn: str = CRN) -> httpx2.Response:
 
 
 async def run_check(client: AsyncClient) -> httpx2.Response:
-    return await client.get(
-        "/api/seat-watches/check",
+    return await client.post(
+        "/api/seat-watches:check",
         headers={"Authorization": f"Bearer {CRON_SECRET}"},
     )
 
@@ -123,8 +124,22 @@ class TestWatches:
         assert (body["seatsAvailable"], body["maximumEnrollment"]) == (0, 30)
         assert body["waitCount"] == 15
         assert body["notifiedAt"] is None
-        listed = (await student.get("/api/seat-watches")).json()
+        listed = (await student.get("/api/seat-watches")).json()["seatWatches"]
         assert [w["crn"] for w in listed] == [CRN]
+
+    async def test_a_new_watch_says_where_it_lives(self, student, banner):
+        banner.seats[CRN] = 0
+        created = await watch(student)
+
+        location = created.headers["location"]
+        assert location == f"/api/seat-watches/{created.json()['id']}"
+        fetched = await student.get(location)
+        assert fetched.status_code == 200
+        assert fetched.json() == created.json()
+
+    async def test_an_unknown_watch_is_not_found(self, student):
+        resp = await student.get(f"/api/seat-watches/{uuid.uuid4()}")
+        assert resp.status_code == 404
 
     async def test_a_crn_banner_doesnt_have_is_not_found(self, student, banner):
         resp = await watch(student, "99999")
@@ -165,7 +180,7 @@ class TestWatches:
         assert (
             await student.delete(f"/api/seat-watches/{watch_id}")
         ).status_code == 204
-        assert (await student.get("/api/seat-watches")).json() == []
+        assert (await student.get("/api/seat-watches")).json() == {"seatWatches": []}
         assert (
             await student.delete(f"/api/seat-watches/{watch_id}")
         ).status_code == 404
@@ -176,7 +191,7 @@ class TestWatches:
 
         await sign_in_as(student, db, sub="google-sub-2", email="other@gmail.com")
 
-        assert (await student.get("/api/seat-watches")).json() == []
+        assert (await student.get("/api/seat-watches")).json() == {"seatWatches": []}
         assert (
             await student.delete(f"/api/seat-watches/{watch_id}")
         ).status_code == 404
@@ -184,8 +199,8 @@ class TestWatches:
 
 class TestCheck:
     async def test_needs_the_cron_secret(self, client: AsyncClient, db, mailer):
-        resp = await client.get(
-            "/api/seat-watches/check", headers={"Authorization": "Bearer wrong"}
+        resp = await client.post(
+            "/api/seat-watches:check", headers={"Authorization": "Bearer wrong"}
         )
         assert resp.status_code == 401
 
@@ -209,7 +224,7 @@ class TestCheck:
         assert "2 seats are open" in email.text
         # Not the /ssb/registration landing page, which signs a student out.
         assert "/ssb/registration/registerPostSignIn?mode=registration" in email.text
-        [listed] = (await student.get("/api/seat-watches")).json()
+        [listed] = (await student.get("/api/seat-watches")).json()["seatWatches"]
         assert listed["seatsAvailable"] == 2
         assert listed["notifiedAt"] is not None
 
@@ -263,7 +278,7 @@ class TestCheck:
         resp = await run_check(student)
 
         assert resp.json() == {"sections": 1, "failed": 1, "emailed": 0}
-        [listed] = (await student.get("/api/seat-watches")).json()
+        [listed] = (await student.get("/api/seat-watches")).json()["seatWatches"]
         assert listed["seatsAvailable"] == 0
 
     async def test_one_banner_read_per_section_for_every_student(
@@ -286,4 +301,4 @@ class TestCheck:
     async def test_stays_out_of_the_openapi_schema(self, client: AsyncClient):
         paths = (await client.get("/openapi.json")).json()["paths"]
         assert "/api/seat-watches" in paths
-        assert "/api/seat-watches/check" not in paths
+        assert "/api/seat-watches:check" not in paths

@@ -16,7 +16,7 @@ const UNAUTHORIZED = 401;
 export type User = UserResponse;
 
 /** A navigation, not a fetch call, so it isn't in the generated client. */
-const LOGIN_PATH = "/api/auth/google/login";
+const LOGIN_PATH = "/api/auth/google";
 
 /** Signs in, then comes back to `returnTo` (a path with its query string). */
 export function loginUrl(returnTo: string): string {

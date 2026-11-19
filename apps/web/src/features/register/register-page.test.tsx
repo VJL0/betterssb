@@ -44,7 +44,7 @@ const SECTIONS = new Map(
 
 beforeEach(() => {
   server.use(
-    http.get(`${API}/classes/sections/:crn`, ({ params }) => {
+    http.get(`${API}/classes/terms/:term/sections/:crn`, ({ params }) => {
       const section = SECTIONS.get(String(params.crn));
       return section
         ? HttpResponse.json(section)
@@ -53,7 +53,7 @@ beforeEach(() => {
             { status: 404 },
           );
     }),
-    http.get(`${API}/classes/search`, () =>
+    http.get(`${API}/classes/terms/:term/sections`, () =>
       HttpResponse.json({
         totalCount: 1,
         fetchedAt: NOW,
@@ -153,7 +153,7 @@ describe("RegisterPage", () => {
 
   it("says when a CRN couldn't be checked", async () => {
     server.use(
-      http.get(`${API}/classes/sections/:crn`, () =>
+      http.get(`${API}/classes/terms/:term/sections/:crn`, () =>
         HttpResponse.json(
           { detail: "Banner isn't answering." },
           { status: 502 },

@@ -1,13 +1,13 @@
 # Banner unofficial transcript PDF parser
 
-The PDF parser runs locally in Python or through `POST /api/transcript/parse-pdf`
+The PDF parser runs locally in Python or through `POST /api/transcripts:parse`
 with the raw file body and `Content-Type: application/pdf`. That endpoint returns
 compact academic data: courses, GPA, current program, periods, term/final totals,
 and diagnostics. It omits names, source glyphs, PDF metadata, repeated cumulative
 snapshots, historical profile fields, and empty source cells.
 
 Open `/transcript/data` (linked from Transcript) to upload a PDF and switch between
-simple and detailed JSON. This page calls `POST /api/transcript/parse-pdf/data`,
+simple and detailed JSON. This page calls `POST /api/transcripts:inspect`,
 which returns `{valid, data, details}`. Partial parses remain inspectable here;
 the normal endpoint rejects incomplete parsing with a simple 422 problem response.
 Neither endpoint persists the document. The data page keeps results in memory,

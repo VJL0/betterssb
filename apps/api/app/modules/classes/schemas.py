@@ -15,6 +15,26 @@ class CodeDescription(BaseSchema):
     description: str
 
 
+class TermList(BaseSchema):
+    terms: list[CodeDescription]
+
+
+class SubjectList(BaseSchema):
+    subjects: list[CodeDescription]
+
+
+class AttributeList(BaseSchema):
+    attributes: list[CodeDescription]
+
+
+class CampusList(BaseSchema):
+    campuses: list[CodeDescription]
+
+
+class PartOfTermList(BaseSchema):
+    parts_of_term: list[CodeDescription]
+
+
 class Faculty(BaseSchema):
     banner_id: str = ""
     display_name: str = ""
@@ -89,6 +109,14 @@ class ClassSearchResult(BaseSchema):
     sections: list[ClassSection]
     fetched_at: datetime = Field(
         description="When Banner returned this data. Seats change."
+    )
+
+
+class SectionPage(ClassSearchResult):
+    """One page of a section search."""
+
+    next_cursor: str | None = Field(
+        description="Pass as `cursor` for the next page; null on the last page."
     )
 
 

@@ -239,6 +239,22 @@
         "title": "AcademicTranscript",
         "type": "object"
       },
+      "AttributeList": {
+        "properties": {
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/CodeDescription"
+            },
+            "title": "Attributes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "attributes"
+        ],
+        "title": "AttributeList",
+        "type": "object"
+      },
       "Audit": {
         "properties": {
           "analysisComplete": {
@@ -610,6 +626,22 @@
         "title": "BulletinSubjectIndex",
         "type": "object"
       },
+      "CampusList": {
+        "properties": {
+          "campuses": {
+            "items": {
+              "$ref": "#/components/schemas/CodeDescription"
+            },
+            "title": "Campuses",
+            "type": "array"
+          }
+        },
+        "required": [
+          "campuses"
+        ],
+        "title": "CampusList",
+        "type": "object"
+      },
       "ChatMessage": {
         "properties": {
           "content": {
@@ -703,34 +735,6 @@
           "maxCredits"
         ],
         "title": "ChoiceCourse",
-        "type": "object"
-      },
-      "ClassSearchResult": {
-        "properties": {
-          "fetchedAt": {
-            "description": "When Banner returned this data. Seats change.",
-            "format": "date-time",
-            "title": "Fetchedat",
-            "type": "string"
-          },
-          "sections": {
-            "items": {
-              "$ref": "#/components/schemas/ClassSection"
-            },
-            "title": "Sections",
-            "type": "array"
-          },
-          "totalCount": {
-            "title": "Totalcount",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "totalCount",
-          "sections",
-          "fetchedAt"
-        ],
-        "title": "ClassSearchResult",
         "type": "object"
       },
       "ClassSection": {
@@ -1603,6 +1607,22 @@
         "title": "GeneratedSchedule",
         "type": "object"
       },
+      "GeneratedScheduleList": {
+        "properties": {
+          "schedules": {
+            "items": {
+              "$ref": "#/components/schemas/GeneratedSchedule"
+            },
+            "title": "Schedules",
+            "type": "array"
+          }
+        },
+        "required": [
+          "schedules"
+        ],
+        "title": "GeneratedScheduleList",
+        "type": "object"
+      },
       "HoursSummary": {
         "description": "Credit hours from the audit's progress chart, for the degree or one category.",
         "properties": {
@@ -2077,6 +2097,22 @@
         "title": "PageSection",
         "type": "object"
       },
+      "PartOfTermList": {
+        "properties": {
+          "partsOfTerm": {
+            "items": {
+              "$ref": "#/components/schemas/CodeDescription"
+            },
+            "title": "Partsofterm",
+            "type": "array"
+          }
+        },
+        "required": [
+          "partsOfTerm"
+        ],
+        "title": "PartOfTermList",
+        "type": "object"
+      },
       "PdfTranscriptCourse": {
         "properties": {
           "campus": {
@@ -2527,6 +2563,22 @@
           "detail"
         ],
         "title": "ProblemError",
+        "type": "object"
+      },
+      "ProfessorList": {
+        "properties": {
+          "professors": {
+            "items": {
+              "$ref": "#/components/schemas/RMPRating"
+            },
+            "title": "Professors",
+            "type": "array"
+          }
+        },
+        "required": [
+          "professors"
+        ],
+        "title": "ProfessorList",
         "type": "object"
       },
       "ProgramLevel": {
@@ -3064,6 +3116,22 @@
         "title": "SeatWatchCreate",
         "type": "object"
       },
+      "SeatWatchList": {
+        "properties": {
+          "seatWatches": {
+            "items": {
+              "$ref": "#/components/schemas/SeatWatchResponse"
+            },
+            "title": "Seatwatches",
+            "type": "array"
+          }
+        },
+        "required": [
+          "seatWatches"
+        ],
+        "title": "SeatWatchList",
+        "type": "object"
+      },
       "SeatWatchResponse": {
         "description": "A watched section with Banner's seats from the last check.",
         "properties": {
@@ -3292,6 +3360,48 @@
           "scheduleType"
         ],
         "title": "Section",
+        "type": "object"
+      },
+      "SectionPage": {
+        "description": "One page of a section search.",
+        "properties": {
+          "fetchedAt": {
+            "description": "When Banner returned this data. Seats change.",
+            "format": "date-time",
+            "title": "Fetchedat",
+            "type": "string"
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass as `cursor` for the next page; null on the last page.",
+            "title": "Nextcursor"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/ClassSection"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "totalCount": {
+            "title": "Totalcount",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "totalCount",
+          "sections",
+          "fetchedAt",
+          "nextCursor"
+        ],
+        "title": "SectionPage",
         "type": "object"
       },
       "SectionSummary": {
@@ -3550,6 +3660,22 @@
         "title": "SubjectCourses",
         "type": "object"
       },
+      "SubjectList": {
+        "properties": {
+          "subjects": {
+            "items": {
+              "$ref": "#/components/schemas/CodeDescription"
+            },
+            "title": "Subjects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "subjects"
+        ],
+        "title": "SubjectList",
+        "type": "object"
+      },
       "SuggestedPlan": {
         "description": "A suggested academic plan grid from the bulletin.",
         "properties": {
@@ -3593,6 +3719,22 @@
           "footnotes"
         ],
         "title": "SuggestedPlan",
+        "type": "object"
+      },
+      "TermList": {
+        "properties": {
+          "terms": {
+            "items": {
+              "$ref": "#/components/schemas/CodeDescription"
+            },
+            "title": "Terms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "terms"
+        ],
+        "title": "TermList",
         "type": "object"
       },
       "TranscriptDiagnostic": {
@@ -3931,199 +4073,7 @@
   },
   "openapi": "3.1.0",
   "paths": {
-    "/api/auth/google/callback": {
-      "get": {
-        "description": "Finish Google sign-in, start a session, and return to the page it started on.",
-        "operationId": "google_callback",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "security": [
-          {
-            "APIKeyCookie": []
-          }
-        ],
-        "summary": "Google Callback",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/google/login": {
-      "get": {
-        "description": "Redirect to Google to sign in.",
-        "operationId": "google_login",
-        "parameters": [
-          {
-            "description": "The frontend page to return to, such as `/search?q=CIS`.",
-            "in": "query",
-            "name": "next",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "The frontend page to return to, such as `/search?q=CIS`.",
-              "title": "Next"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "Google Login",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/logout": {
-      "post": {
-        "description": "Delete the session and clear its cookie.",
-        "operationId": "logout",
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "security": [
-          {
-            "APIKeyCookie": []
-          }
-        ],
-        "summary": "Logout",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/me": {
-      "get": {
-        "description": "Return the signed-in user.",
-        "operationId": "get_me",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "security": [
-          {
-            "APIKeyCookie": []
-          }
-        ],
-        "summary": "Get Me",
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/chat": {
+    "/api/advisor:chat": {
       "post": {
         "operationId": "chat",
         "requestBody": {
@@ -4185,18 +4135,640 @@
         },
         "summary": "Chat",
         "tags": [
-          "chat"
+          "advisor"
         ]
       }
     },
-    "/api/classes/attributes": {
+    "/api/auth/google": {
+      "get": {
+        "description": "Redirect to Google to sign in.",
+        "operationId": "google_login",
+        "parameters": [
+          {
+            "description": "The frontend page to return to, such as `/search?q=CIS`.",
+            "in": "query",
+            "name": "next",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The frontend page to return to, such as `/search?q=CIS`.",
+              "title": "Next"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Google Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/google/callback": {
+      "get": {
+        "description": "Finish Google sign-in, start a session, and return to the page it started on.",
+        "operationId": "google_callback",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "Google Callback",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/session": {
+      "delete": {
+        "description": "Sign out: delete the session and clear its cookie.\n\nIdempotent, so it answers 204 even without a session.",
+        "operationId": "logout",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/bulletins/program-requirements": {
+      "get": {
+        "description": "A program's degree requirements, parsed from its Bulletin page.",
+        "operationId": "get_program_requirements",
+        "parameters": [
+          {
+            "description": "A program page URL from `list_bulletin_programs`",
+            "in": "query",
+            "name": "url",
+            "required": true,
+            "schema": {
+              "description": "A program page URL from `list_bulletin_programs`",
+              "pattern": "^https://bulletin\\.temple\\.edu/(archives/\\d{4}-\\d{4}/)?(undergraduate|graduate)(/[a-z0-9_-]+)+(/|/index\\.html)?(#[a-z0-9_-]+)?$",
+              "title": "Url",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DegreeProgram"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Get Program Requirements",
+        "tags": [
+          "bulletins"
+        ]
+      }
+    },
+    "/api/bulletins/program-requirements:parse": {
+      "post": {
+        "description": "Parse a Temple University Bulletin HTML page into structured degree requirements.",
+        "operationId": "parse_bulletin",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Url",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "title": "Html",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DegreeProgram"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Parse Bulletin",
+        "tags": [
+          "bulletins"
+        ]
+      }
+    },
+    "/api/bulletins/{year}/programs": {
+      "get": {
+        "description": "Every program in one year's Bulletin, from its academic programs index.",
+        "operationId": "list_bulletin_programs",
+        "parameters": [
+          {
+            "description": "Bulletin year, YYYY-YYYY",
+            "in": "path",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "description": "Bulletin year, YYYY-YYYY",
+              "pattern": "^\\d{4}-\\d{4}$",
+              "title": "Year",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulletinProgramIndex"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Bulletin Programs",
+        "tags": [
+          "bulletins"
+        ]
+      }
+    },
+    "/api/bulletins/{year}/subjects": {
+      "get": {
+        "description": "Every course subject in one year's Bulletin, or the closest earlier year online.",
+        "operationId": "list_bulletin_subjects",
+        "parameters": [
+          {
+            "description": "Bulletin year, YYYY-YYYY",
+            "in": "path",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "description": "Bulletin year, YYYY-YYYY",
+              "pattern": "^\\d{4}-\\d{4}$",
+              "title": "Year",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulletinSubjectIndex"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Bulletin Subjects",
+        "tags": [
+          "bulletins"
+        ]
+      }
+    },
+    "/api/bulletins/{year}/subjects/{subject}/courses": {
+      "get": {
+        "description": "Every course one subject lists in a year's Bulletin, with descriptions and prerequisites.",
+        "operationId": "list_subject_courses",
+        "parameters": [
+          {
+            "description": "Bulletin year, YYYY-YYYY",
+            "in": "path",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "description": "Bulletin year, YYYY-YYYY",
+              "pattern": "^\\d{4}-\\d{4}$",
+              "title": "Year",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Subject code, \"CIS\"",
+            "in": "path",
+            "name": "subject",
+            "required": true,
+            "schema": {
+              "description": "Subject code, \"CIS\"",
+              "pattern": "^[A-Z]{2,5}$",
+              "title": "Subject",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectCourses"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Subject Courses",
+        "tags": [
+          "bulletins"
+        ]
+      }
+    },
+    "/api/bulletins/{year}/subjects/{subject}/courses/{number}": {
+      "get": {
+        "description": "A course's description, credits, attributes, prerequisites and restrictions from one year's Bulletin.",
+        "operationId": "get_course_description",
+        "parameters": [
+          {
+            "description": "Bulletin year, YYYY-YYYY",
+            "in": "path",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "description": "Bulletin year, YYYY-YYYY",
+              "pattern": "^\\d{4}-\\d{4}$",
+              "title": "Year",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Subject code, \"CIS\"",
+            "in": "path",
+            "name": "subject",
+            "required": true,
+            "schema": {
+              "description": "Subject code, \"CIS\"",
+              "pattern": "^[A-Z]{2,5}$",
+              "title": "Subject",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Course number, \"3296\"",
+            "in": "path",
+            "name": "number",
+            "required": true,
+            "schema": {
+              "description": "Course number, \"3296\"",
+              "pattern": "^\\d{4}[A-Z]?$",
+              "title": "Number",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseDescription"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Get Course Description",
+        "tags": [
+          "bulletins"
+        ]
+      }
+    },
+    "/api/classes/terms": {
+      "get": {
+        "description": "Terms with a published class schedule, newest first.",
+        "operationId": "list_terms",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TermList"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "List Terms",
+        "tags": [
+          "classes"
+        ]
+      }
+    },
+    "/api/classes/terms/{term}/attributes": {
       "get": {
         "description": "Section attributes for a term, such as GenEd areas and Writing Intensive.",
         "operationId": "list_attributes",
         "parameters": [
           {
             "description": "Banner term code",
-            "in": "query",
+            "in": "path",
             "name": "term",
             "required": true,
             "schema": {
@@ -4212,15 +4784,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/CodeDescription"
-                  },
-                  "title": "Response List Attributes",
-                  "type": "array"
+                  "$ref": "#/components/schemas/AttributeList"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
           },
           "4XX": {
             "content": {
@@ -4249,14 +4826,14 @@
         ]
       }
     },
-    "/api/classes/campuses": {
+    "/api/classes/terms/{term}/campuses": {
       "get": {
         "description": "Campuses with sections in a term, such as Main, Center City and Japan.",
         "operationId": "list_campuses",
         "parameters": [
           {
             "description": "Banner term code",
-            "in": "query",
+            "in": "path",
             "name": "term",
             "required": true,
             "schema": {
@@ -4272,15 +4849,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/CodeDescription"
-                  },
-                  "title": "Response List Campuses",
-                  "type": "array"
+                  "$ref": "#/components/schemas/CampusList"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
           },
           "4XX": {
             "content": {
@@ -4309,14 +4891,14 @@
         ]
       }
     },
-    "/api/classes/parts-of-term": {
+    "/api/classes/terms/{term}/parts-of-term": {
       "get": {
         "description": "Parts of a term, such as the full term and the 7-week halves, with their dates.",
         "operationId": "list_parts_of_term",
         "parameters": [
           {
             "description": "Banner term code",
-            "in": "query",
+            "in": "path",
             "name": "term",
             "required": true,
             "schema": {
@@ -4332,15 +4914,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/CodeDescription"
-                  },
-                  "title": "Response List Parts Of Term",
-                  "type": "array"
+                  "$ref": "#/components/schemas/PartOfTermList"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
           },
           "4XX": {
             "content": {
@@ -4369,14 +4956,14 @@
         ]
       }
     },
-    "/api/classes/search": {
+    "/api/classes/terms/{term}/sections": {
       "get": {
-        "description": "Sections in a term from Banner's public class search, with live seats.\n\nNeeds a subject, keyword, attribute or instructor; the other filters\nonly narrow those, since a whole-term listing is too large to serve.",
+        "description": "Sections in a term from Banner's public class search, with live seats.\n\nThe term's sections, filtered by the query parameters (a List, AIP-132).\n\nNeeds a subject, keyword, attribute or instructor; the other filters\nonly narrow those, since a whole-term listing is too large to serve.",
         "operationId": "search_sections",
         "parameters": [
           {
             "description": "Banner term code",
-            "in": "query",
+            "in": "path",
             "name": "term",
             "required": true,
             "schema": {
@@ -4583,14 +5170,22 @@
             }
           },
           {
+            "description": "`nextCursor` from the page before",
             "in": "query",
-            "name": "offset",
+            "name": "cursor",
             "required": false,
             "schema": {
-              "default": 0,
-              "minimum": 0,
-              "title": "Offset",
-              "type": "integer"
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "`nextCursor` from the page before",
+              "title": "Cursor"
             }
           },
           {
@@ -4611,11 +5206,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ClassSearchResult"
+                  "$ref": "#/components/schemas/SectionPage"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=60, s-maxage=60",
+                  "type": "string"
+                }
+              }
+            }
           },
           "4XX": {
             "content": {
@@ -4644,11 +5248,23 @@
         ]
       }
     },
-    "/api/classes/sections/{crn}": {
+    "/api/classes/terms/{term}/sections/{crn}": {
       "get": {
-        "description": "The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.",
+        "description": "The course a CRN belongs to in a term, such as CIS 3441-702 Software Security.\n\nA CRN names a section only within its term, so the term is part of the path.\nBoth answers are cached for as long as the API keeps them.",
         "operationId": "get_section",
         "parameters": [
+          {
+            "description": "Banner term code",
+            "in": "path",
+            "name": "term",
+            "required": true,
+            "schema": {
+              "description": "Banner term code",
+              "pattern": "^\\d{6}$",
+              "title": "Term",
+              "type": "string"
+            }
+          },
           {
             "description": "Four- or five-digit CRN",
             "in": "path",
@@ -4658,18 +5274,6 @@
               "description": "Four- or five-digit CRN",
               "pattern": "^\\d{4,5}$",
               "title": "Crn",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Banner term code",
-            "in": "query",
-            "name": "term",
-            "required": true,
-            "schema": {
-              "description": "Banner term code",
-              "pattern": "^\\d{6}$",
-              "title": "Term",
               "type": "string"
             }
           }
@@ -4684,6 +5288,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "The term has no such CRN"
           },
           "4XX": {
             "content": {
@@ -4712,14 +5326,14 @@
         ]
       }
     },
-    "/api/classes/subjects": {
+    "/api/classes/terms/{term}/subjects": {
       "get": {
         "description": "Subjects offered in a term, optionally filtered by code or name.",
         "operationId": "list_subjects",
         "parameters": [
           {
             "description": "Banner term code",
-            "in": "query",
+            "in": "path",
             "name": "term",
             "required": true,
             "schema": {
@@ -4746,15 +5360,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/CodeDescription"
-                  },
-                  "title": "Response List Subjects",
-                  "type": "array"
+                  "$ref": "#/components/schemas/SubjectList"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=86400, s-maxage=86400",
+                  "type": "string"
+                }
+              }
+            }
           },
           "4XX": {
             "content": {
@@ -4783,53 +5402,7 @@
         ]
       }
     },
-    "/api/classes/terms": {
-      "get": {
-        "description": "Terms with a published class schedule, newest first.",
-        "operationId": "list_terms",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/CodeDescription"
-                  },
-                  "title": "Response List Terms",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "List Terms",
-        "tags": [
-          "classes"
-        ]
-      }
-    },
-    "/api/dars/audits/parse": {
+    "/api/dars/audits:parse": {
       "post": {
         "description": "Parse a DARS audit page that was already fetched — by the browser extension or saved by the\nstudent (the printer-friendly `read.html`). No credential is involved; this only reads HTML.",
         "operationId": "parse_audit",
@@ -4882,376 +5455,7 @@
         ]
       }
     },
-    "/api/degree/courses": {
-      "get": {
-        "description": "A course's description, credits, attributes, prerequisites and restrictions from one year's Bulletin.",
-        "operationId": "get_course_description",
-        "parameters": [
-          {
-            "description": "Course code, \"CIS 3296\"",
-            "in": "query",
-            "name": "code",
-            "required": true,
-            "schema": {
-              "description": "Course code, \"CIS 3296\"",
-              "pattern": "^[A-Z]{2,5} \\d{4}[A-Z]?$",
-              "title": "Code",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Bulletin year, YYYY-YYYY",
-            "in": "query",
-            "name": "year",
-            "required": true,
-            "schema": {
-              "description": "Bulletin year, YYYY-YYYY",
-              "pattern": "^\\d{4}-\\d{4}$",
-              "title": "Year",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseDescription"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "Get Course Description",
-        "tags": [
-          "degree"
-        ]
-      }
-    },
-    "/api/degree/parse-bulletin": {
-      "post": {
-        "description": "Parse a Temple University Bulletin HTML page into structured degree requirements.",
-        "operationId": "parse_bulletin",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "url",
-            "required": false,
-            "schema": {
-              "default": "",
-              "title": "Url",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "text/plain": {
-              "schema": {
-                "title": "Html",
-                "type": "string"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DegreeProgram"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "Parse Bulletin",
-        "tags": [
-          "degree"
-        ]
-      }
-    },
-    "/api/degree/programs": {
-      "get": {
-        "description": "Every program in one year's Bulletin, from its academic programs index.",
-        "operationId": "list_bulletin_programs",
-        "parameters": [
-          {
-            "description": "Bulletin year, YYYY-YYYY",
-            "in": "query",
-            "name": "year",
-            "required": true,
-            "schema": {
-              "description": "Bulletin year, YYYY-YYYY",
-              "pattern": "^\\d{4}-\\d{4}$",
-              "title": "Year",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BulletinProgramIndex"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "List Bulletin Programs",
-        "tags": [
-          "degree"
-        ]
-      }
-    },
-    "/api/degree/requirements": {
-      "get": {
-        "description": "A program's degree requirements, parsed from its Bulletin page.",
-        "operationId": "get_program_requirements",
-        "parameters": [
-          {
-            "description": "A program page URL from `list_bulletin_programs`",
-            "in": "query",
-            "name": "url",
-            "required": true,
-            "schema": {
-              "description": "A program page URL from `list_bulletin_programs`",
-              "pattern": "^https://bulletin\\.temple\\.edu/(archives/\\d{4}-\\d{4}/)?(undergraduate|graduate)(/[a-z0-9_-]+)+(/|/index\\.html)?(#[a-z0-9_-]+)?$",
-              "title": "Url",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DegreeProgram"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "Get Program Requirements",
-        "tags": [
-          "degree"
-        ]
-      }
-    },
-    "/api/degree/subjects": {
-      "get": {
-        "description": "Every course subject in one year's Bulletin, or the closest earlier year online.",
-        "operationId": "list_bulletin_subjects",
-        "parameters": [
-          {
-            "description": "Bulletin year, YYYY-YYYY",
-            "in": "query",
-            "name": "year",
-            "required": true,
-            "schema": {
-              "description": "Bulletin year, YYYY-YYYY",
-              "pattern": "^\\d{4}-\\d{4}$",
-              "title": "Year",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BulletinSubjectIndex"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "List Bulletin Subjects",
-        "tags": [
-          "degree"
-        ]
-      }
-    },
-    "/api/degree/subjects/{subject}/courses": {
-      "get": {
-        "description": "Every course one subject lists in a year's Bulletin, with descriptions and prerequisites.",
-        "operationId": "list_subject_courses",
-        "parameters": [
-          {
-            "description": "Subject code, \"CIS\"",
-            "in": "path",
-            "name": "subject",
-            "required": true,
-            "schema": {
-              "description": "Subject code, \"CIS\"",
-              "pattern": "^[A-Z]{2,5}$",
-              "title": "Subject",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Bulletin year, YYYY-YYYY",
-            "in": "query",
-            "name": "year",
-            "required": true,
-            "schema": {
-              "description": "Bulletin year, YYYY-YYYY",
-              "pattern": "^\\d{4}-\\d{4}$",
-              "title": "Year",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubjectCourses"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "4XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Client error, as problem details"
-          },
-          "5XX": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            },
-            "description": "Server error, as problem details"
-          }
-        },
-        "summary": "List Subject Courses",
-        "tags": [
-          "degree"
-        ]
-      }
-    },
-    "/api/rmp/search": {
+    "/api/professors": {
       "get": {
         "description": "Temple University professors on RateMyProfessors who could be `name`.\n\nMatches are loose (\"Chris\" finds \"Christopher\"); pick the exact profile on\nthe client.",
         "operationId": "search_professors",
@@ -5271,15 +5475,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/RMPRating"
-                  },
-                  "title": "Response Search Professors",
-                  "type": "array"
+                  "$ref": "#/components/schemas/ProfessorList"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "Cache-Control": {
+                "description": "How long browsers and the CDN may reuse this.",
+                "schema": {
+                  "example": "public, max-age=3600, s-maxage=3600",
+                  "type": "string"
+                }
+              }
+            }
           },
           "4XX": {
             "content": {
@@ -5304,11 +5513,11 @@
         },
         "summary": "Search Professors",
         "tags": [
-          "rmp"
+          "professors"
         ]
       }
     },
-    "/api/schedule/generate": {
+    "/api/schedules:generate": {
       "post": {
         "description": "Generate non-conflicting schedules ranked by preference fit.",
         "operationId": "generate_schedules",
@@ -5327,11 +5536,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/GeneratedSchedule"
-                  },
-                  "title": "Response Generate Schedules",
-                  "type": "array"
+                  "$ref": "#/components/schemas/GeneratedScheduleList"
                 }
               }
             },
@@ -5360,7 +5565,7 @@
         },
         "summary": "Generate Schedules",
         "tags": [
-          "schedule"
+          "schedules"
         ]
       }
     },
@@ -5373,11 +5578,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SeatWatchResponse"
-                  },
-                  "title": "Response List Seat Watches",
-                  "type": "array"
+                  "$ref": "#/components/schemas/SeatWatchList"
                 }
               }
             },
@@ -5520,30 +5721,28 @@
         "tags": [
           "seat-tracker"
         ]
-      }
-    },
-    "/api/transcript/parse-pdf": {
-      "post": {
-        "description": "Return academic data; report incomplete parsing through a simple error.",
-        "operationId": "parse_transcript_pdf",
-        "requestBody": {
-          "content": {
-            "application/pdf": {
-              "schema": {
-                "contentMediaType": "application/octet-stream",
-                "title": "Document",
-                "type": "string"
-              }
+      },
+      "get": {
+        "description": "One of the signed-in student's watched sections.",
+        "operationId": "get_seat_watch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "watch_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Watch Id",
+              "type": "string"
             }
-          },
-          "required": true
-        },
+          }
+        ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AcademicTranscript"
+                  "$ref": "#/components/schemas/SeatWatchResponse"
                 }
               }
             },
@@ -5570,13 +5769,18 @@
             "description": "Server error, as problem details"
           }
         },
-        "summary": "Parse Transcript Pdf",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "Get Seat Watch",
         "tags": [
-          "transcript"
+          "seat-tracker"
         ]
       }
     },
-    "/api/transcript/parse-pdf/data": {
+    "/api/transcripts:inspect": {
       "post": {
         "description": "Inspect simple and detailed JSON without storing the uploaded document.",
         "operationId": "inspect_transcript_pdf",
@@ -5626,7 +5830,108 @@
         },
         "summary": "Inspect Transcript Pdf",
         "tags": [
-          "transcript"
+          "transcripts"
+        ]
+      }
+    },
+    "/api/transcripts:parse": {
+      "post": {
+        "description": "Return academic data; report incomplete parsing through a simple error.",
+        "operationId": "parse_transcript_pdf",
+        "requestBody": {
+          "content": {
+            "application/pdf": {
+              "schema": {
+                "contentMediaType": "application/octet-stream",
+                "title": "Document",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcademicTranscript"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "summary": "Parse Transcript Pdf",
+        "tags": [
+          "transcripts"
+        ]
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "description": "The signed-in user. `me` stands for their own user.",
+        "operationId": "get_me",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Client error, as problem details"
+          },
+          "5XX": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description": "Server error, as problem details"
+          }
+        },
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "summary": "Get Me",
+        "tags": [
+          "auth"
         ]
       }
     }

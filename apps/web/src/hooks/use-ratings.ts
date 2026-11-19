@@ -4,7 +4,11 @@ import {
   useQueries,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import { ApiError, type RmpRating } from "@workspace/api-client";
+import {
+  ApiError,
+  type ProfessorList,
+  type RmpRating,
+} from "@workspace/api-client";
 import { searchProfessorsOptions } from "@workspace/api-client/query";
 import {
   instructorSearchName,
@@ -70,7 +74,8 @@ function ratingOptions(name: string) {
     ...searchProfessorsOptions({
       query: { name: instructorSearchName(name) },
     }),
-    select: (matches: RmpRating[]) => matchingProfile(name, matches),
+    select: ({ professors }: ProfessorList) =>
+      matchingProfile(name, professors),
     // One lookup per instructor for the life of the page.
     staleTime: "static",
     // Any other failed lookup shows as "no profile" now and is retried on reload.

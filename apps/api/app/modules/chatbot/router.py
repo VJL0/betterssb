@@ -13,7 +13,7 @@ from app.api.deps import SettingsDep
 from app.modules.chatbot.schemas import ChatRequest
 from app.modules.chatbot.service import ChatbotService
 
-router = APIRouter(prefix="/chat", tags=["chat"])
+router = APIRouter(prefix="/advisor", tags=["advisor"])
 
 
 def stream_service(body: ChatRequest, settings: SettingsDep) -> ChatbotService:
@@ -34,8 +34,9 @@ def stream_headers(response: Response) -> None:
     response.headers["x-vercel-ai-ui-message-stream"] = "v1"
 
 
+# A custom method (AIP-136): it streams a reply and stores nothing.
 @router.post(
-    "",
+    ":chat",
     response_class=EventSourceResponse,
     dependencies=[Depends(stream_headers)],
     responses={200: {"description": "AI SDK UI message stream (v1)"}},

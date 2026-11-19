@@ -54,7 +54,7 @@ async function run(
     signal,
     meta: { errorMessage: "Couldn't generate schedules." },
   });
-  return data;
+  return data.schedules;
 }
 
 async function generate(

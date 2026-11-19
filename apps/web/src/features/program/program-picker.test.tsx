@@ -120,7 +120,9 @@ describe("ProgramPicker", () => {
   it("labels a stand-in year and points to the degree audit", async () => {
     const user = userEvent.setup();
     server.use(
-      http.get(`${API}/degree/programs`, () => HttpResponse.json(STAND_IN)),
+      http.get(`${API}/bulletins/:year/programs`, () =>
+        HttpResponse.json(STAND_IN),
+      ),
     );
     const { store } = await renderStartedIn(START_TERM.code);
 
@@ -163,7 +165,9 @@ describe("ProgramPicker", () => {
   it("explains when a year's Bulletin isn't online", async () => {
     const missing = `The ${BULLETIN_YEAR} Bulletin isn't on bulletin.temple.edu.`;
     server.use(
-      http.get(`${API}/degree/programs`, () => problemResponse(404, missing)),
+      http.get(`${API}/bulletins/:year/programs`, () =>
+        problemResponse(404, missing),
+      ),
     );
     await renderStartedIn(START_TERM.code);
     expect(await screen.findByText("Couldn't load programs")).toBeTruthy();

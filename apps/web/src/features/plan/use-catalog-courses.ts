@@ -20,8 +20,7 @@ function catalogCourse(course: CourseDescription): CatalogCourse {
 export function subjectCoursesOptions(subject: string, year: string) {
   return queryOptions({
     ...listSubjectCoursesOptions({
-      path: { subject },
-      query: { year },
+      path: { year, subject },
       meta: { errorMessage: `Couldn't load ${subject} from the Bulletin.` },
     }),
     staleTime: "static",

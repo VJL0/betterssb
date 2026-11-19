@@ -29,7 +29,7 @@ def bulletin() -> Iterator[FakeBulletin]:
 
 class TestProgramsRoute:
     async def test_returns_camel_case_programs(self, client: AsyncClient, bulletin):
-        resp = await client.get("/api/degree/programs", params={"year": ARCHIVED_YEAR})
+        resp = await client.get(f"/api/bulletins/{ARCHIVED_YEAR}/programs")
         assert resp.status_code == 200
         body = resp.json()
         assert body["bulletinYear"] == ARCHIVED_YEAR
@@ -48,14 +48,14 @@ class TestProgramsRoute:
 
     @pytest.mark.parametrize("year", ["latest", "24-25", f"{MISSING_YEAR}x"])
     async def test_rejects_bad_years(self, client: AsyncClient, bulletin, year):
-        resp = await client.get("/api/degree/programs", params={"year": year})
+        resp = await client.get(f"/api/bulletins/{year}/programs")
         assert resp.status_code == 422
         assert bulletin.requests == []
 
     async def test_a_year_not_online_returns_the_year_before(
         self, client: AsyncClient, bulletin
     ):
-        resp = await client.get("/api/degree/programs", params={"year": GAP_YEAR})
+        resp = await client.get(f"/api/bulletins/{GAP_YEAR}/programs")
         assert resp.status_code == 200
         body = resp.json()
         assert (body["requestedYear"], body["bulletinYear"]) == (
@@ -64,7 +64,7 @@ class TestProgramsRoute:
         )
 
     async def test_missing_years_are_not_found(self, client: AsyncClient, bulletin):
-        resp = await client.get("/api/degree/programs", params={"year": MISSING_YEAR})
+        resp = await client.get(f"/api/bulletins/{MISSING_YEAR}/programs")
         assert resp.status_code == 404
         assert resp.headers["content-type"] == "application/problem+json"
         assert f"{MISSING_YEAR} Bulletin" in resp.json()["detail"]
@@ -73,9 +73,7 @@ class TestProgramsRoute:
         failing = FakeBulletin({ARCHIVED_INDEX_PATH: httpx2.Response(503)})
         app.dependency_overrides[get_bulletin_service] = lambda: failing.service()
         try:
-            resp = await client.get(
-                "/api/degree/programs", params={"year": ARCHIVED_YEAR}
-            )
+            resp = await client.get(f"/api/bulletins/{ARCHIVED_YEAR}/programs")
         finally:
             app.dependency_overrides.pop(get_bulletin_service, None)
         assert resp.status_code == 502
@@ -84,7 +82,9 @@ class TestProgramsRoute:
 
 class TestRequirementsRoute:
     async def test_returns_parsed_requirements(self, client: AsyncClient, bulletin):
-        resp = await client.get("/api/degree/requirements", params={"url": PROGRAM_URL})
+        resp = await client.get(
+            "/api/bulletins/program-requirements", params={"url": PROGRAM_URL}
+        )
         assert resp.status_code == 200
         body = resp.json()
         assert body["name"] == "Computer Science BS"
@@ -103,13 +103,15 @@ class TestRequirementsRoute:
     async def test_only_accepts_bulletin_program_pages(
         self, client: AsyncClient, bulletin, url
     ):
-        resp = await client.get("/api/degree/requirements", params={"url": url})
+        resp = await client.get(
+            "/api/bulletins/program-requirements", params={"url": url}
+        )
         assert resp.status_code == 422
         assert bulletin.requests == []
 
     async def test_missing_pages_are_not_found(self, client: AsyncClient, bulletin):
         resp = await client.get(
-            "/api/degree/requirements",
+            "/api/bulletins/program-requirements",
             params={"url": "https://bulletin.temple.edu/undergraduate/x/"},
         )
         assert resp.status_code == 404
@@ -118,23 +120,25 @@ class TestRequirementsRoute:
 class TestCoursesRoute:
     async def test_returns_the_course(self, client: AsyncClient, bulletin):
         resp = await client.get(
-            "/api/degree/courses", params={"code": COURSE_CODE, "year": ARCHIVED_YEAR}
+            f"/api/bulletins/{ARCHIVED_YEAR}/subjects/CIS/courses/3296"
         )
         assert resp.status_code == 200
         body = resp.json()
         assert body["code"] == COURSE_CODE
         assert body["prerequisiteCourses"] == ["CIS 2168", "CIS 3203", "CIS 3207"]
 
-    @pytest.mark.parametrize("code", ["cis 3296", "CIS3296", "CIS 32"])
-    async def test_rejects_bad_codes(self, client: AsyncClient, bulletin, code):
+    @pytest.mark.parametrize(("subject", "number"), [("cis", "3296"), ("CIS", "32")])
+    async def test_rejects_bad_codes(
+        self, client: AsyncClient, bulletin, subject, number
+    ):
         resp = await client.get(
-            "/api/degree/courses", params={"code": code, "year": ARCHIVED_YEAR}
+            f"/api/bulletins/{ARCHIVED_YEAR}/subjects/{subject}/courses/{number}"
         )
         assert resp.status_code == 422
 
     async def test_unknown_courses_are_not_found(self, client: AsyncClient, bulletin):
         resp = await client.get(
-            "/api/degree/courses", params={"code": "CIS 9999", "year": ARCHIVED_YEAR}
+            f"/api/bulletins/{ARCHIVED_YEAR}/subjects/CIS/courses/9999"
         )
         assert resp.status_code == 404
         assert "CIS 9999" in resp.json()["detail"]
@@ -142,7 +146,7 @@ class TestCoursesRoute:
 
 class TestSubjectsRoute:
     async def test_returns_the_subjects(self, client: AsyncClient, bulletin):
-        resp = await client.get("/api/degree/subjects", params={"year": ARCHIVED_YEAR})
+        resp = await client.get(f"/api/bulletins/{ARCHIVED_YEAR}/subjects")
         assert resp.status_code == 200
         body = resp.json()
         assert body["bulletinYear"] == ARCHIVED_YEAR
@@ -151,9 +155,7 @@ class TestSubjectsRoute:
         ]
 
     async def test_returns_a_subjects_courses(self, client: AsyncClient, bulletin):
-        resp = await client.get(
-            "/api/degree/subjects/CIS/courses", params={"year": ARCHIVED_YEAR}
-        )
+        resp = await client.get(f"/api/bulletins/{ARCHIVED_YEAR}/subjects/CIS/courses")
         assert resp.status_code == 200
         body = resp.json()
         assert body["subject"] == "CIS"
@@ -162,13 +164,11 @@ class TestSubjectsRoute:
     @pytest.mark.parametrize("subject", ["cis", "C", "CIS1"])
     async def test_rejects_bad_subjects(self, client: AsyncClient, bulletin, subject):
         resp = await client.get(
-            f"/api/degree/subjects/{subject}/courses", params={"year": ARCHIVED_YEAR}
+            f"/api/bulletins/{ARCHIVED_YEAR}/subjects/{subject}/courses"
         )
         assert resp.status_code == 422
 
     async def test_unknown_subjects_are_not_found(self, client: AsyncClient, bulletin):
-        resp = await client.get(
-            "/api/degree/subjects/ZZZ/courses", params={"year": ARCHIVED_YEAR}
-        )
+        resp = await client.get(f"/api/bulletins/{ARCHIVED_YEAR}/subjects/ZZZ/courses")
         assert resp.status_code == 404
         assert "ZZZ" in resp.json()["detail"]

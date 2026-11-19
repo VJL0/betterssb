@@ -12,7 +12,7 @@ export default defineConfig({
       operations: {
         // Browser navigations for Google sign-in, not fetch calls.
         exclude: [
-          "GET /api/auth/google/login",
+          "GET /api/auth/google",
           "GET /api/auth/google/callback",
         ],
       },

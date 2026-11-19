@@ -153,7 +153,7 @@ function isNotFound(error: unknown): boolean {
  * would be fetched again on every look; real failures still throw.
  */
 function sectionOptions(term: string, crn: string) {
-  const request = { path: { crn }, query: { term } };
+  const request = { path: { term, crn } };
   return queryOptions({
     queryKey: getSectionQueryKey(request),
     queryFn: async ({ signal }): Promise<SectionSummary | null> => {

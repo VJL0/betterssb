@@ -71,7 +71,7 @@ beforeEach(() => {
   vi.spyOn(toast, "success");
   generationFails = false;
   server.use(
-    http.get(`${API}/classes/search`, ({ request }) => {
+    http.get(`${API}/classes/terms/:term/sections`, ({ request }) => {
       const courseNumber = new URL(request.url).searchParams.get(
         "courseNumber",
       );
@@ -82,15 +82,15 @@ beforeEach(() => {
       });
     }),
     http.post<never, GenerateRequest>(
-      `${API}/schedule/generate`,
+      `${API}/schedules\\:generate`,
       async ({ request }) => {
         if (generationFails) {
           return problemResponse(503, "The schedule service timed out.");
         }
         const body = await request.json();
-        return HttpResponse.json(
-          sendsEveryPlannedSection(body) ? GENERATED : [],
-        );
+        return HttpResponse.json({
+          schedules: sendsEveryPlannedSection(body) ? GENERATED : [],
+        });
       },
     ),
   );

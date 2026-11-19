@@ -60,7 +60,7 @@ export function useBulletinPrograms() {
     : null;
   const programs = useQuery({
     ...listBulletinProgramsOptions({
-      query: { year: year ?? "" },
+      path: { year: year ?? "" },
       meta: { errorMessage: "Couldn't load programs from the Bulletin." },
     }),
     enabled: year !== null,

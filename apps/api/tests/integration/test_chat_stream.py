@@ -22,7 +22,7 @@ async def test_stream_contract(client, fails):
     app.dependency_overrides[stream_service] = lambda: Service()
     try:
         response = await client.post(
-            "/api/chat",
+            "/api/advisor:chat",
             json={
                 "messages": [{"role": "user", "content": "Hi"}],
                 "context": "My audit",
@@ -53,7 +53,7 @@ async def test_stream_contract(client, fails):
 
 async def test_missing_key_is_problem_before_stream(client, monkeypatch):
     monkeypatch.setattr(app.state.settings, "GOOGLE_API_KEY", "")
-    response = await client.post("/api/chat", json={"messages": []})
+    response = await client.post("/api/advisor:chat", json={"messages": []})
     assert response.status_code == 503
     assert response.headers["content-type"] == "application/problem+json"
 
@@ -77,7 +77,9 @@ async def test_routes_chat_preferences(
 
     monkeypatch.setattr(app.state.settings, "GOOGLE_API_KEY", "test")
     monkeypatch.setattr(router_module, "ChatbotService", Service)
-    response = await client.post("/api/chat", json={"messages": [], **preferences})
+    response = await client.post(
+        "/api/advisor:chat", json={"messages": [], **preferences}
+    )
     assert response.status_code == 200
     assert f'"provider": "{provider}"' in response.text
 
@@ -86,13 +88,16 @@ async def test_routes_chat_preferences(
     "preferences", [{"provider": "unknown"}, {"effort": "unknown"}]
 )
 async def test_rejects_unknown_chat_preferences(client, preferences):
-    response = await client.post("/api/chat", json={"messages": [], **preferences})
+    response = await client.post(
+        "/api/advisor:chat", json={"messages": [], **preferences}
+    )
     assert response.status_code == 422
 
 
 def test_chat_has_only_a_streaming_contract():
     schema = app.openapi()
-    assert "/api/chat/stream" not in schema["paths"]
-    content = schema["paths"]["/api/chat"]["post"]["responses"]["200"]["content"]
+    content = schema["paths"]["/api/advisor:chat"]["post"]["responses"]["200"][
+        "content"
+    ]
     assert set(content) == {"text/event-stream"}
     assert "ChatReply" not in schema["components"]["schemas"]

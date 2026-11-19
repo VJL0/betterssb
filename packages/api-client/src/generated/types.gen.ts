@@ -139,6 +139,16 @@ export type AcademicTranscript = {
 };
 
 /**
+ * AttributeList
+ */
+export type AttributeList = {
+  /**
+   * Attributes
+   */
+  attributes: Array<CodeDescription>;
+};
+
+/**
  * Audit
  */
 export type Audit = {
@@ -395,6 +405,16 @@ export type BulletinSubjectIndex = {
 };
 
 /**
+ * CampusList
+ */
+export type CampusList = {
+  /**
+   * Campuses
+   */
+  campuses: Array<CodeDescription>;
+};
+
+/**
  * ChatMessage
  */
 export type ChatMessage = {
@@ -452,26 +472,6 @@ export type ChoiceCourse = {
    * When it has to be taken to count: "SP19 OR AFTER", "SP10-S216".
    */
   taken: string;
-};
-
-/**
- * ClassSearchResult
- */
-export type ClassSearchResult = {
-  /**
-   * Fetchedat
-   *
-   * When Banner returned this data. Seats change.
-   */
-  fetchedAt: string;
-  /**
-   * Sections
-   */
-  sections: Array<ClassSection>;
-  /**
-   * Totalcount
-   */
-  totalCount: number;
 };
 
 /**
@@ -1039,6 +1039,16 @@ export type GeneratedSchedule = {
 };
 
 /**
+ * GeneratedScheduleList
+ */
+export type GeneratedScheduleList = {
+  /**
+   * Schedules
+   */
+  schedules: Array<GeneratedSchedule>;
+};
+
+/**
  * HoursSummary
  *
  * Credit hours from the audit's progress chart, for the degree or one category.
@@ -1313,6 +1323,16 @@ export type PageSection = {
 };
 
 /**
+ * PartOfTermList
+ */
+export type PartOfTermList = {
+  /**
+   * Partsofterm
+   */
+  partsOfTerm: Array<CodeDescription>;
+};
+
+/**
  * PdfTranscriptCourse
  */
 export type PdfTranscriptCourse = {
@@ -1562,6 +1582,16 @@ export type ProblemError = {
    * JSON Pointer into the body.
    */
   pointer?: string | null;
+};
+
+/**
+ * ProfessorList
+ */
+export type ProfessorList = {
+  /**
+   * Professors
+   */
+  professors: Array<RmpRating>;
 };
 
 /**
@@ -1852,6 +1882,16 @@ export type SeatWatchCreate = {
 };
 
 /**
+ * SeatWatchList
+ */
+export type SeatWatchList = {
+  /**
+   * Seatwatches
+   */
+  seatWatches: Array<SeatWatchResponse>;
+};
+
+/**
  * SeatWatchResponse
  *
  * A watched section with Banner's seats from the last check.
@@ -2028,6 +2068,34 @@ export type SectionOutput = {
 };
 
 /**
+ * SectionPage
+ *
+ * One page of a section search.
+ */
+export type SectionPage = {
+  /**
+   * Fetchedat
+   *
+   * When Banner returned this data. Seats change.
+   */
+  fetchedAt: string;
+  /**
+   * Nextcursor
+   *
+   * Pass as `cursor` for the next page; null on the last page.
+   */
+  nextCursor: string | null;
+  /**
+   * Sections
+   */
+  sections: Array<ClassSection>;
+  /**
+   * Totalcount
+   */
+  totalCount: number;
+};
+
+/**
  * SectionSummary
  *
  * The course a CRN belongs to, from Banner's class details.
@@ -2172,6 +2240,16 @@ export type SubjectCourses = {
 };
 
 /**
+ * SubjectList
+ */
+export type SubjectList = {
+  /**
+   * Subjects
+   */
+  subjects: Array<CodeDescription>;
+};
+
+/**
  * SuggestedPlan
  *
  * A suggested academic plan grid from the bulletin.
@@ -2201,6 +2279,16 @@ export type SuggestedPlan = {
    * Years
    */
   years: Array<PlanYear>;
+};
+
+/**
+ * TermList
+ */
+export type TermList = {
+  /**
+   * Terms
+   */
+  terms: Array<CodeDescription>;
 };
 
 /**
@@ -2419,11 +2507,38 @@ export type UserResponse = {
   pictureUrl: string;
 };
 
+export type ChatData = {
+  body: ChatRequest;
+  path?: never;
+  query?: never;
+  url: "/api/advisor:chat";
+};
+
+export type ChatErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ChatError = ChatErrors[keyof ChatErrors];
+
+export type ChatResponses = {
+  /**
+   * AI SDK UI message stream (v1)
+   */
+  200: unknown;
+};
+
 export type LogoutData = {
   body?: never;
   path?: never;
   query?: never;
-  url: "/api/auth/logout";
+  url: "/api/auth/session";
 };
 
 export type LogoutErrors = {
@@ -2448,66 +2563,284 @@ export type LogoutResponses = {
 
 export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
 
-export type GetMeData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/auth/me";
-};
-
-export type GetMeErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type GetMeError = GetMeErrors[keyof GetMeErrors];
-
-export type GetMeResponses = {
-  /**
-   * Successful Response
-   */
-  200: UserResponse;
-};
-
-export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
-
-export type ChatData = {
-  body: ChatRequest;
-  path?: never;
-  query?: never;
-  url: "/api/chat";
-};
-
-export type ChatErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type ChatError = ChatErrors[keyof ChatErrors];
-
-export type ChatResponses = {
-  /**
-   * AI SDK UI message stream (v1)
-   */
-  200: unknown;
-};
-
-export type ListAttributesData = {
+export type GetProgramRequirementsData = {
   body?: never;
   path?: never;
   query: {
+    /**
+     * Url
+     *
+     * A program page URL from `list_bulletin_programs`
+     */
+    url: string;
+  };
+  url: "/api/bulletins/program-requirements";
+};
+
+export type GetProgramRequirementsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetProgramRequirementsError =
+  GetProgramRequirementsErrors[keyof GetProgramRequirementsErrors];
+
+export type GetProgramRequirementsResponses = {
+  /**
+   * Successful Response
+   */
+  200: DegreeProgram;
+};
+
+export type GetProgramRequirementsResponse =
+  GetProgramRequirementsResponses[keyof GetProgramRequirementsResponses];
+
+export type ParseBulletinData = {
+  /**
+   * Html
+   */
+  body: string;
+  path?: never;
+  query?: {
+    /**
+     * Url
+     */
+    url?: string;
+  };
+  url: "/api/bulletins/program-requirements:parse";
+};
+
+export type ParseBulletinErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ParseBulletinError = ParseBulletinErrors[keyof ParseBulletinErrors];
+
+export type ParseBulletinResponses = {
+  /**
+   * Successful Response
+   */
+  200: DegreeProgram;
+};
+
+export type ParseBulletinResponse =
+  ParseBulletinResponses[keyof ParseBulletinResponses];
+
+export type ListBulletinProgramsData = {
+  body?: never;
+  path: {
+    /**
+     * Year
+     *
+     * Bulletin year, YYYY-YYYY
+     */
+    year: string;
+  };
+  query?: never;
+  url: "/api/bulletins/{year}/programs";
+};
+
+export type ListBulletinProgramsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListBulletinProgramsError =
+  ListBulletinProgramsErrors[keyof ListBulletinProgramsErrors];
+
+export type ListBulletinProgramsResponses = {
+  /**
+   * Successful Response
+   */
+  200: BulletinProgramIndex;
+};
+
+export type ListBulletinProgramsResponse =
+  ListBulletinProgramsResponses[keyof ListBulletinProgramsResponses];
+
+export type ListBulletinSubjectsData = {
+  body?: never;
+  path: {
+    /**
+     * Year
+     *
+     * Bulletin year, YYYY-YYYY
+     */
+    year: string;
+  };
+  query?: never;
+  url: "/api/bulletins/{year}/subjects";
+};
+
+export type ListBulletinSubjectsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListBulletinSubjectsError =
+  ListBulletinSubjectsErrors[keyof ListBulletinSubjectsErrors];
+
+export type ListBulletinSubjectsResponses = {
+  /**
+   * Successful Response
+   */
+  200: BulletinSubjectIndex;
+};
+
+export type ListBulletinSubjectsResponse =
+  ListBulletinSubjectsResponses[keyof ListBulletinSubjectsResponses];
+
+export type ListSubjectCoursesData = {
+  body?: never;
+  path: {
+    /**
+     * Year
+     *
+     * Bulletin year, YYYY-YYYY
+     */
+    year: string;
+    /**
+     * Subject
+     *
+     * Subject code, "CIS"
+     */
+    subject: string;
+  };
+  query?: never;
+  url: "/api/bulletins/{year}/subjects/{subject}/courses";
+};
+
+export type ListSubjectCoursesErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListSubjectCoursesError =
+  ListSubjectCoursesErrors[keyof ListSubjectCoursesErrors];
+
+export type ListSubjectCoursesResponses = {
+  /**
+   * Successful Response
+   */
+  200: SubjectCourses;
+};
+
+export type ListSubjectCoursesResponse =
+  ListSubjectCoursesResponses[keyof ListSubjectCoursesResponses];
+
+export type GetCourseDescriptionData = {
+  body?: never;
+  path: {
+    /**
+     * Year
+     *
+     * Bulletin year, YYYY-YYYY
+     */
+    year: string;
+    /**
+     * Subject
+     *
+     * Subject code, "CIS"
+     */
+    subject: string;
+    /**
+     * Number
+     *
+     * Course number, "3296"
+     */
+    number: string;
+  };
+  query?: never;
+  url: "/api/bulletins/{year}/subjects/{subject}/courses/{number}";
+};
+
+export type GetCourseDescriptionErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetCourseDescriptionError =
+  GetCourseDescriptionErrors[keyof GetCourseDescriptionErrors];
+
+export type GetCourseDescriptionResponses = {
+  /**
+   * Successful Response
+   */
+  200: CourseDescription;
+};
+
+export type GetCourseDescriptionResponse =
+  GetCourseDescriptionResponses[keyof GetCourseDescriptionResponses];
+
+export type ListTermsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/classes/terms";
+};
+
+export type ListTermsErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type ListTermsError = ListTermsErrors[keyof ListTermsErrors];
+
+export type ListTermsResponses = {
+  /**
+   * Successful Response
+   */
+  200: TermList;
+};
+
+export type ListTermsResponse = ListTermsResponses[keyof ListTermsResponses];
+
+export type ListAttributesData = {
+  body?: never;
+  path: {
     /**
      * Term
      *
@@ -2515,7 +2848,8 @@ export type ListAttributesData = {
      */
     term: string;
   };
-  url: "/api/classes/attributes";
+  query?: never;
+  url: "/api/classes/terms/{term}/attributes";
 };
 
 export type ListAttributesErrors = {
@@ -2534,11 +2868,9 @@ export type ListAttributesError =
 
 export type ListAttributesResponses = {
   /**
-   * Response List Attributes
-   *
    * Successful Response
    */
-  200: Array<CodeDescription>;
+  200: AttributeList;
 };
 
 export type ListAttributesResponse =
@@ -2546,8 +2878,7 @@ export type ListAttributesResponse =
 
 export type ListCampusesData = {
   body?: never;
-  path?: never;
-  query: {
+  path: {
     /**
      * Term
      *
@@ -2555,7 +2886,8 @@ export type ListCampusesData = {
      */
     term: string;
   };
-  url: "/api/classes/campuses";
+  query?: never;
+  url: "/api/classes/terms/{term}/campuses";
 };
 
 export type ListCampusesErrors = {
@@ -2573,11 +2905,9 @@ export type ListCampusesError = ListCampusesErrors[keyof ListCampusesErrors];
 
 export type ListCampusesResponses = {
   /**
-   * Response List Campuses
-   *
    * Successful Response
    */
-  200: Array<CodeDescription>;
+  200: CampusList;
 };
 
 export type ListCampusesResponse =
@@ -2585,8 +2915,7 @@ export type ListCampusesResponse =
 
 export type ListPartsOfTermData = {
   body?: never;
-  path?: never;
-  query: {
+  path: {
     /**
      * Term
      *
@@ -2594,7 +2923,8 @@ export type ListPartsOfTermData = {
      */
     term: string;
   };
-  url: "/api/classes/parts-of-term";
+  query?: never;
+  url: "/api/classes/terms/{term}/parts-of-term";
 };
 
 export type ListPartsOfTermErrors = {
@@ -2613,11 +2943,9 @@ export type ListPartsOfTermError =
 
 export type ListPartsOfTermResponses = {
   /**
-   * Response List Parts Of Term
-   *
    * Successful Response
    */
-  200: Array<CodeDescription>;
+  200: PartOfTermList;
 };
 
 export type ListPartsOfTermResponse =
@@ -2625,14 +2953,15 @@ export type ListPartsOfTermResponse =
 
 export type SearchSectionsData = {
   body?: never;
-  path?: never;
-  query: {
+  path: {
     /**
      * Term
      *
      * Banner term code
      */
     term: string;
+  };
+  query?: {
     /**
      * Subject
      */
@@ -2682,15 +3011,17 @@ export type SearchSectionsData = {
      */
     instructor?: string | null;
     /**
-     * Offset
+     * Cursor
+     *
+     * `nextCursor` from the page before
      */
-    offset?: number;
+    cursor?: string | null;
     /**
      * Limit
      */
     limit?: number;
   };
-  url: "/api/classes/search";
+  url: "/api/classes/terms/{term}/sections";
 };
 
 export type SearchSectionsErrors = {
@@ -2711,7 +3042,7 @@ export type SearchSectionsResponses = {
   /**
    * Successful Response
    */
-  200: ClassSearchResult;
+  200: SectionPage;
 };
 
 export type SearchSectionsResponse =
@@ -2721,24 +3052,27 @@ export type GetSectionData = {
   body?: never;
   path: {
     /**
+     * Term
+     *
+     * Banner term code
+     */
+    term: string;
+    /**
      * Crn
      *
      * Four- or five-digit CRN
      */
     crn: string;
   };
-  query: {
-    /**
-     * Term
-     *
-     * Banner term code
-     */
-    term: string;
-  };
-  url: "/api/classes/sections/{crn}";
+  query?: never;
+  url: "/api/classes/terms/{term}/sections/{crn}";
 };
 
 export type GetSectionErrors = {
+  /**
+   * The term has no such CRN
+   */
+  404: Problem;
   /**
    * Client error, as problem details
    */
@@ -2762,20 +3096,21 @@ export type GetSectionResponse = GetSectionResponses[keyof GetSectionResponses];
 
 export type ListSubjectsData = {
   body?: never;
-  path?: never;
-  query: {
+  path: {
     /**
      * Term
      *
      * Banner term code
      */
     term: string;
+  };
+  query?: {
     /**
      * Q
      */
     q?: string;
   };
-  url: "/api/classes/subjects";
+  url: "/api/classes/terms/{term}/subjects";
 };
 
 export type ListSubjectsErrors = {
@@ -2793,46 +3128,13 @@ export type ListSubjectsError = ListSubjectsErrors[keyof ListSubjectsErrors];
 
 export type ListSubjectsResponses = {
   /**
-   * Response List Subjects
-   *
    * Successful Response
    */
-  200: Array<CodeDescription>;
+  200: SubjectList;
 };
 
 export type ListSubjectsResponse =
   ListSubjectsResponses[keyof ListSubjectsResponses];
-
-export type ListTermsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/api/classes/terms";
-};
-
-export type ListTermsErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type ListTermsError = ListTermsErrors[keyof ListTermsErrors];
-
-export type ListTermsResponses = {
-  /**
-   * Response List Terms
-   *
-   * Successful Response
-   */
-  200: Array<CodeDescription>;
-};
-
-export type ListTermsResponse = ListTermsResponses[keyof ListTermsResponses];
 
 export type ParseAuditData = {
   /**
@@ -2841,7 +3143,7 @@ export type ParseAuditData = {
   body: string;
   path?: never;
   query?: never;
-  url: "/api/dars/audits/parse";
+  url: "/api/dars/audits:parse";
 };
 
 export type ParseAuditErrors = {
@@ -2866,247 +3168,6 @@ export type ParseAuditResponses = {
 
 export type ParseAuditResponse = ParseAuditResponses[keyof ParseAuditResponses];
 
-export type GetCourseDescriptionData = {
-  body?: never;
-  path?: never;
-  query: {
-    /**
-     * Code
-     *
-     * Course code, "CIS 3296"
-     */
-    code: string;
-    /**
-     * Year
-     *
-     * Bulletin year, YYYY-YYYY
-     */
-    year: string;
-  };
-  url: "/api/degree/courses";
-};
-
-export type GetCourseDescriptionErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type GetCourseDescriptionError =
-  GetCourseDescriptionErrors[keyof GetCourseDescriptionErrors];
-
-export type GetCourseDescriptionResponses = {
-  /**
-   * Successful Response
-   */
-  200: CourseDescription;
-};
-
-export type GetCourseDescriptionResponse =
-  GetCourseDescriptionResponses[keyof GetCourseDescriptionResponses];
-
-export type ParseBulletinData = {
-  /**
-   * Html
-   */
-  body: string;
-  path?: never;
-  query?: {
-    /**
-     * Url
-     */
-    url?: string;
-  };
-  url: "/api/degree/parse-bulletin";
-};
-
-export type ParseBulletinErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type ParseBulletinError = ParseBulletinErrors[keyof ParseBulletinErrors];
-
-export type ParseBulletinResponses = {
-  /**
-   * Successful Response
-   */
-  200: DegreeProgram;
-};
-
-export type ParseBulletinResponse =
-  ParseBulletinResponses[keyof ParseBulletinResponses];
-
-export type ListBulletinProgramsData = {
-  body?: never;
-  path?: never;
-  query: {
-    /**
-     * Year
-     *
-     * Bulletin year, YYYY-YYYY
-     */
-    year: string;
-  };
-  url: "/api/degree/programs";
-};
-
-export type ListBulletinProgramsErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type ListBulletinProgramsError =
-  ListBulletinProgramsErrors[keyof ListBulletinProgramsErrors];
-
-export type ListBulletinProgramsResponses = {
-  /**
-   * Successful Response
-   */
-  200: BulletinProgramIndex;
-};
-
-export type ListBulletinProgramsResponse =
-  ListBulletinProgramsResponses[keyof ListBulletinProgramsResponses];
-
-export type GetProgramRequirementsData = {
-  body?: never;
-  path?: never;
-  query: {
-    /**
-     * Url
-     *
-     * A program page URL from `list_bulletin_programs`
-     */
-    url: string;
-  };
-  url: "/api/degree/requirements";
-};
-
-export type GetProgramRequirementsErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type GetProgramRequirementsError =
-  GetProgramRequirementsErrors[keyof GetProgramRequirementsErrors];
-
-export type GetProgramRequirementsResponses = {
-  /**
-   * Successful Response
-   */
-  200: DegreeProgram;
-};
-
-export type GetProgramRequirementsResponse =
-  GetProgramRequirementsResponses[keyof GetProgramRequirementsResponses];
-
-export type ListBulletinSubjectsData = {
-  body?: never;
-  path?: never;
-  query: {
-    /**
-     * Year
-     *
-     * Bulletin year, YYYY-YYYY
-     */
-    year: string;
-  };
-  url: "/api/degree/subjects";
-};
-
-export type ListBulletinSubjectsErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type ListBulletinSubjectsError =
-  ListBulletinSubjectsErrors[keyof ListBulletinSubjectsErrors];
-
-export type ListBulletinSubjectsResponses = {
-  /**
-   * Successful Response
-   */
-  200: BulletinSubjectIndex;
-};
-
-export type ListBulletinSubjectsResponse =
-  ListBulletinSubjectsResponses[keyof ListBulletinSubjectsResponses];
-
-export type ListSubjectCoursesData = {
-  body?: never;
-  path: {
-    /**
-     * Subject
-     *
-     * Subject code, "CIS"
-     */
-    subject: string;
-  };
-  query: {
-    /**
-     * Year
-     *
-     * Bulletin year, YYYY-YYYY
-     */
-    year: string;
-  };
-  url: "/api/degree/subjects/{subject}/courses";
-};
-
-export type ListSubjectCoursesErrors = {
-  /**
-   * Client error, as problem details
-   */
-  "4XX": Problem;
-  /**
-   * Server error, as problem details
-   */
-  "5XX": Problem;
-};
-
-export type ListSubjectCoursesError =
-  ListSubjectCoursesErrors[keyof ListSubjectCoursesErrors];
-
-export type ListSubjectCoursesResponses = {
-  /**
-   * Successful Response
-   */
-  200: SubjectCourses;
-};
-
-export type ListSubjectCoursesResponse =
-  ListSubjectCoursesResponses[keyof ListSubjectCoursesResponses];
-
 export type SearchProfessorsData = {
   body?: never;
   path?: never;
@@ -3116,7 +3177,7 @@ export type SearchProfessorsData = {
      */
     name: string;
   };
-  url: "/api/rmp/search";
+  url: "/api/professors";
 };
 
 export type SearchProfessorsErrors = {
@@ -3135,11 +3196,9 @@ export type SearchProfessorsError =
 
 export type SearchProfessorsResponses = {
   /**
-   * Response Search Professors
-   *
    * Successful Response
    */
-  200: Array<RmpRating>;
+  200: ProfessorList;
 };
 
 export type SearchProfessorsResponse =
@@ -3149,7 +3208,7 @@ export type GenerateSchedulesData = {
   body: GenerateRequest;
   path?: never;
   query?: never;
-  url: "/api/schedule/generate";
+  url: "/api/schedules:generate";
 };
 
 export type GenerateSchedulesErrors = {
@@ -3168,11 +3227,9 @@ export type GenerateSchedulesError =
 
 export type GenerateSchedulesResponses = {
   /**
-   * Response Generate Schedules
-   *
    * Successful Response
    */
-  200: Array<GeneratedSchedule>;
+  200: GeneratedScheduleList;
 };
 
 export type GenerateSchedulesResponse =
@@ -3201,11 +3258,9 @@ export type ListSeatWatchesError =
 
 export type ListSeatWatchesResponses = {
   /**
-   * Response List Seat Watches
-   *
    * Successful Response
    */
-  200: Array<SeatWatchResponse>;
+  200: SeatWatchList;
 };
 
 export type ListSeatWatchesResponse =
@@ -3278,6 +3333,75 @@ export type DeleteSeatWatchResponses = {
 export type DeleteSeatWatchResponse =
   DeleteSeatWatchResponses[keyof DeleteSeatWatchResponses];
 
+export type GetSeatWatchData = {
+  body?: never;
+  path: {
+    /**
+     * Watch Id
+     */
+    watch_id: string;
+  };
+  query?: never;
+  url: "/api/seat-watches/{watch_id}";
+};
+
+export type GetSeatWatchErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type GetSeatWatchError = GetSeatWatchErrors[keyof GetSeatWatchErrors];
+
+export type GetSeatWatchResponses = {
+  /**
+   * Successful Response
+   */
+  200: SeatWatchResponse;
+};
+
+export type GetSeatWatchResponse =
+  GetSeatWatchResponses[keyof GetSeatWatchResponses];
+
+export type InspectTranscriptPdfData = {
+  /**
+   * Document
+   */
+  body: Blob | File;
+  path?: never;
+  query?: never;
+  url: "/api/transcripts:inspect";
+};
+
+export type InspectTranscriptPdfErrors = {
+  /**
+   * Client error, as problem details
+   */
+  "4XX": Problem;
+  /**
+   * Server error, as problem details
+   */
+  "5XX": Problem;
+};
+
+export type InspectTranscriptPdfError =
+  InspectTranscriptPdfErrors[keyof InspectTranscriptPdfErrors];
+
+export type InspectTranscriptPdfResponses = {
+  /**
+   * Successful Response
+   */
+  200: TranscriptInspection;
+};
+
+export type InspectTranscriptPdfResponse =
+  InspectTranscriptPdfResponses[keyof InspectTranscriptPdfResponses];
+
 export type ParseTranscriptPdfData = {
   /**
    * Document
@@ -3285,7 +3409,7 @@ export type ParseTranscriptPdfData = {
   body: Blob | File;
   path?: never;
   query?: never;
-  url: "/api/transcript/parse-pdf";
+  url: "/api/transcripts:parse";
 };
 
 export type ParseTranscriptPdfErrors = {
@@ -3312,17 +3436,14 @@ export type ParseTranscriptPdfResponses = {
 export type ParseTranscriptPdfResponse =
   ParseTranscriptPdfResponses[keyof ParseTranscriptPdfResponses];
 
-export type InspectTranscriptPdfData = {
-  /**
-   * Document
-   */
-  body: Blob | File;
+export type GetMeData = {
+  body?: never;
   path?: never;
   query?: never;
-  url: "/api/transcript/parse-pdf/data";
+  url: "/api/users/me";
 };
 
-export type InspectTranscriptPdfErrors = {
+export type GetMeErrors = {
   /**
    * Client error, as problem details
    */
@@ -3333,15 +3454,13 @@ export type InspectTranscriptPdfErrors = {
   "5XX": Problem;
 };
 
-export type InspectTranscriptPdfError =
-  InspectTranscriptPdfErrors[keyof InspectTranscriptPdfErrors];
+export type GetMeError = GetMeErrors[keyof GetMeErrors];
 
-export type InspectTranscriptPdfResponses = {
+export type GetMeResponses = {
   /**
    * Successful Response
    */
-  200: TranscriptInspection;
+  200: UserResponse;
 };
 
-export type InspectTranscriptPdfResponse =
-  InspectTranscriptPdfResponses[keyof InspectTranscriptPdfResponses];
+export type GetMeResponse = GetMeResponses[keyof GetMeResponses];

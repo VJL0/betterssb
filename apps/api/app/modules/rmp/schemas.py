@@ -14,3 +14,7 @@ class RMPRating(BaseSchema):
     num_ratings: int
     top_tags: list[str] = Field(default_factory=list)
     rmp_url: str = ""
+
+
+class ProfessorList(BaseSchema):
+    professors: list[RMPRating]

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useQueries, type UseQueryResult } from "@tanstack/react-query";
-import type { ClassSearchResult, ClassSection } from "@workspace/api-client";
+import type { ClassSection, SectionPage } from "@workspace/api-client";
 import { searchSectionsOptions } from "@workspace/api-client/query";
 import type { PlanCourse } from "./schedule-options";
 
@@ -33,7 +33,7 @@ export function useCourseSections(
 
   // Keyed by the course ids alone, so the result only changes when the data does.
   const combine = useCallback(
-    (results: UseQueryResult<ClassSearchResult, unknown>[]): Loaded => {
+    (results: UseQueryResult<SectionPage, unknown>[]): Loaded => {
       const courseIds = ids.split(",");
       const sectionsByCourse = new Map<string, ClassSection[]>();
       const times: string[] = [];
@@ -62,8 +62,8 @@ export function useCourseSections(
   const loaded = useQueries({
     queries: courses.map((course) =>
       searchSectionsOptions({
+        path: { term },
         query: {
-          term,
           subject: course.subject,
           courseNumber: course.courseNumber,
           limit: SECTIONS_PER_COURSE,

@@ -99,6 +99,15 @@ async def add_watch(
     return watch
 
 
+async def get_watch(
+    db: AsyncSession, user: User, watch_id: uuid.UUID
+) -> SeatWatch | None:
+    """One of `user`'s watches; another student's is treated as missing."""
+    return await db.scalar(
+        select(SeatWatch).where(SeatWatch.id == watch_id, SeatWatch.user_id == user.id)
+    )
+
+
 async def remove_watch(db: AsyncSession, user: User, watch_id: uuid.UUID) -> bool:
     result = await db.execute(
         delete(SeatWatch).where(SeatWatch.id == watch_id, SeatWatch.user_id == user.id)

@@ -122,7 +122,7 @@ export function CatalogCourses({
 
   const subjects = useQuery({
     ...listBulletinSubjectsOptions({
-      query: { year },
+      path: { year },
       meta: { errorMessage: "Couldn't load subjects from the Bulletin." },
     }),
     // A published Bulletin doesn't change.

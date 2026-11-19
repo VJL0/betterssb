@@ -21,7 +21,7 @@ let lookups = 0;
 
 function answer(status: number) {
   server.use(
-    http.get(`${API}/classes/sections/:crn`, () => {
+    http.get(`${API}/classes/terms/:term/sections/:crn`, () => {
       lookups += 1;
       return status === 200
         ? HttpResponse.json(FOUND)

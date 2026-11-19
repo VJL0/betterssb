@@ -60,7 +60,7 @@ async def test_simple_api_response(client):
         return_value=parse_layout(layout()),
     ):
         response = await client.post(
-            "/api/transcript/parse-pdf",
+            "/api/transcripts:parse",
             content=b"PDF",
             headers={"Content-Type": "application/pdf"},
         )
@@ -79,7 +79,7 @@ async def test_incomplete_api_returns_simple_error(client):
         patch("app.modules.transcript.pdf_service.sentry_sdk.capture_event") as capture,
     ):
         response = await client.post(
-            "/api/transcript/parse-pdf",
+            "/api/transcripts:parse",
             content=b"PDF",
             headers={"Content-Type": "application/pdf"},
         )
