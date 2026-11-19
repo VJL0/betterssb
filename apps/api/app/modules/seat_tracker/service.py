@@ -33,8 +33,11 @@ from app.modules.seat_tracker.schemas import SeatCheckSummary
 logger = logging.getLogger(__name__)
 
 MAX_WATCHES_PER_USER = 10
+# "Register for Classes", which signs the student in if needed. Not the
+# `/ssb/registration` landing page: opening it ends a signed-in session.
 BANNER_REGISTRATION_URL = (
-    "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/registration"
+    "https://prd-xereg.temple.edu/StudentRegistrationSsb"
+    "/ssb/registration/registerPostSignIn?mode=registration"
 )
 
 

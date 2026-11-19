@@ -207,6 +207,8 @@ class TestCheck:
         assert email.to == "student@gmail.com"
         assert email.subject == f"Seat open: Software Security (CRN {CRN})"
         assert "2 seats are open" in email.text
+        # Not the /ssb/registration landing page, which signs a student out.
+        assert "/ssb/registration/registerPostSignIn?mode=registration" in email.text
         [listed] = (await student.get("/api/seat-watches")).json()
         assert listed["seatsAvailable"] == 2
         assert listed["notifiedAt"] is not None
