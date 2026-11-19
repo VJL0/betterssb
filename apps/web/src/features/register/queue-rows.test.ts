@@ -9,7 +9,7 @@ import {
   classSection,
   meetingTime,
 } from "@workspace/shared/testing/class-section";
-import { queueCredits, queueRows, withLookedUp } from "./queue-rows";
+import { queueCredits, queueRows } from "./queue-rows";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
@@ -62,7 +62,7 @@ describe("queueRows", () => {
   });
 });
 
-describe("withLookedUp", () => {
+describe("queueRows with looked-up sections", () => {
   const softwareSecurity = {
     crn: "50067",
     title: "Software Security",
@@ -72,8 +72,11 @@ describe("withLookedUp", () => {
   };
 
   it("names CRNs no plan names, and leaves planned ones alone", () => {
-    const rows = withLookedUp(
-      queueRows(["41207", "50067", "99999"], "202703", [plan]),
+    const rows = queueRows(
+      ["41207", "50067", "99999"],
+      "202703",
+      [plan],
+      [],
       new Map([
         ["41207", { ...softwareSecurity, crn: "41207" }],
         ["50067", softwareSecurity],

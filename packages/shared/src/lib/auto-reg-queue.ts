@@ -22,20 +22,6 @@ export function armProblem(queue: AutoRegQueue, now: number): string | null {
   return null;
 }
 
-/**
- * Whether Banner's section-by-CRN lookup found the CRN. Banner answers the
- * section's course (`{ courseTitle, subject, …, success: true }`) or
- * `{ success: false }`; an answer this can't read is null rather than a guess.
- */
-export function crnLookupResult(answer: unknown): boolean | null {
-  if (!isRecord(answer)) return null;
-  if (answer.success === false) return false;
-  if (answer.success === true && typeof answer.courseTitle === "string") {
-    return true;
-  }
-  return null;
-}
-
 /** "28d 14h 06m 12s" until `target`, or null once it's passed. */
 export function countdown(target: number, now: number): string | null {
   const left = Math.floor((target - now) / MS_PER_SECOND);

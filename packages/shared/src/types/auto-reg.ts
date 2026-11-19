@@ -28,9 +28,3 @@ export type RegistrationTimeLookup =
   | { status: "found"; startsAt: string }
   | { status: "not-listed" }
   | { status: "signed-out" };
-
-/** Whether Banner knows a CRN in the term; null when Banner couldn't be asked. */
-export interface CrnCheck {
-  crn: string;
-  found: boolean | null;
-}

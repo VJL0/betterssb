@@ -18,7 +18,6 @@ import {
 import type {
   AutoRegQueue,
   AutoRegSnapshot,
-  CrnCheck,
   RegistrationTimeLookup,
 } from "@workspace/shared/types/auto-reg";
 import type { SSBGetPlansResponse, SSBTerm } from "@workspace/shared/types/ssb";
@@ -164,17 +163,6 @@ export async function armAutoRegister(): Promise<void> {
 
 export async function disarmAutoRegister(): Promise<void> {
   await bridgeRequest({ type: "AUTOREG_DISARM" });
-}
-
-/** Banner's CRN lookups take a moment each; give the whole queue time. */
-const CRN_CHECK_TIMEOUT_MS = 30_000;
-
-/** Asks Banner, with the student's sign-in, whether each CRN exists in the term. */
-export function checkCrns(term: string, crns: string[]): Promise<CrnCheck[]> {
-  return bridgeRequest<CrnCheck[]>(
-    { type: "AUTOREG_CHECK_CRNS", term, crns },
-    CRN_CHECK_TIMEOUT_MS,
-  );
 }
 
 // The extension asks TUportal over the network, which can take a few seconds.

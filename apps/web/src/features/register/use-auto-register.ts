@@ -14,7 +14,6 @@ import type {
 } from "@workspace/shared/types/auto-reg";
 import {
   armAutoRegister,
-  checkCrns,
   disarmAutoRegister,
   getAutoRegister,
   getBannerPlans,
@@ -111,21 +110,6 @@ export function useRegistrationTime(term: string, enabled: boolean) {
     queryKey: ["registrationTime", term],
     queryFn: () => getRegistrationTime(term),
     enabled: enabled && !!term,
-    staleTime: BANNER_STALE_MS,
-    retry: false,
-  });
-}
-
-/** Whether Banner knows each queued CRN in the term. */
-export function useCrnChecks(
-  term: string,
-  crns: readonly string[],
-  enabled: boolean,
-) {
-  return useQuery({
-    queryKey: ["crnChecks", term, crns],
-    queryFn: () => checkCrns(term, [...crns]),
-    enabled: enabled && !!term && crns.length > 0,
     staleTime: BANNER_STALE_MS,
     retry: false,
   });

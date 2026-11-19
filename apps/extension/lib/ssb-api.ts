@@ -1,6 +1,6 @@
 /**
  * Client for the Ellucian Self-Service Banner (SSB) registration API, called
- * from the background script: auto-register, CRN checks and the web bridge.
+ * from the background script: auto-register and the web bridge.
  *
  * The extension's host permission lets these requests carry the student's
  * existing Banner cookies, so no Banner tab needs to be open and the
@@ -257,17 +257,6 @@ export async function openRegistration(term: string): Promise<void> {
   }
   // Banner issues a new token on the page `term/search` forwards to.
   await loadSyncToken(CLASS_REGISTRATION_PAGE);
-}
-
-/** Needs `openRegistration(term)` first. */
-export async function getSectionDetailsFromCRN(
-  crn: string,
-  term: string,
-): Promise<unknown> {
-  return ssbGet("/classRegistration/getSectionDetailsFromCRN", {
-    courseReferenceNumber: crn,
-    term,
-  });
 }
 
 /** The student's Banner plans for the term opened by `openRegistration`. */

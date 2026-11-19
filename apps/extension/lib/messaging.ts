@@ -16,7 +16,6 @@ export interface MessagePayloads {
   AUTOREG_SAVE_QUEUE: { queue: AutoRegQueue };
   AUTOREG_ARM: NoPayload;
   AUTOREG_DISARM: NoPayload;
-  AUTOREG_CHECK_CRNS: { term: string; crns: string[] };
   AUTOREG_REGISTRATION_TIME: { term: string };
 }
 

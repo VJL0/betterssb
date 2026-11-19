@@ -30,17 +30,29 @@ const SOFTWARE_SECURITY = {
   courseNumber: "3441",
   section: "702",
 };
+const DATA_STRUCTURES = {
+  crn: "41207",
+  title: "Data Structures",
+  subject: "CIS",
+  courseNumber: "2168",
+  section: "001",
+};
+/** The sections Banner's public lookup by CRN finds; others are a 404. */
+const SECTIONS = new Map(
+  [SOFTWARE_SECURITY, DATA_STRUCTURES].map((s) => [s.crn, s]),
+);
 
 beforeEach(() => {
   server.use(
-    http.get(`${API}/classes/sections/:crn`, ({ params }) =>
-      params.crn === SOFTWARE_SECURITY.crn
-        ? HttpResponse.json(SOFTWARE_SECURITY)
+    http.get(`${API}/classes/sections/:crn`, ({ params }) => {
+      const section = SECTIONS.get(String(params.crn));
+      return section
+        ? HttpResponse.json(section)
         : HttpResponse.json(
             { detail: "There's no such CRN." },
             { status: 404 },
-          ),
-    ),
+          );
+    }),
     http.get(`${API}/classes/search`, () =>
       HttpResponse.json({
         totalCount: 1,
@@ -67,7 +79,6 @@ function install(
 ) {
   bridge = installFakeBridge({
     registrationTerms: [SPRING],
-    knownCrns: ["41207"],
     ...options,
     autoRegister: { ...EMPTY_AUTO_REGISTER, ...options.autoRegister },
   });
@@ -126,13 +137,30 @@ describe("RegisterPage", () => {
 
   it("names a typed CRN no plan has, even before registration opens", async () => {
     const user = userEvent.setup();
-    const fake = install({ registrationTerms: [], knownCrns: [] });
+    const fake = install({ registrationTerms: [] });
     renderPage(<RegisterPage />);
     const input = await screen.findByRole("textbox", { name: "Add CRN" });
     await user.type(input, "50067{Enter}");
     await waitFor(() => expect(fake.auto.current.crns).toEqual(["50067"]));
     expect(await screen.findByText("CIS 3441 · 702")).toBeTruthy();
     expect(screen.getByText("Software Security")).toBeTruthy();
+    expect(await screen.findByText("1 of 1 CRNs found in Banner")).toBeTruthy();
+  });
+
+  it("says when a CRN couldn't be checked", async () => {
+    server.use(
+      http.get(`${API}/classes/sections/:crn`, () =>
+        HttpResponse.json(
+          { detail: "Banner isn't answering." },
+          { status: 502 },
+        ),
+      ),
+    );
+    install({ autoRegister: { term: "202703", crns: ["41207"] } });
+    renderPage(<RegisterPage />);
+    expect(
+      await screen.findByText("Couldn't check every CRN with Banner"),
+    ).toBeTruthy();
   });
 
   it("arms after the checks pass and confirming, then locks the queue", async () => {

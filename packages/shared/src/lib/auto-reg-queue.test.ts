@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  armProblem,
-  countdown,
-  crnLookupResult,
-  isAutoRegSnapshot,
-} from "./auto-reg-queue";
+import { armProblem, countdown, isAutoRegSnapshot } from "./auto-reg-queue";
 
 const NOW = new Date("2026-10-17T12:00:00").getTime();
 const queue = {
@@ -28,31 +23,6 @@ describe("armProblem", () => {
     ],
   ])("explains what's missing", (q, problem) => {
     expect(armProblem(q, NOW)).toBe(problem);
-  });
-});
-
-describe("crnLookupResult", () => {
-  it("reads found and not found", () => {
-    // Banner's answer for CRN 31752 (data/ssb/Register for classes Fall 2026.har).
-    expect(
-      crnLookupResult({
-        subject: "CIS",
-        courseTitle: "Foundations of Machine Learning",
-        sequenceNumber: "001",
-        courseNumber: "4526",
-        responseDisplay: "Foundations of Machine Learning CIS 4526, 001",
-        olr: false,
-        projectionError: false,
-        success: true,
-      }),
-    ).toBe(true);
-    expect(crnLookupResult({ success: false })).toBe(false);
-  });
-
-  it("is null when the answer is unreadable", () => {
-    expect(crnLookupResult("<html>")).toBeNull();
-    expect(crnLookupResult({})).toBeNull();
-    expect(crnLookupResult({ success: true })).toBeNull();
   });
 });
 

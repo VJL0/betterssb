@@ -32,8 +32,6 @@ export function installFakeBridge({
   autoRegister = EMPTY_AUTO_REGISTER,
   registrationTerms = [] as SSBTerm[],
   bannerPlans = [] as SSBRegPlanHeader[],
-  /** CRNs Banner's lookup finds; others come back not found. */
-  knownCrns = [] as string[],
   /** What TUportal's countdown answers for any term. */
   registrationTime = { status: "not-listed" } as RegistrationTimeLookup,
 } = {}) {
@@ -114,14 +112,6 @@ export function installFakeBridge({
         auto.current = { ...auto.current, armed: false };
         reply(id, { success: true });
         return emitAutoRegisterChange();
-      case "AUTOREG_CHECK_CRNS":
-        return reply(id, {
-          success: true,
-          data: request.crns.map((crn) => ({
-            crn,
-            found: knownCrns.includes(crn),
-          })),
-        });
       case "AUTOREG_REGISTRATION_TIME":
         return reply(id, { success: true, data: registrationTime });
       case "BANNER_REG_TERMS":
