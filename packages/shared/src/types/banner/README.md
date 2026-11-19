@@ -50,7 +50,7 @@ The typed POST routes take an urlencoded form, and the dialog tabs and `term/sea
 import type {
   GuestRoutes,
   SignInRoute,
-} from "@workspace/shared/types/reverse-engineered/routes";
+} from "@workspace/shared/types/banner/routes";
 ```
 
 ## `search-results/`
@@ -76,7 +76,7 @@ To pull a term yourself, without signing in:
 `GET /ssb/classSearch/getTerms?searchTerm=&offset=1&max=10` lists the term codes.
 
 ```ts
-import type { SearchResultsResponse } from "@workspace/shared/types/reverse-engineered/search-results/index";
+import type { SearchResultsResponse } from "@workspace/shared/types/banner/search-results/index";
 ```
 
 ## `terms/`
@@ -103,7 +103,7 @@ To pick a term, without signing in:
 import type {
   GetTermsResponse,
   TermSearchResponse,
-} from "@workspace/shared/types/reverse-engineered/terms/index";
+} from "@workspace/shared/types/banner/terms/index";
 ```
 
 ## `app/`
@@ -120,7 +120,7 @@ A guest session belongs to the `JSESSIONID` cookie, pinned to one app server by 
 import type {
   BannerSessionCookies,
   LandingConfig,
-} from "@workspace/shared/types/reverse-engineered/app/index";
+} from "@workspace/shared/types/banner/app/index";
 ```
 
 ## `class-search/`
@@ -144,7 +144,7 @@ To call one, without signing in or picking a term:
 3. Instructor codes are numbers handed out per session. Call `get_instructor` and `searchResults` with the same cookies: a code from any other session is a 500 that ends the session.
 
 ```ts
-import type { GetSubjectResponse } from "@workspace/shared/types/reverse-engineered/class-search/index";
+import type { GetSubjectResponse } from "@workspace/shared/types/banner/class-search/index";
 ```
 
 ## `course-search/`
@@ -170,7 +170,7 @@ To pull a catalog yourself, without signing in:
 The session keeps the courses of its first search. Before searching with other filters, `POST /ssb/courseSearch/resetDataForm` with `resetCourses=true&resetSections=true`. For a course's sections ("View Sections"), reset with `resetSections=true`, then `GET /ssb/searchResults/searchResults?txt_subjectcoursecombo=ACCT2103&txt_term=<code>&pageOffset=0&pageMaxSize=10&sortColumn=subjectDescription&sortDirection=asc` in the same session. The lookups take `?searchTerm=&term=<code>&offset=1&max=10` and need no session.
 
 ```ts
-import type { CourseSearchResultsResponse } from "@workspace/shared/types/reverse-engineered/course-search/index";
+import type { CourseSearchResultsResponse } from "@workspace/shared/types/banner/course-search/index";
 ```
 
 ## `section-details/`
@@ -198,7 +198,7 @@ A form that doesn't name a section of the term gets a 500 (`SectionTabErrorPage`
 import type {
   ClassDetails,
   SectionCatalogDetails,
-} from "@workspace/shared/types/reverse-engineered/section-details/index";
+} from "@workspace/shared/types/banner/section-details/index";
 ```
 
 ## `section-relations/`
@@ -220,7 +220,7 @@ The tabs need no session: send `term=<code>&courseReferenceNumber=<crn>` as an u
 Instructor `bannerId`s last only for the session that handed them out. To open a contact card, get the instructors from `getFacultyMeetingTimes` (or `searchResults`), then `GET /ssb/contactCard/retrieveData?bannerId=<id>&termCode=<term>` with the same cookies.
 
 ```ts
-import type { FacultyMeetingTimesResponse } from "@workspace/shared/types/reverse-engineered/section-relations/index";
+import type { FacultyMeetingTimesResponse } from "@workspace/shared/types/banner/section-relations/index";
 ```
 
 ## `course-details/`
@@ -248,7 +248,7 @@ No session is needed:
 import type {
   CourseCatalogDetails,
   CoursePrerequisites,
-} from "@workspace/shared/types/reverse-engineered/course-details/index";
+} from "@workspace/shared/types/banner/course-details/index";
 ```
 
 ## `common.ts`
