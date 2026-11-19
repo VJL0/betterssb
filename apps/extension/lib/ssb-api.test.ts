@@ -98,11 +98,14 @@ describe("ssb-api from the background", () => {
       "/term/termSelection": [page("11111111-1111-1111-1111-111111111111")],
       "/term/saveTerm": [Response.json({})],
       "/term/search": [
+        // Banner's real answer, which still forwards to the registration page.
         Response.json({
           studentEligValid: false,
           studentEligFailures: [
             "Time tickets prevent registration at this time.",
           ],
+          fwdURL:
+            "/StudentRegistrationSsb/ssb/classRegistration/classRegistration",
         }),
       ],
     });
@@ -112,6 +115,26 @@ describe("ssb-api from the background", () => {
     await expect(opening).rejects.toBeInstanceOf(ssb.RegistrationClosedError);
     await expect(opening).rejects.toThrow(
       "Time tickets prevent registration at this time.",
+    );
+  });
+
+  it("stops when Banner refuses the term", async () => {
+    stubBanner({
+      "/term/termSelection": [page("11111111-1111-1111-1111-111111111111")],
+      "/term/saveTerm": [Response.json({})],
+      "/term/search": [
+        Response.json({
+          regAllowed: false,
+          studentEligFailures: ["No Classes Found in this Date Range"],
+          fwdURL:
+            "/StudentRegistrationSsb/ssb/classRegistration/classRegistration",
+        }),
+      ],
+    });
+    const ssb = await loadClient();
+
+    await expect(ssb.openRegistration("202703")).rejects.toThrow(
+      "No Classes Found in this Date Range",
     );
   });
 

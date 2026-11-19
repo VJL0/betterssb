@@ -200,14 +200,29 @@ async function saveRegistrationTerm(term: string): Promise<void> {
   });
 }
 
-/** What `term/search` answers: where to go next, or why registration is closed. */
+/**
+ * What `term/search` answers. `fwdURL` comes even when registration is
+ * closed ("Time tickets prevent registration at this time."), so only the
+ * two flags say whether it opened.
+ */
 interface TermSearchAnswer {
   fwdURL?: string;
+  regAllowed?: boolean;
+  studentEligValid?: boolean;
   studentEligFailures?: string[];
 }
 
 function isTermSearchAnswer(value: unknown): value is TermSearchAnswer {
   return typeof value === "object" && value !== null;
+}
+
+/** Banner's own term page goes on only when neither flag is false. */
+function registrationOpened(answer: TermSearchAnswer): boolean {
+  return (
+    !!answer.fwdURL &&
+    answer.regAllowed !== false &&
+    answer.studentEligValid !== false
+  );
 }
 
 async function searchRegistrationTerm(
@@ -234,7 +249,7 @@ async function searchRegistrationTerm(
 export async function openRegistration(term: string): Promise<void> {
   await saveRegistrationTerm(term);
   const answer = await searchRegistrationTerm(term);
-  if (!isTermSearchAnswer(answer) || !answer.fwdURL) {
+  if (!isTermSearchAnswer(answer) || !registrationOpened(answer)) {
     const reasons = isTermSearchAnswer(answer)
       ? (answer.studentEligFailures ?? [])
       : [];
