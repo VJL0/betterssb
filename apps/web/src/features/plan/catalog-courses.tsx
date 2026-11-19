@@ -1,7 +1,5 @@
 "use client";
 
-import { creditsLabel } from "@workspace/shared/lib/dars";
-
 import { useQuery } from "@tanstack/react-query";
 import { CircleXIcon, SearchIcon } from "lucide-react";
 import { useDeferredValue, useId, useState } from "react";
@@ -10,10 +8,8 @@ import {
   type CodeName,
   type CourseDescription,
 } from "@workspace/api-client";
-import {
-  listBulletinSubjectsOptions,
-  listSubjectCoursesOptions,
-} from "@workspace/api-client/query";
+import { listBulletinSubjectsOptions } from "@workspace/api-client/query";
+import { creditsLabel } from "@workspace/shared/lib/dars";
 import { catalogCredits } from "@workspace/shared/lib/planner";
 import {
   Alert,
@@ -37,6 +33,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import type { NewCourse } from "./course-drag";
 import { CourseRow } from "./course-row";
+import { subjectCoursesOptions } from "./use-catalog-courses";
 
 /** Course numbers from 5000 up are graduate courses at Temple. */
 const GRADUATE_FROM = 5000;
@@ -129,16 +126,11 @@ export function CatalogCourses({
       meta: { errorMessage: "Couldn't load subjects from the Bulletin." },
     }),
     // A published Bulletin doesn't change.
-    staleTime: Infinity,
+    staleTime: "static",
   });
   const courses = useQuery({
-    ...listSubjectCoursesOptions({
-      path: { subject: subject ?? "" },
-      query: { year },
-      meta: { errorMessage: "Couldn't load courses from the Bulletin." },
-    }),
+    ...subjectCoursesOptions(subject ?? "", year),
     enabled: subject !== null,
-    staleTime: Infinity,
   });
 
   const subjectOptions = subjects.data?.subjects ?? NO_SUBJECTS;
@@ -231,9 +223,7 @@ export function CatalogCourses({
                   key={course.code}
                   course={newCourse(course)}
                   subtitle={course.title}
-                  credits={
-                    course.credits ? `${creditsLabel(course.credits)}` : null
-                  }
+                  credits={course.credits ? creditsLabel(course.credits) : null}
                   status={statusOf(course.code)}
                   targetName={targetName}
                   onAdd={() => onAdd(newCourse(course))}

@@ -13,7 +13,7 @@ export default defineConfig([
       js.configs.recommended,
       tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
-      pluginQuery.configs["flat/recommended"],
+      pluginQuery.configs["flat/recommended-strict"],
       nextPlugin.configs["core-web-vitals"],
     ],
   },

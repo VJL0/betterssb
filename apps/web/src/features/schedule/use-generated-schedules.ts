@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  queryOptions,
   useQuery,
   useQueryClient,
   type QueryClient,
@@ -69,29 +70,46 @@ async function generate(
   return { schedules, widened };
 }
 
+/**
+ * A POST, but a pure function of its input, so it's a query: cached by input
+ * and cancellable. The same input always gives the same schedules.
+ */
+function generationOptions(
+  meetings: readonly Section[],
+  widenedMeetings: readonly Section[] | null,
+) {
+  return queryOptions({
+    queryKey: [GENERATION, meetings, widenedMeetings],
+    queryFn: ({ signal }) => generate(meetings, widenedMeetings, signal),
+    staleTime: "static",
+  });
+}
+
 /** The most recent earlier run that found schedules, from the query cache. */
 function lastGood(queryClient: QueryClient): GeneratedSchedules["last"] {
-  const [latest] = queryClient
-    .getQueryCache()
-    .findAll({ queryKey: [GENERATION] })
-    .filter(
-      (q) =>
-        q.state.status === "success" &&
-        (q.state.data as Generated).schedules.length > 0,
-    )
-    .sort((a, b) => b.state.dataUpdatedAt - a.state.dataUpdatedAt);
-  if (!latest) return null;
-  return {
-    schedules: (latest.state.data as Generated).schedules,
-    at: new Date(latest.state.dataUpdatedAt).toISOString(),
-  };
+  let latest: { schedules: GeneratedSchedule[]; updatedAt: number } | null =
+    null;
+  for (const [queryKey, data] of queryClient.getQueriesData<Generated>({
+    queryKey: [GENERATION],
+  })) {
+    if (!data?.schedules.length) continue;
+    const updatedAt = queryClient.getQueryState(queryKey)?.dataUpdatedAt ?? 0;
+    if (!latest || updatedAt > latest.updatedAt) {
+      latest = { schedules: data.schedules, updatedAt };
+    }
+  }
+  return latest
+    ? {
+        schedules: latest.schedules,
+        at: new Date(latest.updatedAt).toISOString(),
+      }
+    : null;
 }
 
 /**
  * Conflict-free schedules from the schedule service for `meetings`. When
  * there are none and `widenedMeetings` is given, a run with those shows what
- * a looser day rule would allow. It's a POST, but a pure function of its
- * input, so it's a query: cached by input and cancellable.
+ * a looser day rule would allow.
  */
 export function useGeneratedSchedules(
   meetings: readonly Section[],
@@ -100,15 +118,14 @@ export function useGeneratedSchedules(
   const queryClient = useQueryClient();
   const [cancelledKey, setCancelledKey] = useState<string | null>(null);
   const nothingToTry = meetings.length === 0 && !widenedMeetings?.length;
-  const queryKey = [GENERATION, meetings, widenedMeetings] as const;
+  const options = generationOptions(meetings, widenedMeetings);
+  const { queryKey } = options;
   const runKey = JSON.stringify(queryKey);
   const cancelled = cancelledKey === runKey;
 
   const query = useQuery({
-    queryKey,
-    queryFn: ({ signal }) => generate(meetings, widenedMeetings, signal),
+    ...options,
     enabled: !nothingToTry && !cancelled,
-    staleTime: Infinity,
   });
 
   const base = {

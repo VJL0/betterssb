@@ -24,14 +24,6 @@ interface Loaded {
   retry: () => void;
 }
 
-/** Only this exact course, whatever else the search matched. */
-function onlyCourse(courseId: string) {
-  return (result: ClassSearchResult): ClassSearchResult => ({
-    ...result,
-    sections: result.sections.filter((s) => s.subjectCourse === courseId),
-  });
-}
-
 /** Live sections from Banner for every course in the plan. */
 export function useCourseSections(
   term: string,
@@ -45,15 +37,20 @@ export function useCourseSections(
       const courseIds = ids.split(",");
       const sectionsByCourse = new Map<string, ClassSection[]>();
       const times: string[] = [];
-      results.forEach((result, index) => {
-        if (!result.data) return;
-        sectionsByCourse.set(courseIds[index]!, result.data.sections);
+      for (const [index, result] of results.entries()) {
+        if (!result.data) continue;
+        const courseId = courseIds[index]!;
+        // Only this exact course, whatever else the search matched.
+        sectionsByCourse.set(
+          courseId,
+          result.data.sections.filter((s) => s.subjectCourse === courseId),
+        );
         times.push(result.data.fetchedAt);
-      });
+      }
       return {
-        pending: results.some((r) => r.isPending && r.isFetching),
+        pending: results.some((r) => r.isLoading),
         sectionsByCourse,
-        fetchedAt: times.sort()[0] ?? null,
+        fetchedAt: times.toSorted()[0] ?? null,
         retry: () => {
           for (const r of results) if (r.isError) void r.refetch();
         },
@@ -63,8 +60,8 @@ export function useCourseSections(
   );
 
   const loaded = useQueries({
-    queries: courses.map((course) => ({
-      ...searchSectionsOptions({
+    queries: courses.map((course) =>
+      searchSectionsOptions({
         query: {
           term,
           subject: course.subject,
@@ -73,8 +70,7 @@ export function useCourseSections(
         },
         meta: { errorMessage: `Couldn't load ${course.code} sections.` },
       }),
-      select: onlyCourse(course.courseId),
-    })),
+    ),
     combine,
   });
 

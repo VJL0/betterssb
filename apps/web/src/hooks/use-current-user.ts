@@ -1,13 +1,21 @@
 import { useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { fetchCurrentUser, logout, takeAuthError } from "@/lib/auth";
 
-const CURRENT_USER = ["currentUser"] as const;
+const currentUserOptions = queryOptions({
+  queryKey: ["currentUser"],
+  queryFn: ({ signal }) => fetchCurrentUser(signal),
+});
 
 /** The signed-in user: null when signed out, undefined while checking or on error. */
 export function useCurrentUser() {
-  return useQuery({ queryKey: CURRENT_USER, queryFn: fetchCurrentUser });
+  return useQuery(currentUserOptions);
 }
 
 /** Ends the session and shows the signed-out state at once. */
@@ -15,7 +23,8 @@ export function useSignOut() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: logout,
-    onSuccess: () => queryClient.setQueryData(CURRENT_USER, null),
+    onSuccess: () =>
+      queryClient.setQueryData(currentUserOptions.queryKey, null),
     onError: (error) => toast.error(error.message),
   });
 }

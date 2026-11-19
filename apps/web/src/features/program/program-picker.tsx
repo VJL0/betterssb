@@ -65,7 +65,7 @@ export function useBulletinPrograms() {
     }),
     enabled: year !== null,
     // A Bulletin's program list doesn't change once it's published.
-    staleTime: Infinity,
+    staleTime: "static",
   });
   // The index also lists programs with no page of their own, which have no requirements to show.
   const options = programs.data?.programs.filter((p) => p.url) ?? NO_PROGRAMS;

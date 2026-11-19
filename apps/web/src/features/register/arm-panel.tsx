@@ -50,8 +50,9 @@ interface ArmPanelProps {
   checks: readonly ArmCheck[];
   canArm: boolean;
   pending: boolean;
-  onArm: () => Promise<unknown>;
-  onDisarm: () => Promise<unknown>;
+  /** Each calls `onSettled` once the change succeeds or fails. */
+  onArm: (onSettled: () => void) => void;
+  onDisarm: (onSettled: () => void) => void;
 }
 
 function Countdown({ target }: { target: number }) {
@@ -84,7 +85,7 @@ export function ArmPanel({
   const sections = `${crnCount} ${crnCount === 1 ? "CRN" : "CRNs"}`;
 
   function confirm() {
-    return (armed ? onDisarm() : onArm()).finally(() => setOpen(false));
+    (armed ? onDisarm : onArm)(() => setOpen(false));
   }
 
   return (
@@ -178,7 +179,7 @@ export function ArmPanel({
             <AlertDialogAction
               variant={armed ? "destructive" : "default"}
               disabled={pending}
-              onClick={() => void confirm()}
+              onClick={confirm}
             >
               {armed ? "Turn off" : "Turn on"}
             </AlertDialogAction>

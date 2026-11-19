@@ -1,8 +1,9 @@
 import { render } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { fakeBrowser } from "wxt/testing/fake-browser";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import App from "@/entrypoints/popup/App";
+import { createPopupQueryClient } from "@/entrypoints/popup/query-client";
 import type {
   ExtensionMessage,
   MessagePayloads,
@@ -61,10 +62,11 @@ export function answerBackground(handlers: Handlers) {
   return sent;
 }
 
-/** The popup as Chrome opens it, with a fresh query cache. */
+/** The popup as Chrome opens it, with a fresh query cache whose failures show at once. */
 export function renderPopup() {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
+  const queryClient = createPopupQueryClient();
+  queryClient.setDefaultOptions({
+    queries: { ...queryClient.getDefaultOptions().queries, retry: false },
   });
   return render(
     <QueryClientProvider client={queryClient}>

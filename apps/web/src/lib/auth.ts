@@ -34,9 +34,12 @@ function isAuthError(code: string): code is keyof typeof AUTH_ERRORS {
 }
 
 /** The signed-in user, or null if there's no valid session. */
-export async function fetchCurrentUser(): Promise<User | null> {
+export async function fetchCurrentUser(
+  signal?: AbortSignal,
+): Promise<User | null> {
   try {
     const { data } = await getMe({
+      signal,
       meta: { errorMessage: "Couldn't check sign-in." },
     });
     return data;

@@ -324,8 +324,10 @@ function AutoRegister({
             checks={checks}
             canArm={canArm}
             pending={pending}
-            onArm={() => auto.arm.mutateAsync().catch(() => undefined)}
-            onDisarm={() => auto.disarm.mutateAsync().catch(() => undefined)}
+            onArm={(onSettled) => auto.arm.mutate(undefined, { onSettled })}
+            onDisarm={(onSettled) =>
+              auto.disarm.mutate(undefined, { onSettled })
+            }
           />
           {armError && (
             <Alert variant="destructive">
@@ -483,7 +485,7 @@ function RunSettings({
           items={items}
           value={term || null}
           disabled={armed}
-          onValueChange={(code) => code && onTerm(code as string)}
+          onValueChange={(code) => code && onTerm(code)}
         >
           <SelectTrigger id={`${ids}-term`} className="w-full">
             <SelectValue placeholder="Choose a term" />

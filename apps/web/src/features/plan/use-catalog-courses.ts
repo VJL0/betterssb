@@ -1,4 +1,4 @@
-import { useQueries } from "@tanstack/react-query";
+import { queryOptions, useQueries } from "@tanstack/react-query";
 import type { CourseDescription } from "@workspace/api-client";
 import { listSubjectCoursesOptions } from "@workspace/api-client/query";
 import { subjectsByFrequency } from "@workspace/shared/lib/plan";
@@ -14,6 +14,18 @@ function catalogCourse(course: CourseDescription): CatalogCourse {
     credits: catalogCredits(course.credits),
     prerequisites: course.prerequisiteCourses,
   };
+}
+
+/** A subject's courses in a Bulletin year; a published Bulletin doesn't change. */
+export function subjectCoursesOptions(subject: string, year: string) {
+  return queryOptions({
+    ...listSubjectCoursesOptions({
+      path: { subject },
+      query: { year },
+      meta: { errorMessage: `Couldn't load ${subject} from the Bulletin.` },
+    }),
+    staleTime: "static",
+  });
 }
 
 /** Every subject's courses by code; module-level so useQueries keeps its result stable. */
@@ -37,15 +49,7 @@ function combineSubjects(
 export function useCatalogCourses(codes: readonly string[], year: string) {
   const subjects = subjectsByFrequency(codes).slice(0, MAX_SUBJECTS);
   const { entries, loading } = useQueries({
-    queries: subjects.map((subject) => ({
-      ...listSubjectCoursesOptions({
-        path: { subject },
-        query: { year },
-        meta: { errorMessage: `Couldn't load ${subject} from the Bulletin.` },
-      }),
-      // A published Bulletin doesn't change.
-      staleTime: Infinity,
-    })),
+    queries: subjects.map((subject) => subjectCoursesOptions(subject, year)),
     combine: combineSubjects,
   });
 
