@@ -341,6 +341,7 @@ function AutoRegister({
             lookingUp={lookedUp.pending}
             notFound={lookedUp.missing}
             planCrns={planCrns}
+            term={term}
             termName={termName}
             bannerPlans={bannerPlans}
             crnInput={crnInput}

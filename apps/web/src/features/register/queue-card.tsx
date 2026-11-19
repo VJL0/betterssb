@@ -1,18 +1,7 @@
-import { useId, useState, type RefObject } from "react";
-import {
-  ChevronDownIcon,
-  ListPlusIcon,
-  LockIcon,
-  PlusIcon,
-  XIcon,
-} from "lucide-react";
+import type { RefObject } from "react";
+import { ChevronDownIcon, ListPlusIcon, LockIcon, XIcon } from "lucide-react";
 import type { ClassSection } from "@workspace/api-client";
 import { MAX_QUEUED_CRNS } from "@workspace/shared/lib/bridge";
-import {
-  CRN_FORMAT_ERROR,
-  isCrn,
-  MAX_CRN_LENGTH,
-} from "@workspace/shared/lib/crn";
 import { formatCredits } from "@workspace/shared/lib/dars";
 import type { SSBRegPlanHeader } from "@workspace/shared/types/ssb";
 import { Card } from "@workspace/ui/components/card";
@@ -30,8 +19,6 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty";
-import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field";
-import { Input } from "@workspace/ui/components/input";
 import { SeatMeter } from "@workspace/ui/components/seat-meter";
 import {
   Table,
@@ -41,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { AddCrn } from "./add-crn";
 import { queueCredits, type QueueRow } from "./queue-rows";
 
 interface QueueCardProps {
@@ -54,6 +42,7 @@ interface QueueCardProps {
   notFound: ReadonlySet<string>;
   /** CRNs in the student's plan for this term. */
   planCrns: readonly string[];
+  term: string;
   termName: string;
   bannerPlans: readonly SSBRegPlanHeader[];
   crnInput: RefObject<HTMLInputElement | null>;
@@ -74,6 +63,7 @@ export function QueueCard({
   lookingUp,
   notFound,
   planCrns,
+  term,
   termName,
   bannerPlans,
   crnInput,
@@ -153,6 +143,8 @@ export function QueueCard({
         <AddCrn
           inputRef={crnInput}
           crns={crns}
+          term={term}
+          termName={termName}
           onAdd={(crn) => onChange(withAdded(crns, [crn]))}
         />
       )}
@@ -253,61 +245,5 @@ function CourseName({ row, lookingUp }: { row: QueueRow; lookingUp: boolean }) {
         {row.title}
       </span>
     </span>
-  );
-}
-
-function AddCrn({
-  inputRef,
-  crns,
-  onAdd,
-}: {
-  inputRef: RefObject<HTMLInputElement | null>;
-  crns: readonly string[];
-  onAdd: (crn: string) => void;
-}) {
-  const id = useId();
-  const [value, setValue] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  function add() {
-    const crn = value.trim();
-    if (!isCrn(crn)) return setError(CRN_FORMAT_ERROR);
-    if (crns.includes(crn)) return setError(`${crn} is already added.`);
-    if (crns.length >= MAX_QUEUED_CRNS) {
-      return setError(`You can add up to ${MAX_QUEUED_CRNS} CRNs.`);
-    }
-    setError(null);
-    setValue("");
-    onAdd(crn);
-  }
-
-  return (
-    <form
-      className="flex flex-wrap items-end gap-2"
-      onSubmit={(e) => {
-        e.preventDefault();
-        add();
-      }}
-    >
-      <Field className="w-40" data-invalid={error ? true : undefined}>
-        <FieldLabel htmlFor={id}>Add CRN</FieldLabel>
-        <Input
-          ref={inputRef}
-          id={id}
-          inputMode="numeric"
-          autoComplete="off"
-          maxLength={MAX_CRN_LENGTH}
-          value={value}
-          aria-invalid={error ? true : undefined}
-          onChange={(e) => setValue(e.target.value)}
-          className="tabular-nums"
-        />
-      </Field>
-      <Button type="submit" variant="outline">
-        <PlusIcon data-icon="inline-start" />
-        Add
-      </Button>
-      {error && <FieldError className="basis-full">{error}</FieldError>}
-    </form>
   );
 }

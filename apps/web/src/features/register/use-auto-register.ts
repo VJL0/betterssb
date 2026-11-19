@@ -115,6 +115,34 @@ export function useRegistrationTime(term: string, enabled: boolean) {
   });
 }
 
+function isNotFound(error: unknown): boolean {
+  return error instanceof ApiError && error.status === NOT_FOUND;
+}
+
+function sectionQuery(term: string, crn: string) {
+  return {
+    ...getSectionOptions({ path: { crn }, query: { term } }),
+    staleTime: SECTION_STALE_MS,
+  };
+}
+
+/** "unchecked" when Banner couldn't be asked, or no term is chosen. */
+export type CrnLookup = "found" | "missing" | "unchecked";
+
+/** Looks up a CRN before it's queued, from the cache `useLookedUpSections` reads. */
+export function useCrnLookup(term: string) {
+  const queryClient = useQueryClient();
+  return async (crn: string): Promise<CrnLookup> => {
+    if (!term) return "unchecked";
+    try {
+      await queryClient.query(sectionQuery(term, crn));
+      return "found";
+    } catch (error) {
+      return isNotFound(error) ? "missing" : "unchecked";
+    }
+  };
+}
+
 export interface LookedUpSections {
   byCrn: ReadonlyMap<string, SectionSummary>;
   /** CRNs still being looked up. */
@@ -140,12 +168,7 @@ export function useLookedUpSections(
         const crn = queried[index]!;
         if (result.data) byCrn.set(crn, result.data);
         else if (result.isPending && result.isFetching) pending.add(crn);
-        else if (
-          result.error instanceof ApiError &&
-          result.error.status === NOT_FOUND
-        ) {
-          missing.add(crn);
-        }
+        else if (isNotFound(result.error)) missing.add(crn);
       });
       return { byCrn, pending, missing };
     },
@@ -153,9 +176,8 @@ export function useLookedUpSections(
   );
   return useQueries({
     queries: crns.map((crn) => ({
-      ...getSectionOptions({ path: { crn }, query: { term } }),
+      ...sectionQuery(term, crn),
       enabled: !!term,
-      staleTime: SECTION_STALE_MS,
     })),
     combine,
   });

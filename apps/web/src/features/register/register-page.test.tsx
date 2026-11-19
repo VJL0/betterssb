@@ -131,8 +131,12 @@ describe("RegisterPage", () => {
     ).toBeTruthy();
     await user.clear(input);
     await user.type(input, "52018{Enter}");
-    await waitFor(() => expect(fake.auto.current.crns).toEqual(["52018"]));
-    expect(await screen.findByText("CRN not found")).toBeTruthy();
+    expect(
+      await screen.findByText(
+        "No Spring 2027 section has CRN 52018. Check the number, or choose the term it's in.",
+      ),
+    ).toBeTruthy();
+    expect(fake.auto.current.crns).toEqual([]);
   });
 
   it("names a typed CRN no plan has, even before registration opens", async () => {
