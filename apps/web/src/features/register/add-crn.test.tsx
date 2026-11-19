@@ -17,16 +17,21 @@ const NOT_FOUND_MESSAGE =
   "No Spring 2027 section has CRN 52018. Check the number, or choose the term it's in.";
 const FORMAT_MESSAGE = "A CRN is 4 or 5 digits, like 41207.";
 
+/** CRNs asked about, in order. */
+let lookups: string[] = [];
+
 function answerLookups() {
+  lookups = [];
   server.use(
-    http.get(`${API}/classes/sections/:crn`, ({ params }) =>
-      params.crn === DATA_STRUCTURES.crn
+    http.get(`${API}/classes/sections/:crn`, ({ params }) => {
+      lookups.push(String(params.crn));
+      return params.crn === DATA_STRUCTURES.crn
         ? HttpResponse.json(DATA_STRUCTURES)
         : HttpResponse.json(
             { detail: "There's no such CRN." },
             { status: 404 },
-          ),
-    ),
+          );
+    }),
   );
 }
 
@@ -84,6 +89,20 @@ describe("AddCrn", () => {
     expect(input).toHaveProperty("value", "52018");
     expect(input.getAttribute("aria-invalid")).toBe("true");
     expect(input.getAttribute("aria-describedby")).toBe(error.id);
+  });
+
+  it("says a CRN isn't found again on each Add, asking Banner once", async () => {
+    const { user, input } = setUp();
+    await user.type(input, "52018{Enter}");
+    const first = await screen.findByText(NOT_FOUND_MESSAGE);
+
+    await user.type(input, "{Enter}");
+
+    // A new alert, so screen readers announce it again.
+    await waitFor(() =>
+      expect(screen.getByText(NOT_FOUND_MESSAGE)).not.toBe(first),
+    );
+    expect(lookups).toEqual(["52018"]);
   });
 
   it("clears a not-found error at the first edit and waits for Add", async () => {

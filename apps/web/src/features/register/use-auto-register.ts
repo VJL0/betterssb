@@ -7,8 +7,12 @@ import {
   useQueryClient,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import { ApiError, type SectionSummary } from "@workspace/api-client";
-import { getSectionOptions } from "@workspace/api-client/query";
+import {
+  ApiError,
+  getSection,
+  type SectionSummary,
+} from "@workspace/api-client";
+import { getSectionQueryKey } from "@workspace/api-client/query";
 import type { AutoRegQueue } from "@workspace/shared/types/auto-reg";
 import {
   armAutoRegister,
@@ -25,6 +29,12 @@ import {
 const BANNER_STALE_MS = 5 * 60 * 1000;
 /** A CRN names the same section all term. */
 const SECTION_STALE_MS = 24 * 60 * 60 * 1000;
+/**
+ * A CRN Banner says isn't in the term is an answer too, kept for less time
+ * than a found one since a section can be added mid-term. Matches the API's
+ * MISSING_SECTION_TTL_SECONDS.
+ */
+const MISSING_SECTION_STALE_MS = 5 * 60 * 1000;
 const NOT_FOUND = 404;
 
 /**
@@ -137,10 +147,26 @@ function isNotFound(error: unknown): boolean {
   return error instanceof ApiError && error.status === NOT_FOUND;
 }
 
+/**
+ * The section a CRN names in `term`, or null when Banner has none. A 404 is
+ * an expected answer, so it's data the cache keeps rather than an error that
+ * would be fetched again on every look; real failures still throw.
+ */
 function sectionOptions(term: string, crn: string) {
+  const request = { path: { crn }, query: { term } };
   return queryOptions({
-    ...getSectionOptions({ path: { crn }, query: { term } }),
-    staleTime: SECTION_STALE_MS,
+    queryKey: getSectionQueryKey(request),
+    queryFn: async ({ signal }): Promise<SectionSummary | null> => {
+      try {
+        const { data } = await getSection({ ...request, signal });
+        return data;
+      } catch (error) {
+        if (isNotFound(error)) return null;
+        throw error;
+      }
+    },
+    staleTime: (query) =>
+      query.state.data === null ? MISSING_SECTION_STALE_MS : SECTION_STALE_MS,
   });
 }
 
@@ -153,10 +179,10 @@ export function useCrnLookup(term: string) {
   return async (crn: string): Promise<CrnLookup> => {
     if (!term) return "unchecked";
     try {
-      await queryClient.query(sectionOptions(term, crn));
-      return "found";
-    } catch (error) {
-      return isNotFound(error) ? "missing" : "unchecked";
+      const section = await queryClient.query(sectionOptions(term, crn));
+      return section ? "found" : "missing";
+    } catch {
+      return "unchecked";
     }
   };
 }
@@ -177,7 +203,9 @@ export function useLookedUpSections(
   const key = crns.join(",");
   // Keyed by the CRNs alone, so the result only changes when the data does.
   const combine = useCallback(
-    (results: UseQueryResult<SectionSummary, unknown>[]): LookedUpSections => {
+    (
+      results: UseQueryResult<SectionSummary | null, unknown>[],
+    ): LookedUpSections => {
       const byCrn = new Map<string, SectionSummary>();
       const pending = new Set<string>();
       const missing = new Set<string>();
@@ -185,8 +213,8 @@ export function useLookedUpSections(
       for (const [index, result] of results.entries()) {
         const crn = queried[index]!;
         if (result.data) byCrn.set(crn, result.data);
+        else if (result.data === null) missing.add(crn);
         else if (result.isLoading) pending.add(crn);
-        else if (isNotFound(result.error)) missing.add(crn);
       }
       return { byCrn, pending, missing };
     },
