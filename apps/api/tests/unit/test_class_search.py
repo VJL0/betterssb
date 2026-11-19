@@ -21,7 +21,7 @@ from app.modules.classes.service import (
     ClassSearchService,
 )
 from tests.conftest import FIXTURES_DIR
-from tests.unit.test_section_client import DETAILS_FRAGMENT
+from tests.unit.test_section_client import UNKNOWN_CRN_ERROR_PAGE, section_answer
 
 BASE_URL = "https://banner.example.edu/StudentRegistrationSsb/ssb"
 KNOWN_CRN = "50067"
@@ -50,10 +50,8 @@ class FakeBanner:
         self,
         search_body: object | None = None,
         status: int = 200,
-        details: str = DETAILS_FRAGMENT,
     ) -> None:
         self.requests: list[httpx2.Request] = []
-        self.details = details
         self.search_body = search_body or json.loads(
             (FIXTURES_DIR / "class_search.json").read_text()
         )
@@ -74,9 +72,10 @@ class FakeBanner:
             )
         if path.endswith("/searchResults/searchResults"):
             return httpx2.Response(200, json=self.search_body)
-        if path.endswith("/searchResults/getClassDetails"):
-            known = f"courseReferenceNumber={KNOWN_CRN}" in request.content.decode()
-            return httpx2.Response(200, text=self.details if known else "")
+        if path.endswith("/searchResults/getFacultyMeetingTimes"):
+            if request.url.params["courseReferenceNumber"] != KNOWN_CRN:
+                return httpx2.Response(500, text=UNKNOWN_CRN_ERROR_PAGE)
+            return httpx2.Response(200, json=section_answer())
         if path.endswith("/classSearch/getTerms"):
             return httpx2.Response(
                 200, json=[{"code": "202703", "description": "2027 Spring"}]
@@ -167,6 +166,12 @@ class TestSearch:
             == "Science Education & Research"
         )
         assert result.sections[1].meetings_faculty[0].meeting_time.begin_time is None
+
+    async def test_counts_only_seats_the_cross_list_group_has_room_for(self):
+        body = json.loads((FIXTURES_DIR / "class_search.json").read_text())
+        body["data"][0] |= {"crossList": "2F", "crossListAvailable": 0}
+        result = await FakeBanner(search_body=body).service().search(FILTERS)
+        assert [s.seats_available for s in result.sections] == [0, 0]
 
     async def test_serves_repeat_searches_from_cache(self):
         banner = FakeBanner()
@@ -393,16 +398,6 @@ class TestSection:
             "course_number": "3441",
             "section": "702",
         }
-
-    async def test_leaves_the_code_out_when_no_subject_matches(self):
-        renamed = DETAILS_FRAGMENT.replace(
-            "Computer &amp; Information Science", "Underwater Basketry"
-        )
-        summary = (
-            await FakeBanner(details=renamed).service().section("202703", KNOWN_CRN)
-        )
-        assert summary.subject is None
-        assert summary.title == "Software Security"
 
     async def test_unknown_crn_is_not_found(self):
         with pytest.raises(SectionNotFound):

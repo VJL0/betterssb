@@ -139,7 +139,7 @@ export interface LookedUpSections {
   missing: ReadonlySet<string>;
 }
 
-/** The course of each CRN, from Banner's class details; no sign-in needed. */
+/** The course of each CRN, from Banner's public section lookup; no sign-in needed. */
 export function useLookedUpSections(
   term: string,
   crns: readonly string[],

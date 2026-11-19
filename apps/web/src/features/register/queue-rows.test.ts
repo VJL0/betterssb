@@ -86,18 +86,6 @@ describe("withLookedUp", () => {
     ]);
     expect(rows[1]!.courseId).toBe("CIS3441");
   });
-
-  it("keeps the title when Banner's subject has no code", () => {
-    const [row] = withLookedUp(
-      queueRows(["50067"], "202703", []),
-      new Map([["50067", { ...softwareSecurity, subject: null }]]),
-    );
-    expect([row!.code, row!.courseId, row!.title]).toEqual([
-      null,
-      null,
-      "Software Security",
-    ]);
-  });
 });
 
 describe("queueCredits", () => {

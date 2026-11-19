@@ -16,6 +16,7 @@ from app.modules.classes.schemas import (
     CodeDescription,
     SectionSummary,
 )
+from app.modules.classes.seats import seats_left
 from app.modules.classes.section_client import BannerSectionClient
 
 # Seats change by the minute during registration; lookups change by the term.
@@ -38,8 +39,11 @@ def _unescape(value: Any) -> Any:
     return value
 
 
-def _words(text: str) -> str:
-    return " ".join(text.split()).casefold()
+def _with_seats_left(section: dict[str, Any]) -> dict[str, Any]:
+    seats = seats_left(
+        section.get("seatsAvailable", 0), section.get("crossListAvailable")
+    )
+    return {**section, "seatsAvailable": seats}
 
 
 def _search_key(filters: SearchFilters) -> str:
@@ -90,7 +94,7 @@ class ClassSearchService:
         body = _unescape(await self._client.search(filters))
         result = ClassSearchResult(
             total_count=body.get("totalCount") or 0,
-            sections=body.get("data") or [],
+            sections=[_with_seats_left(section) for section in body.get("data") or []],
             fetched_at=datetime.now(UTC),
         )
         # Banner sometimes answers with nothing for a moment (an instructor
@@ -112,26 +116,18 @@ class ClassSearchService:
         key = f"{CACHE_PREFIX}section:{term}:{crn}"
         if cached := await cache_get(self._cache, key):
             return SectionSummary.model_validate_json(cached)
-        details = await self._sections.details(term, crn)
+        section = await self._sections.section(term, crn)
         summary = SectionSummary(
             crn=crn,
-            title=details.title,
-            subject=await self._subject_code(term, details.subject),
-            course_number=details.course_number,
-            section=details.section,
+            title=section.title,
+            subject=section.subject,
+            course_number=section.course_number,
+            section=section.section,
         )
         await cache_set(
             self._cache, key, summary.model_dump_json(by_alias=True), LOOKUP_TTL_SECONDS
         )
         return summary
-
-    async def _subject_code(self, term: str, name: str) -> str | None:
-        """Class details name the subject ("Computer & Information Science"), not its code."""
-        wanted = _words(name)
-        for subject in await self.subjects(term):
-            if _words(subject.description) == wanted:
-                return subject.code
-        return None
 
     async def _term_lookup(self, lookup: str, term: str) -> list[CodeDescription]:
         return await self._lookup(

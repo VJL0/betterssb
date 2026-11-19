@@ -72,7 +72,7 @@ export function queueRows(
 }
 
 /**
- * Fills in the rows no plan names from Banner's class details by CRN, so
+ * Fills in the rows no plan names from Banner's section lookup by CRN, so
  * every queued section shows its course.
  */
 export function withLookedUp(
@@ -85,8 +85,8 @@ export function withLookedUp(
     const { subject, courseNumber } = found;
     return {
       ...row,
-      code: subject ? courseCode(subject, courseNumber) : null,
-      courseId: subject ? `${subject}${courseNumber}` : null,
+      code: courseCode(subject, courseNumber),
+      courseId: `${subject}${courseNumber}`,
       title: found.title,
       section: found.section,
     };
