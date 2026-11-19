@@ -4,15 +4,11 @@ import {
   failedResultRecord,
   type AutoRegBatchResultRecord,
 } from "@workspace/shared/lib/auto-reg-batch-result";
-import {
-  armProblem,
-  crnLookupResult,
-} from "@workspace/shared/lib/auto-reg-queue";
+import { armProblem } from "@workspace/shared/lib/auto-reg-queue";
 import { matchingProfile } from "@workspace/shared/lib/instructors";
 import type {
   AutoRegQueue,
   AutoRegSnapshot,
-  CrnCheck,
 } from "@workspace/shared/types/auto-reg";
 import type { BannerConnection } from "@workspace/shared/types/store";
 import { setUpApiClient } from "@/lib/api-client";
@@ -228,13 +224,6 @@ async function relayToDarsTab(
   return { success: false, error: lastError };
 }
 
-/** Whether Banner has `crn` in the opened term, or null when it couldn't say. */
-async function lookUpCrn(crn: string, term: string): Promise<boolean | null> {
-  return ssb
-    .getSectionDetailsFromCRN(crn, term)
-    .then(crnLookupResult, () => null);
-}
-
 function snapshotOf(
   queue: AutoRegQueue,
   run: AutoRegRunState,
@@ -274,20 +263,6 @@ async function handleAutoRegMessage(
     case "AUTOREG_DISARM":
       await patchAutoRegRunState({ armed: false });
       return { success: true };
-    case "AUTOREG_CHECK_CRNS": {
-      const { term, crns } = msg.payload;
-      const checks: CrnCheck[] = [];
-      // When registration can't open, no CRN can be checked: each is unknown.
-      const opened = await ssb.openRegistration(term).then(
-        () => true,
-        () => false,
-      );
-      // One at a time: Banner keeps registration state per session.
-      for (const crn of crns) {
-        checks.push({ crn, found: opened ? await lookUpCrn(crn, term) : null });
-      }
-      return { success: true, data: checks };
-    }
     case "AUTOREG_REGISTRATION_TIME": {
       const { term } = msg.payload;
       return { success: true, data: await lookUpRegistrationTime(term) };

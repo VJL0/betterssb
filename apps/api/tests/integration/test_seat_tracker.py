@@ -17,7 +17,7 @@ from app.modules.classes.section_client import BannerSectionClient
 from app.modules.seat_tracker import router as seat_router
 from app.modules.seat_tracker.mailer import Email, MailError
 from app.modules.seat_tracker.service import MAX_WATCHES_PER_USER
-from tests.unit.test_section_client import DETAILS_FRAGMENT, enrollment_fragment
+from tests.unit.test_section_client import UNKNOWN_CRN_ERROR_PAGE, section_answer
 
 SESSION_COOKIE = "__Host-Http-sid"
 CRON_SECRET = "test-cron-secret-0123456789"
@@ -26,10 +26,11 @@ CRN = "50067"
 
 
 class FakeBanner:
-    """Banner's class detail and enrollment fragments, with seats set per CRN."""
+    """Banner's section lookup, with seats set per CRN."""
 
     def __init__(self) -> None:
         self.seats: dict[str, int] = {}
+        self.cross_list_available: dict[str, int] = {}
         self.down = False
 
     def client(self) -> BannerSectionClient:
@@ -38,14 +39,16 @@ class FakeBanner:
     def _handle(self, request: httpx2.Request) -> httpx2.Response:
         if self.down:
             return httpx2.Response(503)
-        crn = dict(httpx2.QueryParams(request.content.decode()))[
-            "courseReferenceNumber"
-        ]
+        crn = request.url.params["courseReferenceNumber"]
         if crn not in self.seats:
-            return httpx2.Response(200, text="<section></section>")
-        if request.url.path.endswith("getClassDetails"):
-            return httpx2.Response(200, text=DETAILS_FRAGMENT)
-        return httpx2.Response(200, text=enrollment_fragment(seats=self.seats[crn]))
+            return httpx2.Response(500, text=UNKNOWN_CRN_ERROR_PAGE)
+        return httpx2.Response(
+            200,
+            json=section_answer(
+                seats=self.seats[crn],
+                cross_list_available=self.cross_list_available.get(crn),
+            ),
+        )
 
 
 class FakeMailer:
@@ -204,9 +207,21 @@ class TestCheck:
         assert email.to == "student@gmail.com"
         assert email.subject == f"Seat open: Software Security (CRN {CRN})"
         assert "2 seats are open" in email.text
+        # Not the /ssb/registration landing page, which signs a student out.
+        assert "/ssb/registration/registerPostSignIn?mode=registration" in email.text
         [listed] = (await student.get("/api/seat-watches")).json()
         assert listed["seatsAvailable"] == 2
         assert listed["notifiedAt"] is not None
+
+    async def test_a_full_cross_list_group_sends_nothing(self, student, banner, mailer):
+        banner.seats[CRN] = 0
+        await watch(student)
+
+        banner.seats[CRN] = 5
+        banner.cross_list_available[CRN] = 0
+        await run_check(student)
+
+        assert mailer.sent == []
 
     async def test_emails_once_while_it_stays_open_and_again_after_it_fills(
         self, student, banner, mailer

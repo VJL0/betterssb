@@ -1,27 +1,29 @@
-"""Banner's public section pages by CRN: the class details and enrollment
-fragments Browse Classes opens, which need no student login.
+"""Banner's public section lookup by CRN: the JSON behind Browse Classes'
+"Instructor/Meeting Times" tab, which needs no student login. With
+`first=first` it adds the whole section, live seat counts included.
 """
 
 from __future__ import annotations
 
 import asyncio
+import html
 import logging
 import re
 from dataclasses import dataclass
+from typing import Any
 
 import httpx2
-from bs4 import BeautifulSoup
 
 from app.modules.classes.client import (
     REQUEST_TIMEOUT_SECONDS,
     TEMPLE_SSB_BASE_URL,
     USER_AGENT,
 )
+from app.modules.classes.seats import seats_left
 
 logger = logging.getLogger(__name__)
 
-DETAILS_PATH = "/searchResults/getClassDetails"
-ENROLLMENT_PATH = "/searchResults/getEnrollmentInfo"
+SECTION_PATH = "/searchResults/getFacultyMeetingTimes"
 # Each check run reads every watched CRN; Banner is shared with all of Temple.
 MAX_CONCURRENT_REQUESTS = 5
 _banner_slots = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
@@ -29,33 +31,13 @@ _banner_slots = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 # section from null fails with a 500 that says so.
 _NULL_SECTION_ERROR = re.compile(r"SectionDecorator.*for \[null\]", re.DOTALL)
 
-_ENROLLMENT_LABELS = {
-    "Enrollment Maximum": "maximum_enrollment",
-    "Enrollment Seats Available": "seats_available",
-    "Waitlist Capacity": "wait_capacity",
-    "Waitlist Actual": "wait_count",
-    "Waitlist Seats Available": "wait_available",
-}
-_ENROLLMENT_PATTERN = re.compile(
-    r'<span class="status-bold">\s*([A-Za-z ]+?):\s*</span>\s*'
-    r"<span[^>]*>\s*(-?\d+)\s*</span>"
-)
-
 
 class SectionUnavailable(Exception):
-    """Banner didn't answer, or answered with something other than the fragment."""
+    """Banner didn't answer, or answered with something other than the section."""
 
 
 class SectionNotFound(Exception):
     """Banner has no section with this CRN in the term."""
-
-
-@dataclass(frozen=True)
-class SectionDetails:
-    title: str
-    subject: str
-    course_number: str
-    section: str
 
 
 @dataclass(frozen=True)
@@ -73,33 +55,38 @@ class Enrollment:
         return self.seats_available > 0
 
 
-def parse_details(fragment: str) -> SectionDetails:
-    soup = BeautifulSoup(fragment, "lxml")
-
-    def text(element_id: str) -> str:
-        element = soup.find(id=element_id)
-        return " ".join(element.get_text().split()) if element else ""
-
-    title = text("courseTitle")
-    if not title:
-        raise SectionNotFound
-    return SectionDetails(
-        title=title,
-        subject=text("subject"),
-        course_number=text("courseNumber"),
-        section=text("sectionNumber"),
-    )
+@dataclass(frozen=True)
+class BannerSection:
+    title: str
+    subject: str
+    subject_description: str
+    course_number: str
+    section: str
+    enrollment: Enrollment
 
 
-def parse_enrollment(fragment: str) -> Enrollment:
-    values = {
-        _ENROLLMENT_LABELS[label]: int(value)
-        for label, value in _ENROLLMENT_PATTERN.findall(fragment)
-        if label in _ENROLLMENT_LABELS
-    }
-    if values.keys() != set(_ENROLLMENT_LABELS.values()):
-        raise SectionUnavailable("Banner returned an unexpected enrollment fragment")
-    return Enrollment(**values)
+def parse_section(body: Any) -> BannerSection:
+    """The `section` of a `first=first` answer. Its text is HTML-escaped."""
+    try:
+        section = body["section"]
+        return BannerSection(
+            title=html.unescape(section["courseTitle"]),
+            subject=section["subject"],
+            subject_description=html.unescape(section["subjectDescription"]),
+            course_number=section["courseNumber"],
+            section=section["sequenceNumber"],
+            enrollment=Enrollment(
+                seats_available=seats_left(
+                    section["seatsAvailable"], section["crossListAvailable"]
+                ),
+                maximum_enrollment=section["maximumEnrollment"],
+                wait_count=section["waitCount"],
+                wait_capacity=section["waitCapacity"],
+                wait_available=section["waitAvailable"],
+            ),
+        )
+    except (KeyError, TypeError) as exc:
+        raise SectionUnavailable("Banner returned an unexpected section") from exc
 
 
 def _is_missing_section(error: httpx2.HTTPError) -> bool:
@@ -118,13 +105,7 @@ class BannerSectionClient:
         self._base_url = base_url.rstrip("/")
         self._transport = transport
 
-    async def details(self, term: str, crn: str) -> SectionDetails:
-        return parse_details(await self._fragment(DETAILS_PATH, term, crn))
-
-    async def enrollment(self, term: str, crn: str) -> Enrollment:
-        return parse_enrollment(await self._fragment(ENROLLMENT_PATH, term, crn))
-
-    async def _fragment(self, path: str, term: str, crn: str) -> str:
+    async def section(self, term: str, crn: str) -> BannerSection:
         async with (
             _banner_slots,
             httpx2.AsyncClient(
@@ -135,13 +116,21 @@ class BannerSectionClient:
             ) as session,
         ):
             try:
-                response = await session.post(
-                    path, data={"term": term, "courseReferenceNumber": crn}
+                response = await session.get(
+                    SECTION_PATH,
+                    params={
+                        "term": term,
+                        "courseReferenceNumber": crn,
+                        "first": "first",
+                    },
                 )
                 response.raise_for_status()
+                body = response.json()
             except httpx2.HTTPError as exc:
                 if _is_missing_section(exc):
                     raise SectionNotFound from exc
-                logger.warning("Banner %s failed for %s: %s", path, crn, exc)
+                logger.warning("Banner %s failed for %s: %s", SECTION_PATH, crn, exc)
                 raise SectionUnavailable from exc
-        return response.text
+            except ValueError as exc:
+                raise SectionUnavailable("Banner didn't answer with JSON") from exc
+        return parse_section(body)

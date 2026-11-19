@@ -65,7 +65,11 @@ class ClassSection(BaseSchema):
     credit_hour_high: float | None = None
     maximum_enrollment: int = 0
     enrollment: int = 0
-    seats_available: int = 0
+    seats_available: int = Field(
+        default=0,
+        description="Seats a student can register for: Banner's count, capped by "
+        "the room left in the section's cross-list group. Negative when over-enrolled.",
+    )
     wait_capacity: int = 0
     wait_count: int = 0
     wait_available: int = 0
@@ -93,9 +97,6 @@ class SectionSummary(BaseSchema):
 
     crn: str
     title: str
-    subject: str | None = Field(
-        description="Subject code, such as CIS; null if Banner's subject name "
-        "matches none of the term's subjects."
-    )
+    subject: str = Field(description="Subject code, such as CIS.")
     course_number: str
     section: str

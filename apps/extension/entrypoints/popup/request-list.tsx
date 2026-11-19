@@ -18,7 +18,7 @@ function siteName(url: URL): string {
   return SITE_NAMES[url.origin] ?? url.host;
 }
 
-/** "getSectionDetailsFromCRN", the part of the path that says what was asked. */
+/** "addCRNRegistrationItems", the part of the path that says what was asked. */
 function endpoint(url: URL): string {
   return url.pathname.split("/").filter(Boolean).at(-1) ?? url.pathname;
 }

@@ -33,8 +33,11 @@ from app.modules.seat_tracker.schemas import SeatCheckSummary
 logger = logging.getLogger(__name__)
 
 MAX_WATCHES_PER_USER = 10
+# "Register for Classes", which signs the student in if needed. Not the
+# `/ssb/registration` landing page: opening it ends a signed-in session.
 BANNER_REGISTRATION_URL = (
-    "https://prd-xereg.temple.edu/StudentRegistrationSsb/ssb/registration"
+    "https://prd-xereg.temple.edu/StudentRegistrationSsb"
+    "/ssb/registration/registerPostSignIn?mode=registration"
 )
 
 
@@ -74,19 +77,17 @@ async def add_watch(
     count = await db.scalar(select(func.count()).where(SeatWatch.user_id == user.id))
     if (count or 0) >= MAX_WATCHES_PER_USER:
         raise WatchLimitReached
-    details, enrollment = await asyncio.gather(
-        banner.details(term, crn), banner.enrollment(term, crn)
-    )
+    section = await banner.section(term, crn)
     watch = SeatWatch(
         user_id=user.id,
         term=term,
         crn=crn,
-        title=details.title,
-        subject=details.subject,
-        course_number=details.course_number,
-        section=details.section,
+        title=section.title,
+        subject=section.subject_description,
+        course_number=section.course_number,
+        section=section.section,
     )
-    _record(watch, enrollment, datetime.now(UTC))
+    _record(watch, section.enrollment, datetime.now(UTC))
     db.add(watch)
     try:
         await db.commit()
@@ -184,7 +185,7 @@ async def _read_enrollment(
     """None when Banner fails or no longer has the section, which leaves the
     watch's last counts in place."""
     try:
-        return await banner.enrollment(term, crn)
+        return (await banner.section(term, crn)).enrollment
     except SectionUnavailable, SectionNotFound:
         return None
 

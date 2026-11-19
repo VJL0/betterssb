@@ -9,7 +9,7 @@ import {
   classSection,
   meetingTime,
 } from "@workspace/shared/testing/class-section";
-import { queueCredits, queueRows, withLookedUp } from "./queue-rows";
+import { queueCredits, queueRows } from "./queue-rows";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
@@ -62,7 +62,7 @@ describe("queueRows", () => {
   });
 });
 
-describe("withLookedUp", () => {
+describe("queueRows with looked-up sections", () => {
   const softwareSecurity = {
     crn: "50067",
     title: "Software Security",
@@ -72,8 +72,11 @@ describe("withLookedUp", () => {
   };
 
   it("names CRNs no plan names, and leaves planned ones alone", () => {
-    const rows = withLookedUp(
-      queueRows(["41207", "50067", "99999"], "202703", [plan]),
+    const rows = queueRows(
+      ["41207", "50067", "99999"],
+      "202703",
+      [plan],
+      [],
       new Map([
         ["41207", { ...softwareSecurity, crn: "41207" }],
         ["50067", softwareSecurity],
@@ -85,18 +88,6 @@ describe("withLookedUp", () => {
       ["99999", null, null, null],
     ]);
     expect(rows[1]!.courseId).toBe("CIS3441");
-  });
-
-  it("keeps the title when Banner's subject has no code", () => {
-    const [row] = withLookedUp(
-      queueRows(["50067"], "202703", []),
-      new Map([["50067", { ...softwareSecurity, subject: null }]]),
-    );
-    expect([row!.code, row!.courseId, row!.title]).toEqual([
-      null,
-      null,
-      "Software Security",
-    ]);
   });
 });
 

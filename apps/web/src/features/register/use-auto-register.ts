@@ -14,7 +14,6 @@ import type {
 } from "@workspace/shared/types/auto-reg";
 import {
   armAutoRegister,
-  checkCrns,
   disarmAutoRegister,
   getAutoRegister,
   getBannerPlans,
@@ -116,21 +115,6 @@ export function useRegistrationTime(term: string, enabled: boolean) {
   });
 }
 
-/** Whether Banner knows each queued CRN in the term. */
-export function useCrnChecks(
-  term: string,
-  crns: readonly string[],
-  enabled: boolean,
-) {
-  return useQuery({
-    queryKey: ["crnChecks", term, crns],
-    queryFn: () => checkCrns(term, [...crns]),
-    enabled: enabled && !!term && crns.length > 0,
-    staleTime: BANNER_STALE_MS,
-    retry: false,
-  });
-}
-
 export interface LookedUpSections {
   byCrn: ReadonlyMap<string, SectionSummary>;
   /** CRNs still being looked up. */
@@ -139,7 +123,7 @@ export interface LookedUpSections {
   missing: ReadonlySet<string>;
 }
 
-/** The course of each CRN, from Banner's class details; no sign-in needed. */
+/** The course of each CRN, from Banner's public section lookup; no sign-in needed. */
 export function useLookedUpSections(
   term: string,
   crns: readonly string[],

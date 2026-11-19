@@ -250,7 +250,7 @@ outlive. It takes the `X-Synchronizer-Token` from a rendered page
 which ends the session, see anomaly 1), and treats a
 redirect or a 401/403 as signed out, after one retry with a fresh token.
 
-The `classRegistration/*` endpoints (`getPlans`, `getSectionDetailsFromCRN`,
+The `classRegistration/*` endpoints (`getPlans`,
 `addCRNRegistrationItems`, `submitRegistration/batch`) answer only after the session has
 opened registration for a term: `term/saveTerm`, then `term/search?mode=registration`
 answering with a `fwdURL`, then the `classRegistration/classRegistration` page. Called

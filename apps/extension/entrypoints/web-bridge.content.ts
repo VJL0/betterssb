@@ -49,11 +49,6 @@ async function handle(request: BridgeRequest): Promise<Reply> {
         type: "AUTOREG_SAVE_QUEUE",
         payload: { queue: request.queue },
       });
-    case "AUTOREG_CHECK_CRNS":
-      return sendMessage({
-        type: "AUTOREG_CHECK_CRNS",
-        payload: { term: request.term, crns: request.crns },
-      });
     case "AUTOREG_REGISTRATION_TIME":
       return sendMessage({
         type: "AUTOREG_REGISTRATION_TIME",

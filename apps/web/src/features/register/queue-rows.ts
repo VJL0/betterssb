@@ -16,14 +16,15 @@ export interface QueueRow {
 
 /**
  * The queued CRNs, described from the student's saved plans for the term,
- * or from a Banner plan when that's where they came from. A typed-in CRN
- * that neither names is left for `withLookedUp`.
+ * from a Banner plan when that's where they came from, or else from Banner's
+ * section lookup by CRN, which has no credits.
  */
 export function queueRows(
   crns: readonly string[],
   term: string,
   plans: readonly TermPlan[],
   bannerPlans: readonly SSBRegPlanHeader[] = [],
+  lookedUp: ReadonlyMap<string, SectionSummary> = new Map(),
 ): QueueRow[] {
   const planned = new Map(
     plans
@@ -60,35 +61,14 @@ export function queueRows(
         credits: course.creditHours,
       };
     }
+    const found = lookedUp.get(crn);
     return {
       crn,
-      code: null,
-      courseId: null,
-      title: null,
-      section: null,
+      code: found ? courseCode(found.subject, found.courseNumber) : null,
+      courseId: found ? `${found.subject}${found.courseNumber}` : null,
+      title: found?.title ?? null,
+      section: found?.section ?? null,
       credits: null,
-    };
-  });
-}
-
-/**
- * Fills in the rows no plan names from Banner's class details by CRN, so
- * every queued section shows its course.
- */
-export function withLookedUp(
-  rows: readonly QueueRow[],
-  lookedUp: ReadonlyMap<string, SectionSummary>,
-): QueueRow[] {
-  return rows.map((row) => {
-    const found = row.title === null ? lookedUp.get(row.crn) : undefined;
-    if (!found) return row;
-    const { subject, courseNumber } = found;
-    return {
-      ...row,
-      code: subject ? courseCode(subject, courseNumber) : null,
-      courseId: subject ? `${subject}${courseNumber}` : null,
-      title: found.title,
-      section: found.section,
     };
   });
 }

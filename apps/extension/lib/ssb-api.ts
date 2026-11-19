@@ -1,6 +1,6 @@
 /**
  * Client for the Ellucian Self-Service Banner (SSB) registration API, called
- * from the background script: auto-register, CRN checks and the web bridge.
+ * from the background script: auto-register and the web bridge.
  *
  * The extension's host permission lets these requests carry the student's
  * existing Banner cookies, so no Banner tab needs to be open and the
@@ -200,14 +200,29 @@ async function saveRegistrationTerm(term: string): Promise<void> {
   });
 }
 
-/** What `term/search` answers: where to go next, or why registration is closed. */
+/**
+ * What `term/search` answers. `fwdURL` comes even when registration is
+ * closed ("Time tickets prevent registration at this time."), so only the
+ * two flags say whether it opened.
+ */
 interface TermSearchAnswer {
   fwdURL?: string;
+  regAllowed?: boolean;
+  studentEligValid?: boolean;
   studentEligFailures?: string[];
 }
 
 function isTermSearchAnswer(value: unknown): value is TermSearchAnswer {
   return typeof value === "object" && value !== null;
+}
+
+/** Banner's own term page goes on only when neither flag is false. */
+function registrationOpened(answer: TermSearchAnswer): boolean {
+  return (
+    !!answer.fwdURL &&
+    answer.regAllowed !== false &&
+    answer.studentEligValid !== false
+  );
 }
 
 async function searchRegistrationTerm(
@@ -234,7 +249,7 @@ async function searchRegistrationTerm(
 export async function openRegistration(term: string): Promise<void> {
   await saveRegistrationTerm(term);
   const answer = await searchRegistrationTerm(term);
-  if (!isTermSearchAnswer(answer) || !answer.fwdURL) {
+  if (!isTermSearchAnswer(answer) || !registrationOpened(answer)) {
     const reasons = isTermSearchAnswer(answer)
       ? (answer.studentEligFailures ?? [])
       : [];
@@ -242,17 +257,6 @@ export async function openRegistration(term: string): Promise<void> {
   }
   // Banner issues a new token on the page `term/search` forwards to.
   await loadSyncToken(CLASS_REGISTRATION_PAGE);
-}
-
-/** Needs `openRegistration(term)` first. */
-export async function getSectionDetailsFromCRN(
-  crn: string,
-  term: string,
-): Promise<unknown> {
-  return ssbGet("/classRegistration/getSectionDetailsFromCRN", {
-    courseReferenceNumber: crn,
-    term,
-  });
 }
 
 /** The student's Banner plans for the term opened by `openRegistration`. */

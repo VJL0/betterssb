@@ -556,6 +556,8 @@ export type ClassSection = {
   scheduleTypeDescription: string;
   /**
    * Seatsavailable
+   *
+   * Seats a student can register for: Banner's count, capped by the room left in the section's cross-list group. Negative when over-enrolled.
    */
   seatsAvailable: number;
   /**
@@ -2046,9 +2048,9 @@ export type SectionSummary = {
   /**
    * Subject
    *
-   * Subject code, such as CIS; null if Banner's subject name matches none of the term's subjects.
+   * Subject code, such as CIS.
    */
-  subject: string | null;
+  subject: string;
   /**
    * Title
    */

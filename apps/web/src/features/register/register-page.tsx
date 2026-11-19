@@ -11,7 +11,6 @@ import { formatTermName } from "@workspace/shared/lib/terms";
 import type {
   AutoRegQueue,
   AutoRegSnapshot,
-  CrnCheck,
   RegistrationTimeLookup,
 } from "@workspace/shared/types/auto-reg";
 import type { SSBRegPlanHeader } from "@workspace/shared/types/ssb";
@@ -61,13 +60,13 @@ import { useCourseSections } from "@/features/schedule/use-course-sections";
 import { ArmPanel, type ArmCheck } from "./arm-panel";
 import { LastRun } from "./last-run";
 import { QueueCard } from "./queue-card";
-import { queueRows, withLookedUp, type QueueRow } from "./queue-rows";
+import { queueRows, type QueueRow } from "./queue-rows";
 import {
   useAutoRegister,
   useBannerRegistration,
-  useCrnChecks,
   useLookedUpSections,
   useRegistrationTime,
+  type LookedUpSections,
 } from "./use-auto-register";
 import { formatDateTime } from "@/lib/relative-time";
 
@@ -197,25 +196,25 @@ function bannerCheck(
   }
 }
 
+/** `lookedUp` holds every queued CRN, so its counts are the queue's. */
 function crnCheck(
   count: number,
-  connected: boolean,
-  checks: readonly CrnCheck[] | undefined,
-  checking: boolean,
+  term: string,
+  lookedUp: LookedUpSections,
 ): ArmCheck {
   if (count === 0) return { label: "No CRNs added", state: "bad" };
-  if (!connected) return { label: "CRNs not checked yet", state: "pending" };
-  if (checking || !checks) {
+  if (!term) return { label: "CRNs not checked yet", state: "pending" };
+  if (lookedUp.pending.size > 0) {
     return { label: "Checking CRNs with Banner…", state: "pending" };
   }
-  const found = checks.filter((c) => c.found === true).length;
-  if (checks.some((c) => c.found === false)) {
-    return { label: `${found} of ${count} CRNs found in Banner`, state: "bad" };
-  }
-  if (checks.some((c) => c.found === null)) {
+  const found = lookedUp.byCrn.size;
+  if (lookedUp.missing.size === 0 && found < count) {
     return { label: "Couldn't check every CRN with Banner", state: "warn" };
   }
-  return { label: `${count} of ${count} CRNs found in Banner`, state: "ok" };
+  return {
+    label: `${found} of ${count} CRNs found in Banner`,
+    state: found === count ? "ok" : "bad",
+  };
 }
 
 function AutoRegister({
@@ -236,22 +235,20 @@ function AutoRegister({
   const term = snapshot.term || currentTerm?.code || "";
   const registration = useBannerRegistration(connected, term);
   const bannerPlans = registration.plans.data?.plans ?? NO_BANNER_PLANS;
-  const plannedRows = queueRows(snapshot.crns, term, plans, bannerPlans);
-  const lookedUp = useLookedUpSections(
+  // Every CRN, not just the ones no plan names: this is also the arm check.
+  const lookedUp = useLookedUpSections(term, snapshot.crns);
+  const rows = queueRows(
+    snapshot.crns,
     term,
-    plannedRows.filter((row) => row.title === null).map((row) => row.crn),
+    plans,
+    bannerPlans,
+    lookedUp.byCrn,
   );
-  const rows = withLookedUp(plannedRows, lookedUp.byCrn);
   const sections = useCourseSections(term, coursesOf(rows));
   const sectionsByCrn = new Map<string, ClassSection>(
     [...sections.sectionsByCourse.values()]
       .flat()
       .map((s) => [s.courseReferenceNumber, s]),
-  );
-  const crnChecks = useCrnChecks(
-    term,
-    snapshot.crns,
-    connected && !snapshot.armed,
   );
   const queue: AutoRegQueue = {
     term,
@@ -284,12 +281,6 @@ function AutoRegister({
     : proxyTerms.terms;
   const termName =
     termOptions.find((t) => t.code === term)?.name ?? currentTerm?.name ?? term;
-  const notFound = new Set([
-    ...lookedUp.missing,
-    ...(crnChecks.data ?? [])
-      .filter((c) => c.found === false)
-      .map((c) => c.crn),
-  ]);
   const planCrns = plans
     .filter((p) => p.term === term)
     .flatMap((p) => p.sections.map((s) => s.crn));
@@ -309,12 +300,7 @@ function AutoRegister({
               label: `${termName} isn't open for registration in Banner`,
               state: "bad",
             },
-    crnCheck(
-      snapshot.crns.length,
-      connected,
-      crnChecks.data,
-      crnChecks.isFetching,
-    ),
+    crnCheck(snapshot.crns.length, term, lookedUp),
     !snapshot.scheduledRunAt
       ? { label: "No registration time set", state: "bad" }
       : new Date(snapshot.scheduledRunAt).getTime() <= now
@@ -353,7 +339,7 @@ function AutoRegister({
             armed={snapshot.armed}
             sectionsByCrn={sectionsByCrn}
             lookingUp={lookedUp.pending}
-            notFound={notFound}
+            notFound={lookedUp.missing}
             planCrns={planCrns}
             termName={termName}
             bannerPlans={bannerPlans}
