@@ -6,21 +6,23 @@ import {
   type GpaTotals,
   type LetterGrade,
 } from "@workspace/shared/lib/gpa";
-import type { SavedCourse } from "@workspace/shared/lib/transcript";
+import type {
+  SavedCourse,
+  TranscriptData,
+} from "@workspace/shared/lib/transcript";
 
 export interface GpaWhatIf {
-  active: boolean;
-  start: () => void;
-  /** Leaves what-if mode, dropping every change. */
-  done: () => void;
-  reset: () => void;
+  /** Puts every course back to its own grade. */
+  revertAll: () => void;
   /** The grade being tried for a course, or its own when none is. */
   gradeOf: (course: SavedCourse) => string;
   /** Tries a letter grade; the course's own grade puts it back. */
   setGrade: (course: SavedCourse, grade: string) => void;
+  /** How many courses have a what-if grade. */
   changed: number;
   whatIf: GpaTotals;
-  nowGpa: number | null;
+  /** The transcript's GPA, or its courses' when it has none. */
+  actualGpa: number | null;
   whatIfGpa: number | null;
   /** Credits in progress without an expected grade, which a target solves for. */
   openCredits: number;
@@ -28,6 +30,8 @@ export interface GpaWhatIf {
 }
 
 type TriedGrades = ReadonlyMap<SavedCourse, LetterGrade>;
+
+const NO_COURSES: SavedCourse[] = [];
 
 /**
  * A course as the what-if GPA counts it. A picked letter grade counts as if
@@ -45,14 +49,13 @@ function triedCourse(grades: TriedGrades, course: SavedCourse): SavedCourse {
  * Grades to try on the transcript, kept in memory only: they never change
  * the saved transcript or what the advisor reads.
  */
-export function useGpaWhatIf(courses: readonly SavedCourse[]): GpaWhatIf {
-  const [active, setActive] = useState(false);
+export function useGpaWhatIf(transcript: TranscriptData | null): GpaWhatIf {
+  const courses = transcript?.courses ?? NO_COURSES;
   // Keyed by the course itself; a re-saved transcript starts fresh.
   const [grades, setGrades] = useState<TriedGrades>(new Map());
 
   const tried = courses.map((course) => triedCourse(grades, course));
   const totals = {
-    now: gpaTotals(courses),
     whatIf: gpaTotals(tried),
     openCredits: tried
       .filter((c) => c.category === "in_progress" && !isLetterGrade(c.grade))
@@ -60,13 +63,7 @@ export function useGpaWhatIf(courses: readonly SavedCourse[]): GpaWhatIf {
   };
 
   return {
-    active,
-    start: () => setActive(true),
-    done: () => {
-      setActive(false);
-      setGrades(new Map());
-    },
-    reset: () => setGrades(new Map()),
+    revertAll: () => setGrades(new Map()),
     gradeOf: (course) => grades.get(course) ?? course.grade,
     setGrade: (course, grade) =>
       setGrades((previous) => {
@@ -80,7 +77,7 @@ export function useGpaWhatIf(courses: readonly SavedCourse[]): GpaWhatIf {
       }),
     changed: grades.size,
     whatIf: totals.whatIf,
-    nowGpa: gpaOf(totals.now),
+    actualGpa: transcript?.gpa ?? gpaOf(gpaTotals(courses)),
     whatIfGpa: gpaOf(totals.whatIf),
     openCredits: totals.openCredits,
     hasCoursesInProgress: courses.some((c) => c.category === "in_progress"),

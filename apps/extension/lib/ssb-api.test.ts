@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { stoppedRedirect } from "@/test/responses";
 import { BANNER_ORIGIN } from "./temple-urls";
 
 const SSB = `${BANNER_ORIGIN}/StudentRegistrationSsb/ssb`;
@@ -6,13 +7,6 @@ const TERMS = [{ code: "202703", description: "2027 Spring" }];
 
 function page(token: string): Response {
   return new Response(`<meta name="synchronizerToken" content="${token}"/>`);
-}
-
-function stoppedRedirect(): Response {
-  const response = new Response(null);
-  Object.defineProperty(response, "type", { value: "opaqueredirect" });
-  Object.defineProperty(response, "status", { value: 0 });
-  return response;
 }
 
 /** Answers each Banner request with the next response queued for its path. */

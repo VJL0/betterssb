@@ -1,15 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
-  CircleXIcon,
-  FileUpIcon,
   GraduationCapIcon,
   InfoIcon,
   MessageCircleQuestionIcon,
-  RefreshCwIcon,
 } from "lucide-react";
-import { queryError, type Audit } from "@workspace/api-client";
+import { parseAudit, type Audit } from "@workspace/api-client";
 import {
   auditGroups,
   countLines,
@@ -27,23 +24,13 @@ import {
   plannedTermByCourse,
   projectedFinish,
 } from "@workspace/shared/lib/planner";
+import type { StoredAudit } from "@workspace/shared/types/store";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert";
 import { Card } from "@workspace/ui/components/card";
-import { Button } from "@workspace/ui/components/button";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@workspace/ui/components/empty";
-import { Skeleton } from "@workspace/ui/components/skeleton";
-import { Spinner } from "@workspace/ui/components/spinner";
 import {
   Tabs,
   TabsContent,
@@ -52,15 +39,19 @@ import {
 } from "@workspace/ui/components/tabs";
 import { isPageReady } from "@/components/shell/pages";
 import { ButtonLink } from "@/components/button-link";
-import { useExtensionInstalled } from "@/hooks/use-extension-installed";
+import { runDarsAudit } from "@/lib/extension";
 import { usePlans } from "@/hooks/use-plans";
 import { useStoreDocument } from "@/lib/store/store-context";
+import { RecordPage } from "@/features/records/record-page";
+import {
+  SignInRequiredError,
+  useRecordRun,
+  type RecordKind,
+  type RecordReaders,
+} from "@/features/records/use-record-run";
 import { RequirementGroup } from "./requirement-group";
-import { useAuditRun } from "./use-audit-run";
 
 const DARS_URL = "https://prd-dars.temple.edu/selfservice/";
-const ELAPSED_TICK_MS = 1_000;
-const MS_PER_SECOND = 1_000;
 
 type Filter = LineStatus | "all";
 const FILTERS: { value: Filter; label: string }[] = [
@@ -96,147 +87,66 @@ function linesFor(group: AuditGroup, filter: Filter) {
     : group.lines.filter((line) => line.status === filter);
 }
 
+const AUDIT: RecordKind = {
+  name: "degree audit",
+  source: "DARS",
+  fileName: "DARS file",
+  accept: ".html,.htm,text/html",
+  sourceHint: "DARS usually takes 5 to 20 seconds.",
+};
+
+/** Reads a printer-friendly DARS audit page, through the API. */
+async function parseAuditPage(
+  html: string,
+  errorMessage: string,
+): Promise<Audit> {
+  const { data } = await parseAudit({ body: html, meta: { errorMessage } });
+  return data;
+}
+
+async function runInDars(): Promise<Audit> {
+  const lookup = await runDarsAudit();
+  if (lookup.status === "signed-out") {
+    throw new SignInRequiredError("DARS", DARS_URL);
+  }
+  return parseAuditPage(lookup.html, "Couldn't read the audit from DARS.");
+}
+
+const AUDIT_READERS: RecordReaders<Audit> = {
+  fromExtension: runInDars,
+  fromFile: async (file) =>
+    parseAuditPage(
+      await file.text(),
+      "Couldn't read that file. Save the printer-friendly audit page as HTML and try again.",
+    ),
+};
+
+function auditSummary({ audit, storedAt }: StoredAudit): string {
+  return [
+    audit.programTitle,
+    audit.catalogYear && `${audit.catalogYear} Bulletin`,
+    `DARS run ${runDate(audit, storedAt)}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 export function AuditPage() {
-  const run = useAuditRun();
-  const extensionInstalled = useExtensionInstalled();
-  const fileInput = useRef<HTMLInputElement>(null);
-  const audit = run.stored?.audit ?? null;
-
-  const actions = (
-    <>
-      <Button
-        variant="outline"
-        onClick={() => fileInput.current?.click()}
-        disabled={run.running}
-      >
-        <FileUpIcon data-icon="inline-start" />
-        Upload DARS file
-      </Button>
-      {extensionInstalled && (
-        <Button
-          variant={audit ? "outline" : "default"}
-          onClick={() => run.start({ kind: "extension" })}
-          disabled={run.running}
-        >
-          <RefreshCwIcon data-icon="inline-start" />
-          {audit ? "Run DARS again" : "Run DARS"}
-        </Button>
-      )}
-    </>
+  const stored = useStoreDocument("audit");
+  const run = useRecordRun(AUDIT, AUDIT_READERS, (audit, storedAt) =>
+    stored.save({ audit, storedAt }),
   );
+  const saved = stored.value;
 
   return (
-    <div className="flex flex-col gap-5">
-      {/* Opened by "Upload DARS file"; hidden from tab order and screen readers. */}
-      <input
-        ref={fileInput}
-        type="file"
-        accept=".html,.htm,text/html"
-        className="sr-only"
-        tabIndex={-1}
-        aria-hidden
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) run.start({ kind: "file", file });
-          e.target.value = "";
-        }}
-      />
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold tracking-tight">Degree audit</h2>
-          {audit && run.stored && (
-            <p className="text-muted-foreground">
-              {[
-                audit.programTitle,
-                audit.catalogYear && `${audit.catalogYear} Bulletin`,
-                `DARS run ${runDate(audit, run.stored.storedAt)}`,
-              ]
-                .filter(Boolean)
-                .join(" · ")}
-            </p>
-          )}
-        </div>
-        {audit && <div className="flex flex-wrap gap-2">{actions}</div>}
-      </div>
-
-      {run.running && (
-        <Running label={run.runLabel} startedAt={run.startedAt} />
-      )}
-      {run.error && !run.running && (
-        <Alert variant="destructive">
-          <CircleXIcon />
-          <AlertTitle>The audit didn't update</AlertTitle>
-          <AlertDescription>
-            {queryError(run.error)?.message}
-            {audit && " Your last saved audit is below."}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {run.loading ? (
-        <Skeleton className="h-96 rounded-3xl" />
-      ) : audit && run.stored ? (
-        <AuditReport audit={audit} />
-      ) : (
-        !run.running && (
-          <NoAudit actions={actions} extensionInstalled={extensionInstalled} />
-        )
-      )}
-    </div>
-  );
-}
-
-function Running({ label, startedAt }: { label: string; startedAt: number }) {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), ELAPSED_TICK_MS);
-    return () => clearInterval(timer);
-  }, []);
-  const seconds = Math.max(0, Math.round((now - startedAt) / MS_PER_SECOND));
-  return (
-    <Card className="flex-row items-center gap-3 p-4">
-      <Spinner aria-hidden />
-      <span role="status" className="flex flex-1 flex-col">
-        {label}
-        <span className="text-xs text-muted-foreground">
-          DARS usually takes 5 to 20 seconds. If you're signed out, a DARS tab
-          opens so you can sign in.
-        </span>
-      </span>
-      <span aria-hidden className="text-muted-foreground tabular-nums">
-        {seconds} s
-      </span>
-    </Card>
-  );
-}
-
-function NoAudit({
-  actions,
-  extensionInstalled,
-}: {
-  actions: React.ReactNode;
-  extensionInstalled: boolean;
-}) {
-  return (
-    <Empty className="border border-dashed">
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <GraduationCapIcon />
-        </EmptyMedia>
-        <EmptyTitle>See your degree audit</EmptyTitle>
-        <EmptyDescription>
-          {extensionInstalled
-            ? "Run it in DARS with the extension, or upload a saved audit file."
-            : "Upload the audit page you saved from DARS. With the BetterSSB extension, you can run it from here instead."}
-        </EmptyDescription>
-      </EmptyHeader>
-      <EmptyContent className="flex-row flex-wrap justify-center">
-        {actions}
-      </EmptyContent>
-      <details className="max-w-md text-left text-muted-foreground">
-        <summary className="cursor-pointer font-medium text-foreground">
-          How do I save my audit?
-        </summary>
+    <RecordPage
+      kind={AUDIT}
+      run={run}
+      loading={stored.status === "loading"}
+      hasRecord={!!saved}
+      subtitle={saved && auditSummary(saved)}
+      icon={<GraduationCapIcon />}
+      help={
         <ol className="mt-2 list-decimal space-y-1 pl-5">
           <li>
             Open your audit in{" "}
@@ -250,11 +160,15 @@ function NoAudit({
             </a>{" "}
             and switch to the printer-friendly view.
           </li>
-          <li>Save the page (⌘S or Ctrl+S) as an HTML file.</li>
-          <li>Upload that file here.</li>
+          <li>
+            Save the page (⌘S or Ctrl+S) as an HTML file, then choose Upload
+            DARS file.
+          </li>
         </ol>
-      </details>
-    </Empty>
+      }
+    >
+      {saved && <AuditReport audit={saved.audit} />}
+    </RecordPage>
   );
 }
 

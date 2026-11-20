@@ -1,10 +1,10 @@
 /**
  * The website's way into the extension, over `window.postMessage` on the
  * website's origin only. Just the requests `parseBridgeRequest` allows cross:
- * DARS runs, Banner status, the shared store, Banner's registration terms and
- * plans, the TUportal registration time and auto-register setup. No Banner
- * registration call crosses, and the extension checks a queue before turning
- * it on.
+ * the DARS audit, Banner status, the shared store, Banner's registration
+ * terms and plans, the student's transcript, the TUportal registration time
+ * and auto-register setup. No Banner registration call crosses, and the
+ * extension checks a queue before turning it on.
  */
 import { AUTO_REG_RUN_STATE_KEY } from "@/lib/auto-reg-run-state";
 import { AUTO_REG_QUEUE_KEY } from "@/lib/auto-reg-queue-storage";
@@ -62,6 +62,8 @@ async function handle(request: BridgeRequest): Promise<Reply> {
         type: "SSB_REG_GET_PLANS",
         payload: { term: request.term },
       });
+    case "BANNER_TRANSCRIPT":
+      return sendMessage({ type: "SSB_GET_TRANSCRIPT", payload: {} });
   }
 }
 
@@ -78,14 +80,17 @@ export default defineContentScript({
   // Only the website (WXT_WEB_ORIGIN): any page here can drive the bridge.
   matches: [originMatchPattern(WEB_ORIGIN)],
 
-  main() {
+  // An extension reload leaves the old copy running in open tabs, unable to
+  // reach the background. `ctx` stops its listeners, so only the new copy
+  // answers, rather than the old one refusing requests it doesn't know.
+  main(ctx) {
     const origin = window.location.origin;
 
     // Lets the page detect that the extension is installed.
     document.documentElement.dataset.betterssbExtension =
       browser.runtime.getManifest().version;
 
-    extensionStore.subscribe((key) => {
+    const unsubscribe = extensionStore.subscribe((key) => {
       const event: BridgeEvent = {
         source: BRIDGE_SOURCE,
         dir: "event",
@@ -94,9 +99,13 @@ export default defineContentScript({
       };
       window.postMessage(event, origin);
     });
+    ctx.onInvalidated(unsubscribe);
 
     // The website refreshes auto-register when it's armed, run or edited elsewhere.
-    browser.storage.onChanged.addListener((changes, area) => {
+    const onStorageChanged = (
+      changes: Record<string, Browser.storage.StorageChange>,
+      area: string,
+    ) => {
       if (area !== "local") return;
       if (AUTO_REG_RUN_STATE_KEY in changes || AUTO_REG_QUEUE_KEY in changes) {
         const event: BridgeEvent = {
@@ -115,9 +124,13 @@ export default defineContentScript({
         };
         window.postMessage(event, origin);
       }
-    });
+    };
+    browser.storage.onChanged.addListener(onStorageChanged);
+    ctx.onInvalidated(() =>
+      browser.storage.onChanged.removeListener(onStorageChanged),
+    );
 
-    window.addEventListener("message", async (event: MessageEvent) => {
+    ctx.addEventListener(window, "message", async (event: MessageEvent) => {
       if (event.source !== window || !hasRequestId(event.data)) return;
       const { id } = event.data;
       const reply = (res: Reply) => {

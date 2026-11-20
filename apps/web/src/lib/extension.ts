@@ -3,10 +3,10 @@
  *
  * The extension's web-bridge content script answers `window.postMessage`
  * requests on this origin (see @workspace/shared/lib/bridge). Through it the
- * site runs DARS audits in the student's own session, reads the Banner
- * connection, shares the extension's local store, and sets up and arms
- * auto-register (the extension runs it, with the student's Banner sign-in). No credential ever
- * reaches this site or the server.
+ * site runs DARS audits and gets the transcript in the student's own sessions,
+ * reads the Banner connection, shares the extension's local store, and sets
+ * up and arms auto-register (the extension runs it, with the student's Banner
+ * sign-in). No credential ever reaches this site or the server.
  */
 import {
   BRIDGE_SOURCE,
@@ -22,11 +22,12 @@ import type {
 } from "@workspace/shared/types/auto-reg";
 import type { SSBGetPlansResponse, SSBTerm } from "@workspace/shared/types/ssb";
 import type { BannerConnection, StoreKey } from "@workspace/shared/types/store";
-import { parseAudit, type Audit } from "@workspace/api-client";
+import type { DarsAuditLookup } from "@workspace/shared/lib/dars";
+import type { TranscriptLookup } from "@workspace/shared/lib/transcript";
 
 const DEFAULT_TIMEOUT_MS = 5_000;
-// A DARS run can wait for the student to finish signing in to DARS.
-const AUDIT_TIMEOUT_MS = 170_000;
+// A new DARS audit can take the extension up to 90 seconds of checking.
+const AUDIT_TIMEOUT_MS = 100_000;
 const DETECT_TIMEOUT_MS = 1_500;
 const DETECT_POLL_MS = 150;
 
@@ -130,18 +131,12 @@ export function onBannerChange(listener: () => void): () => void {
   return onBridgeEvent("BANNER_CHANGED", listener);
 }
 
-/** Asks the extension to run a fresh audit, then parses the result. */
-export async function runViaExtension(): Promise<Audit> {
-  const { html } = await bridgeRequest<{ html?: string }>(
+/** Asks the extension to run a new DARS audit, with the student's DARS session. */
+export function runDarsAudit(): Promise<DarsAuditLookup> {
+  return bridgeRequest<DarsAuditLookup>(
     { type: "DARS_RUN_AUDIT" },
     AUDIT_TIMEOUT_MS,
   );
-  if (!html) throw new ExtensionError("The audit failed.");
-  const { data } = await parseAudit({
-    body: html,
-    meta: { errorMessage: "Couldn't read the audit." },
-  });
-  return data;
 }
 
 /** Auto-register's queue, armed flag and last result, as the extension has them. */
@@ -189,6 +184,17 @@ export function getBannerRegistrationTerms(): Promise<SSBTerm[]> {
  */
 export function getBannerPlans(term: string): Promise<SSBGetPlansResponse> {
   return bridgeRequest<SSBGetPlansResponse>({ type: "BANNER_REG_PLANS", term });
+}
+
+// The extension reads Banner Self-Service over the network, which can take a few seconds.
+const TRANSCRIPT_TIMEOUT_MS = 30_000;
+
+/** The student's transcript, from Banner Self-Service with their sign-in. */
+export function getBannerTranscript(): Promise<TranscriptLookup> {
+  return bridgeRequest<TranscriptLookup>(
+    { type: "BANNER_TRANSCRIPT" },
+    TRANSCRIPT_TIMEOUT_MS,
+  );
 }
 
 /** Calls `listener` when auto-register changes in the extension (armed, ran, edited). */

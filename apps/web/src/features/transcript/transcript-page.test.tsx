@@ -12,9 +12,10 @@ import {
   server,
 } from "@workspace/api-client/testing";
 import { sampleAudit } from "@workspace/shared/testing/audit";
+import { installFakeBridge } from "@/test/fake-bridge";
 import { renderPage } from "@/test/render";
 import { TranscriptPage } from "./transcript-page";
-import { TRANSCRIPT_PDF_URL } from "./transcript-pdf";
+import { TRANSCRIPT_PAGE_URL, TRANSCRIPT_PDF_URL } from "./transcript-pdf";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
@@ -69,14 +70,22 @@ const PARSED: AcademicTranscript = {
   ],
 };
 
+let bridge: ReturnType<typeof installFakeBridge> | null = null;
+
 afterEach(() => {
+  bridge?.uninstall();
+  bridge = null;
   vi.unstubAllGlobals();
 });
 
+/** Picks a PDF the way "Upload transcript PDF" does, through the page's hidden file input. */
 async function upload(file = new File(["%PDF-"], "transcript.pdf")) {
   const user = userEvent.setup();
-  await user.upload(await screen.findByLabelText("Transcript PDF"), file);
-  await user.click(screen.getByRole("button", { name: "Read transcript" }));
+  await screen.findByRole("button", { name: "Upload transcript PDF" });
+  await user.upload(
+    document.querySelector<HTMLInputElement>('input[type="file"]')!,
+    file,
+  );
 }
 
 describe("TranscriptPage", () => {
@@ -96,6 +105,78 @@ describe("TranscriptPage", () => {
       await screen.findByRole("button", { name: "Copy transcript link" }),
     );
     expect(await navigator.clipboard.readText()).toBe(TRANSCRIPT_PDF_URL);
+  });
+
+  it("gets the transcript from Banner through the extension", async () => {
+    bridge = installFakeBridge({
+      transcript: { status: "found", transcript: TRANSCRIPT },
+    });
+    const user = userEvent.setup();
+    const { store } = renderPage(<TranscriptPage />);
+    await user.click(
+      await screen.findByRole("button", { name: "Get from Banner" }),
+    );
+
+    expect(
+      await screen.findByRole("article", { name: "Spring 2026" }),
+    ).toBeTruthy();
+    await waitFor(async () =>
+      expect((await store.get("transcript"))?.transcript).toEqual(TRANSCRIPT),
+    );
+    expect(
+      screen.getByRole("button", { name: "Update from Banner" }),
+    ).toBeTruthy();
+  });
+
+  it("asks to sign in to Self-Service when Banner says the student is signed out", async () => {
+    bridge = installFakeBridge({ transcript: { status: "signed-out" } });
+    const user = userEvent.setup();
+    const { store } = renderPage(<TranscriptPage />);
+    await user.click(
+      await screen.findByRole("button", { name: "Get from Banner" }),
+    );
+
+    const link = await screen.findByRole("link", {
+      name: "Open Banner Self-Service",
+    });
+    expect(link.getAttribute("href")).toBe(TRANSCRIPT_PAGE_URL);
+    expect(screen.getByText("Sign in to Banner Self-Service")).toBeTruthy();
+    expect(await store.get("transcript")).toBeNull();
+  });
+
+  it("offers Banner first and the PDF as the other choice with the extension", async () => {
+    bridge = installFakeBridge();
+    renderPage(<TranscriptPage />);
+    await screen.findByRole("button", { name: "Get from Banner" });
+    const [banner, pdf] = ["Get from Banner", "Upload transcript PDF"].map(
+      (name) => screen.getByRole("button", { name }),
+    );
+    expect(
+      banner!.compareDocumentPosition(pdf!) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("offers both ways to update a saved transcript", async () => {
+    bridge = installFakeBridge();
+    const { store } = renderPage(<TranscriptPage />);
+    await store.set("transcript", { transcript: TRANSCRIPT, storedAt: NOW });
+    expect(
+      await screen.findByRole("button", { name: "Update from Banner" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Upload transcript PDF" }),
+    ).toBeTruthy();
+  });
+
+  it("offers only the PDF without the extension", async () => {
+    renderPage(<TranscriptPage />);
+    expect(await screen.findByText("Add your transcript")).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Upload transcript PDF" }),
+    ).toBeTruthy();
+    expect(
+      screen.queryByRole("button", { name: "Get from Banner" }),
+    ).toBeNull();
   });
 
   it("reads an uploaded PDF into terms and saves only the courses", async () => {
@@ -184,9 +265,7 @@ describe("TranscriptPage", () => {
         transcript: WITH_COURSE_IN_PROGRESS,
         storedAt: NOW,
       });
-      await user.click(
-        await screen.findByRole("button", { name: "Try other grades" }),
-      );
+      await screen.findByRole("article", { name: "Spring 2026" });
       return { user, ...view };
     }
 
@@ -199,20 +278,41 @@ describe("TranscriptPage", () => {
       await user.click(await screen.findByRole("option", { name: grade }));
     }
 
-    it("tries a grade without saving it", async () => {
+    it("changes a grade right on the transcript without saving it", async () => {
       const { user, store } = await tryGrades();
-      expect(screen.getByText("from 3.50 now")).toBeTruthy();
+      expect(
+        screen.getByText("Change any grade to see how it moves your GPA."),
+      ).toBeTruthy();
 
       await pick(user, "Grade for ENG 0802", "A");
+      expect(screen.getByRole("heading", { name: "What-if GPA" })).toBeTruthy();
       expect(screen.getByText("4.00")).toBeTruthy();
-      expect(screen.getAllByText("was B").length).toBeGreaterThan(0);
+      expect(screen.getByText("actual 3.50")).toBeTruthy();
+      expect(screen.getByText("1 what-if grade, not saved.")).toBeTruthy();
       expect((await store.get("transcript"))?.transcript).toEqual(
         WITH_COURSE_IN_PROGRESS,
       );
 
-      await user.click(screen.getByRole("button", { name: "Done" }));
+      await user.click(
+        screen.getByRole("button", { name: "Revert to actual grades" }),
+      );
+      expect(screen.getByRole("heading", { name: "GPA" })).toBeTruthy();
       expect(screen.getByText("3.50")).toBeTruthy();
-      expect(screen.queryByText("was B")).toBeNull();
+    });
+
+    it("reverts one changed grade on its own", async () => {
+      const { user } = await tryGrades();
+      await pick(user, "Grade for ENG 0802", "A");
+      await pick(user, "Grade for CIS 1051", "B");
+      expect(screen.getByText("2 what-if grades, not saved.")).toBeTruthy();
+
+      await user.click(
+        screen.getAllByRole("button", { name: "Revert ENG 0802 to B" })[0]!,
+      );
+      expect(screen.getByText("1 what-if grade, not saved.")).toBeTruthy();
+      expect(
+        screen.queryAllByRole("button", { name: "Revert ENG 0802 to B" }),
+      ).toEqual([]);
     });
 
     it("tries a grade on any course, transfer credit too, and puts it back", async () => {
@@ -223,11 +323,16 @@ describe("TranscriptPage", () => {
       await pick(user, "Grade for MATH 1041", "A");
       // (16 + 12 + 16) / 12
       expect(screen.getByText("3.67")).toBeTruthy();
-      expect(screen.getAllByText("was TR").length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByRole("button", { name: "Revert MATH 1041 to TR" })
+          .length,
+      ).toBeGreaterThan(0);
 
       await pick(user, "Grade for MATH 1041", "TR");
       expect(screen.getByText("3.50")).toBeTruthy();
-      expect(screen.queryByText("was TR")).toBeNull();
+      expect(
+        screen.queryAllByRole("button", { name: "Revert MATH 1041 to TR" }),
+      ).toEqual([]);
     });
 
     it("counts an expected grade on a course in progress", async () => {

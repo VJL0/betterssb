@@ -13,7 +13,6 @@ import type {
 import type { BannerConnection } from "@workspace/shared/types/store";
 import { setUpApiClient } from "@/lib/api-client";
 import { submitWithRetry } from "@/lib/auto-reg-retry";
-import { sleep } from "@/lib/sleep";
 import {
   BANNER_CONNECTION_KEY,
   isSignedInToBanner,
@@ -41,14 +40,10 @@ import {
   type ExtensionResponse,
 } from "@/lib/messaging";
 import * as ssb from "@/lib/ssb-api";
-import { BANNER_PAGES, DARS_PAGES, DARS_START_URL } from "@/lib/temple-urls";
+import { BANNER_PAGES } from "@/lib/temple-urls";
+import { runAudit } from "@/lib/dars-api";
+import { lookUpTranscript } from "@/lib/transcript-api";
 import { lookUpRegistrationTime } from "@/lib/tuportal-api";
-
-const DARS_TAB_READY_TIMEOUT_MS = 150_000;
-const DARS_SIGN_IN_POLL_MS = 1000;
-// The DARS content script may still be loading right after sign-in.
-const DARS_RELAY_ATTEMPTS = 10;
-const DARS_RELAY_RETRY_MS = 500;
 
 /** Fires every minute: the run reminder, and watching Banner while armed. */
 const AUTO_REG_REMINDER_ALARM = "betterssb:autoRegReminder";
@@ -78,7 +73,7 @@ function notify(id: string, title: string, message: string): void {
   });
 }
 
-async function answerFromBanner(
+async function answerFromTemple(
   call: () => Promise<unknown>,
 ): Promise<ExtensionResponse> {
   try {
@@ -86,7 +81,7 @@ async function answerFromBanner(
   } catch (err) {
     return {
       success: false,
-      error: err instanceof Error ? err.message : "Banner request failed",
+      error: err instanceof Error ? err.message : "Temple request failed",
     };
   }
 }
@@ -96,14 +91,16 @@ async function handleBannerMessage(
 ): Promise<ExtensionResponse> {
   switch (msg.type) {
     case "SSB_REG_GET_TERMS":
-      return answerFromBanner(() => ssb.getRegistrationTerms());
+      return answerFromTemple(() => ssb.getRegistrationTerms());
     case "SSB_REG_GET_PLANS": {
       const { term } = msg.payload;
-      return answerFromBanner(async () => {
+      return answerFromTemple(async () => {
         await ssb.openRegistration(term);
         return ssb.getPlans();
       });
     }
+    case "SSB_GET_TRANSCRIPT":
+      return answerFromTemple(lookUpTranscript);
     default:
       return unknownMessage(msg);
   }
@@ -168,58 +165,6 @@ async function watchBannerWhileArmed(): Promise<void> {
   if (!(await getAutoRegRunState()).armed) return;
   if ((await checkBanner()) !== "connected") return;
   await restartBannerPageTimers();
-}
-
-/** A DARS tab is usable once it's on a `/selfservice/` page (i.e. past SSO login). */
-function isDarsReady(tab: Browser.tabs.Tab): boolean {
-  return !!tab.url?.includes("/selfservice/");
-}
-
-/**
- * Finds a logged-in DARS tab, or opens one and waits for the student to finish
- * signing in (SSO + Duo) before resolving with its id.
- */
-async function getOrOpenDarsTab(): Promise<number> {
-  const tabs = await browser.tabs.query({ url: DARS_PAGES });
-  const ready = tabs.find(isDarsReady);
-  if (ready?.id != null) return ready.id;
-
-  const tab =
-    tabs[0] ??
-    (await browser.tabs.create({ url: DARS_START_URL, active: true }));
-  const tabId = tab.id;
-  if (tabId == null) throw new Error("Could not open a DARS tab.");
-
-  const deadline = Date.now() + DARS_TAB_READY_TIMEOUT_MS;
-  for (;;) {
-    const current = await browser.tabs.get(tabId).catch(() => null);
-    if (!current)
-      throw new Error("The DARS tab was closed before sign-in finished.");
-    if (isDarsReady(current)) return tabId;
-    if (Date.now() >= deadline) {
-      throw new Error(
-        "Timed out waiting for DARS sign-in. Sign in, then try again.",
-      );
-    }
-    await sleep(DARS_SIGN_IN_POLL_MS);
-  }
-}
-
-/** Relays a message to the DARS content script, retrying while it finishes loading. */
-async function relayToDarsTab(
-  msg: ExtensionMessage,
-): Promise<ExtensionResponse> {
-  const tabId = await getOrOpenDarsTab();
-  let lastError = "DARS tab did not respond.";
-  for (let attempt = 0; attempt < DARS_RELAY_ATTEMPTS; attempt++) {
-    try {
-      return await sendTabMessage(tabId, msg);
-    } catch (err) {
-      lastError = err instanceof Error ? err.message : lastError;
-      await sleep(DARS_RELAY_RETRY_MS);
-    }
-  }
-  return { success: false, error: lastError };
 }
 
 function snapshotOf(
@@ -397,7 +342,7 @@ async function handleMessage(
     case "BANNER_STATUS":
       return { success: true, data: await checkBanner() };
     case "DARS_RUN_AUDIT":
-      return relayToDarsTab(msg);
+      return answerFromTemple(runAudit);
     case "FETCH_RATING":
       return fetchRating(msg.payload.name);
     default:

@@ -251,6 +251,12 @@ import type {
 } from "@workspace/shared/types/banner/course-details/index";
 ```
 
+## `academic-transcript.ts`
+
+`GET /StudentSelfService/ssb/academicTranscript/academicTranscriptPageData?level=&type=ADV` on `prd-xe.temple.edu`, the data behind Self-Service's Academic Transcript page. It's the one type here outside `/StudentRegistrationSsb`: StudentSelfService is a separate app with its own `JSESSIONID` and CAS sign-in, and a signed-out request is a 302 to fim.temple.edu.
+
+Written from the user's signed-in `data/ssb/transcript workflow.har` of 2026-11-17. Only the fields BetterSSB reads are typed; `bannerTranscript` in `lib/transcript.ts` turns them into the same `TranscriptData` the PDF upload makes.
+
 ## `common.ts`
 
 Shapes more than one group uses: `Open<Known>`, a code list left open for codes Banner admins add later; `CodeDescription<Code>`, one lookup option; and `BannerErrorPage`, the data in the `<head>` of Banner's 404 and 500 pages. Groups whose routes have their own 500 messages extend it (`LookupErrorPage`, `SectionTabErrorPage`, …).

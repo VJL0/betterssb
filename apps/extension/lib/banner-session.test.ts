@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { stoppedRedirect } from "@/test/responses";
 import {
   BANNER_MENU_URL,
   isSignedInToBanner,
@@ -13,14 +14,6 @@ const STUDENT_MENU = `<NavigationEntries>
 
 function stubFetch(response: Response) {
   vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response));
-}
-
-/** What `fetch` resolves with when `redirect: "manual"` stops a redirect. */
-function stoppedRedirect(): Response {
-  const response = new Response(null);
-  Object.defineProperty(response, "type", { value: "opaqueredirect" });
-  Object.defineProperty(response, "status", { value: 0 });
-  return response;
 }
 
 afterEach(() => vi.unstubAllGlobals());

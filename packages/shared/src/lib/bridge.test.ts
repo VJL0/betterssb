@@ -16,6 +16,9 @@ describe("parseBridgeRequest", () => {
       id: "r1",
       request: { type: "DARS_RUN_AUDIT" },
     });
+    expect(parseBridgeRequest(request("BANNER_TRANSCRIPT"))?.request).toEqual({
+      type: "BANNER_TRANSCRIPT",
+    });
     expect(
       parseBridgeRequest(request("STORE_GET", { key: "plan:202703" })),
     ).toEqual({ id: "r1", request: { type: "STORE_GET", key: "plan:202703" } });
