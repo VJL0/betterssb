@@ -8,6 +8,7 @@ export interface MessagePayloads {
   // Banner calls, made by the background with the student's cookies.
   SSB_REG_GET_TERMS: NoPayload;
   SSB_REG_GET_PLANS: { term: string };
+  SSB_GET_TRANSCRIPT: NoPayload;
   /** To a Banner tab: restart the page's own idle-logout timer. */
   BANNER_RESTART_TIMER: NoPayload;
   DARS_RUN_AUDIT: NoPayload;

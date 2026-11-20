@@ -25,7 +25,8 @@ export type BridgeRequest =
   | { type: "AUTOREG_DISARM" }
   | { type: "AUTOREG_REGISTRATION_TIME"; term: string }
   | { type: "BANNER_REG_TERMS" }
-  | { type: "BANNER_REG_PLANS"; term: string };
+  | { type: "BANNER_REG_PLANS"; term: string }
+  | { type: "BANNER_TRANSCRIPT" };
 
 export interface BridgeResponse {
   source: typeof BRIDGE_SOURCE;
@@ -100,6 +101,7 @@ export function parseBridgeRequest(
     case "AUTOREG_ARM":
     case "AUTOREG_DISARM":
     case "BANNER_REG_TERMS":
+    case "BANNER_TRANSCRIPT":
       return { id, request: { type } };
     case "BANNER_REG_PLANS":
       return isTermCode(payload.term)

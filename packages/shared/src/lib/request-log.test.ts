@@ -22,6 +22,14 @@ describe("loggableUrl", () => {
       "https://prd-xereg.temple.edu/x/getSectionDetailsFromCRN?courseReferenceNumber=41207&term=202703",
     );
   });
+
+  it("drops DARS's crossApp, which carries the student's id", () => {
+    expect(
+      loggableUrl(
+        "https://prd-dars.temple.edu/selfservice/audit/create.html?crossApp=CrossAppUrlAttributes!!!!c3R1ZGVudD14",
+      ),
+    ).toBe("https://prd-dars.temple.edu/selfservice/audit/create.html");
+  });
 });
 
 describe("addRequest", () => {

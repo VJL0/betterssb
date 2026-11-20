@@ -12,7 +12,7 @@
  * keeps the student signed in.
  */
 import { BANNER_ORIGIN } from "@/lib/temple-urls";
-import { loggedFetch } from "@/lib/logged-fetch";
+import { isSignedOutAnswer, signedInFetch } from "@/lib/signed-in-fetch";
 
 const SSB_BASE = `${BANNER_ORIGIN}/StudentRegistrationSsb/ssb`;
 export const BANNER_MENU_URL = `${SSB_BASE}/selfServiceMenu/data`;
@@ -22,20 +22,6 @@ export const BANNER_CONNECTION_KEY = "betterssb:bannerConnection";
 
 /** One menu entry; a guest's menu is a bare `<NavigationEntries />`. */
 const MENU_ENTRY = /<NavigationEntryValueObject\b/;
-
-/** HTTP statuses Banner answers with when the session has no signed-in user. */
-const SIGNED_OUT_STATUSES: ReadonlySet<number> = new Set([401, 403]);
-
-/** With the student's cookies, and without following Banner's redirect to sign-in. */
-const BANNER_REQUEST: RequestInit = {
-  credentials: "include",
-  redirect: "manual",
-  cache: "no-store",
-};
-
-function isSignedOutAnswer(res: Response): boolean {
-  return res.type === "opaqueredirect" || SIGNED_OUT_STATUSES.has(res.status);
-}
 
 /** Whether a self-service menu response lists a signed-in student's entries. */
 export function menuIsSignedIn(xml: string): boolean {
@@ -47,7 +33,7 @@ export function menuIsSignedIn(xml: string): boolean {
  * Rejects when Banner can't be reached or fails, which says nothing either way.
  */
 export async function isSignedInToBanner(): Promise<boolean> {
-  const res = await loggedFetch(BANNER_MENU_URL, BANNER_REQUEST);
+  const res = await signedInFetch(BANNER_MENU_URL);
   if (isSignedOutAnswer(res)) return false;
   if (!res.ok) throw new Error(`Banner returned HTTP ${res.status}`);
   return menuIsSignedIn(await res.text());

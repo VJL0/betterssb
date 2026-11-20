@@ -6,6 +6,7 @@ import {
   BANNER_ORIGIN,
   BANNER_PAGES,
   DARS_PAGES,
+  SELF_SERVICE_PAGES,
   TUPORTAL_PAGES,
 } from "./lib/temple-urls";
 
@@ -50,6 +51,8 @@ export default defineConfig({
     permissions: ["storage", "alarms", "notifications"],
     host_permissions: [
       BANNER_PAGES,
+      // Read-only: the student's academic transcript.
+      SELF_SERVICE_PAGES,
       DARS_PAGES,
       // Read-only: the priority registration countdown, for the auto-register time.
       TUPORTAL_PAGES,

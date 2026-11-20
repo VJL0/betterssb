@@ -85,3 +85,7 @@ export function neededRequirements(audit: Audit): NeededRequirement[] {
       };
     });
 }
+
+/** A DARS audit the extension ran: its report page, or a signed-out session. */
+export type DarsAuditLookup =
+  { status: "found"; html: string } | { status: "signed-out" };

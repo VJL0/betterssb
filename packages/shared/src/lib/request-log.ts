@@ -9,10 +9,13 @@ export const REQUEST_LOG_LIMIT = 500;
  */
 const REQUEST_LOG_FOLD_MS = 5 * 60 * 1000;
 
-/** Banner's cache buster and per-session id, which differ on every request and say nothing. */
-const NOISE_PARAMS = ["_", "uniqueSessionId"];
+/**
+ * Banner's cache buster and per-session id, which differ on every request and
+ * say nothing, and DARS's `crossApp`, which carries the student's id.
+ */
+const NOISE_PARAMS = ["_", "uniqueSessionId", "crossApp"];
 
-/** `url` without the parameters that change on every request. */
+/** `url` without the parameters that change on every request or name the student. */
 export function loggableUrl(url: string): string {
   const parsed = new URL(url);
   for (const name of NOISE_PARAMS) parsed.searchParams.delete(name);
