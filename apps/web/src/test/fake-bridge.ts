@@ -7,6 +7,8 @@ import type {
   AutoRegSnapshot,
   RegistrationTimeLookup,
 } from "@workspace/shared/types/auto-reg";
+import type { DarsAuditLookup } from "@workspace/shared/lib/dars";
+import type { TranscriptLookup } from "@workspace/shared/lib/transcript";
 import type { SSBRegPlanHeader, SSBTerm } from "@workspace/shared/types/ssb";
 import type { BannerConnection, StoreKey } from "@workspace/shared/types/store";
 
@@ -34,6 +36,10 @@ export function installFakeBridge({
   bannerPlans = [] as SSBRegPlanHeader[],
   /** What TUportal's countdown answers for any term. */
   registrationTime = { status: "not-listed" } as RegistrationTimeLookup,
+  /** What Banner Self-Service's transcript answers. */
+  transcript = { status: "signed-out" } as TranscriptLookup,
+  /** What DARS answers; without one, DARS fails. */
+  darsAudit = null as DarsAuditLookup | null,
 } = {}) {
   const data = new Map(Object.entries(documents)) as Map<StoreKey, unknown>;
   const auto = { current: { ...autoRegister } };
@@ -88,7 +94,9 @@ export function installFakeBridge({
         reply(id, { success: true });
         return emitChange(request.key);
       case "DARS_RUN_AUDIT":
-        return reply(id, { success: false, error: "No DARS in tests." });
+        return darsAudit
+          ? reply(id, { success: true, data: darsAudit })
+          : reply(id, { success: false, error: "No DARS in tests." });
       case "AUTOREG_GET":
         return reply(id, { success: true, data: auto.current });
       case "AUTOREG_SAVE_QUEUE":
@@ -121,6 +129,8 @@ export function installFakeBridge({
           success: true,
           data: { plans: bannerPlans, selectPlanConfig: [] },
         });
+      case "BANNER_TRANSCRIPT":
+        return reply(id, { success: true, data: transcript });
     }
   }
 

@@ -1,35 +1,18 @@
 "use client";
 
-import { useId, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { CircleXIcon, FileTextIcon } from "lucide-react";
-import { toast } from "sonner";
-import {
-  parseTranscriptPdf,
-  queryError,
-  type Audit,
-} from "@workspace/api-client";
+import { useState } from "react";
+import { FileTextIcon } from "lucide-react";
+import type { Audit } from "@workspace/api-client";
 import { requirementFor } from "@workspace/shared/lib/audit-view";
 import { formatCredits, creditsLabel } from "@workspace/shared/lib/dars";
 import { courseCode } from "@workspace/shared/lib/plan";
 import {
-  savedTranscript,
   transcriptTerms,
-  type SavedCourse,
   type TranscriptData,
   type TranscriptTerm,
 } from "@workspace/shared/lib/transcript";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@workspace/ui/components/alert";
 import { Card } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
-import { Field, FieldLabel } from "@workspace/ui/components/field";
-import { Input } from "@workspace/ui/components/input";
-import { Skeleton } from "@workspace/ui/components/skeleton";
-import { Spinner } from "@workspace/ui/components/spinner";
 import {
   Table,
   TableBody,
@@ -39,85 +22,98 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { ButtonLink } from "@/components/button-link";
+import { getBannerTranscript } from "@/lib/extension";
 import { useStoreDocument } from "@/lib/store/store-context";
+import { RecordPage } from "@/features/records/record-page";
+import {
+  SignInRequiredError,
+  useRecordRun,
+  type RecordKind,
+  type RecordReaders,
+} from "@/features/records/use-record-run";
 import { GpaCard, GradeCell, WhatIfGpaPill } from "./gpa-what-if";
-import { checkPdfSize, TranscriptPdfSteps } from "./transcript-pdf";
+import {
+  readTranscriptPdf,
+  TRANSCRIPT_PAGE_URL,
+  TranscriptPdfSteps,
+} from "./transcript-pdf";
 import { useGpaWhatIf, type GpaWhatIf } from "./use-gpa-what-if";
 
 /** Terms shown before "Show earlier terms". */
 const RECENT_TERMS = 3;
-const NO_COURSES: SavedCourse[] = [];
-async function readTranscript(file: File): Promise<TranscriptData> {
-  checkPdfSize(file);
-  const { data } = await parseTranscriptPdf({
-    body: file,
-    meta: {
-      errorMessage:
-        "Couldn't read that PDF. Try a valid, unprotected transcript PDF.",
-    },
-  });
-  return savedTranscript(data);
+/**
+ * Fixed widths, so every term's table lines up with the others; Title and
+ * Counts toward split what's left. Grade fits the picker and its revert button.
+ */
+const COLUMNS = [
+  { label: "Course", width: "w-24" },
+  { label: "Title", width: "" },
+  { label: "Counts toward", width: "" },
+  { label: "Credits", width: "w-18" },
+  { label: "Grade", width: "w-28" },
+];
+
+const TRANSCRIPT: RecordKind = {
+  name: "transcript",
+  source: "Banner",
+  fileName: "transcript PDF",
+  accept: "application/pdf,.pdf",
+};
+
+async function getFromBanner(): Promise<TranscriptData> {
+  const lookup = await getBannerTranscript();
+  if (lookup.status === "signed-out") {
+    throw new SignInRequiredError("Banner Self-Service", TRANSCRIPT_PAGE_URL);
+  }
+  return lookup.transcript;
+}
+
+const TRANSCRIPT_READERS: RecordReaders<TranscriptData> = {
+  fromExtension: getFromBanner,
+  fromFile: readTranscriptPdf,
+};
+
+function transcriptSummary(
+  transcript: TranscriptData,
+  terms: readonly TranscriptTerm[],
+): string {
+  return [
+    `${transcript.courses.length} courses`,
+    `${terms.length} ${terms.length === 1 ? "term" : "terms"}`,
+    transcript.gpa !== null && `GPA ${transcript.gpa.toFixed(2)}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 export function TranscriptPage() {
   const stored = useStoreDocument("transcript");
+  const run = useRecordRun(
+    TRANSCRIPT,
+    TRANSCRIPT_READERS,
+    (transcript, storedAt) => stored.save({ transcript, storedAt }),
+  );
   const audit = useStoreDocument("audit").value?.audit ?? null;
-  const [replacing, setReplacing] = useState(false);
-  const read = useMutation({
-    mutationFn: readTranscript,
-    onSuccess: async (transcript) => {
-      await stored.save({ transcript, storedAt: new Date().toISOString() });
-      setReplacing(false);
-      toast.success(
-        `Read ${transcript.courses.length} courses from your transcript`,
-      );
-    },
-  });
-
   const transcript = stored.value?.transcript ?? null;
-  const whatIf = useGpaWhatIf(transcript?.courses ?? NO_COURSES);
-  const showForm = !transcript || replacing;
+  const whatIf = useGpaWhatIf(transcript);
   const terms = transcript ? transcriptTerms(transcript) : [];
-  const subtitle =
-    transcript &&
-    [
-      `${transcript.courses.length} courses`,
-      `${terms.length} ${terms.length === 1 ? "term" : "terms"}`,
-      transcript.gpa !== null && `GPA ${transcript.gpa.toFixed(2)}`,
-    ]
-      .filter(Boolean)
-      .join(" · ");
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold tracking-tight">Transcript</h2>
-          {subtitle && <p className="text-muted-foreground">{subtitle}</p>}
-        </div>
-        {transcript && !replacing && (
-          <Button variant="outline" onClick={() => setReplacing(true)}>
-            <FileTextIcon data-icon="inline-start" />
-            Replace transcript
-          </Button>
-        )}
-      </div>
-
-      {stored.status === "loading" ? (
-        <Skeleton className="h-80 rounded-3xl" />
-      ) : showForm ? (
-        <UploadForm
-          pending={read.isPending}
-          error={queryError(read.error)}
-          onRead={(file) => read.mutate(file)}
-          onCancel={transcript ? () => setReplacing(false) : undefined}
-        />
-      ) : (
+    <RecordPage
+      kind={TRANSCRIPT}
+      run={run}
+      loading={stored.status === "loading"}
+      hasRecord={!!transcript}
+      subtitle={transcript && transcriptSummary(transcript, terms)}
+      icon={<FileTextIcon />}
+      help={<TranscriptPdfSteps />}
+    >
+      {transcript && (
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <Terms terms={terms} audit={audit} whatIf={whatIf} />
           {/* Above the terms on phones; beside them, in view, on wide screens. */}
           <aside className="flex flex-col gap-4 max-lg:order-first lg:sticky lg:top-24">
-            <GpaCard officialGpa={transcript!.gpa} whatIf={whatIf} />
+            <GpaCard whatIf={whatIf} />
             {!audit && (
               <p className="rounded-2xl bg-muted/50 p-3">
                 Save your degree audit to see what each course counts toward.{" "}
@@ -134,65 +130,7 @@ export function TranscriptPage() {
           </aside>
         </div>
       )}
-    </div>
-  );
-}
-
-function UploadForm({
-  pending,
-  error,
-  onRead,
-  onCancel,
-}: {
-  pending: boolean;
-  error: Error | null;
-  onRead: (file: File) => void;
-  onCancel?: () => void;
-}) {
-  const [file, setFile] = useState<File | null>(null);
-  const id = useId();
-  return (
-    <Card
-      className="max-w-3xl gap-4 p-5"
-      render={<form />}
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (file) onRead(file);
-      }}
-    >
-      {error && (
-        <Alert variant="destructive">
-          <CircleXIcon />
-          <AlertTitle>We couldn't read that transcript</AlertTitle>
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
-      <TranscriptPdfSteps />
-      <Field>
-        <FieldLabel htmlFor={id}>Transcript PDF</FieldLabel>
-        <Input
-          id={id}
-          type="file"
-          accept="application/pdf,.pdf"
-          disabled={pending}
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        />
-      </Field>
-      <div className="flex flex-wrap items-center justify-end gap-3">
-        <span className="mr-auto text-xs text-muted-foreground">
-          Only your courses and grades are kept. The PDF isn't stored.
-        </span>
-        {onCancel && (
-          <Button type="button" variant="ghost" onClick={onCancel}>
-            Cancel
-          </Button>
-        )}
-        <Button type="submit" disabled={pending || !file}>
-          {pending && <Spinner data-icon="inline-start" aria-hidden />}
-          {pending ? "Reading…" : "Read transcript"}
-        </Button>
-      </div>
-    </Card>
+    </RecordPage>
   );
 }
 
@@ -222,7 +160,7 @@ function Terms({
           Show {earlier} earlier {earlier === 1 ? "term" : "terms"}
         </Button>
       )}
-      {whatIf.active && <WhatIfGpaPill whatIf={whatIf} />}
+      {whatIf.changed > 0 && <WhatIfGpaPill whatIf={whatIf} />}
     </section>
   );
 }
@@ -241,9 +179,7 @@ function TermCard({
     return {
       key: `${code}-${course.grade}`,
       code,
-      title: course.title,
       countsToward: audit ? requirementFor(audit, code) : null,
-      credits: formatCredits(course.credits),
       course,
     };
   });
@@ -267,25 +203,27 @@ function TermCard({
               <span className="font-medium">{row.code}</span>
               <GradeCell course={row.course} whatIf={whatIf} />
             </span>
-            <span>{row.title}</span>
+            <span>{row.course.title}</span>
             <span className="text-xs text-muted-foreground">
-              {creditsLabel(row.credits)}
+              {creditsLabel(row.course.credits)}
               {row.countsToward && ` · ${row.countsToward}`}
             </span>
           </li>
         ))}
       </ul>
       <div className="hidden overflow-x-auto px-3 sm:block">
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead scope="col">Course</TableHead>
-              <TableHead scope="col">Title</TableHead>
-              <TableHead scope="col">Counts toward</TableHead>
-              <TableHead scope="col" className="text-right">
-                Cr
-              </TableHead>
-              <TableHead scope="col">Grade</TableHead>
+              {COLUMNS.map((column) => (
+                <TableHead
+                  key={column.label}
+                  scope="col"
+                  className={column.width}
+                >
+                  {column.label}
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -294,13 +232,13 @@ function TermCard({
                 <TableCell className="font-medium whitespace-nowrap">
                   {row.code}
                 </TableCell>
-                <TableCell className="whitespace-normal">{row.title}</TableCell>
+                <TableCell className="whitespace-normal">
+                  {row.course.title}
+                </TableCell>
                 <TableCell className="whitespace-normal text-muted-foreground">
                   {row.countsToward ?? "—"}
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {row.credits}
-                </TableCell>
+                <TableCell>{formatCredits(row.course.credits)}</TableCell>
                 <TableCell>
                   <GradeCell course={row.course} whatIf={whatIf} />
                 </TableCell>

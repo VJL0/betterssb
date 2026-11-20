@@ -11,12 +11,17 @@ import {
   server,
 } from "@workspace/api-client/testing";
 import { sampleAudit } from "@workspace/shared/testing/audit";
+import { installFakeBridge } from "@/test/fake-bridge";
 import { renderPage } from "@/test/render";
 import { AuditPage } from "./audit-page";
 
 const NOW = "2026-10-17T12:00:00.000Z";
 
+let bridge: ReturnType<typeof installFakeBridge> | null = null;
+
 afterEach(() => {
+  bridge?.uninstall();
+  bridge = null;
   vi.unstubAllGlobals();
 });
 
@@ -37,10 +42,60 @@ async function renderWithAudit() {
 describe("AuditPage", () => {
   it("asks for an audit when none is saved", async () => {
     renderPage(<AuditPage />);
-    expect(await screen.findByText("See your degree audit")).toBeTruthy();
+    expect(await screen.findByText("Add your degree audit")).toBeTruthy();
     expect(
       screen.getByRole("button", { name: "Upload DARS file" }),
     ).toBeTruthy();
+  });
+
+  it("offers DARS first and the file as the other choice with the extension", async () => {
+    bridge = installFakeBridge();
+    renderPage(<AuditPage />);
+    const dars = await screen.findByRole("button", { name: "Get from DARS" });
+    const file = screen.getByRole("button", { name: "Upload DARS file" });
+    expect(
+      dars.compareDocumentPosition(file) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("offers both ways to update a saved audit", async () => {
+    bridge = installFakeBridge();
+    await renderWithAudit();
+    expect(
+      await screen.findByRole("button", { name: "Update from DARS" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Upload DARS file" }),
+    ).toBeTruthy();
+  });
+
+  it("keeps the saved audit when DARS fails", async () => {
+    bridge = installFakeBridge();
+    const user = userEvent.setup();
+    await renderWithAudit();
+    await user.click(
+      await screen.findByRole("button", { name: "Update from DARS" }),
+    );
+    expect(
+      await screen.findByText("We couldn't get your degree audit"),
+    ).toBeTruthy();
+    expect(
+      screen.getByText(/Your last saved degree audit is below\./),
+    ).toBeTruthy();
+  });
+
+  it("asks to sign in to DARS when the extension finds the student signed out", async () => {
+    bridge = installFakeBridge({ darsAudit: { status: "signed-out" } });
+    const user = userEvent.setup();
+    const { store } = renderPage(<AuditPage />);
+    await user.click(
+      await screen.findByRole("button", { name: "Get from DARS" }),
+    );
+    expect(await screen.findByText("Sign in to DARS")).toBeTruthy();
+    expect(
+      screen.getByRole("link", { name: "Open DARS" }).getAttribute("href"),
+    ).toBe("https://prd-dars.temple.edu/selfservice/");
+    expect(await store.get("audit")).toBeNull();
   });
 
   it("reads an uploaded audit file and saves it", async () => {
@@ -51,7 +106,7 @@ describe("AuditPage", () => {
       ),
     );
     const { container, store } = renderPage(<AuditPage />);
-    await screen.findByText("See your degree audit");
+    await screen.findByText("Add your degree audit");
 
     await user.upload(fileInput(container), auditFile());
     expect(
@@ -139,7 +194,9 @@ describe("AuditPage", () => {
     const { container } = await renderWithAudit();
     await screen.findByText("Requirements met");
     await user.upload(fileInput(container), auditFile());
-    expect(await screen.findByText("The audit didn't update")).toBeTruthy();
+    expect(
+      await screen.findByText("We couldn't get your degree audit"),
+    ).toBeTruthy();
     expect(
       screen.getByText(/This doesn't look like a DARS audit\./),
     ).toBeTruthy();

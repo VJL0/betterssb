@@ -62,10 +62,10 @@ export default function PrivacyPage() {
           </p>
           <List
             items={[
-              "Your Temple sign-ins: it sends requests to Temple's Banner, DARS and TUportal with the sign-ins already in your browser, to check that you're signed in, read your registration terms, plans, registration time and degree audit, and submit the registration you set up. These requests go straight from your browser to Temple. BetterSSB never sees your password or your Temple cookies.",
+              "Your Temple sign-ins: it sends requests to Temple's Banner, DARS and TUportal with the sign-ins already in your browser, to check that you're signed in, read your registration terms, plans, registration time, transcript and degree audit, and submit the registration you set up. These requests go straight from your browser to Temple. BetterSSB never sees your password or your Temple cookies.",
               "Banner class pages: it reads the class search results on Banner's pages to show a rating before each instructor. It sends instructor names from those pages to the BetterSSB server to look up their Rate My Professors ratings.",
               "Stored in your browser: your plans, settings, the CRNs you set to auto-register and their last result, whether you're signed in to Banner, and a log of the requests it sent (method, address without session IDs, status and time; the last 500). This stays in Chrome's extension storage on your device.",
-              "The BetterSSB website: when it's open, the extension shares your stored plans and settings with it, and passes it Banner terms and plans and the degree audits you run, so the website can show them.",
+              "The BetterSSB website: when it's open, the extension shares your stored plans and settings with it, and passes it Banner terms and plans, your transcript and the degree audits you run, so the website can show them.",
             ]}
           />
           <p className="text-muted-foreground">

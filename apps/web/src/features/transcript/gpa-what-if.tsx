@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { CalculatorIcon } from "lucide-react";
+import { Undo2Icon } from "lucide-react";
 import {
   GRADE_POINTS,
   LETTER_GRADES,
@@ -12,7 +12,6 @@ import {
 } from "@workspace/shared/lib/gpa";
 import { formatCredits } from "@workspace/shared/lib/dars";
 import type { SavedCourse } from "@workspace/shared/lib/transcript";
-import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
 import {
@@ -28,6 +27,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip";
+import { cn } from "@workspace/ui/lib/utils";
 import type { GpaWhatIf } from "./use-gpa-what-if";
 
 /** Stands in for "no grade yet" on a course in progress. */
@@ -50,14 +55,9 @@ function formatGpa(gpa: number | null): string {
   return gpa === null ? "—" : gpa.toFixed(2);
 }
 
-export function GpaCard({
-  officialGpa,
-  whatIf,
-}: {
-  officialGpa: number | null;
-  whatIf: GpaWhatIf;
-}) {
+export function GpaCard({ whatIf }: { whatIf: GpaWhatIf }) {
   const headingId = useId();
+  const trying = whatIf.changed > 0;
   return (
     <Card
       aria-labelledby={headingId}
@@ -65,56 +65,36 @@ export function GpaCard({
       render={<section />}
     >
       <h3 id={headingId} className="font-medium">
-        {whatIf.active ? "What-if GPA" : "GPA"}
+        {trying ? "What-if GPA" : "GPA"}
       </h3>
-      {whatIf.active ? (
-        <WhatIfTotals whatIf={whatIf} />
-      ) : (
-        <>
-          <p className="flex items-baseline gap-1.5 tabular-nums">
-            <span className="text-3xl font-medium">
-              {formatGpa(officialGpa)}
-            </span>
-            <span className="text-muted-foreground">overall</span>
-          </p>
-          <Button
-            variant="outline"
-            className="self-start"
-            onClick={whatIf.start}
-          >
-            <CalculatorIcon data-icon="inline-start" />
-            Try other grades
-          </Button>
-        </>
-      )}
-    </Card>
-  );
-}
-
-function WhatIfTotals({ whatIf }: { whatIf: GpaWhatIf }) {
-  return (
-    <>
-      <p className="flex items-baseline gap-1.5 tabular-nums">
+      <p
+        aria-live="polite"
+        className="flex items-baseline gap-1.5 tabular-nums"
+      >
         <span className="text-3xl font-medium">
-          {formatGpa(whatIf.whatIfGpa)}
+          {formatGpa(trying ? whatIf.whatIfGpa : whatIf.actualGpa)}
         </span>
         <span className="text-muted-foreground">
-          from {formatGpa(whatIf.nowGpa)} now
+          {trying ? `actual ${formatGpa(whatIf.actualGpa)}` : "overall"}
         </span>
       </p>
-      <p className="text-muted-foreground">Nothing here is saved.</p>
-      {whatIf.hasCoursesInProgress && <TargetGpa whatIf={whatIf} />}
-      <div className="flex flex-wrap gap-2">
-        {whatIf.changed > 0 && (
-          <Button variant="outline" onClick={whatIf.reset}>
-            Reset
-          </Button>
-        )}
-        <Button variant="ghost" onClick={whatIf.done}>
-          Done
+      <p className="text-muted-foreground">
+        {trying
+          ? `${whatIf.changed} what-if ${whatIf.changed === 1 ? "grade" : "grades"}, not saved.`
+          : "Change any grade to see how it moves your GPA."}
+      </p>
+      {trying && (
+        <Button
+          variant="outline"
+          className="self-start"
+          onClick={whatIf.revertAll}
+        >
+          <Undo2Icon data-icon="inline-start" />
+          Revert to actual grades
         </Button>
-      </div>
-    </>
+      )}
+      {whatIf.hasCoursesInProgress && <TargetGpa whatIf={whatIf} />}
+    </Card>
   );
 }
 
@@ -167,8 +147,8 @@ function targetAnswer(whatIf: GpaWhatIf, target: number): string {
 }
 
 /**
- * The what-if GPA under the grade pickers on narrower screens, where the
- * card sits above the terms and scrolls away.
+ * The what-if GPA under the grades on narrower screens, where the card sits
+ * above the terms and scrolls away.
  */
 export function WhatIfGpaPill({ whatIf }: { whatIf: GpaWhatIf }) {
   return (
@@ -177,14 +157,17 @@ export function WhatIfGpaPill({ whatIf }: { whatIf: GpaWhatIf }) {
         aria-live="polite"
         className="rounded-full bg-primary px-4 py-2 font-medium text-primary-foreground tabular-nums shadow-lg"
       >
-        What-if GPA {formatGpa(whatIf.whatIfGpa)} · from{" "}
-        {formatGpa(whatIf.nowGpa)}
+        What-if GPA {formatGpa(whatIf.whatIfGpa)} · actual{" "}
+        {formatGpa(whatIf.actualGpa)}
       </p>
     </div>
   );
 }
 
-/** A course's grade: a picker while trying grades, otherwise the transcript's. */
+/**
+ * A course's grade, which the student can change to see its effect on the
+ * GPA. A changed grade stands out and can be reverted on its own.
+ */
 export function GradeCell({
   course,
   whatIf,
@@ -192,16 +175,13 @@ export function GradeCell({
   course: SavedCourse;
   whatIf: GpaWhatIf;
 }) {
-  if (!whatIf.active) {
-    return course.grade ? (
-      <Badge variant="secondary">{course.grade}</Badge>
-    ) : null;
-  }
   const grade = whatIf.gradeOf(course);
+  const changed = grade !== course.grade;
   const items = gradeItems(course);
-  const inProgress = course.category === "in_progress";
+  const code = `${course.subject} ${course.courseNumber}`;
+  const actual = course.grade || "no grade";
   return (
-    <span className="flex items-center gap-2">
+    <span className="flex items-center gap-1">
       <Select
         items={items}
         value={grade || NO_GRADE}
@@ -209,12 +189,18 @@ export function GradeCell({
       >
         <SelectTrigger
           size="sm"
-          aria-label={`${inProgress ? "Expected grade" : "Grade"} for ${course.subject} ${course.courseNumber}`}
-          className="w-20"
+          aria-label={`${course.category === "in_progress" ? "Expected grade" : "Grade"} for ${code}`}
+          className={cn(
+            // Narrow, so two-letter grades ("WF", "NT") need the trimmed padding to fit.
+            "w-16 bg-secondary px-2 hover:bg-secondary-hover",
+            changed &&
+              "border-primary bg-background font-medium text-primary italic hover:bg-secondary",
+          )}
         >
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        {/* As narrow as the picker: grades are two letters at most. */}
+        <SelectContent className="min-w-(--anchor-width)">
           {items.map((item) => (
             <SelectItem key={item.value} value={item.value}>
               {item.label}
@@ -222,10 +208,25 @@ export function GradeCell({
           ))}
         </SelectContent>
       </Select>
-      {grade !== course.grade && course.grade && (
-        <span className="text-xs whitespace-nowrap text-muted-foreground">
-          was {course.grade}
-        </span>
+      {changed ? (
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label={`Revert ${code} to ${actual}`}
+                onClick={() => whatIf.setGrade(course, course.grade)}
+              />
+            }
+          >
+            <Undo2Icon />
+          </TooltipTrigger>
+          <TooltipContent>Revert to {actual}</TooltipContent>
+        </Tooltip>
+      ) : (
+        // Holds the revert button's place, so changing a grade doesn't reflow the table.
+        <span aria-hidden className="size-6 shrink-0" />
       )}
     </span>
   );
